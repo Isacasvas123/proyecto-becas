@@ -1,0 +1,52 @@
+# Dependencias
+node_modules/
+.pnp
+.pnp.js
+
+# Variables de entorno — NUNCA se versionan.
+# El .env.example sí va al repositorio.
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Compilados
+dist/
+build/
+*.tsbuildinfo
+
+# Pruebas
+coverage/
+.nyc_output/
+
+# Prisma
+prisma/*.db
+prisma/*.db-journal
+
+# Documentos cargados en desarrollo
+uploads/
+storage/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# Editores
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.swp
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Caché
+.cache/
+.temp/
+.turbo/
+.vite/

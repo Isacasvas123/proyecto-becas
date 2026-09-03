@@ -1,0 +1,19 @@
+# Normaliza los finales de línea para todo el equipo.
+# Sin esto, un archivo editado en dos máquinas distintas aparece como
+# "todas las líneas cambiaron" en el Pull Request, y el code review se vuelve inútil.
+
+* text=auto eol=lf
+
+# Scripts de Windows que sí requieren CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binarios: no tocar
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.ico binary
+*.woff binary
+*.woff2 binary
