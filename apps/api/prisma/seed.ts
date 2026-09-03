@@ -5,7 +5,15 @@
  * (`npm run db:migrate`). No se ejecuta en las pruebas unitarias: esas usan el
  * repositorio en memoria y no tocan la base de datos.
  */
+import { resolve } from 'node:path';
+
 import { EstadoConvocatoria, PrismaClient, TipoBeca } from '@prisma/client';
+import { config } from 'dotenv';
+
+// Este script se ejecuta con `ts-node` desde `apps/api`, fuera del contenedor de
+// NestJS, así que no pasa por el `ConfigModule`. Cargamos el `.env` de la raíz a
+// mano, apuntando al mismo archivo que declara `app.module.ts`.
+config({ path: resolve(__dirname, '../../../.env') });
 
 const prisma = new PrismaClient();
 
