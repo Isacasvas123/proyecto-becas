@@ -1,0 +1,40 @@
+# Levanta la base de datos local. Los cuatro integrantes trabajan contra una
+# instancia idéntica, lo que elimina el clásico "en mi máquina sí funciona".
+#
+#   docker compose up -d      levantar
+#   docker compose down       detener (conserva los datos)
+#   docker compose down -v    detener y BORRAR los datos
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: becas_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: becas
+      POSTGRES_PASSWORD: becas_dev
+      POSTGRES_DB: becas
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U becas']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Interfaz web para inspeccionar la base de datos durante el desarrollo.
+  # http://localhost:8080 — usuario: admin@becas.gt / admin
+  adminer:
+    image: adminer:latest
+    container_name: becas_adminer
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
