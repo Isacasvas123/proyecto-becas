@@ -138,29 +138,38 @@ export function PaginaConvocatorias(): ReactElement {
         )}
 
         <ul className="lista">
-          {convocatorias.map((convocatoria) => (
-            <li key={convocatoria.id} className="tarjeta">
-              <div className="tarjeta-encabezado">
-                <h3>{convocatoria.titulo}</h3>
-                <span className="insignia">{convocatoria.tipo.replace('_', ' ')}</span>
-              </div>
-              <p className="descripcion">{convocatoria.descripcion}</p>
-              <dl className="datos">
-                <div>
-                  <dt>Código</dt>
-                  <dd>{convocatoria.codigo}</dd>
+          {convocatorias.map((convocatoria) => {
+            // Cada tipo de beca tiene su color: la franja de la tarjeta y la insignia se
+            // derivan del propio dato, sin condicionales. Un tipo nuevo solo necesita su
+            // regla en `estilos.css`; si falta, hereda el color por defecto.
+            const claseTipo = convocatoria.tipo.toLowerCase();
+
+            return (
+              <li key={convocatoria.id} className={`tarjeta tarjeta-${claseTipo}`}>
+                <div className="tarjeta-encabezado">
+                  <h3>{convocatoria.titulo}</h3>
+                  <span className={`insignia insignia-${claseTipo}`}>
+                    {convocatoria.tipo.replace('_', ' ')}
+                  </span>
                 </div>
-                <div>
-                  <dt>Cupos</dt>
-                  <dd>{convocatoria.cupos}</dd>
-                </div>
-                <div>
-                  <dt>Cierra</dt>
-                  <dd>{formatearFecha(convocatoria.fechaCierre)}</dd>
-                </div>
-              </dl>
-            </li>
-          ))}
+                <p className="descripcion">{convocatoria.descripcion}</p>
+                <dl className="datos">
+                  <div>
+                    <dt>Código</dt>
+                    <dd>{convocatoria.codigo}</dd>
+                  </div>
+                  <div>
+                    <dt>Cupos</dt>
+                    <dd>{convocatoria.cupos}</dd>
+                  </div>
+                  <div>
+                    <dt>Cierra</dt>
+                    <dd>{formatearFecha(convocatoria.fechaCierre)}</dd>
+                  </div>
+                </dl>
+              </li>
+            );
+          })}
         </ul>
       </section>
 
