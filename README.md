@@ -133,7 +133,11 @@ Sprints semanales de jueves a miércoles.
 | [Plan de Pruebas](docs/08-plan-pruebas.md) | 7 |
 | [Manual Técnico](docs/09-manual-tecnico.md) | — |
 | [Manual de Usuario](docs/10-manual-usuario.md) | — |
+| [**Guía de Git para el equipo**](docs/11-guia-git.md) | — |
 | [Minutas de sprints](docs/minutas/) | 2 |
+
+> ¿Primera vez con ramas y Pull Requests? Empieza por la
+> [Guía de Git](docs/11-guia-git.md).
 
 > La documentación vive en el repositorio, no en Drive: el enunciado exige control de versiones
 > **del código y de la documentación**, así que cada cambio de documento también pasa por Pull
