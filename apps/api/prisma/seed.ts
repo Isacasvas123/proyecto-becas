@@ -7,7 +7,8 @@
  */
 import { resolve } from 'node:path';
 
-import { EstadoConvocatoria, PrismaClient, TipoBeca } from '@prisma/client';
+import { EstadoConvocatoria, PrismaClient, RolUsuario, TipoBeca } from '@prisma/client';
+import { hash } from 'bcryptjs';
 import { config } from 'dotenv';
 
 // Este script se ejecuta con `ts-node` desde `apps/api`, fuera del contenedor de
@@ -71,7 +72,56 @@ async function main(): Promise<void> {
     },
   });
 
+  await sembrarAdministrador();
+
   console.log('Datos de prueba cargados.');
+}
+
+/**
+ * Usuario administrador inicial para desarrollo local (US-002).
+ *
+ * DE DÓNDE SALEN LAS CREDENCIALES
+ *   De las variables `ADMIN_USUARIO`, `ADMIN_PASSWORD` y `ADMIN_CORREO` del `.env`.
+ *   Nunca están escritas en este archivo: si lo estuvieran, quedarían para siempre en el
+ *   historial de Git y cualquiera que clonara el repositorio las tendría.
+ *
+ * LA CONTRASEÑA SE GUARDA CON HASH BCRYPT
+ *   Cumple el NFR de seguridad de docs/04-product-backlog.md §5. El valor en claro solo
+ *   existe en el `.env` local, que está en `.gitignore`.
+ *
+ * ⚠️  ESTE SEED ES SOLO PARA DESARROLLO. No debe ejecutarse contra Staging ni producción:
+ *     ahí el administrador se crea con credenciales propias definidas en el servidor.
+ */
+async function sembrarAdministrador(): Promise<void> {
+  const nombreUsuario = (process.env.ADMIN_USUARIO ?? '').trim().toLowerCase();
+  const password = process.env.ADMIN_PASSWORD ?? '';
+  const correo = process.env.ADMIN_CORREO ?? '';
+
+  if (nombreUsuario === '' || password === '' || correo === '') {
+    console.warn(
+      'Se omite el administrador: faltan ADMIN_USUARIO, ADMIN_PASSWORD o ADMIN_CORREO en el .env',
+    );
+    return;
+  }
+
+  const rondas = Number(process.env.BCRYPT_ROUNDS ?? 10);
+  const hashPassword = await hash(password, Number.isInteger(rondas) ? rondas : 10);
+
+  await prisma.usuario.upsert({
+    where: { nombreUsuario },
+    // `update` también refresca el hash: si alguien cambia ADMIN_PASSWORD en su `.env`
+    // y vuelve a sembrar, la contraseña nueva queda aplicada.
+    update: { hashPassword, correo, rol: RolUsuario.ADMINISTRADOR, activo: true },
+    create: {
+      nombreUsuario,
+      correo,
+      hashPassword,
+      rol: RolUsuario.ADMINISTRADOR,
+      activo: true,
+    },
+  });
+
+  console.log(`Administrador listo: ${nombreUsuario} (rol ADMINISTRADOR)`);
 }
 
 main()

@@ -18,7 +18,9 @@ import {
   listarConvocatorias,
   type Convocatoria,
   type EstadoSalud,
+  type Sesion,
 } from './api/cliente';
+import { FormularioLogin } from './componentes/FormularioLogin';
 
 function formatearFecha(iso: string): string {
   return new Date(iso).toLocaleDateString('es-GT', {
@@ -83,6 +85,19 @@ export function App(): ReactElement {
   const listado = useConsulta<Convocatoria[]>(listarConvocatorias);
   const convocatorias = listado.datos ?? [];
 
+  /**
+   * La sesión se guarda SOLO en memoria, no en `localStorage`.
+   *
+   * Es una decisión deliberada: un token en `localStorage` es legible por cualquier
+   * script de la página, así que una vulnerabilidad XSS bastaría para robarlo. El precio
+   * es que al recargar la página hay que volver a iniciar sesión.
+   *
+   * SPRINT 2 (US-002/US-003): la persistencia correcta de la sesión es una cookie
+   * `httpOnly` emitida por el backend, que el JavaScript no puede leer. Se implementa
+   * junto con el guard que valida el token en cada petición.
+   */
+  const [sesion, setSesion] = useState<Sesion | null>(null);
+
   return (
     <main className="contenedor">
       <header>
@@ -93,6 +108,28 @@ export function App(): ReactElement {
           aplicación → dominio → persistencia.
         </p>
       </header>
+
+      <section aria-labelledby="titulo-sesion">
+        <h2 id="titulo-sesion">Acceso</h2>
+
+        {sesion === null ? (
+          <FormularioLogin onSesionIniciada={setSesion} />
+        ) : (
+          <div className="sesion">
+            <p>
+              Sesión iniciada como <strong>{sesion.usuario.nombreUsuario}</strong>
+              <span className="insignia">{sesion.usuario.rol}</span>
+            </p>
+            <p className="atenuado">
+              {sesion.usuario.correo} · expira el{' '}
+              {new Date(sesion.expiraEn).toLocaleString('es-GT')}
+            </p>
+            <button type="button" className="secundario" onClick={() => setSesion(null)}>
+              Cerrar sesión
+            </button>
+          </div>
+        )}
+      </section>
 
       <section aria-labelledby="titulo-salud">
         <h2 id="titulo-salud">Estado de la API</h2>
