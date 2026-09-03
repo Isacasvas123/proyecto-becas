@@ -30,3 +30,17 @@ export class TransicionInvalidaError extends ErrorDeDominio {
     super(mensaje);
   }
 }
+
+/**
+ * Las credenciales no son válidas o la cuenta no puede iniciar sesión (US-002).
+ *
+ * SEGURIDAD: el `mensaje` que llegue al cliente debe ser siempre genérico. Distinguir
+ * "el usuario no existe" de "la contraseña es incorrecta" le regala a un atacante un
+ * oráculo para enumerar cuentas válidas. El detalle real se registra en el log del
+ * servidor, no en la respuesta (ver `dominio-exception.filter.ts`).
+ */
+export class AutenticacionFallidaError extends ErrorDeDominio {
+  constructor(mensaje: string) {
+    super(mensaje);
+  }
+}

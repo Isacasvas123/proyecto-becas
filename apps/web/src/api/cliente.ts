@@ -32,13 +32,65 @@ export interface Convocatoria {
   fechaCierre: string;
 }
 
+/** Contrato de `POST /auth/login`. Refleja `SesionIniciadaDto` del backend. */
+export interface Sesion {
+  token: string;
+  expiraEn: string;
+  usuario: {
+    id: string;
+    nombreUsuario: string;
+    correo: string;
+    rol: string;
+  };
+}
+
+/** Forma del cuerpo de error que devuelve `DominioExceptionFilter`. */
+interface ErrorApi {
+  mensaje?: string;
+}
+
 const URL_BASE: string = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
+
+/**
+ * Extrae el mensaje que envió la API.
+ *
+ * Se prefiere el texto del backend sobre uno inventado en el frontend: el criterio de
+ * aceptación de US-002 exige un mensaje genérico e idéntico para cualquier fallo de
+ * autenticación, y esa decisión pertenece al servidor. Si el frontend improvisara sus
+ * propios mensajes, podría filtrar más información que la API.
+ */
+async function mensajeDelError(respuesta: Response, ruta: string): Promise<string> {
+  try {
+    const cuerpo = (await respuesta.json()) as ErrorApi;
+    if (typeof cuerpo.mensaje === 'string' && cuerpo.mensaje !== '') {
+      return cuerpo.mensaje;
+    }
+  } catch {
+    // La respuesta no traía JSON; se usa el mensaje genérico de abajo.
+  }
+
+  return `La API respondió ${respuesta.status} al consultar ${ruta}`;
+}
 
 async function obtener<T>(ruta: string): Promise<T> {
   const respuesta = await fetch(`${URL_BASE}${ruta}`);
 
   if (!respuesta.ok) {
-    throw new Error(`La API respondió ${respuesta.status} al consultar ${ruta}`);
+    throw new Error(await mensajeDelError(respuesta, ruta));
+  }
+
+  return (await respuesta.json()) as T;
+}
+
+async function enviar<T>(ruta: string, cuerpo: unknown): Promise<T> {
+  const respuesta = await fetch(`${URL_BASE}${ruta}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(cuerpo),
+  });
+
+  if (!respuesta.ok) {
+    throw new Error(await mensajeDelError(respuesta, ruta));
   }
 
   return (await respuesta.json()) as T;
@@ -50,4 +102,9 @@ export function consultarSalud(): Promise<EstadoSalud> {
 
 export function listarConvocatorias(): Promise<Convocatoria[]> {
   return obtener<Convocatoria[]>('/convocatorias');
+}
+
+/** US-002 — Iniciar sesión. */
+export function iniciarSesion(nombreUsuario: string, password: string): Promise<Sesion> {
+  return enviar<Sesion>('/auth/login', { nombreUsuario, password });
 }
