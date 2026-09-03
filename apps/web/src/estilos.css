@@ -247,3 +247,62 @@ button.secundario {
 .sesion .insignia {
   margin-left: 0.5rem;
 }
+
+/* ── Página de login ─────────────────────────────────────────────────────── */
+
+/* Centra el formulario verticalmente cuando es lo único de la pantalla. */
+.contenedor-centrado {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+}
+
+.encabezado-login h1 {
+  margin-bottom: 0.35rem;
+}
+
+.contenedor-centrado .formulario {
+  width: 100%;
+  text-align: left;
+}
+
+/* ── Barra superior de las páginas con sesión ────────────────────────────── */
+
+.barra-superior {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--borde);
+}
+
+.barra-superior h1 {
+  margin: 0;
+}
+
+.usuario-actual {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+/* En móvil la barra se apila: el NFR exige que sea usable desde 360 px. */
+@media (max-width: 480px) {
+  .barra-superior {
+    flex-direction: column;
+  }
+
+  .contenedor-centrado {
+    justify-content: flex-start;
+    padding-top: 2rem;
+  }
+}
