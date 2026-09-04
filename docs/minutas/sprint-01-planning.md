@@ -24,6 +24,11 @@
 | Tiempo máximo de respuesta | 12 horas en día hábil ☐ · otro: ______ |
 | Stack técnico | NestJS + React + PostgreSQL, TypeScript ☐ confirmado · ☐ se discute |
 | Turnos de trabajo | ☐ confirmados tal cual · ☐ con cambios (detallar abajo) |
+| **Proxy Product Owner** | ☐ Stuard · ☐ otro: `______________` |
+| Registro de la aceptación | Mover la tarjeta a *Done* en GitHub Projects — solo lo hace el Proxy PO |
+
+> El **Product Owner sigue siendo el Ing. Fuentes**. El Proxy solo verifica el cumplimiento de los
+> criterios de aceptación ya escritos; no cambia alcance ni prioridades.
 
 **Cambios a los turnos, si los hubo:**
 

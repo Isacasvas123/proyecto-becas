@@ -27,11 +27,44 @@
 | Isaac ____________ | Scrum Master · Documentación de proceso · Manual Técnico | isacasvas4321@gmail.com | ______ |
 | Ivan ____________ | Developer · Arquitectura · DevOps (Git, CI/CD, despliegues) | ______ | ______ |
 | Fernando ____________ | Developer · Diagramas UML · Aseguramiento de calidad y pruebas | ______ | ______ |
-| Stuard ____________ | Developer · Patrones de diseño · Backlog · Manual de Usuario | ______ | ______ |
+| Stuard ____________ | Developer · **Proxy Product Owner** · Patrones de diseño · Manual de Usuario | ______ | ______ |
 
 > **Nota sobre los roles:** los cuatro integrantes programan. La columna de rol indica quién es
-> **responsable de que ese entregable exista y esté completo**, no quién lo hace solo. El Product
-> Owner es el catedrático y es externo al equipo de desarrollo.
+> **responsable de que ese entregable exista y esté completo**, no quién lo hace solo.
+
+### Product Owner y Proxy Product Owner
+
+**El Product Owner es el catedrático, Ing. Mario Fuentes**, conforme al enunciado del proyecto,
+y es externo al equipo de desarrollo. Le corresponde priorizar el Product Backlog, emitir los
+cambios de requerimientos y **dar la aceptación formal** de las historias en la Sprint Review.
+
+Ahora bien, el Product Owner no participa en el día a día del equipo, y una historia no puede
+quedarse en el limbo hasta la siguiente clase esperando que alguien diga si está aceptada. Por
+eso el equipo designa un **Proxy Product Owner**, figura reconocida en Scrum precisamente para
+cuando el PO no está disponible de forma continua.
+
+| | Product Owner | Proxy Product Owner |
+|---|---|---|
+| **Quién** | Ing. Mario Fuentes | **Stuard** |
+| **Decide** | Qué se construye y en qué orden | Si lo construido cumple los criterios ya escritos |
+| **Cuándo** | Sprint Review y clases | Día a día, conforme se terminan las historias |
+| **Alcance** | Puede crear, cambiar y despriorizar historias | **No puede cambiar el alcance ni inventar criterios** |
+
+**Límite explícito del Proxy.** Solo verifica el cumplimiento de los criterios de aceptación que
+ya están escritos en el Product Backlog. No decide si una funcionalidad debía existir, no altera
+prioridades y no aprueba desviaciones de alcance: eso sigue siendo exclusivo del Product Owner.
+Si aparece una duda que los criterios no resuelven, se escala al catedrático y se registra.
+
+**Por qué Stuard y no el Scrum Master.** Concentrar Scrum Master y Proxy Product Owner en una
+sola persona es un anti-patrón: el Scrum Master protege el proceso y al equipo, mientras que el
+Product Owner decide sobre el producto. Si Isaac ocupara ambos roles, acabaría juzgando el
+resultado de su propia facilitación. Stuard es además responsable de la Visión del Producto, del
+Product Backlog y del Manual de Usuario, así que es quien está más cerca de la voz del usuario.
+
+**Cómo se registra la aceptación.** El Proxy Product Owner es el **único** que mueve una tarjeta
+a la columna *Done* en el tablero de GitHub Projects. Ese movimiento constituye la aceptación de
+la historia. Las historias aceptadas y rechazadas durante la semana se listan además en la minuta
+del jueves.
 
 ---
 
@@ -93,7 +126,9 @@ esfuerzo estimado y decisión de diseño adoptada.
 | Manual Técnico | Isaac | Equipo | Ivan | Product Owner |
 | Manual de Usuario | Stuard | Equipo | Todos | Product Owner |
 | Presentación final | Isaac | Equipo | Todos | Product Owner |
-| Aceptación de historias de usuario | **Product Owner** | Product Owner | Equipo | Equipo |
+| Verificación diaria de criterios de aceptación | **Stuard** (Proxy PO) | Equipo | Autor de la historia | Todos |
+| Aceptación formal de historias de usuario | **Product Owner** | Product Owner | Proxy PO, Equipo | Equipo |
+| Cambios de alcance y prioridad del backlog | **Product Owner** | Product Owner | Equipo | Equipo |
 
 ---
 

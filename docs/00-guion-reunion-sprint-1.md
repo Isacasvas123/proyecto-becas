@@ -99,7 +99,34 @@ el Anexo 3 exige que las consensúe el equipo, no que las copien.
 La conversación incómoda hay que tenerla hoy: *"¿qué hacemos si alguien no entrega?"* Es mucho
 más fácil acordarlo ahora que cuando ya pasó.
 
-### 2.6 Instalar el entorno
+### 2.6 Designar al Proxy Product Owner
+
+**El problema que resuelve:** el catedrático es el Product Owner —así lo exige el enunciado— pero
+no va a estar revisando el proyecto todos los días. Alguien tiene que decir "esta historia cumple
+lo que dice el backlog" sin esperar a la siguiente clase.
+
+**La propuesta:** **Stuard** como *Proxy Product Owner*. Es una figura reconocida de Scrum para
+exactamente este caso.
+
+Lo que hay que dejar claro al equipo:
+
+> "El Product Owner **sigue siendo el catedrático**. Él prioriza, él pide cambios y él acepta
+> formalmente en la Review. Stuard solo verifica el día a día: comprueba que lo que hicimos cumple
+> los criterios de aceptación **que ya están escritos** en el backlog. No inventa requisitos, no
+> cambia prioridades. Si aparece una duda que los criterios no resuelven, se la preguntamos al
+> catedrático."
+
+**Por qué Stuard y no yo:** ser Scrum Master y Proxy PO a la vez es un anti-patrón. El Scrum
+Master cuida el proceso, el Product Owner decide sobre el producto. Si fuera las dos cosas,
+acabaría juzgando el resultado de mi propia facilitación. Stuard además ya lleva la Visión del
+Producto, el Backlog y el Manual de Usuario.
+
+**Cómo se registra:** Stuard es el **único** que mueve tarjetas a *Done* en el tablero. Ese
+movimiento es la aceptación.
+
+**Decisión:** ☐ Stuard ☐ otro: `______________`
+
+### 2.7 Instalar el entorno
 Que los cuatro instalen hoy mismo: **Node 22, Docker Desktop, Git y VS Code**.
 
 > Aviso por experiencia propia: en Windows 11 Home, Docker Desktop falla con *"Virtualization
