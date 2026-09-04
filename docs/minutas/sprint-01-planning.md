@@ -7,11 +7,11 @@
 | | |
 |---|---|
 | **Fecha** | 3 de septiembre de 2026 |
-| **Hora inicio / fin** | __:__ / __:__ |
+| **Hora inicio / fin** |09:30 PM / 10:30 PM_ |
 | **Facilitador** | Isaac (Scrum Master) |
 | **Product Owner** | Ing. Mario Fuentes — **no asiste** (reunión interna del equipo) |
-| **Asistentes** | Isaac ☐ · Ivan ☐ · Fernando ☐ · Stuard ☐ |
-| **Toma notas** | ________________ |
+| **Asistentes** | Isaac SI · Ivan SI · Fernando SI · Stuard SI  |
+| **Toma notas** | Todos asistieron_ |
 
 ---
 
@@ -19,12 +19,12 @@
 
 | Decisión | Acuerdo |
 |---|---|
-| Nombre del equipo | `_______________________________` |
-| Plataforma de comunicación | `_______________________________` |
-| Tiempo máximo de respuesta | 12 horas en día hábil ☐ · otro: ______ |
-| Stack técnico | NestJS + React + PostgreSQL, TypeScript ☐ confirmado · ☐ se discute |
-| Turnos de trabajo | ☐ confirmados tal cual · ☐ con cambios (detallar abajo) |
-| **Proxy Product Owner** | ☐ Stuard · ☐ otro: `______________` |
+| Nombre del equipo | `ControlExe` |
+| Plataforma de comunicación | `Whatsapp` |
+| Tiempo máximo de respuesta | 12 horas en día hábil SI · otro: ______ |
+| Stack técnico | NestJS + React + PostgreSQL, TypeScript - CONFIRMADO |
+| Turnos de trabajo | CONFIRMADOS TAL CUAL |
+| **Proxy Product Owner** | Stuard Estrada |
 | Registro de la aceptación | Mover la tarjeta a *Done* en GitHub Projects — solo lo hace el Proxy PO |
 
 > El **Product Owner sigue siendo el Ing. Fuentes**. El Proxy solo verifica el cumplimiento de los
@@ -40,9 +40,9 @@
 
 | Integrante | Usuario de GitHub | Invitado ☐ | Aceptó ☐ |
 |---|---|---|---|
-| Ivan | `________________` | ☐ | ☐ |
-| Fernando | `________________` | ☐ | ☐ |
-| Stuard | `________________` | ☐ | ☐ |
+| Ivan | `joseivan28gc` | ✅ | ✅ |
+| Fernando | `Keller33` | ✅ | ✅ |
+| Stuard | `Stuard20` | ✅ | ✅ |
 
 ---
 
@@ -50,12 +50,12 @@
 
 El equipo debe **elegir** las consecuencias por incumplimiento grave persistente. Marcar:
 
-- [ ] Reducción proporcional del porcentaje de contribución declarado, calculado sobre los
+- [x] Reducción proporcional del porcentaje de contribución declarado, calculado sobre los
       Puntos de Historia efectivamente completados
-- [ ] Asignación de tareas adicionales para compensar al equipo
-- [ ] Reporte formal al docente con la evidencia documentada
+- [x] Asignación de tareas adicionales para compensar al equipo
+- [x] Reporte formal al docente con la evidencia documentada
 
-**Firmas recogidas en `02-politica-equipo.md`:** Isaac ☐ · Ivan ☐ · Fernando ☐ · Stuard ☐
+**Firmas recogidas en `02-politica-equipo.md`:** Isaac ✅ · Ivan ✅ · Fernando ✅ · Stuard ✅
 
 ---
 
@@ -65,7 +65,7 @@ Isaac mostró el esqueleto técnico y el inicio de sesión ya construidos, corri
 
 **Reacción del equipo y acuerdos:**
 
-`_______________________________________________________________________`
+`Les gustó y les pareció correcto, sin cambios proporcionales antes de la revision del Walking Skeleton por fernando`
 
 `_______________________________________________________________________`
 
@@ -83,7 +83,7 @@ Isaac mostró el esqueleto técnico y el inicio de sesión ya construidos, corri
 > **"Dejar el equipo constituido y con acceso, el repositorio funcionando con su flujo de
 > trabajo, y el esqueleto técnico revisado, entendido y aprobado por el equipo."**
 
-☐ Aceptado tal cual ☐ Modificado: `_______________________________`
+✅ Aceptado tal cual ☐ Modificado: `_______________________________`
 
 ---
 
@@ -136,11 +136,11 @@ Motivo: la segunda rama está construida sobre la primera; invertir el orden ens
 
 ## 9. Próximos pasos
 
-- [ ] Cada quien confirmó en voz alta su tarea y su fecha
-- [ ] Todos entraron al canal de comunicación
-- [ ] Todos aceptaron la invitación al repositorio
-- [ ] Todos instalaron Node, Docker, Git y VS Code
+- [x] Cada quien confirmó en voz alta su tarea y su fecha
+- [x] Todos entraron al canal de comunicación
+- [x] Todos aceptaron la invitación al repositorio
+- [x] Todos instalaron Node, Docker, Git y VS Code
 
 **Próxima reunión:** jueves 10 de septiembre de 2026, __:__
 
-**Minuta elaborada por:** ____________ · **Publicada en el repositorio el:** ___/___/2026
+**Minuta elaborada por:** Isaac Castillo· **Publicada en el repositorio el:** 03/09/2026
