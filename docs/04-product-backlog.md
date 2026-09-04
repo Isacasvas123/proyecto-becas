@@ -27,6 +27,21 @@
 
 ---
 
+## Estado de avance — actualizado el 3 de septiembre de 2026
+
+| Historia | Estado | Nota |
+|---|---|---|
+| **US-002** Inicio de sesión | ✅ **Terminada** — pendiente de aceptación del PO | Adelantada del Sprint 2. Implementada con tres puertos invertidos y 67 pruebas en verde |
+| **US-008** Listado público de convocatorias | ⚠️ **Parcial** | El listado funciona, pero quedó **detrás del login**. La historia exige que un visitante lo vea **sin cuenta**. Debe resolverse en el Sprint 3 separando el listado público del panel de administración |
+| **US-003** Control de acceso por rol | ⚠️ **Parcial** | El rol viaja en el token y el frontend redirige, pero **falta el guard del backend** que valide el token en cada petición. Sin eso no hay seguridad real: la guardia del frontend es solo usabilidad |
+| Resto | ⬜ Pendiente | Según el calendario de sprints |
+
+> **Nota para la Sprint Review.** Ninguna de estas historias puede marcarse como *Completada*
+> ante el Product Owner hasta cumplir los 8 puntos de la Definition of Done, incluido el
+> despliegue en Staging y su verificación. Hoy solo corren en local.
+
+---
+
 ## EPIC-01 · Gestión de cuentas y control de acceso
 
 ### US-001 — Registro de estudiante

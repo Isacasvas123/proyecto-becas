@@ -130,34 +130,51 @@ Ninguna arquitectura es gratis. Asumimos conscientemente:
 
 ### 2.3 Estructura del código
 
+Estado real al **3 de septiembre de 2026** (✅ construido · ⬜ pendiente):
+
 ```
 apps/api/src/
 ├─ modules/
-│  ├─ usuarios/
+│  ├─ usuarios/                                                    ✅ Sprint 1 (US-002)
 │  │  ├─ domain/
-│  │  │  ├─ entities/          Usuario, Rol
-│  │  │  ├─ value-objects/     Cui, CorreoElectronico, Password
-│  │  │  └─ ports/             UsuarioRepositorio (interfaz)
+│  │  │  ├─ entities/          Usuario
+│  │  │  ├─ enums/             RolUsuario
+│  │  │  ├─ value-objects/     NombreUsuario
+│  │  │  └─ ports/             UsuarioRepositorio · HasherPassword · GeneradorToken
 │  │  ├─ application/
-│  │  │  ├─ services/          RegistrarUsuarioService, AutenticarService
-│  │  │  └─ dto/
+│  │  │  ├─ services/          AutenticarUsuarioService
+│  │  │  └─ dto/               SesionIniciadaDto
 │  │  ├─ infrastructure/
-│  │  │  ├─ persistence/       UsuarioRepositorioPrisma (implementa el puerto)
-│  │  │  └─ adapters/
+│  │  │  ├─ persistence/       UsuarioPrismaRepositorio · UsuarioEnMemoriaRepositorio
+│  │  │  └─ adapters/          BcryptHasherAdapter · JwtGeneradorTokenAdapter
 │  │  └─ presentation/
-│  │     ├─ controllers/       UsuariosController
-│  │     └─ dto/               Request/Response con validación
-│  ├─ convocatorias/           (misma estructura)
-│  ├─ estudiantes/
-│  ├─ solicitudes/
-│  ├─ evaluaciones/
-│  └─ reportes/
+│  │     ├─ controllers/       AuthController  (POST /auth/login)
+│  │     └─ dto/               LoginRequestDto
+│  ├─ convocatorias/                                               ✅ Sprint 1 (esqueleto)
+│  │  └─ (misma estructura; solo la operación de lectura de US-008)
+│  ├─ salud/                                                       ✅ GET /health
+│  ├─ estudiantes/                                                 ⬜ Sprint 4
+│  ├─ solicitudes/                                                 ⬜ Sprint 4
+│  ├─ evaluaciones/                                                ⬜ Sprint 5
+│  └─ reportes/                                                    ⬜ Sprint 7
 ├─ shared/
-│  ├─ exceptions/              Excepciones de dominio y filtro global
-│  ├─ patterns/                Implementaciones transversales de patrones
-│  └─ config/
+│  ├─ exceptions/              errores-dominio.ts · dominio-exception.filter.ts
+│  ├─ persistence/             PrismaService · PrismaModule
+│  └─ patterns/                ⬜ implementaciones transversales de patrones
 └─ main.ts
 ```
+
+**Notas sobre desviaciones respecto al diseño original:**
+
+- **`domain/enums/`** no estaba previsto. Se añadió porque el dominio declara sus propios enums
+  (`RolUsuario`, `TipoBeca`, `EstadoConvocatoria`) en vez de importar los de Prisma, que
+  rompería la regla de capas. El precio es mantener dos listas sincronizadas; se mitiga con
+  `usuario-prisma.mapper.spec.ts`, que compara ambos conjuntos y falla en CI si divergen.
+- **`shared/persistence/`** aloja el `PrismaService` compartido por los seis módulos, en vez de
+  duplicar la conexión en cada uno.
+- **`modules/salud/` no tiene las cuatro capas** a propósito: no contiene reglas de negocio.
+  Aplicarle la estructura completa sería ceremonia vacía. La arquitectura se aplica donde
+  aporta, no por reglamento.
 
 **Responsabilidad de cada capa**
 
@@ -240,7 +257,11 @@ permite responder "¿por qué hicieron esto así?" en la presentación final.
 | ADR-02 | 03/09/2026 | TypeScript en todo el stack | Un solo lenguaje habilita el code review cruzado obligatorio | Aceptada |
 | ADR-03 | 03/09/2026 | PostgreSQL relacional | El dominio de becas es inherentemente relacional y transaccional | Aceptada |
 | ADR-04 | 03/09/2026 | Puertos y adaptadores en las fronteras | El PO cambiará requerimientos e integraciones durante el semestre | Aceptada |
-| ADR-05 | | | | |
+| ADR-05 | 03/09/2026 | `bcryptjs` en vez de `bcrypt` | `bcrypt` es un módulo nativo que se compila al instalar; en un equipo de 4 máquinas distintas una compilación fallida bloquea a alguien un día entero. `bcryptjs` implementa el mismo algoritmo en JS puro y cumple igual el NFR de seguridad. Es más lento, cosa irrelevante porque bcrypt es lento a propósito | Aceptada |
+| ADR-06 | 03/09/2026 | Campos privados de JavaScript (`#`) para datos sensibles del dominio | El `private` de TypeScript desaparece al compilar: el hash de contraseña quedaba visible en `Object.keys()` y `JSON.stringify()`. Detectado por una prueba que falló. Un `#` es privado en tiempo de ejecución | Aceptada |
+| ADR-07 | 03/09/2026 | La sesión del frontend vive solo en memoria, no en `localStorage` | Un token en `localStorage` es legible por cualquier script: un XSS bastaría para robarlo. Se acepta el costo de reautenticar al recargar. La solución definitiva es una cookie `httpOnly`, prevista en el Sprint 2 con US-003 | Aceptada, revisar en Sprint 2 |
+| ADR-08 | 03/09/2026 | La regla de capas se verifica con ESLint, no solo en code review | `no-restricted-imports` rechaza importar `@nestjs/*`, `@prisma/client` o HTTP dentro de `domain/`. Antes dependía de que el revisor se acordara; ahora lo bloquea el CI | Aceptada |
+| ADR-09 | | | | |
 
 ---
 

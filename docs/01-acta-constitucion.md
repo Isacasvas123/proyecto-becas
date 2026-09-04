@@ -132,14 +132,17 @@ Sprints semanales de **jueves a miércoles**. Ceremonias todos los jueves.
 | 1.1 | Acta de Constitución y Política de Trabajo | Jue 3 Sep | Isaac | Anexos 1 y 3 |
 | 1.2 | Visión del Producto y User Personas | Mié 9 Sep | Stuard | Anexo 4 §2-3 |
 | 1.3 | Product Backlog inicial (6 epics, ~30 historias) | Mié 9 Sep | Stuard, Isaac | Anexo 4 §4 |
-| 1.4 | Repositorio Git, ramas, protecciones, CI | Mié 9 Sep | Ivan | |
-| 1.5 | Walking skeleton (API + web + BD) | Mié 9 Sep | Fernando | Desbloquea Sprint 2 |
+| 1.4 | Repositorio Git, ramas, CI | Mié 9 Sep | Ivan | Protección de `main` pendiente de GitHub Pro |
+| 1.5 | Walking skeleton: estudiar, criticar y abrir su PR | Mié 9 Sep | Fernando | Construido el 2 Sep; su dueño debe poder defenderlo |
 | 1.6 | Documento de Arquitectura v1 | Mié 9 Sep | Ivan | Anexo 5 §2 |
+| 1.7 | Invitar al equipo al repositorio | Jue 3 Sep | Isaac | Bloquea a los tres integrantes |
+| 1.8 | Corregir los 3 defectos detectados en el esqueleto | Mié 9 Sep | Fernando | `/health`, enums duplicados, carpetas sin documentar |
 | 2 | **Sprint 2 — Análisis y dominio** | Mié 16 Sep 2026 | Equipo | Feriado 15 Sep |
 | 2.1 | Diagrama de casos de uso + detalle de cada caso | Mié 16 Sep | Fernando | Anexo 5 §3.1 |
 | 2.2 | Diagrama de componentes y de clases | Mié 16 Sep | Fernando | Anexo 5 §3.2-3.3 |
 | 2.3 | Esquema de BD y primera migración versionada | Mié 16 Sep | Ivan | |
-| 2.4 | Módulo de usuarios, autenticación y roles | Mié 16 Sep | Isaac, Stuard | EPIC-01 |
+| 2.4 | Registro, perfil y recuperación de contraseña | Mié 16 Sep | Isaac, Stuard | EPIC-01 · el login (US-002) se adelantó al Sprint 1 |
+| 2.6 | Guard de autenticación y control de acceso por rol | Mié 16 Sep | Isaac | US-003 · seguridad real en el backend |
 | 2.5 | Requisitos No Funcionales y DoD publicados | Mié 16 Sep | Fernando | Anexo 4 §5-6 |
 | 3 | **Sprint 3 — Convocatorias** | Mié 23 Sep 2026 | Equipo | |
 | 3.1 | Módulo de convocatorias (CRUD y publicación) | Mié 23 Sep | Isaac, Fernando | EPIC-02 |
