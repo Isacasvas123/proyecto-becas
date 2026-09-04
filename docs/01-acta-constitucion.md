@@ -14,7 +14,7 @@
 
 ## 1. Identificación del Equipo
 
-**Nombre del equipo:** `___________________________`
+**Nombre del equipo:**`ControlExe`
 
 **Proyecto asignado:** Plataforma Nacional para la Gestión Integral de Becas
 
@@ -24,10 +24,10 @@
 
 | Nombre completo | Rol / Clave funcional | Correo electrónico | Teléfono |
 |---|---|---|---|
-| Isaac ____________ | Scrum Master · Documentación de proceso · Manual Técnico | isacasvas4321@gmail.com | ______ |
-| Ivan ____________ | Developer · Arquitectura · DevOps (Git, CI/CD, despliegues) | ______ | ______ |
-| Fernando ____________ | Developer · Diagramas UML · Aseguramiento de calidad y pruebas | ______ | ______ |
-| Stuard ____________ | Developer · **Proxy Product Owner** · Patrones de diseño · Manual de Usuario | ______ | ______ |
+| Isaac Castillo | Scrum Master · Documentación de proceso · Manual Técnico | isacasvas4321@gmail.com | 42059194 |
+| Ivan Castellan | Developer · Arquitectura · DevOps (Git, CI/CD, despliegues) | jose.100.ivan@gmail.com | 35715810 |
+| Fernando Herrera | Developer · Diagramas UML · Aseguramiento de calidad y pruebas | williamod090@gmail.com | 46179226 |
+| Stuard Estrada | Developer · **Proxy Product Owner** · Patrones de diseño · Manual de Usuario | emersonstuarde@gmail.com | 54344578 |
 
 > **Nota sobre los roles:** los cuatro integrantes programan. La columna de rol indica quién es
 > **responsable de que ese entregable exista y esté completo**, no quién lo hace solo.
@@ -134,7 +134,7 @@ esfuerzo estimado y decisión de diseño adoptada.
 
 ## 5. Protocolo de Comunicación Única
 
-**Plataforma seleccionada:** `___________________________`
+**Plataforma seleccionada:** `Whatsapp`
 
 ### Normas de uso
 
@@ -217,7 +217,7 @@ cronograma aquí establecidos.
 
 | Nombre | Rol | Firma | Fecha |
 |---|---|---|---|
-| Isaac ____________ | Scrum Master | ______________ | ___/___/2026 |
-| Ivan ____________ | Developer | ______________ | ___/___/2026 |
-| Fernando ____________ | Developer | ______________ | ___/___/2026 |
-| Stuard ____________ | Developer | ______________ | ___/___/2026 |
+| Isaac Castillo | Scrum Master | Firmado | 03/09/2026 |
+| Ivan Castellan | Developer | Firmado | 03/09/2026 |
+| Fernando Herrera | Developer | Firmado | 03/09/2026 |
+| Stuard Estrada | Developer |Firmado | 03/09/2026 |
