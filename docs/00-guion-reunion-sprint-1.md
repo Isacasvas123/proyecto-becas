@@ -81,15 +81,15 @@ la invitación que le llega al correo antes de que termine la reunión.
 | Viernes | Isaac + Ivan |
 | Sábado | Fernando + Stuard |
 | Domingo | Libre / buffer |
-| Lunes | Isaac + Fernando |
-| Martes | Ivan + Stuard |
+| Lunes | Stuard + Fernando |
+| Martes | Ivan + Isaac |
 | **Miércoles** | Los 4 — cierre asincrónico (~30 min) |
 
 Pregunta a cada uno: *"¿esos dos días te sirven, sí o no?"* Si a alguien no le sirven, se
 intercambia **ahora**, no en tres semanas.
 
 ⚠️ **Avísales desde ya:** el **15 de septiembre** y el **20 de octubre** son feriados y caen
-martes — el turno de Ivan y Stuard. Esas dos semanas mueven su día al domingo.
+martes — el turno de Ivan e Isaac. Esas dos semanas mueven su día al domingo.
 
 ### 2.5 Firmar la Política de Trabajo en Grupo
 

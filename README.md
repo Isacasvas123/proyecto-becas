@@ -148,8 +148,8 @@ Sprints semanales de jueves a miércoles.
 | Viernes | Isaac + Ivan |
 | Sábado | Fernando + Stuard |
 | Domingo | Libre / buffer |
-| Lunes | Isaac + Fernando |
-| Martes | Ivan + Stuard |
+| Lunes | Stuard + Fernando |
+| Martes | Ivan + Isaac |
 | **Miércoles** | Los 4 — cierre asincrónico e integración |
 
 ---
