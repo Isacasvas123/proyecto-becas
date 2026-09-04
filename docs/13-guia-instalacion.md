@@ -71,6 +71,38 @@ cierra la terminal, abre una nueva y vuelve a probar. Si sigue fallando, reinsta
 
 ---
 
+### ⚠️ Si al usar npm te sale "la ejecución de scripts está deshabilitada"
+
+Es lo más probable que te pase en Windows. El error se ve así:
+
+```
+npm : No se puede cargar el archivo C:\Program Files\nodejs\npm.ps1 porque
+la ejecución de scripts está deshabilitada en este sistema.
+```
+
+No es que npm esté mal instalado: PowerShell bloquea los scripts por seguridad, y `npm` lo es.
+
+**Arreglo rápido** — añade `.cmd` a cada comando de npm:
+
+```
+npm.cmd install
+```
+
+**Arreglo permanente** — para no escribir `.cmd` nunca más:
+
+```
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+```
+
+Confirma con `S` y Enter. Luego **cierra y vuelve a abrir la terminal**.
+
+> `RemoteSigned` permite ejecutar scripts creados en tu propia máquina, pero sigue bloqueando
+> los descargados de internet que no estén firmados. Es la configuración habitual para
+> desarrollar en Windows. `-Scope CurrentUser` limita el cambio a tu usuario, no a todo el
+> equipo. Si algún día quieres revertirlo: `Set-ExecutionPolicy -Scope CurrentUser Restricted`.
+
+---
+
 ## Paso 3 — Decirle a Git quién eres
 
 **Este paso importa para tu nota.** Si el correo no coincide con el de tu cuenta de GitHub, tus
@@ -276,6 +308,11 @@ Marca cada punto. Si alguno falla, escribe en `#bloqueos` **antes** de tu turno:
 ---
 
 ## Problemas frecuentes
+
+**"npm : No se puede cargar el archivo ... npm.ps1 porque la ejecución de scripts está deshabilitada"**
+PowerShell bloquea scripts por seguridad. Usa `npm.cmd` en lugar de `npm`, o corre una sola vez
+`Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` y reabre la terminal. Explicado arriba, al
+final del Paso 2.
 
 **"docker: command not found" o "no se reconoce"**
 Cierra la terminal y abre una nueva. Si sigue, no terminó de instalarse: reinicia la computadora.
