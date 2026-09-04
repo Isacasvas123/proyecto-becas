@@ -23,16 +23,32 @@
 | Plataforma de comunicación | `Whatsapp` |
 | Tiempo máximo de respuesta | 12 horas en día hábil SI · otro: ______ |
 | Stack técnico | NestJS + React + PostgreSQL, TypeScript - CONFIRMADO |
-| Turnos de trabajo | CONFIRMADOS TAL CUAL |
+| Turnos de trabajo | CONFIRMADOS **con un cambio**: lunes y martes se intercambian |
 | **Proxy Product Owner** | Stuard Estrada |
 | Registro de la aceptación | Mover la tarjeta a *Done* en GitHub Projects — solo lo hace el Proxy PO |
 
 > El **Product Owner sigue siendo el Ing. Fuentes**. El Proxy solo verifica el cumplimiento de los
 > criterios de aceptación ya escritos; no cambia alcance ni prioridades.
 
-**Cambios a los turnos, si los hubo:**
+**Cambios a los turnos:**
 
-`_______________________________________________________________________`
+Se intercambiaron los turnos de lunes y martes respecto a la propuesta inicial:
+
+| Día | Propuesta original | **Acordado** |
+|---|---|---|
+| Viernes | Isaac + Ivan | Isaac + Ivan *(sin cambio)* |
+| Sábado | Fernando + Stuard | Fernando + Stuard *(sin cambio)* |
+| Lunes | Isaac + Fernando | **Stuard + Fernando** |
+| Martes | Ivan + Stuard | **Ivan + Isaac** |
+
+> ⚠️ **Consecuencia a revisar en la Retrospectiva.** Con estos turnos las parejas quedan fijas:
+> Isaac trabaja siempre con Ivan, y Fernando siempre con Stuard. Los code reviews serán siempre
+> entre los mismos, y las dos mitades del equipo no llegarán a conocer el trabajo de la otra.
+> Eso choca con el compromiso de que **cualquiera de los cuatro pueda defender cualquier parte**
+> del proyecto ante el catedrático.
+>
+> Mitigación posible sin cambiar los días de nadie: que en cada sprint el revisor del Pull
+> Request sea alguien de la otra pareja, aunque no coincidan en el mismo día.
 
 ---
 
@@ -117,7 +133,7 @@ Isaac mostró el esqueleto técnico y el inicio de sesión ya construidos, corri
 | Riesgo | Impacto | Mitigación acordada | Responsable |
 |---|---|---|---|
 | Protección de `main` bloqueada hasta que active GitHub Pro | La regla depende de disciplina, no del sistema | Se activa en cuanto entren los beneficios (≈5 Sep) | Isaac |
-| Feriados 15 Sep y 20 Oct caen martes (turno de Ivan y Stuard) | Pierden su día de trabajo | Mueven su turno al domingo esas semanas | Ivan, Stuard |
+| Feriados 15 Sep y 20 Oct caen martes (turno de Ivan e Isaac) | Pierden su día de trabajo | Mueven su turno al domingo esas semanas | Ivan, Isaac |
 | Docker Desktop falla sin WSL en Windows 11 Home | Bloquea a quien no lo tenga | `wsl --install` como administrador y reiniciar | Cada uno |
 | | | | |
 
