@@ -13,16 +13,27 @@
 
 **Cumplimiento del mínimo requerido:** 2 creacionales · 2 estructurales · 2 de comportamiento.
 
-| Tipo | Patrón | Dónde vive | Sprint |
-|---|---|---|---|
-| Creacional | Factory Method | `modules/convocatorias/domain/factories/` | 3 |
-| Creacional | Builder | `modules/reportes/application/builders/` | 7 |
-| Estructural | Adapter | `modules/solicitudes/infrastructure/adapters/` | 4 |
-| Estructural | Facade | `modules/solicitudes/application/facades/` | 6 |
-| Comportamiento | State | `modules/solicitudes/domain/estados/` | 4 |
-| Comportamiento | Strategy | `modules/evaluaciones/domain/strategies/` | 5 |
-| *Extra* | Observer | `shared/patterns/observer/` | 5 (opcional) |
-| *Extra* | Chain of Responsibility | `modules/solicitudes/domain/validaciones/` | 6 (opcional) |
+| Tipo | Patrón | Dónde vive | Sprint | Estado |
+|---|---|---|---|---|
+| Creacional | Factory Method | `modules/convocatorias/domain/factories/` | 3 | Pendiente |
+| Creacional | Builder | `modules/reportes/application/builders/` | 7 | Pendiente |
+| Estructural | **Adapter** | `modules/usuarios/infrastructure/adapters/` | **1** | ✅ **Implementado** |
+| Estructural | Facade | `modules/solicitudes/application/facades/` | 6 | Pendiente |
+| Comportamiento | State | `modules/solicitudes/domain/estados/` | 4 | Pendiente |
+| Comportamiento | Strategy | `modules/evaluaciones/domain/strategies/` | 5 | Pendiente |
+| *Extra* | Observer | `shared/patterns/observer/` | 5 (opcional) | Pendiente |
+| *Extra* | Chain of Responsibility | `modules/solicitudes/domain/validaciones/` | 6 (opcional) | Pendiente |
+
+> **Actualización del 3 de septiembre de 2026.** El patrón **Adapter se adelantó al Sprint 1**:
+> el inicio de sesión (US-002) necesitaba calcular y verificar hashes de contraseña y emitir
+> tokens de sesión, y ninguna de las dos cosas puede vivir en el dominio sin acoplarlo a
+> `bcryptjs` y a `@nestjs/jwt`. Se resolvió con dos puertos y sus adaptadores, exactamente el
+> mismo mecanismo previsto para el almacenamiento de documentos en el Sprint 4.
+>
+> No fue una decisión de calendario sino de diseño: el patrón apareció porque el problema
+> apareció, que es justamente el criterio del curso —*"el objetivo no es utilizar patrones por
+> obligación, es resolver problemas de diseño"*. Ver la sección **Adapter** más abajo, donde se
+> documentan las tres implementaciones actuales.
 
 ---
 
@@ -167,10 +178,20 @@ const reporte = new ReporteBuilder()
 
 # PATRONES ESTRUCTURALES
 
-## 3. Adapter — `AlmacenamientoDocumentosPort`
+## 3. Adapter — puertos de infraestructura
 
-**Ubicación:** puerto en `modules/solicitudes/domain/ports/`, adaptadores en
-`modules/solicitudes/infrastructure/adapters/`
+**✅ IMPLEMENTADO EN EL SPRINT 1** (adelantado desde el Sprint 4, ver nota inicial).
+
+**Ubicaciones actuales:**
+
+| Puerto (domain) | Adaptador (infrastructure) | Qué aísla |
+|---|---|---|
+| `usuarios/domain/ports/hasher-password.ts` | `BcryptHasherAdapter` | La biblioteca de hashing (`bcryptjs`) |
+| `usuarios/domain/ports/generador-token.ts` | `JwtGeneradorTokenAdapter` | El formato de sesión (JWT HS256) |
+| `usuarios/domain/ports/usuario.repositorio.ts` | `UsuarioPrismaRepositorio` · `UsuarioEnMemoriaRepositorio` | La persistencia |
+
+**Ubicación prevista para el Sprint 4:** puerto en `modules/solicitudes/domain/ports/`,
+adaptadores en `modules/solicitudes/infrastructure/adapters/` (almacenamiento de documentos).
 
 ### ¿Qué problema resuelve?
 
@@ -212,15 +233,42 @@ se invierte: manda el dominio, no el proveedor.
 
 ### Esquema
 
+### Esquema — implementación real del Sprint 1
+
 ```ts
-// domain/ports/almacenamiento-documentos.port.ts  — lo que el dominio NECESITA
+// domain/ports/hasher-password.ts  — lo que el dominio NECESITA
+export interface HasherPassword {
+  verificar(passwordEnClaro: string, hashAlmacenado: string): Promise<boolean>;
+  calcular(passwordEnClaro: string): Promise<string>;
+}
+
+// infrastructure/adapters/  — lo que la biblioteca OFRECE, adaptado
+export class BcryptHasherAdapter implements HasherPassword { /* bcryptjs */ }
+```
+
+El enlace entre ambos ocurre en un solo punto, `usuarios.module.ts`:
+
+```ts
+{ provide: HASHER_PASSWORD,  useClass: BcryptHasherAdapter },
+{ provide: GENERADOR_TOKEN,  useClass: JwtGeneradorTokenAdapter },
+```
+
+Migrar a argon2, o cambiar JWT por sesiones en servidor, es cambiar **una línea** de ese archivo.
+Ni la entidad `Usuario`, ni el caso de uso `AutenticarUsuarioService`, ni el controlador se
+enteran. Esa es la ventaja, y es verificable: la prueba unitaria del caso de uso inyecta un
+hasher falso y corre en milisegundos, sin bcrypt real.
+
+### Esquema previsto para el Sprint 4 — almacenamiento de documentos
+
+```ts
+// domain/ports/almacenamiento-documentos.port.ts
 export interface AlmacenamientoDocumentosPort {
   guardar(archivo: ArchivoDocumento): Promise<ReferenciaDocumento>;
   obtener(ref: ReferenciaDocumento): Promise<ArchivoDocumento>;
   eliminar(ref: ReferenciaDocumento): Promise<void>;
 }
 
-// infrastructure/adapters/  — lo que cada proveedor OFRECE, adaptado
+// infrastructure/adapters/
 export class AlmacenamientoLocalAdapter implements AlmacenamientoDocumentosPort { /* fs */ }
 export class AlmacenamientoNubeAdapter  implements AlmacenamientoDocumentosPort { /* SDK */ }
 export class AlmacenamientoMemoriaAdapter implements AlmacenamientoDocumentosPort { /* tests */ }
