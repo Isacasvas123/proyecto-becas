@@ -403,10 +403,28 @@ cumple, la historia **no está hecha** y regresa al backlog.
 - [ ] La suite de regresión completa está en verde: no se introdujeron bugs nuevos
 - [ ] El linter pasa sin advertencias
 - [ ] La documentación técnica afectada fue creada o actualizada
-- [ ] La funcionalidad está **desplegada en Staging** y **verificada por el Product Owner**
+- [ ] La funcionalidad está **desplegada en Staging**
+- [ ] El **Proxy Product Owner** (Stuard) verificó los criterios de aceptación y movió la tarjeta
+      a *Done* en el tablero
 
-> **Nota del Scrum Master:** el último punto es el que más se olvida. Sin despliegue en Staging y
-> visto bueno del PO, una historia sigue estando "en progreso" por más terminada que se sienta.
+> **Nota del Scrum Master:** los dos últimos puntos son los que más se olvidan. Sin despliegue en
+> Staging y sin el visto bueno del Proxy PO, una historia sigue estando "en progreso" por más
+> terminada que se sienta.
+
+### La aceptación tiene dos niveles
+
+| Nivel | Quién | Cuándo | Qué significa |
+|---|---|---|---|
+| **Verificación** | Stuard, Proxy PO | Al terminar la historia | Los criterios de aceptación escritos se cumplen. La tarjeta pasa a *Done* |
+| **Aceptación formal** | Ing. Fuentes, PO | En la Sprint Review | La funcionalidad aporta el valor esperado. Se registra en la minuta |
+
+El Proxy Product Owner **solo verifica contra los criterios ya escritos**: no inventa requisitos,
+no cambia prioridades y no aprueba desviaciones de alcance. Si surge una duda que los criterios
+no resuelven, se escala al Product Owner y queda anotada para la Sprint Review.
+
+Que el Product Owner rechace en la Review algo que el Proxy ya había dado por bueno **no es un
+fallo del proceso**: significa que los criterios de aceptación estaban incompletos. En ese caso se
+corrigen los criterios de la historia, no se culpa a nadie, y es material para la Retrospectiva.
 
 ---
 
