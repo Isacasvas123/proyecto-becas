@@ -204,45 +204,25 @@ apps/api/src/
 
 ## 3. Diagramas Esenciales
 
-> Se elaboran en el Sprint 2 (responsable: Fernando) y se versionan en `docs/diagramas/`.
-> Herramienta recomendada: **Mermaid** dentro de archivos Markdown, para que los diagramas
-> queden bajo control de versiones como texto y sus cambios sean visibles en los Pull Requests.
+Los tres diagramas están **elaborados** y viven en `docs/diagramas/`, escritos en **Mermaid
+dentro de Markdown**. No son imágenes: son texto versionado, así que cada cambio se revisa línea
+por línea en el Pull Request en lugar de un archivo binario opaco.
 
-### 3.1 Diagrama de Casos de Uso
+| Diagrama | Archivo | Contenido |
+|---|---|---|
+| **3.1 Casos de uso** | [`diagramas/01-casos-de-uso.md`](diagramas/01-casos-de-uso.md) | 5 actores, 17 casos de uso agrupados, relaciones `include` y `extend`, y **el detalle de los casos que cubren los nueve objetivos del enunciado**: precondiciones, flujo principal, flujos alternos, flujos de excepción y postcondiciones |
+| **3.2 Componentes** | [`diagramas/02-componentes.md`](diagramas/02-componentes.md) | Vista general del despliegue, los seis módulos con sus dependencias, **la tabla de puertos y sus adaptadores**, y los tres entornos |
+| **3.3 Clases** | [`diagramas/03-clases-dominio.md`](diagramas/03-clases-dominio.md) | Modelo de dominio con 9 entidades, las jerarquías de los patrones State y Strategy, el diagrama de transiciones de estado y los objetos de valor |
 
-*(Pendiente — Sprint 2)*
+**Lo que hay que mirar en cada uno:**
 
-**Actores identificados:** Estudiante Aspirante · Evaluador · Administrador del Ministerio ·
-Visitante (público, sin autenticación) · Sistema de Notificaciones (actor secundario).
-
-Cada caso de uso llevará su **detalle** documentado: actor principal, precondiciones, flujo
-principal paso a paso, flujos alternos, flujos de excepción y postcondiciones. El enunciado del
-proyecto lo exige explícitamente.
-
-### 3.2 Diagrama de Componentes
-
-*(Pendiente — Sprint 2)*
-
-Debe reflejar: `WebApp (React)` → `API REST (NestJS)` → los seis módulos de negocio → los puertos
-de infraestructura → `PostgreSQL`, `Almacenamiento de Documentos` y `Servicio de Notificaciones`.
-Deben mostrarse las **interfaces** y las relaciones de dependencia, no solo las cajas.
-
-### 3.3 Diagrama de Clases (Modelo de Dominio Inicial)
-
-*(Pendiente — Sprint 2)*
-
-**Entidades principales y sus relaciones:**
-
-- `Usuario` (1) ──── (0..1) `Estudiante`
-- `Convocatoria` (1) ──── (0..*) `Solicitud`
-- `Estudiante` (1) ──── (0..*) `Solicitud`
-- `Solicitud` (1) ──── (0..*) `Documento`
-- `Solicitud` (1) ──── (0..*) `Evaluacion`
-- `Solicitud` (1) ──── (0..*) `HistorialEstado`
-- `Comite` (1) ──── (1..*) `Evaluador` · `Comite` (1) ──── (1) `Convocatoria`
-- `Solicitud` (1) ──── (0..1) `Beca` *(al adjudicarse)*
-- `Solicitud` ──── `EstadoSolicitud` *(jerarquía del patrón State)*
-- `Evaluacion` ──── `CriterioEvaluacionStrategy` *(jerarquía del patrón Strategy)*
+- En **componentes**, la flecha punteada de `infrastructure` hacia `domain`. En una arquitectura
+  tradicional iría al revés; aquí está invertida, y eso es toda la decisión de diseño.
+- En **clases**, que la jerarquía de `EstadoSolicitud` rechaza todo por defecto y cada estado
+  concreto solo sobrescribe lo que sí permite. Una transición ilegal es imposible, no
+  desaconsejada.
+- En **casos de uso**, que el Visitante es un actor de pleno derecho. El enunciado exige
+  transparencia, y sin ese actor la consulta pública sin cuenta desaparecería del diseño.
 
 ---
 
