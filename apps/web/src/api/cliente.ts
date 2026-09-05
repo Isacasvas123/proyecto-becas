@@ -72,8 +72,40 @@ async function mensajeDelError(respuesta: Response, ruta: string): Promise<strin
   return `La API respondió ${respuesta.status} al consultar ${ruta}`;
 }
 
+/**
+ * Token de la sesión activa.
+ *
+ * Vive en memoria del módulo, no en `localStorage`: un token ahí es legible por cualquier
+ * script de la página y un XSS bastaría para robarlo. El precio es que al recargar (F5) hay
+ * que volver a iniciar sesión.
+ *
+ * Se guarda aquí, en el cliente HTTP, y no en el contexto de React, porque quien lo necesita
+ * es cada petición. Si viviera solo en el contexto, cada componente tendría que acordarse de
+ * pasarlo, y bastaría un olvido para provocar un 401 inexplicable.
+ *
+ * SPRINT 2 (US-003): la forma correcta de persistirlo es una cookie `httpOnly` emitida por
+ * el backend, que el JavaScript no puede leer.
+ */
+let tokenActivo: string | null = null;
+
+export function establecerToken(token: string | null): void {
+  tokenActivo = token;
+}
+
+/**
+ * Cabecera `Authorization` si hay sesión.
+ *
+ * El backend exige `Bearer` explícitamente: aceptar la cabecera pelada sería más cómodo y
+ * menos seguro.
+ */
+function cabecerasAutenticadas(extra: HeadersInit = {}): HeadersInit {
+  return tokenActivo === null ? extra : { ...extra, Authorization: `Bearer ${tokenActivo}` };
+}
+
 async function obtener<T>(ruta: string): Promise<T> {
-  const respuesta = await fetch(`${URL_BASE}${ruta}`);
+  const respuesta = await fetch(`${URL_BASE}${ruta}`, {
+    headers: cabecerasAutenticadas(),
+  });
 
   if (!respuesta.ok) {
     throw new Error(await mensajeDelError(respuesta, ruta));
