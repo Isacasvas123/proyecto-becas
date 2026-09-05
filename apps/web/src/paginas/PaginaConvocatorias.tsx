@@ -1,96 +1,82 @@
 /**
- * PÁGINA `/convocatorias` — listado de convocatorias e información de becas.
+ * PÁGINA `/convocatorias` — listado de convocatorias de beca.
+ *
+ * DISEÑO: banda de cifras + panel de facetas + lista de tarjetas. Es el patrón
+ * de una bolsa de empleo (computrabajo, tecoloco) y no el de una página de
+ * presentación, porque la tarea real del usuario es **comparar** convocatorias
+ * y decidir a cuál postular, no leer un texto corrido.
  *
  * ⚠️  NOTA PARA EL EQUIPO — CONFLICTO CONOCIDO CON EL BACKLOG
  *   Hoy esta página está PROTEGIDA: exige sesión iniciada. Pero US-008 dice
- *   textualmente: "Como visitante, quiero ver las convocatorias vigentes con sus
- *   requisitos y fechas para poder decidir a cuál postular, SIN NECESIDAD DE TENER
- *   CUENTA", y esa es la necesidad de Ana, la aspirante de provincia
- *   (docs/03-vision-producto.md).
+ *   textualmente: "Como **visitante**, quiero ver las convocatorias vigentes
+ *   con sus requisitos y fechas, **sin necesidad de tener cuenta**", y esa es
+ *   la necesidad de Ana, la aspirante de provincia (docs/03-vision-producto.md).
  *
- *   En el Sprint 3 hay que resolverlo: el listado público va en una ruta abierta, y lo
- *   que queda detrás del login es el panel de administración (crear, publicar y cerrar
- *   convocatorias, US-006/US-007/US-009). Anotado para la Sprint Planning.
+ *   En el Sprint 3 hay que separarlo: el listado público va en una ruta abierta
+ *   y lo que queda detrás del login es el panel de administración (crear,
+ *   publicar y cerrar convocatorias: US-006, US-007, US-009).
  *
- * ALCANCE (Sprint 1 · US-S1-08): solo lectura, sin filtros. El listado definitivo con
- * filtro por tipo de beca es del Sprint 3.
+ * ALCANCE (Sprint 1 · US-S1-08): solo lectura. El filtro es local, sobre lo ya
+ * descargado; el filtrado en servidor con paginación es del Sprint 3.
  */
-import { useEffect, useState, type ReactElement } from 'react';
+import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import {
-  consultarSalud,
-  listarConvocatorias,
-  type Convocatoria,
-  type EstadoSalud,
-} from '../api/cliente';
+import { listarConvocatorias, type Convocatoria } from '../api/cliente';
+import { BandaEstadisticas } from '../componentes/BandaEstadisticas';
+import { Encabezado } from '../componentes/Encabezado';
+import { PanelFiltros } from '../componentes/PanelFiltros';
+import { TarjetaConvocatoria } from '../componentes/TarjetaConvocatoria';
+import { nombreTipo } from '../formato';
 import { useSesion } from '../sesion/ContextoSesion';
 
-function formatearFecha(iso: string): string {
-  return new Date(iso).toLocaleDateString('es-GT', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  });
-}
-
-/**
- * Estado de una consulta a la API: cargando, con datos o con error.
- * Modelarlo así evita el clásico "cargando eterno" cuando la petición falla.
- */
 interface Consulta<T> {
   datos: T | null;
   error: string | null;
   cargando: boolean;
 }
 
-const INICIAL = { datos: null, error: null, cargando: true };
+export function PaginaConvocatorias(): ReactElement {
+  const { sesion, cerrar } = useSesion();
+  const navegar = useNavigate();
 
-function mensajeDeError(causa: unknown): string {
-  return causa instanceof Error
-    ? causa.message
-    : 'No se pudo contactar con la API. ¿Está corriendo `npm run dev`?';
-}
-
-/**
- * Hook que ejecuta UNA consulta y expone su estado.
- *
- * Cada endpoint se consulta por separado, a propósito: si la base de datos está caída,
- * `GET /convocatorias` falla pero `GET /health` sigue respondiendo, y la pantalla debe
- * mostrar esa diferencia. Con un `Promise.all` el fallo de una consulta ocultaría el
- * resultado de la otra, que es justo la información que se necesita para diagnosticar.
- */
-function useConsulta<T>(consultar: () => Promise<T>): Consulta<T> {
-  const [estado, setEstado] = useState<Consulta<T>>(INICIAL);
+  const [consulta, setConsulta] = useState<Consulta<Convocatoria[]>>({
+    datos: null,
+    error: null,
+    cargando: true,
+  });
+  const [tipoActivo, setTipoActivo] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelado = false;
 
-    consultar()
+    listarConvocatorias()
       .then((datos) => {
-        if (!cancelado) setEstado({ datos, error: null, cargando: false });
+        if (!cancelado) setConsulta({ datos, error: null, cargando: false });
       })
       .catch((causa: unknown) => {
-        if (!cancelado) setEstado({ datos: null, error: mensajeDeError(causa), cargando: false });
+        if (!cancelado) {
+          setConsulta({
+            datos: null,
+            cargando: false,
+            error:
+              causa instanceof Error
+                ? causa.message
+                : 'No se pudo contactar con el servicio de convocatorias.',
+          });
+        }
       });
 
     return () => {
       cancelado = true;
     };
-    // Se ejecuta una sola vez al montar: `consultar` se define a nivel de módulo y es
-    // estable entre renders.
-  }, [consultar]);
+  }, []);
 
-  return estado;
-}
-
-export function PaginaConvocatorias(): ReactElement {
-  const salud = useConsulta<EstadoSalud>(consultarSalud);
-  const listado = useConsulta<Convocatoria[]>(listarConvocatorias);
-  const convocatorias = listado.datos ?? [];
-
-  const { sesion, cerrar } = useSesion();
-  const navegar = useNavigate();
+  const todas = useMemo(() => consulta.datos ?? [], [consulta.datos]);
+  const visibles = useMemo(
+    () => (tipoActivo === null ? todas : todas.filter((c) => c.tipo === tipoActivo)),
+    [todas, tipoActivo],
+  );
 
   function cerrarSesion(): void {
     cerrar();
@@ -98,100 +84,83 @@ export function PaginaConvocatorias(): ReactElement {
   }
 
   return (
-    <main className="contenedor">
-      <div className="barra-superior">
-        <div>
-          <p className="etiqueta">Ministerio de Educación</p>
-          <h1>Plataforma Nacional de Becas</h1>
-        </div>
+    <>
+      <Encabezado sesion={sesion} onCerrarSesion={cerrarSesion} />
 
-        {sesion !== null && (
-          <div className="usuario-actual">
-            <span>
-              <strong>{sesion.usuario.nombreUsuario}</strong>
-              <span className="insignia">{sesion.usuario.rol}</span>
-            </span>
-            <button type="button" className="secundario" onClick={cerrarSesion}>
-              Cerrar sesión
-            </button>
-          </div>
-        )}
+      {/* Las cifras se calculan sobre el total, no sobre lo filtrado: describen
+          el programa completo, no la búsqueda actual del usuario. */}
+      {todas.length > 0 && <BandaEstadisticas convocatorias={todas} />}
+
+      <div className="contenido">
+        <div className="columnas">
+          <PanelFiltros convocatorias={todas} tipoActivo={tipoActivo} onCambiar={setTipoActivo} />
+
+          <main>
+            <div className="barra-resultados">
+              <h1>Convocatorias vigentes</h1>
+              {!consulta.cargando && consulta.error === null && (
+                <p className="conteo">
+                  <strong>{visibles.length}</strong>{' '}
+                  {visibles.length === 1 ? 'convocatoria' : 'convocatorias'}
+                  {tipoActivo !== null && <> de {nombreTipo(tipoActivo).toLowerCase()}</>}
+                </p>
+              )}
+            </div>
+
+            {consulta.cargando && (
+              <ul className="lista" aria-busy="true" aria-label="Cargando convocatorias">
+                <li className="esqueleto" />
+                <li className="esqueleto" />
+                <li className="esqueleto" />
+              </ul>
+            )}
+
+            {consulta.error !== null && (
+              <p className="aviso error" role="alert">
+                {consulta.error} Si la API responde pero esta consulta falla, casi siempre es que
+                PostgreSQL no está levantado: <code>docker compose up -d</code>.
+              </p>
+            )}
+
+            {!consulta.cargando && consulta.error === null && visibles.length === 0 && (
+              <p className="aviso">
+                {todas.length === 0 ? (
+                  <>
+                    No hay convocatorias publicadas en este momento. Ejecute{' '}
+                    <code>npm run db:seed</code> con la base de datos levantada para cargar datos de
+                    prueba.
+                  </>
+                ) : (
+                  <>
+                    No hay convocatorias de {nombreTipo(tipoActivo ?? '').toLowerCase()} abiertas
+                    ahora mismo.
+                  </>
+                )}
+              </p>
+            )}
+
+            {visibles.length > 0 && (
+              <ul className="lista">
+                {visibles.map((convocatoria) => (
+                  <TarjetaConvocatoria key={convocatoria.id} convocatoria={convocatoria} />
+                ))}
+              </ul>
+            )}
+          </main>
+        </div>
       </div>
 
-      <section aria-labelledby="titulo-convocatorias">
-        <h2 id="titulo-convocatorias">Convocatorias publicadas</h2>
-
-        {listado.cargando && <p className="atenuado">Cargando convocatorias…</p>}
-
-        {listado.error !== null && (
-          <p className="error">
-            {listado.error}. Si la API responde pero esta consulta falla, casi siempre es que
-            PostgreSQL no está levantado: <code>docker compose up -d</code>.
-          </p>
-        )}
-
-        {!listado.cargando && listado.error === null && convocatorias.length === 0 && (
-          <p className="atenuado">
-            No hay convocatorias publicadas. Ejecute <code>npm run db:seed</code> con la base de
-            datos levantada para cargar datos de prueba.
-          </p>
-        )}
-
-        <ul className="lista">
-          {convocatorias.map((convocatoria) => {
-            // Cada tipo de beca tiene su color: la franja de la tarjeta y la insignia se
-            // derivan del propio dato, sin condicionales. Un tipo nuevo solo necesita su
-            // regla en `estilos.css`; si falta, hereda el color por defecto.
-            const claseTipo = convocatoria.tipo.toLowerCase();
-
-            return (
-              <li key={convocatoria.id} className={`tarjeta tarjeta-${claseTipo}`}>
-                <div className="tarjeta-encabezado">
-                  <h3>{convocatoria.titulo}</h3>
-                  <span className={`insignia insignia-${claseTipo}`}>
-                    {convocatoria.tipo.replace('_', ' ')}
-                  </span>
-                </div>
-                <p className="descripcion">{convocatoria.descripcion}</p>
-                <dl className="datos">
-                  <div>
-                    <dt>Código</dt>
-                    <dd>{convocatoria.codigo}</dd>
-                  </div>
-                  <div>
-                    <dt>Cupos</dt>
-                    <dd>{convocatoria.cupos}</dd>
-                  </div>
-                  <div>
-                    <dt>Cierra</dt>
-                    <dd>{formatearFecha(convocatoria.fechaCierre)}</dd>
-                  </div>
-                </dl>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
-
-      <section aria-labelledby="titulo-salud">
-        <h2 id="titulo-salud">Estado de la API</h2>
-        {salud.cargando && <p className="atenuado">Consultando…</p>}
-        {salud.datos !== null && (
-          <p className="salud">
-            <span className="punto" aria-hidden="true" />
-            <strong>{salud.datos.status}</strong>
-            <span className="atenuado">
-              {' '}
-              · {new Date(salud.datos.timestamp).toLocaleString('es-GT')}
-            </span>
-          </p>
-        )}
-        {salud.error !== null && <p className="error">{salud.error}</p>}
-      </section>
-
-      <footer className="atenuado">
-        Universidad Mariano Gálvez · Análisis de Sistemas II · Isaac · Ivan · Fernando · Stuard
+      <footer className="pie">
+        <div className="interior">
+          <span>
+            <strong>Plataforma Nacional de Becas</strong> · Ministerio de Educación de Guatemala
+          </span>
+          <span>
+            Proyecto académico · Universidad Mariano Gálvez · Análisis de Sistemas II · Equipo
+            ControlExe
+          </span>
+        </div>
       </footer>
-    </main>
+    </>
   );
 }
