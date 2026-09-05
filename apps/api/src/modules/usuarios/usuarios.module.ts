@@ -15,16 +15,21 @@
  */
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 
 import { AutenticarUsuarioService } from './application/services/autenticar-usuario.service';
 import { GENERADOR_TOKEN } from './domain/ports/generador-token';
 import { HASHER_PASSWORD } from './domain/ports/hasher-password';
 import { USUARIO_REPOSITORIO } from './domain/ports/usuario.repositorio';
+import { VERIFICADOR_TOKEN } from './domain/ports/verificador-token';
 import { BcryptHasherAdapter } from './infrastructure/adapters/bcrypt-hasher.adapter';
 import { JwtGeneradorTokenAdapter } from './infrastructure/adapters/jwt-generador-token.adapter';
+import { JwtVerificadorTokenAdapter } from './infrastructure/adapters/jwt-verificador-token.adapter';
 import { UsuarioPrismaRepositorio } from './infrastructure/persistence/usuario-prisma.repositorio';
 import { AuthController } from './presentation/controllers/auth.controller';
+import { AutenticacionGuard } from './presentation/guards/autenticacion.guard';
+import { RolesGuard } from './presentation/guards/roles.guard';
 
 @Module({
   imports: [
@@ -53,6 +58,19 @@ import { AuthController } from './presentation/controllers/auth.controller';
     { provide: USUARIO_REPOSITORIO, useClass: UsuarioPrismaRepositorio },
     { provide: HASHER_PASSWORD, useClass: BcryptHasherAdapter },
     { provide: GENERADOR_TOKEN, useClass: JwtGeneradorTokenAdapter },
+    { provide: VERIFICADOR_TOKEN, useClass: JwtVerificadorTokenAdapter },
+
+    // US-003 — Los guards se registran GLOBALMENTE, con `APP_GUARD`.
+    //
+    // SEGURO POR DEFECTO: toda ruta del sistema exige sesión salvo que se marque con
+    // `@Publico()`. La alternativa —proteger solo lo que se marque— es la que causa las
+    // fugas reales: alguien agrega un endpoint, olvida el decorador y queda abierto sin
+    // que nadie lo note. Aquí el olvido produce un 401 visible, no una fuga silenciosa.
+    //
+    // El ORDEN IMPORTA: autenticación primero, roles después. `RolesGuard` necesita el
+    // portador que `AutenticacionGuard` deja en la petición.
+    { provide: APP_GUARD, useClass: AutenticacionGuard },
+    { provide: APP_GUARD, useClass: RolesGuard },
   ],
   // Se exporta el caso de uso y el hasher: el Sprint 2 necesitará el hasher para el
   // registro (US-001). El repositorio NO se exporta, por la misma razón que en

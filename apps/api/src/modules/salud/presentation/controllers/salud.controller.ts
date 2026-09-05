@@ -26,6 +26,7 @@
 import { Controller, Get, HttpCode, HttpException, HttpStatus, Logger } from '@nestjs/common';
 
 import { PrismaService } from '../../../../shared/persistence/prisma.service';
+import { Publico } from '../../../usuarios/presentation/guards/decoradores';
 
 export interface RespuestaSalud {
   status: 'ok';
@@ -57,6 +58,9 @@ class ServicioNoDisponibleError extends HttpException {
   }
 }
 
+// Los dos diagnósticos son públicos por necesidad operativa: el orquestador y el pipeline
+// de CI los consultan sin credenciales. No exponen ningún dato del negocio.
+@Publico()
 @Controller()
 export class SaludController {
   private readonly logger = new Logger(SaludController.name);

@@ -25,7 +25,7 @@ import {
   type ReactNode,
 } from 'react';
 
-import type { Sesion } from '../api/cliente';
+import { establecerToken, type Sesion } from '../api/cliente';
 
 interface ValorContexto {
   sesion: Sesion | null;
@@ -43,8 +43,18 @@ export function ProveedorSesion({ children }: { children: ReactNode }): ReactEle
   const valor = useMemo<ValorContexto>(
     () => ({
       sesion,
-      iniciar: setSesion,
-      cerrar: () => setSesion(null),
+      // El token se entrega al cliente HTTP en el mismo acto de iniciar o cerrar sesión.
+      // Si fueran dos pasos separados, bastaría olvidar uno para que el estado de React y
+      // el del cliente HTTP discreparan: la pantalla mostraría al usuario dentro mientras
+      // todas sus peticiones reciben 401.
+      iniciar: (nueva: Sesion) => {
+        establecerToken(nueva.token);
+        setSesion(nueva);
+      },
+      cerrar: () => {
+        establecerToken(null);
+        setSesion(null);
+      },
     }),
     [sesion],
   );
