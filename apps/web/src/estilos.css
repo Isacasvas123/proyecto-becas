@@ -1,35 +1,78 @@
-/* Estilos del walking skeleton.
-   Paleta institucional: azul de ministerio con el celeste de la bandera de Guatemala.
-   El diseño definitivo se aborda en sprints posteriores; aquí se busca que sea legible,
-   que funcione desde 360 px (NFR de usabilidad) y que distinga los tipos de beca. */
+/* ============================================================================
+   SISTEMA DE DISEÑO — Plataforma Nacional de Becas
+   ----------------------------------------------------------------------------
+   Referencias tomadas de portales institucionales guatemaltecos reales
+   (becas.segeplan.gob.gt, becasnuestrofuturo.gob.gt) y de bolsas de empleo
+   locales (computrabajo, tecoloco) para el patrón de listado.
+
+   Criterios:
+   - Densidad informativa alta: el usuario compara convocatorias, no contempla.
+   - Jerarquía institucional: franja de gobierno, marca, contenido.
+   - Urgencia visible: los plazos son lo que más importa a un aspirante.
+   - Usable desde 360 px (NFR de usabilidad, docs/04-product-backlog.md).
+   ========================================================================== */
 
 :root {
-  /* Neutros */
-  --tinta: #10212f;
-  --tinta-suave: #566a7c;
-  --fondo: #f2f6fa;
-  --superficie: #ffffff;
-  --borde: #dae3ec;
+  /* ---- Escala tipográfica (base 16px, razón 1.25) ---- */
+  --txt-2xs: 0.6875rem;
+  --txt-xs: 0.75rem;
+  --txt-sm: 0.8125rem;
+  --txt-base: 0.9375rem;
+  --txt-md: 1.0625rem;
+  --txt-lg: 1.375rem;
+  --txt-xl: 1.75rem;
+  --txt-2xl: 2.25rem;
 
-  /* Azules institucionales */
-  --azul-profundo: #0a3558;
-  --azul: #10609c;
-  --azul-claro: #e6f1fa;
-  --celeste: #4ea6dd;
+  /* ---- Escala de espaciado (base 4px) ---- */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 3rem;
+  --sp-8: 4rem;
 
-  /* Semánticos */
-  --exito: #12805a;
-  --exito-claro: #e3f5ee;
-  --error: #c0392b;
-  --error-claro: #fdecea;
+  /* ---- Azules institucionales ---- */
+  --gob-900: #06263f;
+  --gob-800: #0a3558;
+  --gob-700: #0e4574;
+  --gob-600: #12609c;
+  --gob-500: #2f80c2;
+  --gob-300: #7fb6de;
+  --gob-100: #dcebf7;
+  --gob-50: #f0f7fc;
 
-  /* Tipos de beca */
-  --medio: #0d7f75;
-  --medio-claro: #e2f4f2;
-  --universitaria: #10609c;
-  --universitaria-claro: #e6f1fa;
-  --posgrado: #6b3fa0;
-  --posgrado-claro: #f0eafa;
+  /* ---- Neutros cálidos ---- */
+  --tinta: #16202b;
+  --tinta-2: #445362;
+  --tinta-3: #6b7b8c;
+  --linea: #dfe5ec;
+  --linea-2: #edf1f5;
+  --papel: #ffffff;
+  --fondo: #f4f7fa;
+
+  /* ---- Acentos semánticos ---- */
+  --ambar: #b45309;
+  --ambar-bg: #fef3e2;
+  --verde: #0f7a52;
+  --verde-bg: #e4f4ec;
+  --rojo: #b3261e;
+  --rojo-bg: #fdecea;
+
+  /* ---- Tipos de beca ---- */
+  --medio: #0e7490;
+  --medio-bg: #e0f4f8;
+  --univ: #1d4ed8;
+  --univ-bg: #e4ecfd;
+  --posg: #6d28d9;
+  --posg-bg: #f0e9fd;
+
+  --radio: 6px;
+  --radio-lg: 10px;
+  --sombra-1: 0 1px 2px rgb(6 38 63 / 6%);
+  --sombra-2: 0 4px 16px rgb(6 38 63 / 10%);
+  --sombra-3: 0 12px 32px rgb(6 38 63 / 14%);
 
   color-scheme: light;
 }
@@ -43,406 +86,858 @@ body {
   background: var(--fondo);
   color: var(--tinta);
   font-family:
+    'Segoe UI',
     system-ui,
     -apple-system,
-    'Segoe UI',
     Roboto,
     sans-serif;
+  font-size: var(--txt-base);
   line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
 }
 
-.contenedor {
-  max-width: 56rem;
-  margin: 0 auto;
-  padding: 2rem 1.25rem 4rem;
-}
-
-.etiqueta {
-  margin: 0;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--celeste);
-}
-
-h1 {
-  margin: 0.2rem 0 0.5rem;
-  font-size: clamp(1.5rem, 4vw, 2.125rem);
-  line-height: 1.15;
-  color: var(--azul-profundo);
-  letter-spacing: -0.015em;
-}
-
-h2 {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin: 2.25rem 0 1rem;
-  font-size: 1.05rem;
-  color: var(--azul-profundo);
-}
-
-/* Barrita celeste antes de cada título de sección. */
-h2::before {
-  content: '';
-  width: 0.25rem;
-  height: 1.1em;
-  border-radius: 999px;
-  background: linear-gradient(180deg, var(--celeste), var(--azul));
-}
-
+h1,
+h2,
 h3 {
   margin: 0;
-  font-size: 1rem;
-  color: var(--azul-profundo);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: var(--gob-800);
 }
 
-.subtitulo {
-  margin: 0;
-  max-width: 42rem;
-  color: var(--tinta-suave);
-  font-size: 0.9rem;
+a {
+  color: var(--gob-600);
 }
 
-.atenuado {
-  color: var(--tinta-suave);
-  font-size: 0.875rem;
-}
+/* ============================================================================
+   ENCABEZADO INSTITUCIONAL
+   Tres franjas, como en los portales del gobierno: identidad del Estado,
+   marca del programa, y cenefa decorativa que las separa del contenido.
+   ========================================================================== */
 
-.error {
-  padding: 0.6rem 0.8rem;
-  border-radius: 0.4rem;
-  background: var(--error-claro);
-  border-left: 3px solid var(--error);
-  color: var(--error);
-  font-size: 0.875rem;
-}
-
-/* ── Estado de la API ────────────────────────────────────────────────────── */
-
-.salud {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0;
-  padding: 0.4rem 0.85rem;
-  border-radius: 999px;
-  background: var(--exito-claro);
-  color: var(--exito);
-  font-size: 0.875rem;
-}
-
-.punto {
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 50%;
-  background: var(--exito);
-  flex: none;
-  box-shadow: 0 0 0 0.2rem rgb(18 128 90 / 18%);
-}
-
-/* ── Tarjetas de convocatoria ────────────────────────────────────────────── */
-
-.lista {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 0.875rem;
-}
-
-.tarjeta {
-  position: relative;
-  overflow: hidden;
-  background: var(--superficie);
-  border: 1px solid var(--borde);
-  border-radius: 0.6rem;
-  padding: 1.1rem 1.25rem;
-  box-shadow: 0 1px 2px rgb(16 33 47 / 4%);
-  transition:
-    box-shadow 0.15s ease,
-    transform 0.15s ease;
-}
-
-.tarjeta:hover {
-  box-shadow: 0 4px 14px rgb(16 33 47 / 9%);
-  transform: translateY(-1px);
-}
-
-/* Franja de color a la izquierda, distinta por tipo de beca. */
-.tarjeta::before {
-  content: '';
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 0.28rem;
-  background: var(--universitaria);
-}
-
-.tarjeta-nivel_medio::before {
-  background: var(--medio);
-}
-.tarjeta-universitaria::before {
-  background: var(--universitaria);
-}
-.tarjeta-posgrado::before {
-  background: var(--posgrado);
-}
-
-.tarjeta-encabezado {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-
-.insignia {
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--universitaria);
-  background: var(--universitaria-claro);
-  border-radius: 999px;
-  padding: 0.18rem 0.6rem;
-  white-space: nowrap;
-}
-
-.insignia-nivel_medio {
-  color: var(--medio);
-  background: var(--medio-claro);
-}
-.insignia-universitaria {
-  color: var(--universitaria);
-  background: var(--universitaria-claro);
-}
-.insignia-posgrado {
-  color: var(--posgrado);
-  background: var(--posgrado-claro);
-}
-
-.descripcion {
-  margin: 0.5rem 0 1rem;
-  color: var(--tinta-suave);
-  font-size: 0.9rem;
-}
-
-.datos {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.75rem;
-  margin: 0;
-  padding-top: 0.875rem;
-  border-top: 1px solid var(--borde);
-}
-
-.datos div {
-  margin: 0;
-}
-
-.datos dt {
-  font-size: 0.66rem;
-  font-weight: 700;
+.franja-gobierno {
+  background: var(--gob-900);
+  color: #b9cede;
+  font-size: var(--txt-2xs);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--tinta-suave);
 }
 
-.datos dd {
-  margin: 0;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--azul-profundo);
+.franja-gobierno .interior {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-2) var(--sp-5);
+}
+
+.encabezado {
+  background: var(--papel);
+  border-bottom: 1px solid var(--linea);
+}
+
+.encabezado .interior {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-4) var(--sp-5);
+}
+
+.marca {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: center;
+  min-width: 0;
+}
+
+.marca .emblema {
+  flex: none;
+}
+
+.marca .institucion {
+  font-size: var(--txt-2xs);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gob-500);
+}
+
+.marca .titulo {
+  font-size: var(--txt-md);
+  font-weight: 700;
+  color: var(--gob-800);
+  letter-spacing: -0.01em;
+}
+
+/* Cenefa geométrica: guiño al tejido guatemalteco, dibujada en CSS.
+   Reemplaza al típico degradado genérico. */
+.cenefa {
+  height: 6px;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--gob-600) 0 10px,
+    var(--gob-500) 10px 20px,
+    var(--medio) 20px 30px,
+    var(--posg) 30px 40px,
+    var(--ambar) 40px 50px
+  );
+  opacity: 0.9;
+}
+
+/* ============================================================================
+   LAYOUT
+   ========================================================================== */
+
+.interior {
+  max-width: 1120px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.contenido {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--sp-6) var(--sp-5) var(--sp-8);
+}
+
+.columnas {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: var(--sp-6);
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .columnas {
+    grid-template-columns: 1fr;
+    gap: var(--sp-5);
+  }
+}
+
+/* ============================================================================
+   BANDA DE ESTADÍSTICAS
+   Números reales calculados de los datos, no adornos.
+   ========================================================================== */
+
+.banda-datos {
+  background: linear-gradient(180deg, var(--gob-800), var(--gob-700));
+  color: #fff;
+}
+
+.banda-datos .interior {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  padding: var(--sp-5);
+  gap: var(--sp-4);
+}
+
+.dato {
+  padding-left: var(--sp-4);
+  border-left: 2px solid rgb(255 255 255 / 22%);
+}
+
+.dato .cifra {
+  font-size: var(--txt-2xl);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
 }
 
-footer {
-  margin-top: 3rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--borde);
-  font-size: 0.8rem;
+.dato .rotulo {
+  margin-top: var(--sp-1);
+  font-size: var(--txt-xs);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #a9c6dd;
+}
+
+/* En móvil las cuatro cifras apiladas empujaban el contenido casi 600 px hacia
+   abajo: había que recorrer toda la banda antes de ver una sola convocatoria.
+   Se pasa a dos columnas y se reduce la escala. La persona que definimos —Ana,
+   que entra desde el teléfono con datos limitados— viene a ver convocatorias,
+   no cifras. */
+@media (max-width: 600px) {
+  .banda-datos .interior {
+    grid-template-columns: 1fr 1fr;
+    padding: var(--sp-4);
+    gap: var(--sp-3) var(--sp-2);
+  }
+
+  .dato {
+    padding-left: var(--sp-3);
+  }
+
+  .dato .cifra {
+    font-size: var(--txt-lg);
+  }
+
+  .dato .rotulo {
+    font-size: var(--txt-2xs);
+    line-height: 1.3;
+  }
+}
+
+/* ============================================================================
+   PANEL LATERAL DE FILTROS  (patrón tomado de tecoloco)
+   ========================================================================== */
+
+.panel {
+  background: var(--papel);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-lg);
+  overflow: hidden;
+}
+
+.panel > h2 {
+  padding: var(--sp-3) var(--sp-4);
+  margin: 0;
+  font-size: var(--txt-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tinta-3);
+  background: var(--linea-2);
+  border-bottom: 1px solid var(--linea);
+}
+
+.facetas {
+  list-style: none;
+  margin: 0;
+  padding: var(--sp-2);
+}
+
+.faceta {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: center;
+  width: 100%;
+  padding: var(--sp-2) var(--sp-3);
+  font: inherit;
+  font-size: var(--txt-sm);
+  color: var(--tinta-2);
+  text-align: left;
+  cursor: pointer;
+  background: none;
+  border: none;
+  border-radius: var(--radio);
+}
+
+.faceta:hover {
+  background: var(--gob-50);
+  color: var(--gob-700);
+}
+
+.faceta[aria-pressed='true'] {
+  font-weight: 700;
+  color: var(--gob-700);
+  background: var(--gob-100);
+}
+
+.faceta .punto-tipo {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex: none;
+}
+
+.faceta .nombre {
+  flex: 1;
+  min-width: 0;
+}
+
+.faceta .cuenta {
+  font-size: var(--txt-xs);
+  font-weight: 700;
+  color: var(--tinta-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.nota-panel {
+  padding: var(--sp-3) var(--sp-4);
+  margin: 0;
+  font-size: var(--txt-xs);
+  color: var(--tinta-3);
+  border-top: 1px solid var(--linea);
+  background: var(--gob-50);
+}
+
+/* ============================================================================
+   BARRA DE RESULTADOS
+   ========================================================================== */
+
+.barra-resultados {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: var(--sp-3);
+  margin-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--linea);
+}
+
+.barra-resultados h1 {
+  font-size: var(--txt-lg);
+}
+
+.barra-resultados .conteo {
+  font-size: var(--txt-sm);
+  color: var(--tinta-3);
+}
+
+.barra-resultados .conteo strong {
+  color: var(--gob-700);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================================
+   TARJETAS DE CONVOCATORIA  (patrón de bolsa de empleo)
+   ========================================================================== */
+
+.lista {
+  display: grid;
+  gap: var(--sp-3);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.convocatoria {
+  position: relative;
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: var(--sp-4);
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--papel);
+  border: 1px solid var(--linea);
+  border-left: 3px solid var(--univ);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-1);
+  transition:
+    box-shadow 0.16s ease,
+    border-color 0.16s ease;
+}
+
+.convocatoria:hover {
+  border-color: var(--gob-300);
+  box-shadow: var(--sombra-2);
+}
+
+.convocatoria.t-nivel_medio {
+  border-left-color: var(--medio);
+}
+.convocatoria.t-universitaria {
+  border-left-color: var(--univ);
+}
+.convocatoria.t-posgrado {
+  border-left-color: var(--posg);
+}
+
+/* Sello con la inicial del tipo, como el logo de la empresa en una oferta */
+.sello {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  font-size: var(--txt-lg);
+  font-weight: 800;
+  border-radius: var(--radio);
+}
+
+.t-nivel_medio .sello {
+  color: var(--medio);
+  background: var(--medio-bg);
+}
+.t-universitaria .sello {
+  color: var(--univ);
+  background: var(--univ-bg);
+}
+.t-posgrado .sello {
+  color: var(--posg);
+  background: var(--posg-bg);
+}
+
+.convocatoria .cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-3);
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.convocatoria h3 {
+  font-size: var(--txt-md);
+  font-weight: 700;
+}
+
+.etiqueta-tipo {
+  padding: 2px var(--sp-2);
+  font-size: var(--txt-2xs);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-radius: 3px;
+}
+
+.t-nivel_medio .etiqueta-tipo {
+  color: var(--medio);
+  background: var(--medio-bg);
+}
+.t-universitaria .etiqueta-tipo {
+  color: var(--univ);
+  background: var(--univ-bg);
+}
+.t-posgrado .etiqueta-tipo {
+  color: var(--posg);
+  background: var(--posg-bg);
+}
+
+.convocatoria .resumen {
+  margin: var(--sp-2) 0 var(--sp-3);
+  font-size: var(--txt-sm);
+  color: var(--tinta-2);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-5);
+  align-items: center;
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--linea-2);
+  font-size: var(--txt-sm);
+}
+
+.meta .item {
+  display: flex;
+  gap: var(--sp-2);
+  align-items: center;
+  color: var(--tinta-2);
+}
+
+.meta .item svg {
+  flex: none;
+  color: var(--tinta-3);
+}
+
+.meta .item b {
+  color: var(--tinta);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Indicador de plazo: lo que un aspirante mira primero */
+.plazo {
+  display: inline-flex;
+  gap: var(--sp-2);
+  align-items: center;
+  padding: 3px var(--sp-3);
+  margin-left: auto;
+  font-size: var(--txt-xs);
+  font-weight: 700;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.plazo.holgado {
+  color: var(--verde);
+  background: var(--verde-bg);
+}
+
+.plazo.urgente {
+  color: var(--ambar);
+  background: var(--ambar-bg);
+}
+
+.plazo.cerrado {
+  color: var(--rojo);
+  background: var(--rojo-bg);
+}
+
+/* ============================================================================
+   ESTADOS: cargando, vacío, error
+   ========================================================================== */
+
+.esqueleto {
+  height: 132px;
+  background: linear-gradient(90deg, var(--linea-2) 25%, #f7fafc 50%, var(--linea-2) 75%);
+  background-size: 200% 100%;
+  border-radius: var(--radio-lg);
+  animation: brillo 1.4s infinite;
+}
+
+@keyframes brillo {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .esqueleto {
+    animation: none;
+  }
+}
+
+.aviso {
+  padding: var(--sp-5);
+  text-align: center;
+  background: var(--papel);
+  border: 1px dashed var(--linea);
+  border-radius: var(--radio-lg);
+  color: var(--tinta-2);
+  font-size: var(--txt-sm);
+}
+
+.aviso.error {
+  color: var(--rojo);
+  background: var(--rojo-bg);
+  border: 1px solid #f3c9c5;
+  border-left: 3px solid var(--rojo);
+  text-align: left;
 }
 
 code {
-  background: var(--azul-claro);
-  color: var(--azul);
-  border-radius: 0.25rem;
-  padding: 0.08rem 0.35rem;
-  font-size: 0.85em;
+  padding: 1px 5px;
+  font-size: 0.9em;
+  color: var(--gob-700);
+  background: var(--gob-100);
+  border-radius: 3px;
 }
 
-/* ── Formulario de acceso (US-002) ───────────────────────────────────────── */
+/* ============================================================================
+   SESIÓN EN EL ENCABEZADO
+   ========================================================================== */
 
-.formulario {
+.sesion-chip {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  gap: var(--sp-3);
+  align-items: center;
+}
+
+.sesion-chip .avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  font-size: var(--txt-sm);
+  font-weight: 800;
+  color: var(--papel);
+  background: var(--gob-600);
+  border-radius: 50%;
+  flex: none;
+}
+
+.sesion-chip .quien {
+  line-height: 1.3;
+  min-width: 0;
+}
+
+.sesion-chip .nombre {
+  font-size: var(--txt-sm);
+  font-weight: 700;
+  color: var(--tinta);
+}
+
+.sesion-chip .rol {
+  font-size: var(--txt-2xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gob-600);
+  font-weight: 700;
+}
+
+/* ============================================================================
+   BOTONES Y FORMULARIOS
+   ========================================================================== */
+
+.boton {
+  display: inline-flex;
+  gap: var(--sp-2);
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-3) var(--sp-5);
+  font: inherit;
+  font-size: var(--txt-sm);
+  font-weight: 700;
+  color: var(--papel);
+  cursor: pointer;
+  background: var(--gob-600);
+  border: 1px solid var(--gob-600);
+  border-radius: var(--radio);
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.boton:hover:not(:disabled) {
+  background: var(--gob-700);
+  border-color: var(--gob-700);
+}
+
+.boton:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.boton.fantasma {
+  color: var(--gob-700);
+  background: transparent;
+  border-color: var(--linea);
+}
+
+.boton.fantasma:hover:not(:disabled) {
+  background: var(--gob-50);
+  border-color: var(--gob-300);
+}
+
+.boton.pequeno {
+  padding: var(--sp-2) var(--sp-3);
+  font-size: var(--txt-xs);
+}
+
+.boton.ancho {
   width: 100%;
-  max-width: 23rem;
-  padding: 1.5rem;
-  background: var(--superficie);
-  border: 1px solid var(--borde);
-  border-radius: 0.75rem;
-  box-shadow: 0 8px 28px rgb(10 53 88 / 10%);
 }
 
 .campo {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: var(--sp-2);
 }
 
 .campo label {
-  font-size: 0.78rem;
+  font-size: var(--txt-sm);
   font-weight: 700;
-  letter-spacing: 0.03em;
-  color: var(--azul-profundo);
+  color: var(--tinta);
 }
 
 .campo input {
-  padding: 0.6rem 0.75rem;
+  padding: var(--sp-3);
   font: inherit;
+  font-size: var(--txt-base);
   color: var(--tinta);
-  background: var(--fondo);
-  border: 1px solid var(--borde);
-  border-radius: 0.4rem;
+  background: var(--papel);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease;
 }
 
+.campo input::placeholder {
+  color: #a6b2be;
+}
+
 .campo input:focus {
   outline: none;
-  border-color: var(--celeste);
-  background: var(--superficie);
-  box-shadow: 0 0 0 3px rgb(78 166 221 / 25%);
+  border-color: var(--gob-500);
+  box-shadow: 0 0 0 3px var(--gob-100);
 }
 
-button {
-  padding: 0.65rem 1.1rem;
-  font: inherit;
-  font-weight: 700;
-  color: #fff;
-  cursor: pointer;
-  background: linear-gradient(135deg, var(--azul), var(--azul-profundo));
-  border: 1px solid transparent;
-  border-radius: 0.4rem;
-  transition:
-    filter 0.15s ease,
-    box-shadow 0.15s ease;
+.campo .pista {
+  font-size: var(--txt-xs);
+  color: var(--tinta-3);
 }
 
-button:hover:not(:disabled) {
-  filter: brightness(1.12);
-  box-shadow: 0 3px 10px rgb(10 53 88 / 25%);
+:focus-visible {
+  outline: 2px solid var(--gob-500);
+  outline-offset: 2px;
 }
 
-button:disabled {
-  cursor: progress;
-  opacity: 0.65;
-}
+/* ============================================================================
+   PÁGINA DE ACCESO — dos columnas: contexto institucional | formulario
+   ========================================================================== */
 
-button.secundario {
-  color: var(--azul);
-  background: var(--superficie);
-  border-color: var(--borde);
-}
-
-button.secundario:hover:not(:disabled) {
-  filter: none;
-  border-color: var(--celeste);
-  background: var(--azul-claro);
-  box-shadow: none;
-}
-
-/* ── Página de login ─────────────────────────────────────────────────────── */
-
-.contenedor-centrado {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  align-items: center;
-  justify-content: center;
+.acceso {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
   min-height: 100vh;
-  text-align: center;
-  /* Fondo con un degradado suave hacia el celeste institucional. */
-  background:
-    radial-gradient(60rem 30rem at 50% -10%, rgb(78 166 221 / 18%), transparent 70%), var(--fondo);
 }
 
-.encabezado-login h1 {
-  margin-bottom: 0.35rem;
-}
-
-.contenedor-centrado .formulario {
-  text-align: left;
-}
-
-/* ── Barra superior de las páginas con sesión ────────────────────────────── */
-
-.barra-superior {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding-bottom: 1.25rem;
-  margin-bottom: 0.5rem;
-  border-bottom: 2px solid transparent;
-  border-image: linear-gradient(90deg, var(--celeste), var(--azul), transparent) 1;
-}
-
-.barra-superior h1 {
-  margin: 0;
-}
-
-.usuario-actual {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  align-items: center;
-  padding: 0.5rem 0.5rem 0.5rem 0.9rem;
-  background: var(--superficie);
-  border: 1px solid var(--borde);
-  border-radius: 999px;
-  font-size: 0.9rem;
-}
-
-.usuario-actual button {
-  padding: 0.35rem 0.8rem;
-  font-size: 0.82rem;
-  border-radius: 999px;
-}
-
-.sesion {
+.acceso .presentacion {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
-  padding: 1rem 1.25rem;
-  background: var(--superficie);
-  border: 1px solid var(--borde);
-  border-left: 3px solid var(--exito);
-  border-radius: 0.5rem;
+  justify-content: center;
+  gap: var(--sp-5);
+  padding: var(--sp-8) var(--sp-7);
+  color: #d6e6f2;
+  background: var(--gob-800);
+  position: relative;
+  overflow: hidden;
 }
 
-.sesion .insignia {
-  margin-left: 0.5rem;
+/* Trama geométrica de fondo, dibujada con degradados. Sustituye a la
+   fotografía de banco de imágenes. */
+.acceso .presentacion::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.14;
+  background-image:
+    linear-gradient(30deg, transparent 47%, var(--gob-300) 47% 53%, transparent 53%),
+    linear-gradient(-30deg, transparent 47%, var(--gob-300) 47% 53%, transparent 53%);
+  background-size: 46px 80px;
 }
 
-/* En móvil la barra se apila: el NFR exige que sea usable desde 360 px. */
-@media (max-width: 480px) {
-  .barra-superior {
-    flex-direction: column;
+.acceso .presentacion > * {
+  position: relative;
+}
+
+.acceso .presentacion h1 {
+  font-size: var(--txt-2xl);
+  color: #fff;
+  max-width: 15ch;
+}
+
+.acceso .presentacion .entrada {
+  font-size: var(--txt-md);
+  max-width: 48ch;
+  color: #bcd6e8;
+}
+
+.puntos {
+  display: grid;
+  gap: var(--sp-4);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  max-width: 46ch;
+}
+
+.puntos li {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: var(--sp-3);
+  font-size: var(--txt-sm);
+  color: #cadeed;
+}
+
+.puntos .icono {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radio);
+  background: rgb(255 255 255 / 12%);
+  color: #fff;
+}
+
+.puntos b {
+  display: block;
+  color: #fff;
+  font-size: var(--txt-base);
+}
+
+.acceso .formulario-zona {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--sp-7) var(--sp-6);
+  background: var(--papel);
+}
+
+.formulario {
+  display: grid;
+  gap: var(--sp-4);
+  width: 100%;
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+.formulario .encabezado-form {
+  margin-bottom: var(--sp-2);
+}
+
+.formulario h2 {
+  font-size: var(--txt-xl);
+}
+
+.formulario .sub {
+  margin: var(--sp-2) 0 0;
+  font-size: var(--txt-sm);
+  color: var(--tinta-3);
+}
+
+.credenciales-demo {
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--txt-xs);
+  color: var(--tinta-2);
+  background: var(--gob-50);
+  border: 1px solid var(--gob-100);
+  border-radius: var(--radio);
+}
+
+.credenciales-demo b {
+  color: var(--gob-700);
+}
+
+@media (max-width: 900px) {
+  .acceso {
+    grid-template-columns: 1fr;
+    min-height: 0;
   }
 
-  .contenedor-centrado {
-    justify-content: flex-start;
-    padding-top: 2.5rem;
+  .acceso .presentacion {
+    padding: var(--sp-6) var(--sp-5);
   }
 
-  .datos {
-    gap: 1.1rem;
+  .acceso .presentacion h1 {
+    font-size: var(--txt-xl);
+  }
+
+  .puntos {
+    display: none;
+  }
+
+  .acceso .formulario-zona {
+    padding: var(--sp-6) var(--sp-5) var(--sp-8);
+  }
+}
+
+/* ============================================================================
+   PIE
+   ========================================================================== */
+
+.pie {
+  padding: var(--sp-5);
+  margin-top: var(--sp-8);
+  color: #9fb7c9;
+  background: var(--gob-900);
+  font-size: var(--txt-xs);
+}
+
+.pie .interior {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pie strong {
+  color: #dfeaf3;
+  font-weight: 700;
+}
+
+@media (max-width: 560px) {
+  .convocatoria {
+    grid-template-columns: 1fr;
+    padding: var(--sp-4);
+  }
+
+  .convocatoria .sello {
+    display: none;
+  }
+
+  .plazo {
+    margin-left: 0;
+  }
+
+  .meta {
+    gap: var(--sp-2) var(--sp-4);
   }
 }
