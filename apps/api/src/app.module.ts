@@ -13,6 +13,7 @@ import { ConfigModule } from '@nestjs/config';
 
 import { ConvocatoriasModule } from './modules/convocatorias/convocatorias.module';
 import { SaludModule } from './modules/salud/salud.module';
+import { UsuariosModule } from './modules/usuarios/usuarios.module';
 import { PrismaModule } from './shared/persistence/prisma.module';
 
 @Module({
@@ -26,6 +27,7 @@ import { PrismaModule } from './shared/persistence/prisma.module';
     PrismaModule,
     SaludModule,
     ConvocatoriasModule,
+    UsuariosModule,
   ],
 })
 export class AppModule {}
