@@ -20,6 +20,7 @@ import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { AutenticarUsuarioService } from '../../application/services/autenticar-usuario.service';
 import { SesionIniciadaDto } from '../../application/dto/sesion-iniciada.dto';
 import { LoginRequestDto } from '../dto/login-request.dto';
+import { Publico } from '../guards/decoradores';
 
 @Controller('auth')
 export class AuthController {
@@ -31,6 +32,10 @@ export class AuthController {
    * `@HttpCode(200)`: por defecto NestJS responde 201 a un POST, pero aquí no se está
    * creando ningún recurso, solo verificando credenciales.
    */
+  // Ruta abierta por necesidad: es el punto donde se OBTIENE la sesión, así que no puede
+  // exigirla. Es una de las tres únicas rutas públicas del sistema, y cada una tiene su
+  // justificación escrita (US-003).
+  @Publico()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async iniciarSesion(@Body() peticion: LoginRequestDto): Promise<SesionIniciadaDto> {
