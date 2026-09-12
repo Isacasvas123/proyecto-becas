@@ -96,6 +96,21 @@ export class AutenticacionGuard implements CanActivate {
    *
    * Se exige el esquema `Bearer` explícitamente. Aceptar la cabecera pelada sería más
    * cómodo y menos seguro: cualquier cadena arbitraria entraría al verificador.
+   *
+   * ────────────────────────────────────────────────────────────────────────────────
+   * DOS ARISTAS SEÑALADAS POR FERNANDO EN LA REVISIÓN DEL PR #4
+   *
+   * 1. CABECERA DUPLICADA. Si un cliente manda dos cabeceras `Authorization`, Node las
+   *    une con coma: `"Bearer aaa, Bearer bbb"`. Partir por espacios daba `valor = "aaa,"`,
+   *    que el verificador rechazaba por firma inválida — no era una fuga, pero el rechazo
+   *    ocurría por accidente y no por decisión. Ahora se rechaza aquí, explícitamente:
+   *    una petición con dos credenciales es ambigua y no se adivina cuál vale.
+   *
+   * 2. ESQUEMA EN MINÚSCULA. El RFC 7235 §2.1 define el nombre del esquema como
+   *    *case-insensitive*, así que `bearer token` es una petición VÁLIDA que estábamos
+   *    rechazando con un 401. Era un fallo de interoperabilidad, no una medida de
+   *    seguridad: comparar sin distinguir mayúsculas no debilita nada, porque lo que
+   *    autentica es el token, no cómo se escriba la palabra.
    */
   private extraerToken(peticion: Request): string | null {
     const cabecera = peticion.headers.authorization;
@@ -104,8 +119,23 @@ export class AutenticacionGuard implements CanActivate {
       return null;
     }
 
-    const [esquema, valor] = cabecera.split(' ');
+    // Arista 1: credenciales múltiples. Se rechaza en vez de elegir una.
+    if (cabecera.includes(',')) {
+      this.logger.warn(
+        `Cabecera Authorization con credenciales múltiples en ${peticion.method} ${peticion.url}`,
+      );
+      return null;
+    }
 
-    return esquema === 'Bearer' && typeof valor === 'string' && valor.length > 0 ? valor : null;
+    const partes = cabecera.trim().split(/\s+/);
+
+    if (partes.length !== 2) {
+      return null;
+    }
+
+    const [esquema, valor] = partes;
+
+    // Arista 2: el esquema es case-insensitive por RFC 7235; el token NO se normaliza.
+    return esquema.toLowerCase() === 'bearer' && valor.length > 0 ? valor : null;
   }
 }

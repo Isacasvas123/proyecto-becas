@@ -72,12 +72,35 @@ class ControladorDePrueba {
   }
 }
 
+/**
+ * Segundo controlador con `@Roles` A NIVEL DE CLASE.
+ *
+ * Señalado por Fernando en la revisión del PR #4: en NestJS es práctica corriente restringir
+ * un controlador entero y relajar un método concreto, y solo estábamos probando el decorador
+ * a nivel de método. El guard usa `getAllAndOverride`, que hace ganar a lo más específico;
+ * estas rutas lo demuestran en lugar de darlo por supuesto.
+ */
+@Roles(RolUsuario.ADMINISTRADOR)
+@Controller('panel')
+class ControladorRestringidoPorClase {
+  @Get('heredada')
+  heredada() {
+    return { visto: 'solo por administradores, por herencia de la clase' };
+  }
+
+  @Roles(RolUsuario.EVALUADOR)
+  @Get('relajada')
+  relajada() {
+    return { visto: 'por evaluadores: el método gana a la clase' };
+  }
+}
+
 describe('US-003 · Control de acceso (e2e)', () => {
   let app: INestApplication<App>;
 
   beforeAll(async () => {
     const modulo = await Test.createTestingModule({
-      controllers: [ControladorDePrueba],
+      controllers: [ControladorDePrueba, ControladorRestringidoPorClase],
       providers: [
         Reflector,
         { provide: VERIFICADOR_TOKEN, useClass: VerificadorFalso },
@@ -150,6 +173,60 @@ describe('US-003 · Control de acceso (e2e)', () => {
         .expect(401);
     });
 
+    it('acepta el esquema en minúscula: "bearer" es válido por RFC 7235', async () => {
+      // Señalado por Fernando en la revisión del PR #4. El RFC 7235 §2.1 define el nombre
+      // del esquema como case-insensitive, así que rechazar `bearer` era un fallo de
+      // interoperabilidad, no una medida de seguridad. Lo que autentica es el token.
+      await request(app.getHttpServer())
+        .get('/prueba/con-sesion')
+        .set({ Authorization: 'bearer token-admin' })
+        .expect(200);
+    });
+
+    it('acepta BEARER en mayúsculas, pero el token sigue siendo sensible a mayúsculas', async () => {
+      await request(app.getHttpServer())
+        .get('/prueba/con-sesion')
+        .set({ Authorization: 'BEARER token-admin' })
+        .expect(200);
+
+      // El esquema se normaliza; el token NO. `TOKEN-ADMIN` no es `token-admin`.
+      await request(app.getHttpServer())
+        .get('/prueba/con-sesion')
+        .set({ Authorization: 'Bearer TOKEN-ADMIN' })
+        .expect(401);
+    });
+
+    it('rechaza dos credenciales en la misma cabecera', async () => {
+      // Señalado por Fernando en la revisión del PR #4: al mandar dos cabeceras
+      // `Authorization`, Node las une con coma. Antes el rechazo ocurría por accidente
+      // —el token quedaba con una coma pegada y fallaba la firma—; ahora es explícito.
+      await request(app.getHttpServer())
+        .get('/prueba/con-sesion')
+        .set({ Authorization: 'Bearer token-admin, Bearer token-estudiante' })
+        .expect(401);
+    });
+
+    it('un token válido con una coma detrás no cuela', async () => {
+      await request(app.getHttpServer())
+        .get('/prueba/con-sesion')
+        .set({ Authorization: 'Bearer token-admin,' })
+        .expect(401);
+    });
+
+    it('rechaza la cabecera con más de dos partes', async () => {
+      await request(app.getHttpServer())
+        .get('/prueba/con-sesion')
+        .set({ Authorization: 'Bearer token-admin extra' })
+        .expect(401);
+    });
+
+    it('tolera espacios de más entre el esquema y el token', async () => {
+      await request(app.getHttpServer())
+        .get('/prueba/con-sesion')
+        .set({ Authorization: '  Bearer   token-admin  ' })
+        .expect(200);
+    });
+
     it('devuelve el mismo mensaje falte el token o sea inválido', async () => {
       // Distinguirlos le diría a quien tantea si va por buen camino.
       const sinToken = await request(app.getHttpServer()).get('/prueba/con-sesion').expect(401);
@@ -208,6 +285,55 @@ describe('US-003 · Control de acceso (e2e)', () => {
         .get('/prueba/admin-o-evaluador')
         .set(con('token-estudiante'))
         .expect(403);
+    });
+  });
+
+  describe('@Roles a nivel de clase', () => {
+    it('la restricción de la clase se aplica a un método que no la declara', async () => {
+      await request(app.getHttpServer()).get('/panel/heredada').set(con('token-admin')).expect(200);
+
+      await request(app.getHttpServer())
+        .get('/panel/heredada')
+        .set(con('token-evaluador'))
+        .expect(403);
+    });
+
+    it('el decorador del método gana al de la clase', async () => {
+      await request(app.getHttpServer())
+        .get('/panel/relajada')
+        .set(con('token-evaluador'))
+        .expect(200);
+
+      // Y el administrador, que sí pasaba por la clase, ahora NO pasa: lo más específico
+      // gana en los dos sentidos. Es la consecuencia de `getAllAndOverride` y conviene
+      // tenerla escrita, porque es exactamente donde se cometen errores de permisos.
+      await request(app.getHttpServer()).get('/panel/relajada').set(con('token-admin')).expect(403);
+    });
+
+    it('la clase restringida sigue exigiendo sesión antes que rol', async () => {
+      await request(app.getHttpServer()).get('/panel/heredada').expect(401);
+    });
+  });
+
+  describe('el rol PUBLICO (criterio 1 de US-003)', () => {
+    it('los cuatro roles del criterio de aceptación existen en el dominio', () => {
+      // Señalado por Stuard en la revisión del PR #4: el criterio lista cuatro roles y el
+      // enum declaraba tres.
+      expect(Object.values(RolUsuario).sort()).toEqual([
+        'ADMINISTRADOR',
+        'ESTUDIANTE',
+        'EVALUADOR',
+        'PUBLICO',
+      ]);
+    });
+
+    it('un token que se declare PUBLICO no abre una ruta con sesión', async () => {
+      // PUBLICO representa la ausencia de sesión. Si algún día un token llegara con ese rol
+      // —por un error de emisión o por manipulación—, no debe valer como sesión iniciada.
+      await request(app.getHttpServer())
+        .get('/prueba/solo-admin')
+        .set(con('token-publico'))
+        .expect(401);
     });
   });
 });
