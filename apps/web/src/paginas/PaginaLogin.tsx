@@ -10,7 +10,7 @@
  * En móvil las columnas se apilan y la lista de garantías se oculta: ahí lo
  * único que importa es entrar.
  *
- * ALCANCE (Sprint 1): solo el inicio de sesión. Los enlaces a "crear cuenta"
+ * ALCANCE: solo el inicio de sesión. Los enlaces a "crear cuenta"
  * (US-001) y "olvidé mi contraseña" (US-005) aparecerán en el Sprint 2, cuando
  * esas historias existan. No se ponen enlaces que no llevan a ningún lado.
  */
@@ -30,16 +30,24 @@ export function PaginaLogin(): ReactElement {
   const navegar = useNavigate();
   const ubicacion = useLocation();
 
-  const destino = (ubicacion.state as EstadoNavegacion | null)?.destino ?? '/convocatorias';
+  const destinoPedido = (ubicacion.state as EstadoNavegacion | null)?.destino;
+
+  // Si venía de una ruta concreta, se le devuelve ahí. Si no, el administrador va a su panel y
+  // cualquier otro rol al listado: entrar al sistema para aterrizar en una página que ya podía
+  // ver sin cuenta no le sirve de nada al administrador.
+  function destinoPara(rol: string): string {
+    if (destinoPedido !== undefined) return destinoPedido;
+    return rol === 'ADMINISTRADOR' ? '/gestion' : '/convocatorias';
+  }
 
   // Si ya hay sesión no tiene sentido mostrar el formulario. Va en un efecto y
   // no en el cuerpo del componente porque navegar es un efecto secundario, y
   // hacerlo durante el render es un error en React.
   useEffect(() => {
     if (sesion !== null) {
-      navegar(destino, { replace: true });
+      navegar(destinoPara(sesion.usuario.rol), { replace: true });
     }
-  }, [sesion, destino, navegar]);
+  }, [sesion, destinoPedido, navegar]);
 
   return (
     <div className="acceso">
@@ -98,7 +106,7 @@ export function PaginaLogin(): ReactElement {
         <FormularioLogin
           onSesionIniciada={(nueva) => {
             iniciar(nueva);
-            navegar(destino, { replace: true });
+            navegar(destinoPara(nueva.usuario.rol), { replace: true });
           }}
         />
       </section>
