@@ -132,4 +132,95 @@ describe('AutenticarUsuarioService', () => {
     await expect(servicio.ejecutar('a', 'correcta')).rejects.toThrow(/entre 3 y 30 caracteres/);
     expect(hasher.llamadas).toBe(0);
   });
+
+  describe('bloqueo tras 5 intentos fallidos (US-002, criterio 3)', () => {
+    const AHORA = new Date('2026-09-12T15:00:00.000Z');
+    const minutos = (m: number) => new Date(AHORA.getTime() + m * 60 * 1000);
+
+    async function fallarVeces(servicio: AutenticarUsuarioService, veces: number, cuando = AHORA) {
+      for (let i = 0; i < veces; i++) {
+        await expect(servicio.ejecutar('admin', 'incorrecta', cuando)).rejects.toThrow(
+          AutenticacionFallidaError,
+        );
+      }
+    }
+
+    it('tras 5 intentos fallidos rechaza incluso la contraseña CORRECTA', async () => {
+      // Esta es la prueba que demuestra que el bloqueo protege algo. Si la contraseña correcta
+      // entrara durante el bloqueo, un atacante seguiría probando y sabría cuándo acertó.
+      const servicio = crearServicio([crearUsuario()]);
+
+      await fallarVeces(servicio, 5);
+
+      await expect(servicio.ejecutar('admin', 'correcta', minutos(1))).rejects.toThrow(
+        AutenticacionFallidaError,
+      );
+    });
+
+    it('con 4 intentos fallidos la contraseña correcta todavía entra', async () => {
+      const servicio = crearServicio([crearUsuario()]);
+
+      await fallarVeces(servicio, 4);
+
+      await expect(servicio.ejecutar('admin', 'correcta', AHORA)).resolves.toHaveProperty('token');
+    });
+
+    it('pasados 15 minutos la cuenta se desbloquea sola', async () => {
+      const servicio = crearServicio([crearUsuario()]);
+
+      await fallarVeces(servicio, 5);
+
+      await expect(servicio.ejecutar('admin', 'correcta', minutos(14))).rejects.toThrow();
+      await expect(servicio.ejecutar('admin', 'correcta', minutos(15))).resolves.toHaveProperty(
+        'token',
+      );
+    });
+
+    it('los intentos deben ser CONSECUTIVOS: un acceso correcto reinicia la cuenta', async () => {
+      const servicio = crearServicio([crearUsuario()]);
+
+      await fallarVeces(servicio, 4);
+      await servicio.ejecutar('admin', 'correcta', AHORA);
+      await fallarVeces(servicio, 4);
+
+      // 8 fallos en total, pero nunca 5 seguidos: la cuenta sigue abierta.
+      await expect(servicio.ejecutar('admin', 'correcta', AHORA)).resolves.toHaveProperty('token');
+    });
+
+    it('durante el bloqueo NO se verifica la contraseña real', async () => {
+      const servicio = crearServicio([crearUsuario()]);
+      await fallarVeces(servicio, 5);
+      const verificarReal = jest.spyOn(hasher, 'verificar');
+
+      await expect(servicio.ejecutar('admin', 'correcta', minutos(1))).rejects.toThrow();
+
+      // Se llama UNA vez, pero contra el hash señuelo, no contra el hash del usuario: gasta el
+      // mismo tiempo que un intento normal sin darle al atacante un oráculo.
+      expect(verificarReal).toHaveBeenCalledTimes(1);
+      expect(verificarReal.mock.calls[0][1]).not.toBe(HASH_CORRECTO);
+    });
+
+    it('bloqueado o no, el error es el mismo tipo que una contraseña incorrecta', async () => {
+      // El filtro de excepciones convierte cualquier AutenticacionFallidaError en el mismo
+      // mensaje genérico. Así una cuenta bloqueada no se distingue de una clave mal escrita.
+      const servicio = crearServicio([crearUsuario()]);
+      await fallarVeces(servicio, 5);
+
+      const error = await servicio.ejecutar('admin', 'correcta', minutos(1)).catch((e) => e);
+
+      expect(error).toBeInstanceOf(AutenticacionFallidaError);
+    });
+
+    it('un acceso correcto sin intentos previos no escribe en el repositorio', async () => {
+      // Evita una escritura a la base en CADA inicio de sesión normal.
+      const repositorio = new UsuarioEnMemoriaRepositorio([crearUsuario()]);
+      const escribir = jest.spyOn(repositorio, 'actualizarEstadoDeAcceso');
+      hasher = new HasherFalso();
+      const servicio = new AutenticarUsuarioService(repositorio, hasher, new GeneradorTokenFalso());
+
+      await servicio.ejecutar('admin', 'correcta', AHORA);
+
+      expect(escribir).not.toHaveBeenCalled();
+    });
+  });
 });
