@@ -1,0 +1,448 @@
+/* Estilos del walking skeleton.
+   Paleta institucional: azul de ministerio con el celeste de la bandera de Guatemala.
+   El diseño definitivo se aborda en sprints posteriores; aquí se busca que sea legible,
+   que funcione desde 360 px (NFR de usabilidad) y que distinga los tipos de beca. */
+
+:root {
+  /* Neutros */
+  --tinta: #10212f;
+  --tinta-suave: #566a7c;
+  --fondo: #f2f6fa;
+  --superficie: #ffffff;
+  --borde: #dae3ec;
+
+  /* Azules institucionales */
+  --azul-profundo: #0a3558;
+  --azul: #10609c;
+  --azul-claro: #e6f1fa;
+  --celeste: #4ea6dd;
+
+  /* Semánticos */
+  --exito: #12805a;
+  --exito-claro: #e3f5ee;
+  --error: #c0392b;
+  --error-claro: #fdecea;
+
+  /* Tipos de beca */
+  --medio: #0d7f75;
+  --medio-claro: #e2f4f2;
+  --universitaria: #10609c;
+  --universitaria-claro: #e6f1fa;
+  --posgrado: #6b3fa0;
+  --posgrado-claro: #f0eafa;
+
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--tinta);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  line-height: 1.55;
+}
+
+.contenedor {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+.etiqueta {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--celeste);
+}
+
+h1 {
+  margin: 0.2rem 0 0.5rem;
+  font-size: clamp(1.5rem, 4vw, 2.125rem);
+  line-height: 1.15;
+  color: var(--azul-profundo);
+  letter-spacing: -0.015em;
+}
+
+h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 2.25rem 0 1rem;
+  font-size: 1.05rem;
+  color: var(--azul-profundo);
+}
+
+/* Barrita celeste antes de cada título de sección. */
+h2::before {
+  content: '';
+  width: 0.25rem;
+  height: 1.1em;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--celeste), var(--azul));
+}
+
+h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--azul-profundo);
+}
+
+.subtitulo {
+  margin: 0;
+  max-width: 42rem;
+  color: var(--tinta-suave);
+  font-size: 0.9rem;
+}
+
+.atenuado {
+  color: var(--tinta-suave);
+  font-size: 0.875rem;
+}
+
+.error {
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.4rem;
+  background: var(--error-claro);
+  border-left: 3px solid var(--error);
+  color: var(--error);
+  font-size: 0.875rem;
+}
+
+/* ── Estado de la API ────────────────────────────────────────────────────── */
+
+.salud {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: var(--exito-claro);
+  color: var(--exito);
+  font-size: 0.875rem;
+}
+
+.punto {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--exito);
+  flex: none;
+  box-shadow: 0 0 0 0.2rem rgb(18 128 90 / 18%);
+}
+
+/* ── Tarjetas de convocatoria ────────────────────────────────────────────── */
+
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.875rem;
+}
+
+.tarjeta {
+  position: relative;
+  overflow: hidden;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: 0.6rem;
+  padding: 1.1rem 1.25rem;
+  box-shadow: 0 1px 2px rgb(16 33 47 / 4%);
+  transition:
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.tarjeta:hover {
+  box-shadow: 0 4px 14px rgb(16 33 47 / 9%);
+  transform: translateY(-1px);
+}
+
+/* Franja de color a la izquierda, distinta por tipo de beca. */
+.tarjeta::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0.28rem;
+  background: var(--universitaria);
+}
+
+.tarjeta-nivel_medio::before {
+  background: var(--medio);
+}
+.tarjeta-universitaria::before {
+  background: var(--universitaria);
+}
+.tarjeta-posgrado::before {
+  background: var(--posgrado);
+}
+
+.tarjeta-encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.insignia {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--universitaria);
+  background: var(--universitaria-claro);
+  border-radius: 999px;
+  padding: 0.18rem 0.6rem;
+  white-space: nowrap;
+}
+
+.insignia-nivel_medio {
+  color: var(--medio);
+  background: var(--medio-claro);
+}
+.insignia-universitaria {
+  color: var(--universitaria);
+  background: var(--universitaria-claro);
+}
+.insignia-posgrado {
+  color: var(--posgrado);
+  background: var(--posgrado-claro);
+}
+
+.descripcion {
+  margin: 0.5rem 0 1rem;
+  color: var(--tinta-suave);
+  font-size: 0.9rem;
+}
+
+.datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.75rem;
+  margin: 0;
+  padding-top: 0.875rem;
+  border-top: 1px solid var(--borde);
+}
+
+.datos div {
+  margin: 0;
+}
+
+.datos dt {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+.datos dd {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--azul-profundo);
+  font-variant-numeric: tabular-nums;
+}
+
+footer {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--borde);
+  font-size: 0.8rem;
+}
+
+code {
+  background: var(--azul-claro);
+  color: var(--azul);
+  border-radius: 0.25rem;
+  padding: 0.08rem 0.35rem;
+  font-size: 0.85em;
+}
+
+/* ── Formulario de acceso (US-002) ───────────────────────────────────────── */
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 23rem;
+  padding: 1.5rem;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 28px rgb(10 53 88 / 10%);
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.campo label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--azul-profundo);
+}
+
+.campo input {
+  padding: 0.6rem 0.75rem;
+  font: inherit;
+  color: var(--tinta);
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: 0.4rem;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.campo input:focus {
+  outline: none;
+  border-color: var(--celeste);
+  background: var(--superficie);
+  box-shadow: 0 0 0 3px rgb(78 166 221 / 25%);
+}
+
+button {
+  padding: 0.65rem 1.1rem;
+  font: inherit;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--azul), var(--azul-profundo));
+  border: 1px solid transparent;
+  border-radius: 0.4rem;
+  transition:
+    filter 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+button:hover:not(:disabled) {
+  filter: brightness(1.12);
+  box-shadow: 0 3px 10px rgb(10 53 88 / 25%);
+}
+
+button:disabled {
+  cursor: progress;
+  opacity: 0.65;
+}
+
+button.secundario {
+  color: var(--azul);
+  background: var(--superficie);
+  border-color: var(--borde);
+}
+
+button.secundario:hover:not(:disabled) {
+  filter: none;
+  border-color: var(--celeste);
+  background: var(--azul-claro);
+  box-shadow: none;
+}
+
+/* ── Página de login ─────────────────────────────────────────────────────── */
+
+.contenedor-centrado {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  /* Fondo con un degradado suave hacia el celeste institucional. */
+  background:
+    radial-gradient(60rem 30rem at 50% -10%, rgb(78 166 221 / 18%), transparent 70%), var(--fondo);
+}
+
+.encabezado-login h1 {
+  margin-bottom: 0.35rem;
+}
+
+.contenedor-centrado .formulario {
+  text-align: left;
+}
+
+/* ── Barra superior de las páginas con sesión ────────────────────────────── */
+
+.barra-superior {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding-bottom: 1.25rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 2px solid transparent;
+  border-image: linear-gradient(90deg, var(--celeste), var(--azul), transparent) 1;
+}
+
+.barra-superior h1 {
+  margin: 0;
+}
+
+.usuario-actual {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.5rem 0.5rem 0.5rem 0.9rem;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  font-size: 0.9rem;
+}
+
+.usuario-actual button {
+  padding: 0.35rem 0.8rem;
+  font-size: 0.82rem;
+  border-radius: 999px;
+}
+
+.sesion {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-left: 3px solid var(--exito);
+  border-radius: 0.5rem;
+}
+
+.sesion .insignia {
+  margin-left: 0.5rem;
+}
+
+/* En móvil la barra se apila: el NFR exige que sea usable desde 360 px. */
+@media (max-width: 480px) {
+  .barra-superior {
+    flex-direction: column;
+  }
+
+  .contenedor-centrado {
+    justify-content: flex-start;
+    padding-top: 2.5rem;
+  }
+
+  .datos {
+    gap: 1.1rem;
+  }
+}
