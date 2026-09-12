@@ -139,12 +139,25 @@ Base local: `http://localhost:3000`
 | `GET`  | `/convocatorias`  | Público  | Lista las convocatorias publicadas y vigentes |
 | `GET`  | `/health`         | Público  | *Liveness*: ¿vive el proceso?               |
 | `GET`  | `/ready`          | Público  | *Readiness*: ¿responde PostgreSQL?          |
+| `GET`  | `/convocatorias/gestion` | **ADMINISTRADOR** | Todas, incluidos borradores |
+| `GET`  | `/convocatorias/catalogo` | **ADMINISTRADOR** | Requisitos, documentos y valores por defecto de cada tipo |
+| `POST` | `/convocatorias`  | **ADMINISTRADOR** | Crea una convocatoria en BORRADOR (US-006) |
+| `POST` | `/convocatorias/:id/publicar` | **ADMINISTRADOR** | La publica (US-007) |
 
-> **Las cuatro son públicas y eso es deliberado**, no un olvido. El guard de autenticación es
-> **global y seguro por defecto**: toda ruta exige sesión salvo que se marque con `@Publico()`.
-> Cada una de estas cuatro tiene su justificación escrita: el login es donde se *obtiene* la
-> sesión, el listado lo exige US-008 para visitantes sin cuenta, y los dos diagnósticos los
-> consume el monitoreo.
+> **Las públicas lo son deliberadamente**, no por olvido. El guard de autenticación es **global y
+> seguro por defecto**: toda ruta exige sesión salvo que se marque con `@Publico()`. Cada una de
+> las cuatro públicas tiene su justificación escrita: el login es donde se *obtiene* la sesión, el
+> listado lo exige US-008 para visitantes sin cuenta, y los dos diagnósticos los consume el
+> monitoreo.
+
+**Códigos de error de las rutas de gestión**, que salen del filtro de excepciones del dominio:
+
+| Código | Cuándo |
+|---|---|
+| 400 | Datos con forma inválida: tipo inexistente, requisito fuera del catálogo, id que no es UUID, o un campo no permitido como `estado` |
+| 404 | La convocatoria no existe |
+| 409 | Transición inválida: publicar algo que no está en BORRADOR |
+| 422 | Regla de negocio: cierre anterior a la apertura, posgrado con más de 50 cupos, publicar sin requisitos |
 
 ### 4.2 `POST /auth/login`
 

@@ -14,7 +14,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { Convocatoria } from '../../domain/entities/convocatoria.entity';
 import { EstadoConvocatoria } from '../../domain/enums/estado-convocatoria.enum';
+import { Requisito } from '../../domain/enums/requisito.enum';
 import { TipoBeca } from '../../domain/enums/tipo-beca.enum';
+import { TipoDocumento } from '../../domain/enums/tipo-documento.enum';
 import { CONVOCATORIA_REPOSITORIO } from '../../domain/ports/convocatoria.repositorio';
 import { PeriodoPostulacion } from '../../domain/value-objects/periodo-postulacion.vo';
 import { ConvocatoriaEnMemoriaRepositorio } from '../../infrastructure/persistence/convocatoria-en-memoria.repositorio';
@@ -37,6 +39,8 @@ function convocatoria(
     estado,
     cupos: 100,
     periodo: PeriodoPostulacion.crear(new Date(apertura), new Date(cierre)),
+    requisitos: [Requisito.PROMEDIO_MINIMO_75],
+    documentosExigidos: [TipoDocumento.DPI],
   });
 }
 
@@ -128,10 +132,12 @@ describe('ListarConvocatoriasPublicadasService', () => {
       'codigo',
       'cupos',
       'descripcion',
+      'documentosExigidos',
       'estado',
       'fechaApertura',
       'fechaCierre',
       'id',
+      'requisitos',
       'tipo',
       'titulo',
     ]);

@@ -13,6 +13,15 @@
  * Sí, es código de traducción. docs/05-arquitectura.md §2.2 lo declara como trade-off
  * aceptado a cambio de la independencia del dominio.
  */
+/**
+ * Un elemento de catálogo tal como lo necesita quien lo muestra: el código estable, para
+ * guardarlo y compararlo, y la descripción legible, para enseñarlo.
+ */
+export interface ElementoCatalogoDto {
+  readonly codigo: string;
+  readonly descripcion: string;
+}
+
 export interface ConvocatoriaListadaDto {
   readonly id: string;
   readonly codigo: string;
@@ -23,4 +32,7 @@ export interface ConvocatoriaListadaDto {
   readonly cupos: number;
   readonly fechaApertura: string;
   readonly fechaCierre: string;
+  /** US-008: el visitante ve los requisitos antes de decidir si postula. */
+  readonly requisitos: readonly ElementoCatalogoDto[];
+  readonly documentosExigidos: readonly ElementoCatalogoDto[];
 }

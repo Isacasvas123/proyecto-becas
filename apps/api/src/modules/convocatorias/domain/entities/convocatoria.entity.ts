@@ -16,16 +16,24 @@
  *   hará— el cambio entra aquí y en application/. Ni los controladores ni la base de
  *   datos se tocan, y las pruebas del dominio siguen corriendo sin levantar Postgres.
  *
- * ALCANCE (Sprint 1 · US-S1-08)
- *   El esqueleto solo necesita LEER convocatorias, así que aquí solo hay lo mínimo para
- *   representarlas y decidir si son visibles al público. La funcionalidad completa
- *   —crear, publicar, cerrar, editar— corresponde al SPRINT 3 (US-006 a US-010), junto
- *   con el `ConvocatoriaFactory` (Factory Method, docs/06-patrones.md §1).
- *   NO la implementen aquí antes de tiempo: esa es la historia de otro sprint.
+ * ALCANCE
+ *   Sprint 1: leer convocatorias y decidir si son visibles al público (US-008).
+ *   Sprint 3: requisitos y documentos exigidos (US-006) y la transición a PUBLICADA
+ *   (US-007). Cerrar (US-009) y editar un borrador (US-010) quedan para después.
+ *
+ * CÓMO SE CREA UNA CONVOCATORIA NUEVA
+ *   No con `nuevaEnBorrador` directamente, sino a través de `ConvocatoriaFactory`
+ *   (domain/factories/). Cada tipo de beca trae sus propios requisitos, documentos y reglas
+ *   de cupos, y la fábrica concreta es la que los conoce. Ver docs/06-patrones.md §1.
  */
-import { ReglaDeNegocioError } from '../../../../shared/exceptions/errores-dominio';
+import {
+  ReglaDeNegocioError,
+  TransicionInvalidaError,
+} from '../../../../shared/exceptions/errores-dominio';
 import { EstadoConvocatoria } from '../enums/estado-convocatoria.enum';
+import { Requisito } from '../enums/requisito.enum';
 import { TipoBeca } from '../enums/tipo-beca.enum';
+import { TipoDocumento } from '../enums/tipo-documento.enum';
 import { PeriodoPostulacion } from '../value-objects/periodo-postulacion.vo';
 
 /** Datos necesarios para reconstruir una convocatoria ya existente. */
@@ -38,6 +46,8 @@ export interface AtributosConvocatoria {
   readonly estado: EstadoConvocatoria;
   readonly cupos: number;
   readonly periodo: PeriodoPostulacion;
+  readonly requisitos: readonly Requisito[];
+  readonly documentosExigidos: readonly TipoDocumento[];
 }
 
 export class Convocatoria {
@@ -50,39 +60,46 @@ export class Convocatoria {
     private _estado: EstadoConvocatoria,
     public readonly cupos: number,
     public readonly periodo: PeriodoPostulacion,
+    public readonly requisitos: readonly Requisito[],
+    public readonly documentosExigidos: readonly TipoDocumento[],
   ) {}
 
   /**
    * Reconstituye una convocatoria que YA EXISTE (viene de la base de datos).
    *
-   * Se llama desde el mapper de infrastructure/. Es distinta de la creación de una
-   * convocatoria NUEVA, que en el Sprint 3 pasará por `ConvocatoriaFactory` porque cada
-   * tipo de beca trae reglas propias (Factory Method, docs/06-patrones.md §1).
-   *
    * Aun reconstituyendo, se validan las invariantes: si la base de datos tiene un dato
    * corrupto queremos enterarnos aquí y no tres capas más arriba.
    */
   static reconstituir(atributos: AtributosConvocatoria): Convocatoria {
-    if (atributos.codigo.trim().length === 0) {
-      throw new ReglaDeNegocioError('La convocatoria debe tener un código.');
-    }
-    if (atributos.titulo.trim().length === 0) {
-      throw new ReglaDeNegocioError('La convocatoria debe tener un título.');
-    }
-    if (!Number.isInteger(atributos.cupos) || atributos.cupos <= 0) {
-      throw new ReglaDeNegocioError('El número de cupos debe ser un entero mayor que cero.');
-    }
+    Convocatoria.validarInvariantes(atributos);
 
     return new Convocatoria(
       atributos.id,
       atributos.codigo,
-      atributos.titulo,
-      atributos.descripcion,
+      atributos.titulo.trim(),
+      atributos.descripcion.trim(),
       atributos.tipo,
       atributos.estado,
       atributos.cupos,
       atributos.periodo,
+      // Copias congeladas: quien tenga la entidad no puede hacer `requisitos.push(...)` y
+      // cambiarle las reglas a una convocatoria ya publicada por la puerta de atrás.
+      Object.freeze(Convocatoria.sinRepetidos(atributos.requisitos)),
+      Object.freeze(Convocatoria.sinRepetidos(atributos.documentosExigidos)),
     );
+  }
+
+  /**
+   * Crea una convocatoria NUEVA, siempre en `BORRADOR` (US-006, criterio 4).
+   *
+   * El estado no es un parámetro: una convocatoria no puede nacer publicada. Para ser visible
+   * tiene que pasar por `publicar()`, que es donde se verifican los requisitos (US-007).
+   *
+   * Quien debe llamar a este método es `ConvocatoriaFactory`. TypeScript no permite
+   * restringirlo solo a la fábrica, así que la regla se hace cumplir en el code review.
+   */
+  static nuevaEnBorrador(atributos: Omit<AtributosConvocatoria, 'estado'>): Convocatoria {
+    return Convocatoria.reconstituir({ ...atributos, estado: EstadoConvocatoria.BORRADOR });
   }
 
   get estado(): EstadoConvocatoria {
@@ -90,7 +107,7 @@ export class Convocatoria {
   }
 
   /**
-   * REGLA DE NEGOCIO CENTRAL DEL ESQUELETO (US-008).
+   * REGLA DE NEGOCIO CENTRAL DEL LISTADO PÚBLICO (US-008).
    *
    * Una convocatoria es visible para un visitante sin cuenta solo si está PUBLICADA y su
    * fecha de cierre no ha pasado.
@@ -111,10 +128,63 @@ export class Convocatoria {
     return this._estado === EstadoConvocatoria.PUBLICADA && this.periodo.contiene(ahora);
   }
 
-  // ────────────────────────────────────────────────────────────────────────────
-  // SPRINT 3 — US-007 `publicar()`, US-009 `cerrar()`, US-010 `editarBorrador()`.
-  // Aquí van los cambios de estado, cada uno validando que la transición sea legal
-  // y lanzando `TransicionInvalidaError` cuando no lo sea.
-  // Deliberadamente NO implementados en el walking skeleton.
-  // ────────────────────────────────────────────────────────────────────────────
+  /**
+   * US-007, criterio 3: *"Una convocatoria publicada ya no permite editar sus requisitos ni
+   * sus cupos."*
+   *
+   * La edición en sí es US-010 y no existe todavía. Este método deja la regla escrita y
+   * probada desde ya, para que la edición, cuando llegue, solo tenga que preguntarle a la
+   * entidad en vez de reinventar la condición en el servicio.
+   */
+  admiteEdicion(): boolean {
+    return this._estado === EstadoConvocatoria.BORRADOR;
+  }
+
+  /**
+   * US-007 — publicar la convocatoria.
+   *
+   * DOS ERRORES DISTINTOS A PROPÓSITO
+   *   - Publicar algo que no está en BORRADOR es una **transición inválida** del ciclo de vida
+   *     (HTTP 409): el problema es el estado, no los datos.
+   *   - Publicar un borrador sin requisitos o sin documentos es una **regla de negocio**
+   *     incumplida (HTTP 422): el estado es correcto pero el contenido no.
+   *   Separarlos le dice a la interfaz qué tiene que corregir el administrador.
+   */
+  publicar(): void {
+    if (this._estado !== EstadoConvocatoria.BORRADOR) {
+      throw new TransicionInvalidaError(
+        `Solo se puede publicar una convocatoria en BORRADOR; esta está ${this._estado}.`,
+      );
+    }
+    if (this.requisitos.length === 0) {
+      throw new ReglaDeNegocioError(
+        'No se puede publicar una convocatoria sin al menos un requisito definido.',
+      );
+    }
+    if (this.documentosExigidos.length === 0) {
+      throw new ReglaDeNegocioError(
+        'No se puede publicar una convocatoria sin al menos un documento exigido.',
+      );
+    }
+
+    this._estado = EstadoConvocatoria.PUBLICADA;
+  }
+
+  private static validarInvariantes(atributos: AtributosConvocatoria): void {
+    if (atributos.codigo.trim().length === 0) {
+      throw new ReglaDeNegocioError('La convocatoria debe tener un código.');
+    }
+    if (atributos.titulo.trim().length === 0) {
+      throw new ReglaDeNegocioError('La convocatoria debe tener un título.');
+    }
+    // US-006, criterio 3.
+    if (!Number.isInteger(atributos.cupos) || atributos.cupos <= 0) {
+      throw new ReglaDeNegocioError('El número de cupos debe ser un entero mayor que cero.');
+    }
+    // US-006, criterio 2 lo garantiza `PeriodoPostulacion.crear`: cierre posterior a apertura.
+  }
+
+  private static sinRepetidos<T>(valores: readonly T[]): T[] {
+    return [...new Set(valores)];
+  }
 }

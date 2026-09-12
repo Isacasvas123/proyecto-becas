@@ -43,8 +43,27 @@ export interface ConvocatoriaRepositorio {
    * `ahora` viaja como parámetro para que el criterio temporal lo fije quien orquesta el
    * caso de uso, y no cada adaptador por su cuenta.
    *
-   * SPRINT 3: aquí se agregarán `guardar()`, `buscarPorId()` y `buscarPorCodigo()`
-   * conforme las necesiten US-006, US-007, US-009 y US-010. Ni antes, ni "por completitud".
    */
   buscarPublicadasVigentes(ahora: Date): Promise<Convocatoria[]>;
+
+  /** Todas, en cualquier estado, para el panel de gestión del administrador. */
+  buscarTodas(): Promise<Convocatoria[]>;
+
+  /** `null` si no existe: decidir si eso es un error le corresponde al caso de uso. */
+  buscarPorId(id: string): Promise<Convocatoria | null>;
+
+  /**
+   * Crea la convocatoria si no existe o actualiza la que ya existe con ese `id`.
+   *
+   * Un solo método y no `crear` + `actualizar` porque para el dominio es la misma operación:
+   * "persiste este estado". Si el servicio tuviera que decidir cuál llamar, estaría
+   * razonando sobre la base de datos.
+   */
+  guardar(convocatoria: Convocatoria): Promise<void>;
+
+  /**
+   * Cuántas convocatorias tienen un código que empieza por `prefijo` (p. ej. `UNIV-2026-`).
+   * Sirve para calcular el siguiente correlativo.
+   */
+  contarConPrefijoDeCodigo(prefijo: string): Promise<number>;
 }
