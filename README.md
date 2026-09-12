@@ -51,6 +51,42 @@ Verificar que funciona:
 curl http://localhost:3000/health
 ```
 
+### Abrir la aplicación
+
+| Dirección | Qué es |
+|---|---|
+| http://localhost:5173 | La aplicación web |
+| http://localhost:3000/convocatorias | La API en crudo (JSON) |
+| http://localhost:8080 | Adminer, para inspeccionar la base de datos |
+
+**Usuario de prueba:** `admin` / `EC321`
+
+Lo crea `npm run db:seed` a partir de las variables `ADMIN_*` de tu `.env`. La contraseña se
+almacena con hash bcrypt; el valor en claro solo existe en tu `.env` local, que nunca se sube.
+
+> ⚠️ Son credenciales **de desarrollo**. Antes de desplegar a Staging hay que definir otras en
+> las variables de entorno del servidor, y el seed no debe ejecutarse contra una base real.
+
+### Rutas de la aplicación
+
+| Ruta | Acceso |
+|---|---|
+| `/login` | Pública |
+| `/convocatorias` | Requiere sesión iniciada |
+
+> **Pendiente conocido:** US-008 exige que el listado de convocatorias sea visible **sin cuenta**
+> ("como visitante..."). Hoy está detrás del login. Se resuelve en el Sprint 3 separando el
+> listado público del panel de administración. Documentado en `PaginaConvocatorias.tsx`.
+
+### Problemas frecuentes al instalar
+
+**Docker Desktop dice "Virtualization support not detected"** (Windows 11 Home): falta WSL.
+Abre una terminal **como administrador**, corre `wsl --install` y **reinicia**. La virtualización
+del BIOS normalmente ya está activada; el problema es que WSL 2 no está instalado.
+
+**`npm run db:seed` falla con `Environment variable not found: DATABASE_URL`**: te falta copiar
+el archivo de entorno. Corre `cp .env.example .env`.
+
 ## Pruebas
 
 ```bash
@@ -112,8 +148,8 @@ Sprints semanales de jueves a miércoles.
 | Viernes | Isaac + Ivan |
 | Sábado | Fernando + Stuard |
 | Domingo | Libre / buffer |
-| Lunes | Isaac + Fernando |
-| Martes | Ivan + Stuard |
+| Lunes | Stuard + Fernando |
+| Martes | Ivan + Isaac |
 | **Miércoles** | Los 4 — cierre asincrónico e integración |
 
 ---

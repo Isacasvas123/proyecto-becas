@@ -27,6 +27,21 @@
 
 ---
 
+## Estado de avance — actualizado el 3 de septiembre de 2026
+
+| Historia | Estado | Nota |
+|---|---|---|
+| **US-002** Inicio de sesión | ✅ **Terminada** — pendiente de aceptación del PO | Adelantada del Sprint 2. Implementada con tres puertos invertidos y 67 pruebas en verde |
+| **US-008** Listado público de convocatorias | ⚠️ **Parcial** | El listado funciona, pero quedó **detrás del login**. La historia exige que un visitante lo vea **sin cuenta**. Debe resolverse en el Sprint 3 separando el listado público del panel de administración |
+| **US-003** Control de acceso por rol | ⚠️ **Parcial** | El rol viaja en el token y el frontend redirige, pero **falta el guard del backend** que valide el token en cada petición. Sin eso no hay seguridad real: la guardia del frontend es solo usabilidad |
+| Resto | ⬜ Pendiente | Según el calendario de sprints |
+
+> **Nota para la Sprint Review.** Ninguna de estas historias puede marcarse como *Completada*
+> ante el Product Owner hasta cumplir los 8 puntos de la Definition of Done, incluido el
+> despliegue en Staging y su verificación. Hoy solo corren en local.
+
+---
+
 ## EPIC-01 · Gestión de cuentas y control de acceso
 
 ### US-001 — Registro de estudiante
@@ -388,10 +403,28 @@ cumple, la historia **no está hecha** y regresa al backlog.
 - [ ] La suite de regresión completa está en verde: no se introdujeron bugs nuevos
 - [ ] El linter pasa sin advertencias
 - [ ] La documentación técnica afectada fue creada o actualizada
-- [ ] La funcionalidad está **desplegada en Staging** y **verificada por el Product Owner**
+- [ ] La funcionalidad está **desplegada en Staging**
+- [ ] El **Proxy Product Owner** (Stuard) verificó los criterios de aceptación y movió la tarjeta
+      a *Done* en el tablero
 
-> **Nota del Scrum Master:** el último punto es el que más se olvida. Sin despliegue en Staging y
-> visto bueno del PO, una historia sigue estando "en progreso" por más terminada que se sienta.
+> **Nota del Scrum Master:** los dos últimos puntos son los que más se olvidan. Sin despliegue en
+> Staging y sin el visto bueno del Proxy PO, una historia sigue estando "en progreso" por más
+> terminada que se sienta.
+
+### La aceptación tiene dos niveles
+
+| Nivel | Quién | Cuándo | Qué significa |
+|---|---|---|---|
+| **Verificación** | Stuard, Proxy PO | Al terminar la historia | Los criterios de aceptación escritos se cumplen. La tarjeta pasa a *Done* |
+| **Aceptación formal** | Ing. Fuentes, PO | En la Sprint Review | La funcionalidad aporta el valor esperado. Se registra en la minuta |
+
+El Proxy Product Owner **solo verifica contra los criterios ya escritos**: no inventa requisitos,
+no cambia prioridades y no aprueba desviaciones de alcance. Si surge una duda que los criterios
+no resuelven, se escala al Product Owner y queda anotada para la Sprint Review.
+
+Que el Product Owner rechace en la Review algo que el Proxy ya había dado por bueno **no es un
+fallo del proceso**: significa que los criterios de aceptación estaban incompletos. En ese caso se
+corrigen los criterios de la historia, no se culpa a nadie, y es material para la Retrospectiva.
 
 ---
 
