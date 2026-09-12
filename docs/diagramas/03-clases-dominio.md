@@ -4,7 +4,7 @@
 | | |
 |---|---|
 | **Responsable** | Fernando (diagramas) · revisado por el equipo |
-| **Fecha** | 5 de septiembre de 2026 · **Versión** 1.0 |
+| **Fecha** | 5 de septiembre de 2026 · **Versión** 1.1 (11 sep: verificado contra el código) |
 
 > Este es el **modelo de dominio**, no el esquema de la base de datos. Se parecen hoy y no tienen
 > por qué seguir pareciéndose: la traducción entre ambos es responsabilidad de los *mappers* de
@@ -55,7 +55,9 @@ classDiagram
         +EstadoConvocatoria estado
         +int cupos
         +PeriodoPostulacion periodo
-        +estaVigente(Date) boolean
+        +reconstituir(Atributos)$ Convocatoria
+        +esVisiblePublicamente(Date) boolean
+        +admiteSolicitudes(Date) boolean
         +publicar() void
         +cerrar() void
         +descontarCupo() void
@@ -286,25 +288,35 @@ válido. Además el compilador impide confundirlo con cualquier otro texto.
 
 | Enum | Valores |
 |---|---|
-| `RolUsuario` | `ESTUDIANTE` · `EVALUADOR` · `ADMINISTRADOR` |
+| `RolUsuario` | `ESTUDIANTE` · `EVALUADOR` · `ADMINISTRADOR` · `PUBLICO` ¹ |
 | `TipoBeca` | `NIVEL_MEDIO` · `UNIVERSITARIA` · `POSGRADO` |
 | `EstadoConvocatoria` | `BORRADOR` · `PUBLICADA` · `CERRADA` |
 | `NombreEstado` | `BORRADOR` · `ENVIADA` · `EN_EVALUACION` · `APROBADA` · `RECHAZADA` · `ADJUDICADA` |
 | `Decision` | `APROBAR` · `RECHAZAR` |
 
+> ¹ **`PUBLICO` no existe en el `schema.prisma`, y es deliberado.** Representa al visitante sin
+> sesión: no hay filas de `Usuario` con ese rol y no debe poder haberlas. Es la única diferencia
+> intencional entre los dos enums.
+>
 > **El dominio declara sus propios enums** en lugar de importar los de Prisma, porque importarlos
 > metería el ORM dentro de `domain/` y rompería la regla de capas. El precio es mantener dos
-> listas sincronizadas; se mitiga con `usuario-prisma.mapper.spec.ts`, que compara ambos
-> conjuntos y falla en CI si divergen.
+> listas sincronizadas; se mitiga con `usuario-prisma.mapper.spec.ts`, que compara los roles
+> **persistibles** contra los de Prisma, exige que `PUBLICO` siga fuera, y falla en CI si
+> aparece un rol nuevo sin que alguien decida si se persiste o no.
 
 ---
 
 ## 6. Estado de implementación
 
+> **Cómo leer esta tabla.** El diagrama de arriba es el **modelo de dominio objetivo**, no una
+> fotografía del código de hoy. Esta sección dice qué parte ya existe, para que nadie tenga que
+> adivinarlo comparando a mano. Verificado contra el código por Fernando en la revisión del
+> Sprint 1.
+
 | Clase | Módulo | Estado |
 |---|---|---|
-| `Usuario` | usuarios | 🟢 Implementada y probada |
-| `Convocatoria` | convocatorias | 🟢 Implementada y probada |
+| `Usuario` | usuarios | 🟢 Implementada y probada — el diagrama coincide miembro por miembro |
+| `Convocatoria` | convocatorias | 🟡 Implementada parcialmente — ver la nota ² |
 | `Estudiante` | estudiantes | 🔴 Sprint 4 |
 | `Solicitud` + jerarquía de estados | solicitudes | 🔴 Sprint 4 |
 | `Documento` | solicitudes | 🔴 Sprint 4 |
@@ -312,3 +324,23 @@ válido. Además el compilador impide confundirlo con cualquier otro texto.
 | `Comite` | evaluaciones | 🔴 Sprint 5 |
 | `Beca` | solicitudes | 🔴 Sprint 6 |
 | `HistorialEstado` | solicitudes | 🔴 Sprint 4 |
+
+### ² Nota sobre `Convocatoria`
+
+Sus atributos y sus dos consultas de negocio existen y están probados. Lo que el diagrama dibuja
+y **el código todavía no tiene** son los tres métodos que mutan el estado:
+
+| Miembro del diagrama | En el código | Cuándo |
+|---|---|---|
+| `reconstituir(Atributos)$` | ✅ Existe (fábrica estática) | Sprint 1 |
+| `esVisiblePublicamente(Date)` | ✅ Existe y probado | Sprint 1 |
+| `admiteSolicitudes(Date)` | ✅ Existe y probado | Sprint 1 |
+| `publicar()` | ❌ No existe | Sprint 3 · US-007 |
+| `cerrar()` | ❌ No existe | Sprint 3 · US-009 |
+| `descontarCupo()` | ❌ No existe | Sprint 6 · US-024 |
+
+> La versión 1.0 de este diagrama declaraba un método `estaVigente(Date)` que **nunca existió**.
+> En el código esa idea quedó separada en dos consultas distintas a propósito —una convocatoria
+> puede ser visible al público y ya no admitir solicitudes— y el diagrama no lo reflejaba. La
+> confusión de un solo método que responde dos preguntas es justo el tipo de cosa que un diagrama
+> desalineado esconde, y es la razón por la que se verifica contra el código y no al revés.

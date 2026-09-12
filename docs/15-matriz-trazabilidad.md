@@ -53,7 +53,7 @@ Los nueve objetivos específicos del proyecto, y dónde se resuelve cada uno.
 
 | Requisito | Dónde se resuelve | Estado |
 |---|---|---|
-| Control de acceso por rol | `usuarios` · US-002, US-003 | 🟡 Login sí, guard de backend no |
+| Control de acceso por rol | `usuarios` · US-002, US-003 | 🟢 Guard global *seguro por defecto*, 4 roles, 403 verificado con pruebas e2e |
 | Trazabilidad del proceso | `solicitudes` · US-016, historial de estados | 🔴 Sprint 4 |
 | Transparencia | Consulta pública sin autenticación · US-025 | 🔴 Sprint 6 |
 
