@@ -71,6 +71,19 @@ export class ListarConvocatoriasPublicadasService {
       );
     }
 
-    return visibles.map(aConvocatoriaListadaDto);
+    // Mismo criterio que el filtro de arriba, por la misma razón. El orden por cierre más
+    // próximo es parte del CONTRATO del caso de uso —el estudiante debe ver primero lo que
+    // se le vence antes—, así que lo garantiza el caso de uso. Que los dos adaptadores
+    // actuales ya ordenen (`ORDER BY fechaCierre` en Prisma, `.sort()` en el de memoria) es
+    // una optimización suya, no la garantía: un tercer adaptador que no ordenara rompería
+    // el contrato sin que ninguna prueba del servicio lo notara.
+    //
+    // Señalado por Fernando en la revisión del PR #1: la prueba de ordenamiento estaba
+    // verificando el doble de prueba, no el servicio.
+    const ordenadas = [...visibles].sort(
+      (a, b) => a.periodo.cierre.getTime() - b.periodo.cierre.getTime(),
+    );
+
+    return ordenadas.map(aConvocatoriaListadaDto);
   }
 }
