@@ -133,11 +133,11 @@ si lo dice el equipo, es control del proyecto.
 | 6 | Fernando (PR #1) | La rama del `logger.warn` se recorría pero nunca se comprobaba | ✅ Corregido |
 | 7 | Fernando (PR #4) | El esquema `bearer` en minúscula se rechazaba con 401, y el RFC 7235 §2.1 lo define *case-insensitive* | ✅ Corregido |
 | 8 | Fernando (PR #4) | Con dos cabeceras `Authorization`, el rechazo ocurría por accidente y no por decisión | ✅ Corregido |
-| 9 | Fernando (Anexo 5) | El diagrama de clases declaraba un método `estaVigente(Date)` que **nunca existió** en el código | ✅ Corregido |
-| 10 | Fernando (Anexo 5) | El módulo `salud` y el puerto `VerificadorToken` faltaban en el diagrama de componentes y en `06-patrones.md` | ✅ Corregido |
+| 9 | Isaac (verificando el Anexo 5) | El diagrama de clases declaraba un método `estaVigente(Date)` que **nunca existió** en el código | ✅ Corregido |
+| 10 | Isaac (verificando el Anexo 5) | El módulo `salud` y el puerto `VerificadorToken` faltaban en el diagrama de componentes y en `06-patrones.md` | ✅ Corregido |
 
-> **Esto es lo que valió la pena del code review.** Siete de los diez defectos de este sprint no
-> los encontró quien escribió el código, sino quien lo revisó. Ninguno era de estilo: dos eran
+> **Esto es lo que valió la pena del code review.** Cuatro de los diez defectos de este sprint los
+> encontró Fernando revisando y uno Stuard; ninguno de esos cinco lo vio quien escribió el código. Ninguno era de estilo: dos eran
 > criterios de aceptación incumplidos y tres eran pruebas que pasaban sin probar lo que decían.
 
 ---
