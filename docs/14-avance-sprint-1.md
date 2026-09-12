@@ -90,10 +90,24 @@ si lo dice el equipo, es control del proyecto.
 
 | Pendiente | Estado |
 |---|---|
-| **Ningún Pull Request mergeado** | Todo el trabajo está en ramas. `develop` solo tiene documentación. |
 | **Protección de `main` sin activar** | Requiere GitHub Pro; el Student Pack se aprobó el 2 sep y aún no entran los beneficios. |
-| **Sin despliegue en Staging** | Por eso ninguna historia cumple la Definition of Done completa. |
-| **CI en rojo** | Tres fallos, todos de commits anteriores a que existiera el código. |
+| **Sin despliegue en Staging** | Por eso ninguna historia cumple la Definition of Done completa. Es el bloqueo mayor. |
+| **US-002 no cumple sus criterios** | Falta el bloqueo tras 5 intentos fallidos, diferido al Sprint 2. La historia queda como parcial, no como terminada. |
+| **Dos PRs entraron sin code review** | El #3 y el #5. Ver la nota de abajo. |
+
+> **Los 5 Pull Requests están mergeados a `develop`** (11 de septiembre). `develop` ya tiene el
+> código y la documentación juntos, y el CI corre en verde sobre el proyecto completo.
+>
+> **Y hay que decirlo entero: tres de los cinco entraron sin aprobación de otro integrante.** El
+> #2 lo mergeó Stuard directamente el 9 de septiembre, y el #3 y el #5 se mergearon el 11 sin
+> revisión porque el único revisor posible era su propio autor, y GitHub —con razón— no permite
+> aprobarse a uno mismo. Eso **incumple el punto 3 de nuestra Definition of Done**, y no se
+> presenta como si no hubiera pasado.
+>
+> Causa real: las parejas de turnos quedaron fijas y el reparto de revisores se hizo el mismo día
+> que había que mergear. La mitigación ya está anotada para la Retrospectiva —asignar el revisor
+> al inicio del sprint, no al final— y la propuesta concreta es **activar la protección de rama
+> en cuanto entre GitHub Pro**, para que el proceso no dependa de que nadie se acuerde.
 
 ### Defectos: los tres del esqueleto, más los que encontró el equipo revisando
 
