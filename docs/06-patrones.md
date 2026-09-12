@@ -188,6 +188,7 @@ const reporte = new ReporteBuilder()
 |---|---|---|
 | `usuarios/domain/ports/hasher-password.ts` | `BcryptHasherAdapter` | La biblioteca de hashing (`bcryptjs`) |
 | `usuarios/domain/ports/generador-token.ts` | `JwtGeneradorTokenAdapter` | El formato de sesión (JWT HS256) |
+| `usuarios/domain/ports/verificador-token.ts` | `JwtVerificadorTokenAdapter` | La validación de la sesión, que consume el guard global (US-003) |
 | `usuarios/domain/ports/usuario.repositorio.ts` | `UsuarioPrismaRepositorio` · `UsuarioEnMemoriaRepositorio` | La persistencia |
 
 **Ubicación prevista para el Sprint 4:** puerto en `modules/solicitudes/domain/ports/`,
@@ -231,8 +232,6 @@ se invierte: manda el dominio, no el proveedor.
   criterio "adaptarse al cambio".
 - El mismo patrón se reutiliza para el envío de notificaciones (`NotificacionPort`).
 
-### Esquema
-
 ### Esquema — implementación real del Sprint 1
 
 ```ts
@@ -249,8 +248,9 @@ export class BcryptHasherAdapter implements HasherPassword { /* bcryptjs */ }
 El enlace entre ambos ocurre en un solo punto, `usuarios.module.ts`:
 
 ```ts
-{ provide: HASHER_PASSWORD,  useClass: BcryptHasherAdapter },
-{ provide: GENERADOR_TOKEN,  useClass: JwtGeneradorTokenAdapter },
+{ provide: HASHER_PASSWORD,   useClass: BcryptHasherAdapter },
+{ provide: GENERADOR_TOKEN,   useClass: JwtGeneradorTokenAdapter },
+{ provide: VERIFICADOR_TOKEN, useClass: JwtVerificadorTokenAdapter },
 ```
 
 Migrar a argon2, o cambiar JWT por sesiones en servidor, es cambiar **una línea** de ese archivo.

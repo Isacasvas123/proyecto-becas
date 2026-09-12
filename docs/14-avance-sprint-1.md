@@ -48,7 +48,7 @@ desde 360 px, por la persona que definimos —Ana, aspirante de provincia con un
 | Archivos de código | **64** TypeScript |
 | Módulos del backend | `convocatorias` · `usuarios` · `salud` |
 | Archivos de pruebas | **9** |
-| Pruebas automatizadas | **67, todas en verde** |
+| Pruebas automatizadas | **72 unitarias + 32 de integración, todas en verde** |
 | Commits | 14 |
 | Tarjetas en el tablero | 43 |
 
@@ -95,18 +95,36 @@ si lo dice el equipo, es control del proyecto.
 | **Sin despliegue en Staging** | Por eso ninguna historia cumple la Definition of Done completa. |
 | **CI en rojo** | Tres fallos, todos de commits anteriores a que existiera el código. |
 
-### Tres defectos conocidos y ya documentados
+### Defectos: los tres del esqueleto, más los que encontró el equipo revisando
 
-1. **`/health` responde `ok` aunque PostgreSQL esté caído.** Se hizo así para que la API
-   arrancara sin Docker. Está mal y hay que corregirlo antes de Staging.
-2. **El dominio duplica los enums de Prisma.** Si cambia uno y no el otro, falla en ejecución.
-   Mitigado con una prueba que compara ambos conjuntos.
-3. **US-008 incumplida en parte.** La historia dice que un *visitante* debe ver las convocatorias
-   **sin cuenta**, y hoy quedaron detrás del login. Se resuelve en el Sprint 3 separando el
-   listado público del panel de administración.
+**Cerrados durante el sprint (S1-12):**
 
-> Que el equipo tenga sus propios defectos localizados y con plan de corrección vale más que
-> aparentar que no los hay.
+1. ✅ **`/health` respondía `ok` aunque PostgreSQL estuviera caído.** Separado en dos rutas:
+   `/health` responde si el proceso vive, `/ready` devuelve 503 si la base no responde.
+2. ✅ **El dominio duplicaba los enums de Prisma.** Mitigado con una prueba que los compara y
+   falla en CI si divergen.
+
+**Abierto y diferido con decisión escrita:**
+
+3. 🔴 **US-008 incumplida en parte.** La historia dice que un *visitante* debe ver las
+   convocatorias **sin cuenta**, y hoy quedaron detrás del login. El backend ya expone el
+   listado sin sesión; falta separarlo en el frontend. **Se resuelve en el Sprint 3.**
+
+**Encontrados por el equipo en los code reviews del 9 y 10 de septiembre**, todos corregidos:
+
+| # | Quién lo encontró | Defecto | Estado |
+|---|---|---|---|
+| 4 | Stuard (PR #4) | El criterio 1 de US-003 lista **cuatro** roles y el enum del dominio declaraba tres: faltaba `PUBLICO` | ✅ Corregido |
+| 5 | Fernando (PR #1) | La prueba de ordenamiento verificaba el **doble de prueba**, no el servicio: el repositorio en memoria ya ordenaba solo | ✅ Corregido |
+| 6 | Fernando (PR #1) | La rama del `logger.warn` se recorría pero nunca se comprobaba | ✅ Corregido |
+| 7 | Fernando (PR #4) | El esquema `bearer` en minúscula se rechazaba con 401, y el RFC 7235 §2.1 lo define *case-insensitive* | ✅ Corregido |
+| 8 | Fernando (PR #4) | Con dos cabeceras `Authorization`, el rechazo ocurría por accidente y no por decisión | ✅ Corregido |
+| 9 | Fernando (Anexo 5) | El diagrama de clases declaraba un método `estaVigente(Date)` que **nunca existió** en el código | ✅ Corregido |
+| 10 | Fernando (Anexo 5) | El módulo `salud` y el puerto `VerificadorToken` faltaban en el diagrama de componentes y en `06-patrones.md` | ✅ Corregido |
+
+> **Esto es lo que valió la pena del code review.** Siete de los diez defectos de este sprint no
+> los encontró quien escribió el código, sino quien lo revisó. Ninguno era de estilo: dos eran
+> criterios de aceptación incumplidos y tres eran pruebas que pasaban sin probar lo que decían.
 
 ---
 

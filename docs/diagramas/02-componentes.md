@@ -4,7 +4,7 @@
 | | |
 |---|---|
 | **Responsable** | Fernando (diagramas) · revisado por el equipo |
-| **Fecha** | 5 de septiembre de 2026 · **Versión** 1.0 |
+| **Fecha** | 5 de septiembre de 2026 · **Versión** 1.1 (11 sep: verificado contra el código) |
 
 > Este diagrama debe reflejar la arquitectura elegida —monolito modular en capas con puertos y
 > adaptadores— y mostrar **las interfaces**, no solo las cajas. Las flechas indican dependencia:
@@ -76,6 +76,7 @@ flowchart LR
         M4["<b>solicitudes</b> ⬜<br/>expediente y su ciclo"]
         M5["<b>evaluaciones</b> ⬜<br/>comités y dictámenes"]
         M6["<b>reportes</b> ⬜<br/>estadísticas"]
+        M7["<b>salud</b> ✅<br/>liveness y readiness"]
     end
 
     subgraph COMPARTIDO["shared/"]
@@ -118,7 +119,8 @@ ninguna de sus ventajas. Se verifica en cada code review.
 |---|---|---|
 | `POST /auth/login` | WebApp | 🟢 Implementada |
 | `GET /convocatorias` | WebApp | 🟢 Implementada |
-| `GET /health` | Monitoreo · CI | 🟢 Implementada |
+| `GET /health` | Monitoreo · CI | 🟢 Implementada — *liveness*: responde si el proceso vive |
+| `GET /ready` | Monitoreo · CI · Staging | 🟢 Implementada — *readiness*: 503 si PostgreSQL no responde |
 | `POST /solicitudes` | WebApp | 🔴 Sprint 4 |
 | `GET /consulta-publica/{numero}` | WebApp, sin autenticación | 🔴 Sprint 6 |
 
@@ -132,12 +134,13 @@ en `domain/`; cada adaptador la implementa en `infrastructure/`.
 | `UsuarioRepositorio` | `UsuarioPrismaRepositorio`<br/>`UsuarioEnMemoriaRepositorio` | usuarios | 🟢 |
 | `HasherPassword` | `BcryptHasherAdapter` | usuarios | 🟢 |
 | `GeneradorToken` | `JwtGeneradorTokenAdapter` | usuarios | 🟢 |
+| `VerificadorToken` | `JwtVerificadorTokenAdapter` | usuarios | 🟢 — lo consume el guard global (US-003) |
 | `ConvocatoriaRepositorio` | `ConvocatoriaPrismaRepositorio`<br/>`ConvocatoriaEnMemoriaRepositorio` | convocatorias | 🟢 |
 | `AlmacenamientoDocumentosPort` | `AlmacenamientoLocalAdapter`<br/>`AlmacenamientoNubeAdapter` | solicitudes | 🔴 Sprint 4 |
 | `NotificacionPort` | `NotificacionConsolaAdapter`<br/>`NotificacionCorreoAdapter` | solicitudes | 🔴 Sprint 5 |
 
 > **Que cada puerto tenga dos adaptadores no es casualidad.** Uno real y uno de prueba. Es lo que
-> permite que las 67 pruebas corran en segundos sin levantar PostgreSQL, y es la demostración
+> permite que las 72 pruebas unitarias corran en segundos sin levantar PostgreSQL, y es la demostración
 > práctica del principio de sustitución de Liskov.
 
 ---
