@@ -4,7 +4,7 @@
 | | |
 |---|---|
 | **Responsable** | Fernando (diagramas) · revisado por el equipo |
-| **Fecha** | 5 de septiembre de 2026 · **Versión** 1.0 |
+| **Fecha** | 5 de septiembre de 2026 · **Versión** 1.1 (12 sep: detalle de los 13 casos completo) |
 
 > Los diagramas están escritos en **Mermaid dentro de Markdown**, no como imágenes. Así quedan
 > versionados como texto: cada cambio se ve línea por línea en el Pull Request, en lugar de un
@@ -125,9 +125,13 @@ flowchart LR
 
 ## 3. Detalle de los casos de uso
 
-> El enunciado exige el detalle de cada caso de uso. Se documentan aquí los que cubren los nueve
-> objetivos específicos del proyecto. Los casos secundarios siguen esta misma plantilla y sus
-> criterios de aceptación están en `docs/04-product-backlog.md`.
+> El enunciado exige el detalle de **cada** caso de uso, y aquí están **los trece**, en orden. Cada
+> uno documenta actor, precondiciones, postcondición, flujo principal, flujos alternos, flujos de
+> excepción y los requisitos no funcionales que le aplican. Los criterios de aceptación de sus
+> historias están en `docs/04-product-backlog.md`.
+>
+> Se detallan también los casos que todavía no están implementados: el detalle es el análisis
+> previo, no la documentación de lo ya construido. La columna de estado de §4 dice qué existe hoy.
 
 ---
 
@@ -195,6 +199,58 @@ Debe responder en menos de 1 segundo. Debe ser usable desde 360 px de ancho.
 **Reglas de negocio**
 Nunca se muestran datos personales, documentos ni puntajes. La transparencia del proceso no
 puede convertirse en una filtración de datos del solicitante.
+
+---
+
+### CU-03 · Registrar estudiante
+
+|                            |                                                                    |
+| -------------------------- | ------------------------------------------------------------------ |
+| **Actor principal**        | Estudiante aspirante                                               |
+| **Historia**               | US-001                                                             |
+| **Objetivo del enunciado** | Registrar estudiantes                                              |
+| **Precondiciones**         | Ninguna. **No requiere cuenta**: este caso de uso es el que la crea |
+| **Postcondición**          | Existe una cuenta con rol `ESTUDIANTE`, autenticada y en su panel   |
+
+**Flujo principal**
+
+1. El aspirante abre el formulario de registro.
+2. El sistema solicita nombre completo, CUI, correo electrónico y contraseña.
+3. El aspirante completa los datos y envía el formulario.
+4. El sistema valida que el CUI tenga **13 dígitos** y que no exista otro igual.
+5. El sistema valida que la contraseña tenga **mínimo 8 caracteres, al menos una mayúscula y un
+   número**.
+6. El sistema valida que el correo no esté registrado.
+7. El sistema calcula el **hash bcrypt** de la contraseña y crea la cuenta con rol `ESTUDIANTE`.
+8. El sistema inicia la sesión automáticamente y redirige al aspirante a su panel.
+
+**Flujos alternos**
+
+- **4a. El CUI ya está registrado.** El sistema informa que ese CUI ya tiene una cuenta y ofrece
+  iniciar sesión o recuperar la contraseña. **No se crea una segunda cuenta**: un CUI es una
+  persona.
+- **6a. El correo ya está registrado.** Mismo tratamiento que el anterior.
+
+**Flujos de excepción**
+
+- **4b. El CUI no tiene 13 dígitos o contiene letras.** El sistema señala el campo y explica el
+  formato esperado, sin borrar el resto de lo que el aspirante ya escribió.
+- **5a. La contraseña no cumple la política.** El sistema indica **cuál de las tres condiciones**
+  falta, no un mensaje genérico.
+- **7a. La base de datos no responde.** El sistema informa del fallo sin detalles técnicos, no crea
+  la cuenta a medias y registra el error en el log.
+
+**Requisitos no funcionales aplicables**
+
+La contraseña se almacena **siempre** con hash bcrypt, nunca en texto plano ni cifrada de forma
+reversible. El formulario debe ser usable desde 360 px de ancho.
+
+> **Por qué aquí los mensajes de error sí son específicos y al iniciar sesión no.** Al registrarse,
+> decir "ese CUI ya existe" es necesario para que la persona sepa qué hacer, y no revela nada
+> aprovechable: el CUI ya lo conoce quien lo escribió. Al **iniciar sesión**, en cambio, el mensaje
+> es genérico a propósito, porque distinguir "usuario inexistente" de "contraseña incorrecta"
+> permitiría averiguar qué usuarios existen. La regla es informar a quien tiene derecho a saber, y
+> solo eso.
 
 ---
 
@@ -387,6 +443,54 @@ intercambiables. Una política de becas nueva es una clase nueva, no una modific
 
 ---
 
+### CU-13 · Gestionar comités evaluadores
+
+|                            |                                                                                                              |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Actor principal**        | Administrador                                                                                                |
+| **Historia**               | US-017                                                                                                       |
+| **Objetivo del enunciado** | Gestionar comités evaluadores                                                                                |
+| **Precondiciones**         | Sesión con rol `ADMINISTRADOR` · existir al menos una convocatoria y un usuario con rol `EVALUADOR`           |
+| **Postcondición**          | Existe un comité con evaluadores asignados a una convocatoria                                                |
+
+**Flujo principal**
+
+1. El administrador abre la gestión de comités.
+2. El sistema muestra los comités existentes con su convocatoria y sus integrantes.
+3. El administrador crea un comité, le da nombre y elige la convocatoria que evaluará.
+4. El sistema lista los usuarios con rol `EVALUADOR` disponibles.
+5. El administrador selecciona los integrantes.
+6. El sistema valida que el comité tenga **al menos un evaluador** y que ninguno esté repetido.
+7. El sistema guarda el comité y registra quién lo creó y cuándo.
+
+**Flujos alternos**
+
+- **2a. No hay comités.** El sistema lo indica y ofrece crear el primero.
+- **4a. No hay usuarios con rol `EVALUADOR`.** El sistema explica que primero hay que asignar ese
+  rol a alguien, y no permite crear un comité vacío.
+- **5a. Se quita a un integrante que ya tiene solicitudes asignadas.** El sistema advierte cuántas
+  solicitudes quedarían sin evaluador y pide confirmación explícita.
+
+**Flujos de excepción**
+
+- **3a. La convocatoria elegida ya tiene un comité.** El sistema lo informa y ofrece editar el
+  existente. **Una convocatoria tiene un solo comité**, según el diagrama de clases.
+- **6a. El comité queda sin evaluadores.** El sistema rechaza la operación: un comité sin
+  integrantes no puede dictaminar nada.
+- **7a. La base de datos no responde.** No se guarda nada parcialmente y se informa del fallo.
+
+**Requisitos no funcionales aplicables**
+
+Toda creación o modificación de un comité queda en el registro de auditoría, que **no se puede
+modificar ni eliminar desde la aplicación**.
+
+> **Este caso de uso es más delicado de lo que parece.** No mueve dinero ni cambia estados de
+> solicitudes, pero **define quién puede ver qué**: un evaluador asignado a un comité accede a las
+> solicitudes de esa convocatoria. Un error aquí es una fuga de datos personales de aspirantes, no
+> una molestia administrativa. Por eso exige rol `ADMINISTRADOR` y queda auditado.
+
+---
+
 ### CU-15 · Resolver solicitud
 
 | | |
@@ -414,6 +518,61 @@ intercambiables. Una política de becas nueva es una clase nueva, no una modific
 **Patrón de diseño aplicado**
 **Facade.** `SolicitudFacade` coordina los seis colaboradores y expone una sola operación al
 controlador, manteniendo la transaccionalidad en un único lugar.
+
+---
+
+### CU-16 · Adjudicar beca
+
+|                            |                                                                                                      |
+| -------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Actor principal**        | Administrador                                                                                        |
+| **Historia**               | US-024                                                                                               |
+| **Objetivo del enunciado** | Aprobar o rechazar solicitudes (adjudicación formal)                                                 |
+| **Precondiciones**         | Sesión con rol `ADMINISTRADOR` · solicitud en estado `APROBADA` · cupo disponible en la convocatoria  |
+| **Postcondición**          | La solicitud queda `ADJUDICADA`, existe una `Beca` asociada y el cupo se descontó                     |
+
+**Flujo principal**
+
+1. El administrador abre la lista de solicitudes `APROBADAS` de una convocatoria.
+2. El sistema muestra, junto a la lista, **cuántos cupos quedan disponibles**.
+3. El administrador selecciona una solicitud y confirma la adjudicación.
+4. El sistema verifica que la convocatoria **tenga cupo disponible**.
+5. El sistema crea la `Beca`, registra la fecha de adjudicación y el acta de resolución.
+6. El sistema **descuenta un cupo** de la convocatoria.
+7. El sistema cambia el estado de la solicitud a `ADJUDICADA` y lo registra en su historial.
+8. El sistema notifica al estudiante el cambio de estado.
+
+**Flujos alternos**
+
+- **1a. No hay solicitudes aprobadas.** El sistema lo indica: no se puede adjudicar sin resolver
+  antes.
+- **3a. Se adjudican varias a la vez.** El sistema procesa una por una y se detiene al agotarse el
+  cupo, informando cuáles quedaron sin adjudicar.
+
+**Flujos de excepción**
+
+- **4a. No queda cupo.** El sistema **rechaza la adjudicación** e informa que la convocatoria agotó
+  sus cupos. No se adjudica de más bajo ninguna circunstancia.
+- **4b. Dos administradores adjudican a la vez la última beca.** El descuento de cupo y la creación
+  de la beca ocurren en **una sola transacción**, de modo que solo una prospera y la otra recibe el
+  error de cupo agotado.
+- **3b. La solicitud no está `APROBADA`.** El estado rechaza la transición: adjudicar una solicitud
+  en `BORRADOR` o `RECHAZADA` lanza una excepción de dominio. Lo impide el patrón **State**, no una
+  comprobación dispersa.
+- **8a. Falla la notificación.** La adjudicación **no se revierte**: la beca ya está otorgada. El
+  fallo se registra y la notificación se reintenta.
+
+**Requisitos no funcionales aplicables**
+
+El descuento de cupo y la creación de la beca son **atómicos**. El registro de auditoría de la
+adjudicación es inmutable desde la aplicación: es el respaldo de un otorgamiento público de fondos
+del Estado.
+
+> **Este es el caso de uso con más consecuencias del sistema.** Es el momento en que el Estado
+> otorga un beneficio económico a una persona concreta, y es irreversible en la práctica. De ahí las
+> tres condiciones que no se negocian: el cupo se verifica y se descuenta en la misma transacción,
+> el estado solo transiciona desde `APROBADA`, y queda un acta que la aplicación no puede alterar
+> después.
 
 ---
 
@@ -446,13 +605,15 @@ constructor telescópico de ocho parámetros opcionales.
 
 ---
 
+---
+
 ## 4. Trazabilidad
 
 | Caso de uso | Objetivo del enunciado | Historias | Patrón | Estado |
 |---|---|---|---|---|
 | CU-01 | Administrar convocatorias | US-008 | — | 🟡 Parcial |
 | CU-02 | Consultar estado de una beca | US-025 | — | 🔴 Sprint 6 |
-| CU-03 | Registrar estudiantes | US-001 | — | 🔴 Sprint 2 |
+| CU-03 | Registrar estudiantes | US-001 | — | 🔴 Sprint 3 |
 | CU-04 | — (transversal) | US-002 | Adapter | 🟢 **Implementado** |
 | CU-06 | Gestionar solicitudes | US-012 | State | 🔴 Sprint 4 |
 | CU-07 | Cargar documentación | US-013 | Adapter | 🔴 Sprint 4 |
