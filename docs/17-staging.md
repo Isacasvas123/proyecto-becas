@@ -11,10 +11,44 @@
 > historia puede darse por terminada por más que funcione en las máquinas del equipo. Ha sido el
 > bloqueo declarado del Sprint 1.
 
-> ⚠️ **Estado al 11 de septiembre de 2026: la configuración está escrita, el entorno NO está
-> levantado.** Los archivos de este documento definen el despliegue completo, pero crear la cuenta
-> y conectar el repositorio requiere credenciales y eso lo tiene que hacer una persona. Los pasos
-> de la §2 son exactamente lo que falta.
+> ⚠️ **Estado al 12 de septiembre de 2026: la imagen está verificada, el entorno NO está
+> levantado.** Crear la cuenta y conectar el repositorio requiere credenciales y eso lo tiene que
+> hacer una persona. Los pasos de la §2 son exactamente lo que falta.
+
+### Qué sí está comprobado (12 de septiembre de 2026)
+
+La imagen de Docker **se construye y arranca**, verificado contra el PostgreSQL local:
+
+```bash
+docker build -f apps/api/Dockerfile -t becas-api-staging:test .
+```
+
+| Comprobación                                      | Resultado                                                        |
+| ------------------------------------------------- | ---------------------------------------------------------------- |
+| `docker build`                                     | ✅ Construye. Imagen de **1.13 GB**                               |
+| Migraciones al arrancar                           | ✅ `prisma migrate deploy` corre solo: _"No pending migrations"_   |
+| Conexión a PostgreSQL                             | ✅ _"Conexión con PostgreSQL establecida"_                         |
+| Rutas mapeadas                                    | ✅ Las cuatro: `/health`, `/ready`, `/convocatorias`, `/auth/login` |
+| `GET /health`                                     | ✅ 200 · `{"status":"ok"}`                                         |
+| `GET /ready`                                      | ✅ 200 · `{"baseDatos":"arriba"}`                                  |
+| `GET /convocatorias`                              | ✅ 200 · devuelve el listado                                       |
+| `POST /auth/login` con credenciales falsas         | ✅ 401 · _"Usuario o contraseña incorrectos"_, sin decir cuál falló |
+| **`/ready` con PostgreSQL detenido**               | ✅ **503** · `{"baseDatos":"abajo"}` — y `/health` sigue en 200     |
+
+> **La última fila es la que justifica todo el defecto que corregimos en S1-12.** Antes
+> `/health` respondía `ok` con la base caída y por tanto no servía para verificar nada. Ahora, con
+> PostgreSQL detenido a propósito, el contenedor real distingue las dos preguntas: el proceso vive
+> (`/health` 200) pero no está listo para atender (`/ready` 503). Eso es exactamente lo que Render
+> necesita para no enrutar tráfico a una instancia que no puede responder, y es lo que comprueba
+> el workflow de verificación.
+
+> **Sobre el tamaño: 1.13 GB es grande** para una API de Node, y es la consecuencia directa de
+> incluir todas las dependencias en la imagen final (el motivo está comentado en el Dockerfile: el
+> CLI de `prisma` es devDependency y hace falta tanto en el `postinstall` como al arrancar). Se
+> acepta para Staging. Si llegara a molestar, la salida limpia es una tercera etapa que instale
+> solo producción con `--ignore-scripts` y copie el cliente de Prisma ya generado desde la etapa de
+> build, en vez de mover `prisma` a `dependencies`, que sería declarar una mentira sobre para qué
+> sirve ese paquete.
 
 ---
 
@@ -57,7 +91,9 @@ Requiere una cuenta y por eso no está hecho. Son unos 20 minutos.
    `develop`. Render lee `render.yaml` y muestra los tres recursos que va a crear. Confirmar.
 
 4. **Esperar el primer despliegue.** Tarda entre 5 y 10 minutos. La base de datos se crea primero;
-   la API arranca después y aplica las migraciones sola.
+   la API arranca después y aplica las migraciones sola. La imagen ya está verificada localmente
+   (ver el cuadro del inicio), así que si falla aquí el problema será de configuración de Render o
+   de variables de entorno, no del Dockerfile.
 
 5. **Copiar la URL de la API.** Queda algo como `https://becas-api-staging.onrender.com`.
    Comprobar a mano, una sola vez, que `<URL>/ready` responde `200`.
