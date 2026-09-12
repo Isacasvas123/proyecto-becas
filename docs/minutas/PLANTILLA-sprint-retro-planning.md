@@ -78,17 +78,17 @@ situación, no a la persona** — Anexo 3, respeto mutuo.*
 
 | Integrante | Días de trabajo | Disponibilidad | Notas |
 |---|---|---|---|
-| Isaac | Viernes, Lunes | ☐ Completa ☐ Reducida | |
+| Isaac | Viernes, Martes | ☐ Completa ☐ Reducida | |
 | Ivan | Viernes, Martes | ☐ Completa ☐ Reducida | |
 | Fernando | Sábado, Lunes | ☐ Completa ☐ Reducida | |
-| Stuard | Sábado, Martes | ☐ Completa ☐ Reducida | |
+| Stuard | Sábado, Lunes | ☐ Completa ☐ Reducida | |
 
 **Capacidad total:** ______ días-persona *(8 en una semana normal)*
 **Velocidad del sprint anterior:** ______ puntos
 **Compromiso máximo recomendado:** no exceder la velocidad anterior, salvo justificación.
 
-> ⚠️ Verificar feriados: **15 de septiembre** y **20 de octubre** caen martes — turno de Ivan y
-> Stuard. Esas semanas deben mover su día al domingo o reducir el compromiso.
+> ⚠️ Verificar feriados: **15 de septiembre** y **20 de octubre** caen martes — turno de Ivan e
+> Isaac. Esas semanas deben mover su día al domingo o reducir el compromiso.
 
 ## 2.2 Sprint Goal
 

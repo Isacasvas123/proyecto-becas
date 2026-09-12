@@ -6,7 +6,7 @@
 | | |
 |---|---|
 | **Nombre del Proyecto** | Plataforma Nacional para la Gestión Integral de Becas |
-| **Nombre del Equipo** | `___________________________` |
+| **Nombre del Equipo** | `ControlExe` |
 | **Curso** | Análisis de Sistemas II (0910-037) |
 | **Fecha de Creación** | 3 de septiembre de 2026 |
 | **Versión** | 1.0 |
@@ -18,10 +18,10 @@ establecidas.
 
 | Nombre Completo | Rol en el Proyecto | Firma |
 |---|---|---|
-| Isaac ____________ | Scrum Master | ______________________ |
-| Ivan ____________ | Developer | ______________________ |
-| Fernando ____________ | Developer | ______________________ |
-| Stuard ____________ | Developer | ______________________ |
+| Isaac Castillo | Scrum Master | Firmado |
+| Ivan Castellan | Developer | Firmado |
+| Fernando Herrera | Developer | Firmado |
+| Stuard Estrada | Developer | Firmado |
 
 ---
 
@@ -87,8 +87,8 @@ más las ceremonias del jueves y el cierre del miércoles:
 | Viernes | Isaac + Ivan |
 | Sábado | Fernando + Stuard |
 | Domingo | Libre / buffer para atrasos |
-| Lunes | Isaac + Fernando |
-| Martes | Ivan + Stuard |
+| Lunes | Stuard + Fernando |
+| Martes | Ivan + Isaac |
 | Miércoles | Los 4 — cierre asincrónico (~30 min) |
 
 El emparejamiento cambia cada día a propósito: garantiza que siempre haya un compañero en
@@ -159,10 +159,10 @@ subir código directamente a `main` saltándose el flujo de PRs, comportamiento 
   discutir el problema y definir un **plan de mejora con plazos claros**, documentado en minuta.
 - **Si persiste, el equipo aplicará** *(marcar lo acordado en la reunión del 3 de septiembre)*:
 
-  - [ ] Reducción proporcional del porcentaje de contribución declarado en la entrega evaluada,
+  - [x] Reducción proporcional del porcentaje de contribución declarado en la entrega evaluada,
         calculado con base en los Puntos de Historia efectivamente completados por el integrante.
-  - [ ] Asignación de tareas adicionales para compensar al equipo.
-  - [ ] Reporte formal al docente, adjuntando la evidencia documentada, para que tome las
+  - [x] Asignación de tareas adicionales para compensar al equipo.
+  - [x] Reporte formal al docente, adjuntando la evidencia documentada, para que tome las
         medidas académicas correspondientes, que pueden incluir la separación del integrante
         del proyecto.
 
