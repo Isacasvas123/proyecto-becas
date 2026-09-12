@@ -18,6 +18,7 @@
  */
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
+import { MAX_INTENTOS_FALLIDOS, MINUTOS_DE_BLOQUEO } from '../../domain/entities/usuario.entity';
 import { NombreUsuario } from '../../domain/value-objects/nombre-usuario.vo';
 import { GENERADOR_TOKEN, GeneradorToken } from '../../domain/ports/generador-token';
 import { HASHER_PASSWORD, HasherPassword } from '../../domain/ports/hasher-password';
@@ -38,7 +39,16 @@ export class AutenticarUsuarioService {
     private readonly generadorToken: GeneradorToken,
   ) {}
 
-  async ejecutar(nombreUsuarioEntrada: string, password: string): Promise<SesionIniciadaDto> {
+  /**
+   * `ahora` tiene valor por defecto por la misma razón que en `ListarConvocatoriasPublicadas`:
+   * el bloqueo depende del tiempo, y recibirlo como parámetro permite probar "15 minutos
+   * después" sin relojes falsos ni esperas.
+   */
+  async ejecutar(
+    nombreUsuarioEntrada: string,
+    password: string,
+    ahora: Date = new Date(),
+  ): Promise<SesionIniciadaDto> {
     // El objeto de valor normaliza y valida el formato: "Admin", " ADMIN " y "admin"
     // buscan al mismo usuario.
     const nombreUsuario = NombreUsuario.crear(nombreUsuarioEntrada);
@@ -54,14 +64,51 @@ export class AutenticarUsuarioService {
       throw new AutenticacionFallidaError('El usuario no existe');
     }
 
+    // US-002, criterio 3 — CUENTA BLOQUEADA.
+    //
+    // Durante el bloqueo **no se verifica la contraseña real**, ni siquiera si es correcta. Si
+    // se verificara, un atacante podría seguir probando contraseñas mientras dura el bloqueo y
+    // sabría cuándo acertó: el bloqueo no protegería nada.
+    //
+    // Pero sí se gasta el mismo tiempo contra el hash señuelo. Sin eso, una cuenta bloqueada
+    // respondería más rápido que una activa, y ese diferencial delataría qué cuentas existen y
+    // cuáles están bajo ataque.
+    //
+    // El mensaje hacia fuera es el mismo genérico de siempre (lo decide el filtro de
+    // excepciones). Decisión consciente: decir "cuenta bloqueada" ayudaría al usuario legítimo,
+    // pero confirmaría a un atacante que el usuario existe. Se prefirió no confirmar.
+    if (usuario.estaBloqueado(ahora)) {
+      await this.hasher.verificar(password, HASH_SENUELO);
+      this.logger.warn(`Intento de acceso a cuenta bloqueada: ${nombreUsuario.valor}`);
+      throw new AutenticacionFallidaError('La cuenta está bloqueada temporalmente');
+    }
+
     const passwordCorrecta = await this.hasher.verificar(password, usuario.hashAlmacenado());
     if (!passwordCorrecta) {
-      this.logger.warn(`Contraseña incorrecta para el usuario ${nombreUsuario.valor}`);
+      const actualizado = usuario.conIntentoFallido(ahora);
+      await this.repositorio.actualizarEstadoDeAcceso(actualizado);
+
+      if (actualizado.estaBloqueado(ahora)) {
+        this.logger.warn(
+          `Cuenta bloqueada ${MINUTOS_DE_BLOQUEO} minutos tras ${MAX_INTENTOS_FALLIDOS} intentos fallidos: ${nombreUsuario.valor}`,
+        );
+      } else {
+        this.logger.warn(
+          `Contraseña incorrecta para el usuario ${nombreUsuario.valor} (${actualizado.intentosFallidos}/${MAX_INTENTOS_FALLIDOS})`,
+        );
+      }
+
       throw new AutenticacionFallidaError('Contraseña incorrecta');
     }
 
     // Regla de negocio del dominio: una cuenta desactivada no entra.
     usuario.asegurarPuedeIniciarSesion();
+
+    // Un acceso correcto limpia el contador: los intentos deben ser CONSECUTIVOS. Solo se
+    // escribe si hay algo que limpiar, para no tocar la base en cada inicio de sesión normal.
+    if (usuario.tieneIntentosRegistrados()) {
+      await this.repositorio.actualizarEstadoDeAcceso(usuario.conAccesoCorrecto());
+    }
 
     const token = await this.generadorToken.emitir(usuario);
     this.logger.log(`Sesión iniciada: ${usuario.nombreUsuario.valor} (${usuario.rol})`);
