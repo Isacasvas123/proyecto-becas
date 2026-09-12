@@ -48,7 +48,7 @@ desde 360 px, por la persona que definimos —Ana, aspirante de provincia con un
 | Archivos de código | **64** TypeScript |
 | Módulos del backend | `convocatorias` · `usuarios` · `salud` |
 | Archivos de pruebas | **9** |
-| Pruebas automatizadas | **72 unitarias + 32 de integración, todas en verde** |
+| Pruebas automatizadas | **75 unitarias + 32 de integración, todas en verde** |
 | Commits | 14 |
 | Tarjetas en el tablero | 43 |
 
