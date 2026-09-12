@@ -66,7 +66,7 @@ flowchart TB
 las otras capas. `infrastructure/` no es una capa "de abajo" de la que dependa el dominio: es una
 capa externa que **implementa interfaces que el dominio declara**.
 
-Consecuencia práctica y verificable: las 75 pruebas unitarias corren **sin Docker, sin PostgreSQL y
+Consecuencia práctica y verificable: las 106 pruebas unitarias corren **sin Docker, sin PostgreSQL y
 sin red**, porque inyectan repositorios en memoria. Eso no es una comodidad de las pruebas; es la
 demostración de que la inversión de dependencias funciona.
 
@@ -354,9 +354,9 @@ pasos detallados y los errores frecuentes están en `13-guia-instalacion.md`.
 | ----------------------- | ----------------------------------------------- |
 | `npm run dev`           | API y frontend en modo desarrollo               |
 | `npm run build`         | Compila los dos                                 |
-| `npm run test`          | 75 pruebas unitarias (sin Docker)               |
+| `npm run test`          | 106 pruebas unitarias (sin Docker)              |
 | `npm run test:e2e`      | 32 pruebas de integración                       |
-| `npm run test:cov`      | Cobertura — ver la advertencia de `19-plan-pruebas.md` §6 |
+| `npm run test:cov`      | Unitarias + integración con cobertura (necesita Docker) |
 | `npm run lint`          | ESLint + Prettier                               |
 | `npm run format`        | Aplica el formato                               |
 
@@ -394,7 +394,7 @@ El orden importa: **de dentro hacia fuera**, igual que apuntan las dependencias.
 
 | Patrón           | Tipo           | Estado                                 | Sprint |
 | ---------------- | -------------- | -------------------------------------- | ------ |
-| **Adapter**      | Estructural    | ✅ Implementado — **sin pruebas (0 %)** | 1      |
+| **Adapter**      | Estructural    | ✅ Implementado y probado               | 1      |
 | Factory Method   | Creacional     | 🔴 Pendiente                            | 3      |
 | State            | Comportamiento | 🔴 Pendiente                            | 4      |
 | Strategy         | Comportamiento | 🔴 Pendiente                            | 5      |
@@ -412,8 +412,7 @@ Se documenta para que quien mantenga el sistema no la descubra a golpes:
 | Deuda                                                          | Impacto                                          | Plan                    |
 | -------------------------------------------------------------- | ------------------------------------------------ | ----------------------- |
 | Staging no existe                                              | Ninguna historia puede cumplir el DoD            | Sprint 2                |
-| Los tres adaptadores del Adapter a 0 % de cobertura            | El patrón que se presenta no está probado        | Sprint 2 (DEF-02)       |
-| La medición de cobertura excluye las pruebas de integración      | El número reportado es más bajo que el real      | Sprint 2 (DEF-03)       |
+| `@nestjs/jwt` v12 es solo ESM                                    | Jest necesita transformarlo (`tsconfig.jest.json`) | Revisar si una versión futura publica CommonJS |
 | `ConvocatoriaPrismaRepositorio` sin pruebas                    | El SQL real no se ejercita                       | Issue #6                |
 | El listado público quedó detrás del login en el frontend        | Incumple US-008                                  | Sprint 3                |
 | Falta el bloqueo tras 5 intentos fallidos                       | Incumple un criterio de US-002                   | Sprint 3                |

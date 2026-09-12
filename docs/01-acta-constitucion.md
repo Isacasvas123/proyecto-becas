@@ -180,8 +180,8 @@ Sprints semanales de **jueves a miércoles**. Ceremonias todos los jueves.
 | 2.5 | Requisitos No Funcionales y DoD publicados | ~~Mié 16 Sep~~ → **entregado Jue 3 Sep** | Fernando | Anexo 4 §5-6 · adelantado al Sprint 1 |
 | 2.6 | Guard de autenticación y control de acceso por rol | ~~Mié 16 Sep~~ → **entregado Mié 9 Sep** | Isaac | US-003 · adelantado al Sprint 1. 32 pruebas de integración |
 | 2.7 | **Entorno de Staging desplegado y verificado** | Mié 16 Sep | Ivan | **Adelantado del 3.3.** Sin esto el punto 8 de la DoD es incumplible y ninguna historia puede cerrarse |
-| 2.8 | Probar los tres adaptadores del patrón Adapter | Mié 16 Sep | Fernando | Hoy a 0 % de cobertura: es el único patrón implementado y el que se presentará al PO |
-| 2.9 | Corregir la medición de cobertura para que incluya las e2e | Mié 16 Sep | Ivan | El número actual (41.89 %) está medido solo con las unitarias |
+| 2.8 | Probar los tres adaptadores del patrón Adapter | ~~Mié 16 Sep~~ → **entregado Sáb 12 Sep** | Fernando | De 0 % a 100 % (JWT) y 88 % (bcrypt), con las bibliotecas reales |
+| 2.9 | Corregir la medición de cobertura para que incluya las e2e | ~~Mié 16 Sep~~ → **entregado Sáb 12 Sep** | Ivan | Medía solo las unitarias (41.89 %). Corregida, la cobertura real es **84.35 %** |
 | 3 | **Sprint 3 — Convocatorias** | Mié 23 Sep 2026 | Equipo | |
 | 3.1 | Módulo de convocatorias (CRUD y publicación) | Mié 23 Sep | Isaac, Fernando | EPIC-02 |
 | 3.2 | Patrón Factory Method implementado y documentado | Mié 23 Sep | Stuard | Creacional 1 |

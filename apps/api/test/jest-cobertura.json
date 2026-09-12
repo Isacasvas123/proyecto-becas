@@ -1,0 +1,47 @@
+{
+  "_comentario": [
+    "Configuración de Jest usada SOLO para medir cobertura (npm run test:cov).",
+    "",
+    "POR QUÉ EXISTE ESTE TERCER ARCHIVO",
+    "  La configuración de unitarias (package.json) tiene rootDir 'src' y solo reconoce",
+    "  *.spec.ts. La de integración (jest-e2e.json) usa otro rootDir, otro patrón y no",
+    "  declara cobertura en absoluto. Consecuencia: 'jest --coverage' medía SOLO las",
+    "  unitarias, y los controladores y guards —que están probados de punta a punta—",
+    "  aparecían a 0%. El número reportado era más bajo que la cobertura real.",
+    "",
+    "  Este archivo recoge los dos tipos de prueba en una sola pasada. El testRegex",
+    "  reconoce '.spec.ts' y '.e2e-spec.ts', que NO se solapan: el nombre e2e lleva",
+    "  guion antes de 'spec', así que el patrón de unitarias nunca lo capturaba.",
+    "",
+    "POR QUÉ NO SE UNIFICARON LOS TRES EN UNO",
+    "  Porque 'npm run test' debe seguir corriendo SIN Docker ni PostgreSQL: es la",
+    "  demostración de que la inversión de dependencias funciona, y el argumento de",
+    "  testeabilidad de docs/05-arquitectura.md §2.2. Las de integración sí necesitan la",
+    "  base de datos, así que juntarlas rompería esa propiedad. Solo la medición de",
+    "  cobertura las junta, y esa sí exige Docker levantado.",
+    "",
+    "  Defecto DEF-03, comprometido en el Sprint 2.",
+    "",
+    "TRANSFORMAR @nestjs/jwt",
+    "  La v12 se publica solo como ESM y Jest corre en CommonJS: sin esta excepcion",
+    "  ninguna prueba podia importar los adaptadores de JWT, y por eso estaban a 0%.",
+    "  Ver tsconfig.jest.json (allowJs)."
+  ],
+  "rootDir": "..",
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "testEnvironment": "node",
+  "testRegex": ".*\\.(spec|e2e-spec)\\.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": [
+      "ts-jest",
+      {
+        "tsconfig": "<rootDir>/tsconfig.jest.json"
+      }
+    ]
+  },
+  "collectCoverageFrom": ["src/**/*.(t|j)s"],
+  "coveragePathIgnorePatterns": ["\\.module\\.ts$", "main\\.ts$"],
+  "coverageDirectory": "<rootDir>/../../coverage",
+  "coverageReporters": ["text", "text-summary", "lcov"],
+  "transformIgnorePatterns": ["/node_modules/(?!@nestjs/jwt/)"]
+}
