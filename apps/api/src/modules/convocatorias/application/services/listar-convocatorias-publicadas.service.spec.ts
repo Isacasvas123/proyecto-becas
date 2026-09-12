@@ -9,6 +9,7 @@
  * verificar de paso que el ENLACE del token de inyección está bien hecho. Si alguien
  * rompe el `provide: CONVOCATORIA_REPOSITORIO`, esta prueba lo detecta.
  */
+import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { Convocatoria } from '../../domain/entities/convocatoria.entity';
@@ -85,6 +86,33 @@ describe('ListarConvocatoriasPublicadasService', () => {
     expect(resultado.map((c) => c.codigo)).toEqual(['PRONTO', 'TARDE']);
   });
 
+  it('ordena aunque el repositorio devuelva las convocatorias desordenadas', async () => {
+    // La prueba de arriba no demuestra que ORDENE EL SERVICIO: el repositorio en memoria ya
+    // ordena por su cuenta, así que pasaría igual con un servicio que no ordenara nada.
+    // Señalado por Fernando en la revisión del PR #1.
+    //
+    // Este doble devuelve a propósito el orden inverso al esperado. Si el servicio dejara de
+    // ordenar, esta prueba —y solo esta— se pondría roja.
+    const repositorioDesordenado = {
+      buscarPublicadasVigentes: async (): Promise<Convocatoria[]> => [
+        convocatoria('TARDE', EstadoConvocatoria.PUBLICADA, '2026-12-31T00:00:00.000Z'),
+        convocatoria('MEDIO', EstadoConvocatoria.PUBLICADA, '2026-11-15T00:00:00.000Z'),
+        convocatoria('PRONTO', EstadoConvocatoria.PUBLICADA, '2026-09-20T00:00:00.000Z'),
+      ],
+    };
+
+    const modulo = await Test.createTestingModule({
+      providers: [
+        ListarConvocatoriasPublicadasService,
+        { provide: CONVOCATORIA_REPOSITORIO, useValue: repositorioDesordenado },
+      ],
+    }).compile();
+
+    const resultado = await modulo.get(ListarConvocatoriasPublicadasService).ejecutar(AHORA);
+
+    expect(resultado.map((c) => c.codigo)).toEqual(['PRONTO', 'MEDIO', 'TARDE']);
+  });
+
   it('devuelve DTOs planos, no entidades de dominio', async () => {
     const servicio = await crearServicio([
       convocatoria('VIGENTE', EstadoConvocatoria.PUBLICADA, '2026-10-31T00:00:00.000Z'),
@@ -128,5 +156,50 @@ describe('ListarConvocatoriasPublicadasService', () => {
     const servicio = modulo.get(ListarConvocatoriasPublicadasService);
 
     await expect(servicio.ejecutar(AHORA)).resolves.toEqual([]);
+  });
+
+  it('avisa por el log cuando el repositorio devuelve algo que no debía', async () => {
+    // La prueba anterior recorre esta rama pero no comprueba el aviso, así que el día que
+    // alguien borre el `logger.warn` nada se pondría rojo. El aviso ES la funcionalidad:
+    // es lo único que delataría un adaptador con el `WHERE` mal escrito en producción.
+    // Señalado por Fernando en la revisión del PR #1.
+    const aviso = jest.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+
+    const repositorioDefectuoso = {
+      buscarPublicadasVigentes: async (): Promise<Convocatoria[]> => [
+        convocatoria('FUGA-1', EstadoConvocatoria.BORRADOR, '2026-10-31T00:00:00.000Z'),
+        convocatoria('FUGA-2', EstadoConvocatoria.CERRADA, '2026-10-31T00:00:00.000Z'),
+        convocatoria('LEGITIMA', EstadoConvocatoria.PUBLICADA, '2026-10-31T00:00:00.000Z'),
+      ],
+    };
+
+    const modulo = await Test.createTestingModule({
+      providers: [
+        ListarConvocatoriasPublicadasService,
+        { provide: CONVOCATORIA_REPOSITORIO, useValue: repositorioDefectuoso },
+      ],
+    }).compile();
+
+    const resultado = await modulo.get(ListarConvocatoriasPublicadasService).ejecutar(AHORA);
+
+    expect(resultado.map((c) => c.codigo)).toEqual(['LEGITIMA']);
+    expect(aviso).toHaveBeenCalledTimes(1);
+    expect(aviso.mock.calls[0][0]).toContain('2 convocatoria(s)');
+
+    aviso.mockRestore();
+  });
+
+  it('no ensucia el log cuando el repositorio se comporta', async () => {
+    const aviso = jest.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+
+    const servicio = await crearServicio([
+      convocatoria('VIGENTE', EstadoConvocatoria.PUBLICADA, '2026-10-31T00:00:00.000Z'),
+    ]);
+
+    await servicio.ejecutar(AHORA);
+
+    expect(aviso).not.toHaveBeenCalled();
+
+    aviso.mockRestore();
   });
 });
