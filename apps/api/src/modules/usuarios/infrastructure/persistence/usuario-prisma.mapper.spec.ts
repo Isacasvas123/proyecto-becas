@@ -11,15 +11,32 @@
  */
 import { RolUsuario as RolPrisma } from '@prisma/client';
 
-import { RolUsuario } from '../../domain/enums/rol-usuario.enum';
+import { ROLES_PERSISTIBLES, RolUsuario } from '../../domain/enums/rol-usuario.enum';
 import { aDominio } from './usuario-prisma.mapper';
 
 describe('usuario-prisma.mapper', () => {
-  it('el enum del dominio y el de Prisma declaran exactamente los mismos roles', () => {
-    const enDominio = Object.values(RolUsuario).sort();
+  it('los roles persistibles del dominio y los de Prisma coinciden exactamente', () => {
+    const persistiblesEnDominio = [...ROLES_PERSISTIBLES].sort();
     const enPrisma = Object.values(RolPrisma).sort();
 
-    expect(enDominio).toEqual(enPrisma);
+    expect(persistiblesEnDominio).toEqual(enPrisma);
+  });
+
+  it('PUBLICO existe en el dominio y sigue fuera de Prisma', () => {
+    // US-003 exige cuatro roles, pero `PUBLICO` es el visitante sin sesión: no hay filas de
+    // `Usuario` con ese rol y no debe poder haberlas. La diferencia entre los dos enums es
+    // intencional y esta prueba la fija, para que nadie la "arregle" agregándolo al schema.
+    expect(Object.values(RolUsuario)).toContain('PUBLICO');
+    expect(Object.values(RolPrisma)).not.toContain('PUBLICO');
+    expect(ROLES_PERSISTIBLES).not.toContain(RolUsuario.PUBLICO);
+  });
+
+  it('no se olvidó ningún rol: dominio = persistibles + PUBLICO', () => {
+    // Red de seguridad para un rol futuro: si alguien agrega uno al dominio y olvida
+    // decidir si se persiste, esta prueba se pone roja y lo obliga a decidirlo.
+    expect(Object.values(RolUsuario).sort()).toEqual(
+      [...ROLES_PERSISTIBLES, RolUsuario.PUBLICO].sort(),
+    );
   });
 
   it('traduce una fila de Prisma a la entidad de dominio', () => {

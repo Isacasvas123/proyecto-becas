@@ -23,6 +23,7 @@ import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
 
 import { ListarConvocatoriasPublicadasService } from '../../application/services/listar-convocatorias-publicadas.service';
 import { ConvocatoriaResponseDto } from '../dto/convocatoria-response.dto';
+import { Publico } from '../../../usuarios/presentation/guards/decoradores';
 
 @Controller('convocatorias')
 export class ConvocatoriasController {
@@ -34,6 +35,14 @@ export class ConvocatoriasController {
    *
    * Sin autenticación: un visitante sin cuenta debe poder consultarlo (US-008).
    */
+  // ⚠️ PÚBLICA A PROPÓSITO. US-008 dice textualmente: "Como VISITANTE, quiero ver las
+  // convocatorias vigentes... SIN NECESIDAD DE TENER CUENTA". Es la necesidad de Ana, la
+  // aspirante de provincia (docs/03-vision-producto.md), y un requisito de transparencia
+  // del enunciado.
+  //
+  // En el Sprint 3, cuando exista el panel de administración (US-006, US-007, US-009), esas
+  // rutas SÍ llevarán @Roles(ADMINISTRADOR). Lo que queda abierto es solo la consulta.
+  @Publico()
   @Get()
   @HttpCode(HttpStatus.OK)
   async listar(): Promise<ConvocatoriaResponseDto[]> {
