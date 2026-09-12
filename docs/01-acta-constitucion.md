@@ -172,19 +172,26 @@ Sprints semanales de **jueves a miércoles**. Ceremonias todos los jueves.
 | 1.6 | Documento de Arquitectura v1 | Mié 9 Sep | Ivan | Anexo 5 §2 |
 | 1.7 | Invitar al equipo al repositorio | Jue 3 Sep | Isaac | Bloquea a los tres integrantes |
 | 1.8 | Corregir los 3 defectos detectados en el esqueleto | Mié 9 Sep | Fernando | `/health`, enums duplicados, carpetas sin documentar |
-| 2 | **Sprint 2 — Análisis y dominio** | Mié 16 Sep 2026 | Equipo | Feriado 15 Sep |
-| 2.1 | Diagrama de casos de uso + detalle de cada caso | Mié 16 Sep | Fernando | Anexo 5 §3.1 |
-| 2.2 | Diagrama de componentes y de clases | Mié 16 Sep | Fernando | Anexo 5 §3.2-3.3 |
-| 2.3 | Esquema de BD y primera migración versionada | Mié 16 Sep | Ivan | |
-| 2.4 | Registro, perfil y recuperación de contraseña | Mié 16 Sep | Isaac, Stuard | EPIC-01 · el login (US-002) se adelantó al Sprint 1 |
-| 2.6 | Guard de autenticación y control de acceso por rol | Mié 16 Sep | Isaac | US-003 · seguridad real en el backend |
-| 2.5 | Requisitos No Funcionales y DoD publicados | Mié 16 Sep | Fernando | Anexo 4 §5-6 |
+| 2 | **Sprint 2 — Staging y calidad de la evidencia** | Mié 16 Sep 2026 | Equipo | Feriado 15 Sep · **sprint de 3 días**: la Review del Sprint 1 se celebró el domingo 13, no el jueves 10 |
+| 2.1 | Diagrama de casos de uso + detalle de cada caso | ~~Mié 16 Sep~~ → **entregado Sáb 5 Sep** | Fernando | Anexo 5 §3.1 · adelantado al Sprint 1. Faltan los detalles de CU-03, CU-13 y CU-16 → Sprint 3 |
+| 2.2 | Diagrama de componentes y de clases | ~~Mié 16 Sep~~ → **entregado Sáb 5 Sep** | Fernando | Anexo 5 §3.2-3.3 · adelantado al Sprint 1 y verificado contra el código el 11 Sep |
+| 2.3 | Esquema de BD y primera migración versionada | ~~Mié 16 Sep~~ → **entregado Jue 3 Sep** | Ivan | Dos migraciones versionadas en `prisma/migrations/` |
+| 2.4 | Registro, perfil y recuperación de contraseña | **movido** | Isaac, Stuard | EPIC-01 · 13 pts no caben en una capacidad de 8. **US-001 → Sprint 3; US-004 y US-005 → Sprint 4.** Decidido en el Planning del 13 Sep |
+| 2.5 | Requisitos No Funcionales y DoD publicados | ~~Mié 16 Sep~~ → **entregado Jue 3 Sep** | Fernando | Anexo 4 §5-6 · adelantado al Sprint 1 |
+| 2.6 | Guard de autenticación y control de acceso por rol | ~~Mié 16 Sep~~ → **entregado Mié 9 Sep** | Isaac | US-003 · adelantado al Sprint 1. 32 pruebas de integración |
+| 2.7 | **Entorno de Staging desplegado y verificado** | Mié 16 Sep | Ivan | **Adelantado del 3.3.** Sin esto el punto 8 de la DoD es incumplible y ninguna historia puede cerrarse |
+| 2.8 | Probar los tres adaptadores del patrón Adapter | Mié 16 Sep | Fernando | Hoy a 0 % de cobertura: es el único patrón implementado y el que se presentará al PO |
+| 2.9 | Corregir la medición de cobertura para que incluya las e2e | Mié 16 Sep | Ivan | El número actual (41.89 %) está medido solo con las unitarias |
 | 3 | **Sprint 3 — Convocatorias** | Mié 23 Sep 2026 | Equipo | |
 | 3.1 | Módulo de convocatorias (CRUD y publicación) | Mié 23 Sep | Isaac, Fernando | EPIC-02 |
 | 3.2 | Patrón Factory Method implementado y documentado | Mié 23 Sep | Stuard | Creacional 1 |
-| 3.3 | Entorno de Staging desplegado y accesible | Mié 23 Sep | Ivan | **Hito: PO puede probar** |
+| 3.3 | ~~Entorno de Staging desplegado y accesible~~ | **movido al 2.7** | Ivan | Se adelantó al Sprint 2 por bloquear la DoD completa |
+| 3.4 | Registro de estudiante (US-001) + bloqueo tras 5 intentos (US-002) | Mié 23 Sep | Isaac, Stuard | Movido del 2.4 |
+| 3.5 | Cerrar las 4 revisiones documentales del Sprint 1 (S1-07 a S1-10) | Mié 23 Sep | Fernando, Stuard, Ivan | Deuda declarada del Sprint 1 |
+| 3.6 | Detalle de los casos de uso CU-03, CU-13 y CU-16 | Mié 23 Sep | Fernando | Completa el 2.1 |
 | 4 | **Sprint 4 — Estudiantes y solicitudes** | Mié 30 Sep 2026 | Equipo | |
-| 4.1 | Registro de estudiantes y creación de solicitudes | Mié 30 Sep | Isaac, Ivan | EPIC-03 |
+| 4.1 | Creación de solicitudes | Mié 30 Sep | Isaac, Ivan | EPIC-03 · el registro de estudiante se movió al 3.4 |
+| 4.4 | Gestión de perfil (US-004) y recuperación de contraseña (US-005) | Mié 30 Sep | Isaac, Stuard | Movidos del 2.4 |
 | 4.2 | Patrón State (ciclo de vida de la solicitud) | Mié 30 Sep | Stuard | Comportamiento 1 |
 | 4.3 | Carga de documentación + patrón Adapter | Mié 30 Sep | Fernando | Estructural 1 |
 | 5 | **Sprint 5 — Evaluación** | Mié 7 Oct 2026 | Equipo | |
