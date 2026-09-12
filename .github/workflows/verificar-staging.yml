@@ -1,0 +1,148 @@
+# Verificación automática del entorno de Staging.
+#
+# POR QUÉ EXISTE
+#   El punto 8 de la Definition of Done no dice "desplegado", dice desplegado **y
+#   verificado**. Este workflow es esa verificación, hecha por una máquina y con evidencia
+#   guardada, en lugar de alguien diciendo "yo lo abrí y andaba".
+#
+#   No despliega: de eso se encarga Render solo, en cuanto entra un commit a `develop`.
+#   Esto comprueba que lo que quedó desplegado responde.
+#
+# REQUISITO
+#   La variable de repositorio `STAGING_API_URL` con la dirección de la API de Staging
+#   (Settings → Secrets and variables → Actions → Variables). Sin ella el workflow no falla
+#   a ciegas: avisa que falta configurarla. Ver docs/17-staging.md.
+
+name: Verificar Staging
+
+on:
+  # Tras cada integración a develop, dándole tiempo a Render a desplegar.
+  push:
+    branches: [develop]
+  # Y a mano, que es como se usa antes de una Sprint Review.
+  workflow_dispatch:
+
+jobs:
+  verificar:
+    name: Staging responde y está listo
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Comprobar que la URL está configurada
+        id: config
+        env:
+          URL: ${{ vars.STAGING_API_URL }}
+        run: |
+          if [ -z "$URL" ]; then
+            echo "::warning::Falta la variable STAGING_API_URL. Ver docs/17-staging.md §4."
+            echo "configurada=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "configurada=si" >> "$GITHUB_OUTPUT"
+          fi
+
+      # El plan gratuito de Render suspende el servicio tras 15 minutos sin tráfico, y
+      # despertarlo tarda cerca de un minuto. Por eso se reintenta en vez de fallar al
+      # primer intento: un 502 inicial es el comportamiento normal del plan, no una caída.
+      - name: Esperar a que la API despierte y responda /health
+        if: steps.config.outputs.configurada == 'si'
+        env:
+          URL: ${{ vars.STAGING_API_URL }}
+        run: |
+          for intento in $(seq 1 20); do
+            codigo=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$URL/health" || echo 000)
+            echo "Intento $intento/20 → HTTP $codigo"
+            if [ "$codigo" = "200" ]; then
+              echo "La API está viva."
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "::error::La API de Staging no respondió 200 en /health tras 5 minutos."
+          exit 1
+
+      # Esta es la comprobación que de verdad importa, y existe gracias al defecto que
+      # corregimos en S1-12: antes /health respondía "ok" aunque PostgreSQL estuviera caído,
+      # así que no servía para verificar nada. /ready sí consulta la base.
+      - name: Comprobar que la base de datos responde (/ready)
+        if: steps.config.outputs.configurada == 'si'
+        env:
+          URL: ${{ vars.STAGING_API_URL }}
+        run: |
+          cuerpo=$(curl -s --max-time 30 "$URL/ready")
+          codigo=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$URL/ready")
+          echo "HTTP $codigo"
+          echo "$cuerpo"
+          if [ "$codigo" != "200" ]; then
+            echo "::error::/ready devolvió $codigo. La API vive pero la base de datos no responde."
+            exit 1
+          fi
+
+      # El listado público es la funcionalidad de US-008 y la que se demuestra en la Review.
+      - name: Comprobar que el listado público responde
+        if: steps.config.outputs.configurada == 'si'
+        env:
+          URL: ${{ vars.STAGING_API_URL }}
+        run: |
+          codigo=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$URL/convocatorias")
+          echo "GET /convocatorias → HTTP $codigo"
+          if [ "$codigo" != "200" ]; then
+            echo "::error::El listado público devolvió $codigo."
+            exit 1
+          fi
+
+      # Prueba negativa sobre un criterio de aceptación escrito de US-002: credenciales
+      # inválidas deben devolver 401 con un mensaje GENÉRICO, que no revele si falló el
+      # usuario o la contraseña.
+      #
+      # Nota de por qué no se prueba aquí el guard de US-003: en el Sprint 1 **todas** las
+      # rutas existentes son legítimamente públicas (login, listado público, diagnósticos),
+      # así que no hay ninguna ruta protegida real que consultar todavía. El guard global
+      # está instalado y probado con 32 pruebas de integración; su verificación en Staging
+      # llega cuando exista la primera ruta con sesión, en el Sprint 3.
+      - name: Comprobar el rechazo de credenciales inválidas (US-002)
+        if: steps.config.outputs.configurada == 'si'
+        env:
+          URL: ${{ vars.STAGING_API_URL }}
+        run: |
+          respuesta=$(curl -s -w '\n%{http_code}' --max-time 30 \
+            -X POST "$URL/auth/login" \
+            -H 'Content-Type: application/json' \
+            -d '{"nombreUsuario":"usuario-que-no-existe","password":"incorrecta"}')
+          codigo=$(echo "$respuesta" | tail -n1)
+          cuerpo=$(echo "$respuesta" | sed '$d')
+          echo "POST /auth/login con credenciales falsas → HTTP $codigo"
+          echo "$cuerpo"
+
+          if [ "$codigo" != "401" ]; then
+            echo "::error::Se esperaba 401 con credenciales inválidas y llegó $codigo."
+            exit 1
+          fi
+
+          # El mensaje no debe delatar cuál de los dos campos falló.
+          if echo "$cuerpo" | grep -qiE 'no existe|inexistente|not found|usuario incorrecto|contraseña incorrecta'; then
+            echo "::error::El mensaje de error revela qué campo falló. Criterio de US-002 incumplido."
+            exit 1
+          fi
+
+      - name: Resumen
+        if: always()
+        env:
+          URL: ${{ vars.STAGING_API_URL }}
+        run: |
+          {
+            echo "## Verificación de Staging"
+            if [ -z "$URL" ]; then
+              echo "⚠️ No ejecutada: falta la variable \`STAGING_API_URL\`."
+              echo ""
+              echo "Ver \`docs/17-staging.md\` §4 para configurarla."
+            else
+              echo "Entorno verificado: \`$URL\`"
+              echo ""
+              echo "| Comprobación | Qué demuestra |"
+              echo "| --- | --- |"
+              echo "| \`/health\` 200 | El proceso está vivo |"
+              echo "| \`/ready\` 200 | PostgreSQL responde |"
+              echo "| \`/convocatorias\` 200 | US-008 funciona en el entorno real |"
+              echo "| \`/auth/login\` 401 genérico | US-002: no revela qué campo falló |"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
