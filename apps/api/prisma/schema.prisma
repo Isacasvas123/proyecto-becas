@@ -1,0 +1,83 @@
+// Esquema de persistencia — Prisma + PostgreSQL.
+//
+// ALCANCE ACTUAL:
+//   - `Convocatoria` — walking skeleton (Sprint 1, US-S1-08).
+//   - `Usuario` — solo lo que exige el inicio de sesión (US-002). NO están aquí el
+//     registro público (US-001), el perfil (US-004) ni la recuperación de contraseña
+//     (US-005): son del Sprint 2 y se agregan con sus historias.
+//
+// El resto del modelo de dominio (Estudiante, Solicitud, Documento, Evaluacion, Comite,
+// Beca, HistorialEstado) se agrega en los sprints 2 a 8, conforme a
+// docs/05-arquitectura.md §3.3.
+//
+// IMPORTANTE: este esquema es el modelo de PERSISTENCIA, no el modelo de DOMINIO.
+// Son parecidos hoy y no tienen por qué seguir siéndolo mañana: la traducción entre
+// ambos es responsabilidad del mapper de infrastructure/. Ese costo de traducción está
+// aceptado explícitamente como trade-off en docs/05-arquitectura.md §2.2.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  // Nunca credenciales en el código: se leen de la variable de entorno (.env.example).
+  url      = env("DATABASE_URL")
+}
+
+/// Roles del sistema (US-003). Solo ADMINISTRADOR se usa hoy; los demás quedan
+/// declarados porque el control de acceso por rol es del Sprint 2 y este enum es la
+/// referencia acordada en docs/04-product-backlog.md.
+enum RolUsuario {
+  ESTUDIANTE
+  EVALUADOR
+  ADMINISTRADOR
+}
+
+model Usuario {
+  id             String     @id @default(uuid())
+  nombreUsuario  String     @unique @map("nombre_usuario")
+  correo         String     @unique
+  // Hash bcrypt, NUNCA la contraseña en claro (NFR de seguridad,
+  // docs/04-product-backlog.md §5).
+  hashPassword   String     @map("hash_password")
+  rol            RolUsuario @default(ESTUDIANTE)
+  activo         Boolean    @default(true)
+  creadoEn       DateTime   @default(now()) @map("creado_en")
+  actualizadoEn  DateTime   @updatedAt @map("actualizado_en")
+
+  @@map("usuarios")
+}
+
+/// Tipos de programa de beca que administra el Ministerio (US-006).
+enum TipoBeca {
+  NIVEL_MEDIO
+  UNIVERSITARIA
+  POSGRADO
+}
+
+/// Ciclo de vida de una convocatoria (US-006, US-007, US-009).
+enum EstadoConvocatoria {
+  BORRADOR
+  PUBLICADA
+  CERRADA
+}
+
+model Convocatoria {
+  id             String             @id @default(uuid())
+  codigo         String             @unique
+  titulo         String
+  descripcion    String
+  tipo           TipoBeca
+  estado         EstadoConvocatoria @default(BORRADOR)
+  cupos          Int
+  fechaApertura  DateTime           @map("fecha_apertura")
+  fechaCierre    DateTime           @map("fecha_cierre")
+  creadaEn       DateTime           @default(now()) @map("creada_en")
+  actualizadaEn  DateTime           @updatedAt @map("actualizada_en")
+
+  // El listado público filtra por estado y fecha de cierre; el NFR de rendimiento
+  // exige responder en menos de 1 segundo (docs/04-product-backlog.md).
+  @@index([estado, fechaCierre])
+  @@map("convocatorias")
+}
