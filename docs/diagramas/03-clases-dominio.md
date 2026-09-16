@@ -159,31 +159,36 @@ classDiagram
 
     class Solicitud {
         -EstadoSolicitud estado
-        +enviar() void
-        +evaluar(Evaluacion) void
-        +resolver(Decision) void
-        +cambiarEstado(EstadoSolicitud) void
+        -EntradaHistorial[] historial
+        +cargarDocumento(tipo, ArchivoDocumento, ref, Date)
+        +enviar(Date, autorId) void
+        +iniciarEvaluacion(Date, autorId) void
+        +resolver(Decision, Date, autorId, motivo) void
+        +adjudicar(Date, autorId) void
+        +documentosFaltantes() String[]
+        -transicionar(EstadoSolicitud, Date, autorId, motivo) void
     }
 
     class EstadoSolicitud {
         <<abstract>>
-        +nombre() NombreEstado
-        +cargarDocumento(Solicitud, Documento) void
-        +enviar(Solicitud) void
-        +evaluar(Solicitud, Evaluacion) void
-        +resolver(Solicitud, Decision) void
+        +nombre NombreEstado
+        +verificarCargaDeDocumentos() void
+        +enviar(VistaSolicitud) EstadoSolicitud
+        +iniciarEvaluacion() EstadoSolicitud
+        +resolver(Decision) EstadoSolicitud
+        +adjudicar() EstadoSolicitud
+        +estaActiva() boolean
         #rechazar(String) never
     }
 
     class EstadoBorrador {
-        +cargarDocumento() permitido
+        +verificarCargaDeDocumentos() permitido
         +enviar() permitido
     }
     class EstadoEnviada {
-        +evaluar() permitido
+        +iniciarEvaluacion() permitido
     }
     class EstadoEnEvaluacion {
-        +evaluar() permitido
         +resolver() permitido
     }
     class EstadoAprobada {
@@ -206,7 +211,9 @@ classDiagram
 ```
 
 **La clase base rechaza todo por defecto.** Cada estado concreto solo sobrescribe lo que sí
-permite. Consecuencia: evaluar un borrador o adjudicar una solicitud rechazada lanza una
+permite. **Los estados deciden, la solicitud aplica:** cada transición *devuelve* el estado
+siguiente, y es `Solicitud.transicionar` quien lo asigna y agrega la entrada al historial. Por eso
+el diagrama ya no tiene `cambiarEstado` público (versión 1.2, 16 Sep: ajustado al código). Consecuencia: evaluar un borrador o adjudicar una solicitud rechazada lanza una
 excepción sin que ningún otro código tenga que acordarse de comprobarlo.
 
 ### Transiciones válidas
@@ -328,13 +335,13 @@ válido. Además el compilador impide confundirlo con cualquier otro texto.
 |---|---|---|
 | `Usuario` | usuarios | 🟢 Implementada y probada — el diagrama coincide miembro por miembro. Ver la nota ³ |
 | `Convocatoria` | convocatorias | 🟡 Implementada salvo cerrar y descontar cupo — ver la nota ² |
-| `Estudiante` | estudiantes | 🔴 Sprint 4 |
-| `Solicitud` + jerarquía de estados | solicitudes | 🔴 Sprint 4 |
-| `Documento` | solicitudes | 🔴 Sprint 4 |
+| `Estudiante` | estudiantes | 🟢 Implementada y probada (16 Sep). El departamento es un catálogo de 22 valores, no texto |
+| `Solicitud` + jerarquía de estados | solicitudes | 🟢 Implementada y probada (16 Sep) — ver §2 |
+| `Documento` | solicitudes | 🟢 Implementado como `DocumentoCargado` dentro de `Solicitud` (composición), con `ArchivoDocumento` como objeto de valor |
 | `Evaluacion` + estrategias | evaluaciones | 🔴 Sprint 5 |
 | `Comite` | evaluaciones | 🔴 Sprint 5 |
 | `Beca` | solicitudes | 🔴 Sprint 6 |
-| `HistorialEstado` | solicitudes | 🔴 Sprint 4 |
+| `HistorialEstado` | solicitudes | 🟢 Implementado como `EntradaHistorial` (16 Sep): solo crece |
 
 ### ² Nota sobre `Convocatoria`
 

@@ -40,9 +40,9 @@ Los nueve objetivos específicos del proyecto, y dónde se resuelve cada uno.
 | # | Objetivo del enunciado | Epic | Historias | Módulo | Sprint | Estado |
 |---|---|---|---|---|---|---|
 | 1 | Administrar convocatorias | EPIC-02 | US-006 a US-010 | `convocatorias` | 3 | 🟡 Crear, publicar y listado público · faltan cerrar y editar |
-| 2 | Registrar estudiantes | EPIC-01, EPIC-03 | US-001, US-011 | `usuarios`, `estudiantes` | 2, 4 | 🟡 Registro hecho (US-001) · falta el perfil académico (US-011) |
-| 3 | Gestionar solicitudes | EPIC-03 | US-012, US-014 a US-016 | `solicitudes` | 4 | 🔴 Pendiente |
-| 4 | Cargar documentación | EPIC-03 | US-013 | `solicitudes` | 4 | 🔴 Pendiente |
+| 2 | Registrar estudiantes | EPIC-01, EPIC-03 | US-001, US-011 | `usuarios`, `estudiantes` | 2, 4 | 🟢 Registro (US-001) y perfil académico (US-011) · falta Staging |
+| 3 | Gestionar solicitudes | EPIC-03 | US-012, US-014 a US-016 | `solicitudes` | 4 | 🟢 Crear, enviar, listar e historial · falta Staging |
+| 4 | Cargar documentación | EPIC-03 | US-013 | `solicitudes` | 4 | 🟢 PDF/JPG/PNG hasta 5 MB, validados por contenido · falta Staging |
 | 5 | Administrar evaluaciones | EPIC-04 | US-019, US-021 | `evaluaciones` | 5 | 🔴 Pendiente |
 | 6 | Gestionar comités evaluadores | EPIC-04 | US-017, US-018, US-020 | `evaluaciones` | 5 | 🔴 Pendiente |
 | 7 | Aprobar o rechazar solicitudes | EPIC-05 | US-023, US-024, US-026 | `solicitudes` | 6 | 🔴 Pendiente |
@@ -54,7 +54,7 @@ Los nueve objetivos específicos del proyecto, y dónde se resuelve cada uno.
 | Requisito | Dónde se resuelve | Estado |
 |---|---|---|
 | Control de acceso por rol | `usuarios` · US-002, US-003 | 🟢 Guard global *seguro por defecto*, 4 roles, 403 verificado con pruebas e2e |
-| Trazabilidad del proceso | `solicitudes` · US-016, historial de estados | 🔴 Sprint 4 |
+| Trazabilidad del proceso | `solicitudes` · US-016, historial de estados | 🟢 Cada transición queda con fecha, autor y motivo; la tabla solo recibe inserciones |
 | Transparencia | Consulta pública sin autenticación · US-025 | 🔴 Sprint 6 |
 
 🟢 Terminado · 🟡 Parcial · 🔴 Pendiente
@@ -76,7 +76,7 @@ Si no se puede nombrar el problema concreto y la historia que lo origina, el pat
 | **Ubicación** | `modules/convocatorias/domain/factories/convocatoria.factory.ts` |
 | **Prueba que lo verifica** | Que cada fábrica concreta produzca los requisitos correctos y rechace cupos fuera de rango |
 | **Sprint** | 3 · Responsable: Stuard |
-| **Estado** | 🔴 Pendiente |
+| **Estado** | 🟢 **Implementado y probado** (12 Sep) — `convocatoria.factory.spec.ts` |
 
 | | **Builder** |
 |---|---|
@@ -95,7 +95,7 @@ Si no se puede nombrar el problema concreto y la historia que lo origina, el pat
 | **Problema real** | El dominio necesita verificar contraseñas y emitir sesiones sin depender de `bcryptjs` ni de `@nestjs/jwt`; y el enunciado anticipa integraciones con otras instituciones |
 | **Origen** | US-002 · NFR de seguridad: *"las contraseñas deben almacenarse con hash"* |
 | **Alternativa descartada** | Llamar a bcrypt dentro de la entidad: acopla el dominio y vuelve lentas las pruebas unitarias |
-| **Ubicación** | `usuarios/domain/ports/hasher-password.ts` → `BcryptHasherAdapter`<br>`usuarios/domain/ports/generador-token.ts` → `JwtGeneradorTokenAdapter`<br>`usuarios/domain/ports/usuario.repositorio.ts` → `UsuarioPrismaRepositorio` y `UsuarioEnMemoriaRepositorio` |
+| **Ubicación** | `solicitudes/domain/ports/almacenamiento-documentos.ts` → `AlmacenamientoLocalAdapter` y `AlmacenamientoMemoriaAdapter` (US-013)<br>`usuarios/domain/ports/hasher-password.ts` → `BcryptHasherAdapter`<br>`usuarios/domain/ports/generador-token.ts` → `JwtGeneradorTokenAdapter`<br>`usuarios/domain/ports/usuario.repositorio.ts` → `UsuarioPrismaRepositorio` y `UsuarioEnMemoriaRepositorio` |
 | **Prueba que lo verifica** | `autenticar-usuario.service.spec.ts` — 8 pruebas que corren con dobles, sin bcrypt real ni base de datos |
 | **Sprint** | **1** (adelantado del 4: apareció el problema, no la fecha) |
 | **Estado** | 🟢 **Implementado y probado** |
@@ -120,7 +120,7 @@ Si no se puede nombrar el problema concreto y la historia que lo origina, el pat
 | **Ubicación** | `modules/solicitudes/domain/estados/` |
 | **Prueba que lo verifica** | Que evaluar un borrador o adjudicar una solicitud rechazada lance excepción |
 | **Sprint** | 4 · Responsable: Stuard |
-| **Estado** | 🔴 Pendiente |
+| **Estado** | 🟢 **Implementado y probado** (16 Sep) — `estados-solicitud.spec.ts` prueba los 30 pares estado × acción |
 
 | | **Strategy** |
 |---|---|
@@ -136,13 +136,13 @@ Si no se puede nombrar el problema concreto y la historia que lo origina, el pat
 
 | Categoría | Exigido | Definidos | Implementados |
 |---|---|---|---|
-| Creacionales | 2 | 2 | 0 |
-| Estructurales | 2 | 2 | **1** |
-| De comportamiento | 2 | 2 | 0 |
+| Creacionales | 2 | 2 | **1** (Factory Method) |
+| Estructurales | 2 | 2 | **1** (Adapter) |
+| De comportamiento | 2 | 2 | **1** (State) |
 
 > **Cómo presentar esto sin adornarlo:** los seis están definidos con su problema, su alternativa
-> descartada y su ubicación prevista; **uno está implementado y probado**. Los cinco restantes
-> entran en el sprint donde aparece la historia que los origina. Implementarlos antes sería
+> descartada y su ubicación prevista; **tres están implementados y probados**, uno de cada tipo.
+> Los otros tres entran en el sprint donde aparece la historia que los origina. Implementarlos antes sería
 > escribir código sin problema que resolver, que es justo lo que el enunciado descarta.
 
 ---
