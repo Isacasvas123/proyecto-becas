@@ -6,14 +6,14 @@
 | ---------------------- | -------------------------------------------- |
 | **Versión del sistema** | 0.1.0                                       |
 | **Versión del manual** | 1.0                                          |
-| **Fecha**              | 12 de septiembre de 2026                     |
+| **Fecha**              | 12 de septiembre de 2026 · actualizado el 16 de septiembre |
 | **Responsable**        | Stuard Estrada                               |
 | **Dirigido a**         | Estudiantes, evaluadores y personal del Ministerio |
 
 > ### Lea esto antes de seguir
 >
 > **La plataforma está en construcción.** Este manual describe **únicamente lo que ya funciona** al
-> 12 de septiembre de 2026. La sección 5 lista lo que todavía no existe, con la fecha prevista.
+> 16 de septiembre de 2026. La sección 6 lista lo que todavía no existe, con la fecha prevista.
 >
 > Se escribe así a propósito: un manual que describa pantallas que no existen hace perder el
 > tiempo a quien lo lee y no sirve para nada.
@@ -57,7 +57,8 @@ Si todavía no tiene cuenta, use **"Crear cuenta"** en la parte de arriba. Le pe
 | **Contraseña**       | Al menos 8 caracteres, con una mayúscula y un número                      |
 
 Mientras escribe la contraseña, la lista de abajo le marca qué condiciones ya cumple. Al terminar,
-**queda dentro de la plataforma** sin tener que volver a escribir sus datos.
+**queda dentro de la plataforma** sin tener que volver a escribir sus datos, y llega a **Mi perfil**:
+es lo primero que necesita para postular (sección 4).
 
 | Si ve este mensaje                                   | Qué significa                                                     |
 | ---------------------------------------------------- | ----------------------------------------------------------------- |
@@ -163,38 +164,105 @@ El panel de filtros le permite ver solo el tipo que le interesa:
 > ⚠️ **La fecha de cierre no se prorroga.** Si una convocatoria cierra el 31 de octubre, el 1 de
 > noviembre ya no aparece y no se puede postular. No deje la postulación para el último día.
 
-## 4. Cerrar sesión
+## 4. Postular a una beca
+
+Con su cuenta de estudiante, el encabezado muestra **Mis solicitudes** y **Mi perfil**. Al entrar
+llega a **Mis solicitudes**.
+
+### 4.1 Paso 1 — Complete su perfil
+
+En **Mi perfil** llene sus datos académicos (centro educativo, nivel, promedio), su situación
+económica (ingreso familiar mensual en quetzales y cuántas personas dependen de él) y dónde vive
+(departamento y municipio).
+
+- **Puede guardar a medias.** Si todavía no tiene un dato, guarde lo que tenga y vuelva después.
+  Arriba verá en amarillo exactamente qué le falta.
+- **Sin perfil completo no se puede postular.** Cuando esté completo, el aviso se pone verde.
+
+### 4.2 Paso 2 — Inicie la solicitud
+
+En **Convocatorias**, cada tarjeta tiene un botón **Postular**. Al presionarlo se crea su
+solicitud **en borrador** y pasa a su expediente. Recibe un número como `SOL-2026-000014`:
+**anótelo**.
+
+| Si ve este mensaje | Qué hacer |
+|---|---|
+| *"Complete su perfil antes de postular. Falta: …"* | Use el enlace **Completar mi perfil**; al guardarlo podrá volver |
+| *"Ya tiene una solicitud activa para esta convocatoria"* | Ya postuló. Búsquela en **Mis solicitudes** |
+| *"La convocatoria … no está recibiendo postulaciones"* | El plazo cerró o todavía no abre |
+
+### 4.3 Paso 3 — Cargue sus documentos
+
+El expediente muestra la lista de documentos que pide esa convocatoria, cada uno con su botón
+**Cargar**.
+
+- **Formatos:** PDF, JPG o PNG. **Tamaño:** hasta 5 MB por archivo.
+- **Puede reemplazar** un archivo mientras la solicitud esté en borrador: botón **Reemplazar**.
+- Presione el nombre del archivo para descargarlo y comprobar que es el correcto.
+
+> ⚠️ **El archivo tiene que ser lo que dice ser.** Un documento de Word renombrado a `.pdf` se
+> rechaza con *"El archivo dice ser PDF pero su contenido no lo es"*. Genere o escanee el documento
+> directamente en PDF, JPG o PNG.
+
+> 💡 **¿Su archivo pesa más de 5 MB?** Escanee en menor resolución (150 ppp basta para leerlo) o
+> guarde la foto en JPG en vez de PNG.
+
+### 4.4 Paso 4 — Envíe la solicitud
+
+Cuando no falte nada, se habilita **Enviar solicitud**. El sistema le pide confirmar, porque
+**después de enviarla ya no se puede modificar**.
+
+Si falta algo, el mensaje dice **todo** lo que falta de una vez: datos del perfil y documentos.
+
+Al enviarla, el estado pasa a **Enviada**, queda registrada la fecha y la hora, y se le envía un
+aviso con su número de solicitud.
+
+### 4.5 Siga su solicitud
+
+**Mis solicitudes** muestra todas las suyas con su estado. En cada expediente, el **Historial**
+muestra cada cambio de estado con su fecha.
+
+| Estado | Qué significa |
+|---|---|
+| **Borrador** | La está preparando. Todavía puede cargar y reemplazar documentos |
+| **Enviada** | Llegó al Ministerio. Ya no se puede modificar |
+| **En evaluación** | Un comité la está revisando |
+| **Aprobada** · **Rechazada** | Ya hay una decisión, con su motivo |
+| **Adjudicada** | Se le otorgó la beca |
+
+> 🔒 **Nadie más ve sus solicitudes.** Si otra persona intenta abrir el enlace de la suya, el
+> servidor se lo niega.
+
+## 5. Cerrar sesión
 
 Use la opción de cerrar sesión del encabezado. Hágalo siempre que use una computadora que no sea
 suya.
 
-## 5. Lo que todavía no está disponible
+## 6. Lo que todavía no está disponible
 
 Esta es la parte honesta del manual. Lo siguiente **aún no funciona**, con la fecha prevista:
 
 | Funcionalidad                                | Estado           | Previsto para |
 | -------------------------------------------- | ---------------- | ------------- |
-| Ver y editar sus datos personales            | 🔴 No disponible | Sprint 4      |
+| Cambiar su nombre, correo o contraseña (US-004) | 🔴 No disponible | Sprint 4   |
 | Recuperar una contraseña olvidada            | 🔴 No disponible | Sprint 4      |
-| Postular a una convocatoria                  | 🔴 No disponible | Sprint 4      |
-| Subir documentos de respaldo                 | 🔴 No disponible | Sprint 4      |
-| Consultar el estado de su solicitud          | 🔴 No disponible | Sprint 4      |
+| Recibir los avisos por correo (hoy quedan registrados en el sistema) | 🔴 No disponible | Sprint 5 |
 | Evaluar solicitudes (evaluadores)            | 🔴 No disponible | Sprint 5      |
 | Consulta pública sin cuenta                  | 🔴 No disponible | Sprint 6      |
 | Reportes y estadísticas                      | 🔴 No disponible | Sprint 7      |
 
 
 
-### 5.1 Un defecto que ya está corregido
+### 6.1 Un defecto que ya está corregido
 
 Hasta el 12 de septiembre de 2026 había que iniciar sesión para ver las convocatorias, y eso estaba
 mal: consultarlas debe poder hacerlo cualquier persona, por transparencia. **Ya no hace falta
 cuenta.**
 
-## 6. Preguntas frecuentes
+## 7. Preguntas frecuentes
 
 **¿Puedo postular a más de una convocatoria?**
-Cuando la postulación esté disponible, sí, siempre que cumpla los requisitos de cada una.
+Sí, una solicitud por convocatoria. Si una le fue rechazada, puede volver a postular a esa misma.
 
 **Olvidé mi contraseña.**
 Por ahora no hay recuperación automática (Sprint 4). Comuníquese con el Ministerio.
@@ -213,7 +281,7 @@ Está usando una versión de prueba, no la oficial. Los datos que vea ahí no so
 **¿Por qué se cerró mi sesión sola?**
 Las sesiones duran 8 horas por seguridad. Vuelva a entrar.
 
-## 7. A quién acudir
+## 8. A quién acudir
 
 | Si...                                          | Acuda a                                             |
 | ---------------------------------------------- | --------------------------------------------------- |

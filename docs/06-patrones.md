@@ -19,7 +19,7 @@
 | Creacional | Builder | `modules/reportes/application/builders/` | 7 | Pendiente |
 | Estructural | **Adapter** | `modules/usuarios/infrastructure/adapters/` | **1** | ✅ **Implementado** |
 | Estructural | Facade | `modules/solicitudes/application/facades/` | 6 | Pendiente |
-| Comportamiento | State | `modules/solicitudes/domain/estados/` | 4 | Pendiente |
+| Comportamiento | **State** | `modules/solicitudes/domain/estados/` | **4** | ✅ **Implementado** (adelantado al 16 Sep) |
 | Comportamiento | Strategy | `modules/evaluaciones/domain/strategies/` | 5 | Pendiente |
 | *Extra* | Observer | `shared/patterns/observer/` | 5 (opcional) | Pendiente |
 | *Extra* | Chain of Responsibility | `modules/solicitudes/domain/validaciones/` | 6 (opcional) | Pendiente |
@@ -209,8 +209,15 @@ const reporte = new ReporteBuilder()
 | `usuarios/domain/ports/verificador-token.ts` | `JwtVerificadorTokenAdapter` | La validación de la sesión, que consume el guard global (US-003) |
 | `usuarios/domain/ports/usuario.repositorio.ts` | `UsuarioPrismaRepositorio` · `UsuarioEnMemoriaRepositorio` | La persistencia |
 
-**Ubicación prevista para el Sprint 4:** puerto en `modules/solicitudes/domain/ports/`,
-adaptadores en `modules/solicitudes/infrastructure/adapters/` (almacenamiento de documentos).
+| `solicitudes/domain/ports/almacenamiento-documentos.ts` | `AlmacenamientoLocalAdapter` · `AlmacenamientoMemoriaAdapter` | Dónde se guardan los documentos (US-013). Se elige con `ALMACENAMIENTO_TIPO` |
+| `solicitudes/domain/ports/notificador-solicitudes.ts` | `NotificadorConsolaAdapter` | El canal de avisos. El de correo llega con US-022 |
+| `solicitudes/domain/ports/consultas-externas.ts` | `ConsultaConvocatoriasAdapter` · `ConsultaPerfilesAdapter` | Otros módulos: `solicitudes` no importa su dominio, solo lo que exportan |
+
+> **16 de septiembre.** Se agregó el almacenamiento de documentos que aquí estaba *previsto para el
+> Sprint 4*. El adaptador local guarda las rutas **relativas** y comprueba, antes de leer o borrar,
+> que no salgan de su carpeta: una referencia manipulada como `../../.env` no llega al disco. El
+> de la nube no existe todavía; si se configura, la API **no arranca**, para que el error se vea al
+> desplegar y no con el primer documento.
 
 ### ¿Qué problema resuelve?
 
@@ -276,21 +283,27 @@ Ni la entidad `Usuario`, ni el caso de uso `AutenticarUsuarioService`, ni el con
 enteran. Esa es la ventaja, y es verificable: la prueba unitaria del caso de uso inyecta un
 hasher falso y corre en milisegundos, sin bcrypt real.
 
-### Esquema previsto para el Sprint 4 — almacenamiento de documentos
+### Esquema — almacenamiento de documentos (implementado el 16 Sep)
 
 ```ts
-// domain/ports/almacenamiento-documentos.port.ts
-export interface AlmacenamientoDocumentosPort {
-  guardar(archivo: ArchivoDocumento): Promise<ReferenciaDocumento>;
-  obtener(ref: ReferenciaDocumento): Promise<ArchivoDocumento>;
-  eliminar(ref: ReferenciaDocumento): Promise<void>;
+// solicitudes/domain/ports/almacenamiento-documentos.ts
+export interface AlmacenamientoDocumentos {
+  guardar(contenido: Buffer, destino: { carpeta: string; nombre: string }): Promise<string>;
+  obtener(referencia: string): Promise<Buffer>;
+  eliminar(referencia: string): Promise<void>;
 }
 
-// infrastructure/adapters/
-export class AlmacenamientoLocalAdapter implements AlmacenamientoDocumentosPort { /* fs */ }
-export class AlmacenamientoNubeAdapter  implements AlmacenamientoDocumentosPort { /* SDK */ }
-export class AlmacenamientoMemoriaAdapter implements AlmacenamientoDocumentosPort { /* tests */ }
+// solicitudes/infrastructure/almacenamiento/
+export class AlmacenamientoLocalAdapter   implements AlmacenamientoDocumentos { /* node:fs */ }
+export class AlmacenamientoMemoriaAdapter implements AlmacenamientoDocumentos { /* pruebas */ }
+// AlmacenamientoNubeAdapter: cuando haya proveedor. Es una clase nueva y una línea en el módulo.
 ```
+
+El caso de uso `CargarDocumentoService` usa el puerto en un orden deliberado: **guarda el archivo
+nuevo con un nombre único, actualiza la solicitud, y solo entonces borra el anterior**. Si guardar
+la solicitud falla, borra el archivo recién subido. Así nunca queda un documento marcado como
+cargado sin archivo detrás (flujo de excepción 3a de CU-07). Las pruebas lo verifican con el
+adaptador en memoria, forzando el fallo del repositorio.
 
 ---
 
@@ -369,7 +382,11 @@ export class SolicitudFacade {
 
 ## 5. State — `EstadoSolicitud`
 
-**Ubicación:** `modules/solicitudes/domain/estados/`
+**✅ IMPLEMENTADO EL 16 DE SEPTIEMBRE** (previsto para el Sprint 4; llegó con US-012).
+
+**Ubicación:** `modules/solicitudes/domain/estados/estados-solicitud.ts`
+**Pruebas:** `estados-solicitud.spec.ts` recorre **los 30 pares** estado × acción contra la tabla del
+diagrama: si alguien habilita una transición que no está dibujada, una prueba falla.
 
 ### ¿Qué problema resuelve?
 
@@ -419,33 +436,50 @@ recordarlo.
 - **El diagrama de estados se traduce uno a uno al código**, y el código sirve de documentación.
 - Cada estado se prueba unitariamente por separado.
 
-### Esquema
+### Esquema — tal como quedó implementado
 
 ```ts
 export abstract class EstadoSolicitud {
-  abstract get nombre(): NombreEstado;
-  cargarDocumento(_: Solicitud, __: Documento): void { this.rechazar('cargar documentos'); }
-  enviar(_: Solicitud): void                        { this.rechazar('enviar'); }
-  evaluar(_: Solicitud, __: Evaluacion): void       { this.rechazar('evaluar'); }
-  resolver(_: Solicitud, __: Decision): void        { this.rechazar('resolver'); }
+  abstract readonly nombre: NombreEstado;
+  verificarCargaDeDocumentos(): void              { this.rechazar('cargar o reemplazar documentos de'); }
+  enviar(_s: VistaSolicitud): EstadoSolicitud     { return this.rechazar('enviar'); }
+  iniciarEvaluacion(): EstadoSolicitud            { return this.rechazar('pasar a evaluación'); }
+  resolver(_d: Decision): EstadoSolicitud         { return this.rechazar('resolver'); }
+  adjudicar(): EstadoSolicitud                    { return this.rechazar('adjudicar'); }
+  estaActiva(): boolean                           { return true; }
 
   protected rechazar(accion: string): never {
-    throw new TransicionInvalidaError(
-      `No se puede ${accion} una solicitud en estado ${this.nombre}`);
+    throw new TransicionInvalidaError(`No se puede ${accion} una solicitud en estado ${this.nombre}.`);
   }
 }
 
 export class EstadoBorrador extends EstadoSolicitud {
-  get nombre() { return NombreEstado.BORRADOR; }
-  cargarDocumento(solicitud: Solicitud, doc: Documento) { solicitud.agregarDocumento(doc); }
-  enviar(solicitud: Solicitud) {
-    if (!solicitud.tieneTodosLosDocumentos())
-      throw new ReglaDeNegocioError('Faltan documentos exigidos por la convocatoria');
-    solicitud.cambiarEstado(new EstadoEnviada());
+  readonly nombre = NombreEstado.BORRADOR;
+  verificarCargaDeDocumentos(): void { /* permitido */ }
+  enviar(solicitud: VistaSolicitud): EstadoSolicitud {
+    const faltantes = solicitud.documentosFaltantes();
+    if (faltantes.length > 0) throw new ReglaDeNegocioError(`Faltan documentos exigidos: ...`);
+    return new EstadoEnviada();
   }
-  // evaluar() y resolver() heredan el rechazo: son imposibles desde BORRADOR.
+  // iniciarEvaluacion(), resolver() y adjudicar() heredan el rechazo.
+}
+
+// En la entidad: no hay un solo if sobre el estado.
+enviar(ahora: Date, autorId: string): void {
+  this.transicionar(this.estado.enviar(this), ahora, autorId, null);
+  this._enviadaEn = ahora;
 }
 ```
+
+**Una diferencia con la versión 1.0 de este esquema, y por qué.** En la variante clásica el estado
+llama a `solicitud.cambiarEstado(...)`, lo que obliga a exponer ese método a cualquiera. Aquí cada
+transición **devuelve** el estado siguiente y es la `Solicitud` quien lo aplica y lo anota en el
+historial (US-016). Resultado: la solicitud es la única que se modifica a sí misma, ningún código
+externo puede saltarse el historial, y cada estado se prueba sin construir una solicitud completa.
+`VistaSolicitud` es la interfaz mínima que un estado necesita ver: solo los documentos faltantes.
+
+Los estados de evaluación y adjudicación ya existen y están probados porque son parte del modelo;
+los **casos de uso** que los disparan llegan con sus historias (US-018, US-023, US-024).
 
 ---
 
