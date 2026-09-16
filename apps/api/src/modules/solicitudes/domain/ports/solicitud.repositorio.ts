@@ -22,4 +22,23 @@ export interface SolicitudRepositorio {
 
   /** Guarda la solicitud con sus documentos y su historial, todo o nada. */
   guardar(solicitud: Solicitud): Promise<void>;
+
+  /**
+   * US-023, criterio 4: guarda una solicitud recién APROBADA solo si su convocatoria todavía tiene
+   * cupo. La comprobación y la escritura DEBEN ser atómicas: dos aprobaciones simultáneas no pueden
+   * pasar las dos por el último cupo. Si no hay cupo, lanza `ReglaDeNegocioError` y no guarda nada.
+   */
+  guardarSiHayCupo(solicitud: Solicitud, cupos: number): Promise<void>;
+
+  /** Cuántas solicitudes de la convocatoria ocupan cupo: APROBADAS y ADJUDICADAS. */
+  contarOcupacion(convocatoriaId: string): Promise<{ aprobadas: number; adjudicadas: number }>;
+
+  /** US-025. */
+  buscarPorNumero(numero: string): Promise<Solicitud | null>;
+
+  contarBecasConPrefijo(prefijo: string): Promise<number>;
 }
+
+/** El mensaje de US-023, criterio 4. Lo usan los dos adaptadores para que no difieran. */
+export const mensajeSinCupo = (cupos: number) =>
+  `La convocatoria ya no tiene cupos disponibles (${cupos} en total). No se puede aprobar otra solicitud.`;

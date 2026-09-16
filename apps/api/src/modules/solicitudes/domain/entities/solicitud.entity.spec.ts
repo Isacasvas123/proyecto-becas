@@ -135,9 +135,11 @@ describe('Solicitud', () => {
       s.enviar(AHORA, 'e1');
       s.iniciarEvaluacion(AHORA, 'admin');
       s.resolver(Decision.APROBAR, AHORA, 'evaluador', '  Cumple todos los requisitos  ');
-      s.adjudicar(AHORA, 'admin');
+      s.adjudicar(AHORA, 'admin', 'BECA-2026-000001');
 
       expect(s.nombreEstado).toBe(NombreEstado.ADJUDICADA);
+      expect(s.beca).toEqual({ codigo: 'BECA-2026-000001', otorgadaEn: AHORA });
+      expect(s.ultimoCambio).toEqual(AHORA);
       expect(s.listaHistorial().map((h) => h.hacia)).toEqual([
         NombreEstado.BORRADOR,
         NombreEstado.ENVIADA,
