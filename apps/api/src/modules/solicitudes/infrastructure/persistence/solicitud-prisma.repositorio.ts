@@ -43,6 +43,27 @@ export class SolicitudPrismaRepositorio implements SolicitudRepositorio {
     return this.prisma.solicitud.count({ where: { numero: { startsWith: prefijo } } });
   }
 
+  async buscarPorConvocatoriaYEstado(
+    convocatoriaId: string,
+    estado: NombreEstado,
+  ): Promise<Solicitud[]> {
+    const filas = await this.prisma.solicitud.findMany({
+      where: { convocatoriaId, estado },
+      include: CON_DETALLE,
+      orderBy: { enviadaEn: 'asc' },
+    });
+    return filas.map(aDominio);
+  }
+
+  async buscarPorIds(ids: readonly string[]): Promise<Solicitud[]> {
+    if (ids.length === 0) return [];
+    const filas = await this.prisma.solicitud.findMany({
+      where: { id: { in: [...ids] } },
+      include: CON_DETALLE,
+    });
+    return filas.map(aDominio);
+  }
+
   /**
    * En una sola transacción: la solicitud, sus documentos y las entradas nuevas del historial.
    * Si algo falla no queda un documento guardado con la solicitud en el estado anterior.

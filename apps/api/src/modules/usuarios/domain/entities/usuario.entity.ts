@@ -115,6 +115,20 @@ export class Usuario {
    * `"rol": "ADMINISTRADOR"` en el formulario para darse privilegios. Aquí no hay por dónde.
    */
   static nuevoEstudiante(datos: DatosNuevoEstudiante): Usuario {
+    return Usuario.cuentaNueva(datos, RolUsuario.ESTUDIANTE);
+  }
+
+  /**
+   * US-017 — la cuenta de un evaluador, que crea un administrador.
+   *
+   * Mismo razonamiento que `nuevoEstudiante`: el rol lo fija el método, no quien llama. No existe
+   * un "crear cuenta con el rol X": cada rol tiene su puerta y su caso de uso.
+   */
+  static nuevoEvaluador(datos: DatosNuevoEstudiante): Usuario {
+    return Usuario.cuentaNueva(datos, RolUsuario.EVALUADOR);
+  }
+
+  private static cuentaNueva(datos: DatosNuevoEstudiante, rol: RolUsuario): Usuario {
     const nombreCompleto = datos.nombreCompleto.trim().replace(/\s+/g, ' ');
 
     if (nombreCompleto.length < 3) {
@@ -126,7 +140,7 @@ export class Usuario {
       nombreUsuario: datos.nombreUsuario,
       correo: normalizarCorreo(datos.correo),
       hashPassword: datos.hashPassword,
-      rol: RolUsuario.ESTUDIANTE,
+      rol,
       activo: true,
       nombreCompleto,
       cui: datos.cui,
