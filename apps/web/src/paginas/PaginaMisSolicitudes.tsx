@@ -9,7 +9,7 @@ import { useEffect, useState, type ReactElement } from 'react';
 import { Link } from 'react-router-dom';
 
 import { listarMisSolicitudes, type Solicitud } from '../api/cliente';
-import { MarcoEstudiante } from '../componentes/MarcoEstudiante';
+import { MarcoPrivado } from '../componentes/MarcoPrivado';
 import { formatearFecha, formatearFechaHora, nombreEstadoSolicitud } from '../formato';
 
 function situacion(s: Solicitud): string {
@@ -36,7 +36,7 @@ export function PaginaMisSolicitudes(): ReactElement {
   }, []);
 
   return (
-    <MarcoEstudiante>
+    <MarcoPrivado>
       <div className="barra-resultados">
         <div>
           <h1>Mis solicitudes</h1>
@@ -97,6 +97,6 @@ export function PaginaMisSolicitudes(): ReactElement {
           ))}
         </ul>
       )}
-    </MarcoEstudiante>
+    </MarcoPrivado>
   );
 }

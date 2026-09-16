@@ -21,7 +21,7 @@ import {
   type ElementoCatalogo,
   type PerfilEstudiante,
 } from '../api/cliente';
-import { MarcoEstudiante } from '../componentes/MarcoEstudiante';
+import { MarcoPrivado } from '../componentes/MarcoPrivado';
 
 const NIVELES: ElementoCatalogo[] = [
   { codigo: 'NIVEL_MEDIO', descripcion: 'Nivel medio (diversificado)' },
@@ -110,7 +110,7 @@ export function PaginaPerfil(): ReactElement {
   }
 
   return (
-    <MarcoEstudiante>
+    <MarcoPrivado>
       <div className="barra-resultados">
         <div>
           <h1>Mi perfil</h1>
@@ -267,6 +267,6 @@ export function PaginaPerfil(): ReactElement {
           </div>
         </form>
       )}
-    </MarcoEstudiante>
+    </MarcoPrivado>
   );
 }

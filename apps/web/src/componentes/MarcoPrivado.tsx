@@ -1,8 +1,8 @@
 /**
- * Estructura común de las pantallas del estudiante: encabezado, contenido y pie.
+ * Estructura común de las pantallas con sesión (estudiante, evaluador y administración):
+ * encabezado y contenido.
  *
- * Existe para que perfil, mis solicitudes y detalle no repitan el mismo cierre de sesión y el
- * mismo pie. Cerrar sesión desde una pantalla privada lleva al listado público: quedarse en una
+ * Existe para que cada pantalla no repita el mismo cierre de sesión. Cerrar sesión desde una pantalla privada lleva al listado público: quedarse en una
  * ruta protegida solo provocaría un salto al login.
  */
 import type { ReactElement, ReactNode } from 'react';
@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { Encabezado } from './Encabezado';
 import { useSesion } from '../sesion/ContextoSesion';
 
-export function MarcoEstudiante({ children }: { children: ReactNode }): ReactElement {
+export function MarcoPrivado({ children }: { children: ReactNode }): ReactElement {
   const { sesion, cerrar } = useSesion();
   const navegar = useNavigate();
 
@@ -25,7 +25,7 @@ export function MarcoEstudiante({ children }: { children: ReactNode }): ReactEle
         }}
       />
       <div className="contenido">
-        <main className="estudiante">{children}</main>
+        <main className="privada">{children}</main>
       </div>
     </>
   );

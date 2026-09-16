@@ -27,7 +27,8 @@ import {
   type Solicitud,
 } from '../api/cliente';
 import { IconoDocumento } from '../componentes/Iconos';
-import { MarcoEstudiante } from '../componentes/MarcoEstudiante';
+import { MarcoPrivado } from '../componentes/MarcoPrivado';
+import { guardarArchivo } from '../descargas';
 import {
   formatearFecha,
   formatearFechaHora,
@@ -108,13 +109,7 @@ export function PaginaSolicitud(): ReactElement {
     setAviso(null);
     try {
       const archivo = await descargarDocumento(id, documento.tipo);
-      const url = URL.createObjectURL(archivo);
-      const enlace = document.createElement('a');
-      enlace.href = url;
-      enlace.download = documento.nombreArchivo ?? documento.tipo;
-      enlace.click();
-      // Se libera después: si se liberara en el acto, algunos navegadores cancelan la descarga.
-      setTimeout(() => URL.revokeObjectURL(url), 10_000);
+      guardarArchivo(archivo, documento.nombreArchivo ?? documento.tipo);
     } catch (causa: unknown) {
       setAviso({
         tipo: 'error',
@@ -147,7 +142,7 @@ export function PaginaSolicitud(): ReactElement {
   }
 
   return (
-    <MarcoEstudiante>
+    <MarcoPrivado>
       <p className="migas">
         <Link to="/solicitudes">← Mis solicitudes</Link>
       </p>
@@ -292,7 +287,7 @@ export function PaginaSolicitud(): ReactElement {
           </div>
         </>
       )}
-    </MarcoEstudiante>
+    </MarcoPrivado>
   );
 }
 
