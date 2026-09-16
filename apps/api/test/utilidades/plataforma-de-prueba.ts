@@ -1,5 +1,5 @@
 /**
- * La plataforma completa montada para las pruebas de integración de EPIC-04 y EPIC-05.
+ * La plataforma completa montada para las pruebas de integración de EPIC-04, EPIC-05 y EPIC-06.
  *
  * POR QUÉ NO SE IMPORTAN `EvaluacionesModule` NI `ResolucionesModule`
  *   Los dos importan `UsuariosModule`, que importa `@nestjs/jwt`, y en esta rama Jest todavía no
@@ -66,6 +66,23 @@ import {
   ResolucionesController,
 } from '../../src/modules/resoluciones/presentation/controllers/resoluciones.controller';
 import { LimiteConsultasGuard } from '../../src/modules/resoluciones/presentation/guards/limite-consultas.guard';
+import { GenerarReporteService } from '../../src/modules/reportes/application/services/generar-reporte.service';
+import { PanelService } from '../../src/modules/reportes/application/services/panel.service';
+import { ReporteRegionesService } from '../../src/modules/reportes/application/services/reporte-regiones.service';
+import {
+  EXPORTADORES,
+  FUENTE_CONVOCATORIAS,
+  FUENTE_PERFILES,
+  FUENTE_SOLICITUDES,
+} from '../../src/modules/reportes/domain/ports/puertos';
+import { CsvExportador } from '../../src/modules/reportes/infrastructure/exportadores/csv.exportador';
+import { PdfExportador } from '../../src/modules/reportes/infrastructure/exportadores/pdf.exportador';
+import {
+  FuenteConvocatoriasAdapter,
+  FuentePerfilesAdapter,
+  FuenteSolicitudesAdapter,
+} from '../../src/modules/reportes/infrastructure/integraciones/fuentes.adapter';
+import { ReportesController } from '../../src/modules/reportes/presentation/reportes.controller';
 import { ALMACENAMIENTO_DOCUMENTOS } from '../../src/modules/solicitudes/domain/ports/almacenamiento-documentos';
 import { SOLICITUD_REPOSITORIO } from '../../src/modules/solicitudes/domain/ports/solicitud.repositorio';
 import { AlmacenamientoMemoriaAdapter } from '../../src/modules/solicitudes/infrastructure/almacenamiento/almacenamiento-memoria.adapter';
@@ -164,6 +181,7 @@ export async function montarPlataforma(): Promise<INestApplication<App>> {
       EvaluacionesController,
       ResolucionesController,
       ConsultaPublicaController,
+      ReportesController,
     ],
     providers: [
       // evaluaciones
@@ -192,6 +210,20 @@ export async function montarPlataforma(): Promise<INestApplication<App>> {
       },
       { provide: CONSULTA_IDENTIDAD, useClass: ConsultaIdentidadAdapter },
       { provide: NOTIFICADOR_RESOLUCIONES, useClass: NotificadorResolucionesConsolaAdapter },
+      // reportes
+      GenerarReporteService,
+      PanelService,
+      ReporteRegionesService,
+      CsvExportador,
+      PdfExportador,
+      {
+        provide: EXPORTADORES,
+        inject: [CsvExportador, PdfExportador],
+        useFactory: (csv: CsvExportador, pdf: PdfExportador) => [csv, pdf],
+      },
+      { provide: FUENTE_SOLICITUDES, useClass: FuenteSolicitudesAdapter },
+      { provide: FUENTE_PERFILES, useClass: FuentePerfilesAdapter },
+      { provide: FUENTE_CONVOCATORIAS, useClass: FuenteConvocatoriasAdapter },
       // seguridad
       { provide: VERIFICADOR_TOKEN, useClass: VerificadorFalso },
       { provide: APP_GUARD, useClass: AutenticacionGuard },

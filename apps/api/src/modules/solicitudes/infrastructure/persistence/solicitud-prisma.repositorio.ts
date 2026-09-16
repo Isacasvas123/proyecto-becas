@@ -5,7 +5,11 @@ import { PrismaService } from '../../../../shared/persistence/prisma.service';
 import { Solicitud } from '../../domain/entities/solicitud.entity';
 import { NombreEstado } from '../../domain/enums/solicitud.enums';
 import { ReglaDeNegocioError } from '../../../../shared/exceptions/errores-dominio';
-import { mensajeSinCupo, SolicitudRepositorio } from '../../domain/ports/solicitud.repositorio';
+import {
+  FiltroSolicitudesReporte,
+  mensajeSinCupo,
+  SolicitudRepositorio,
+} from '../../domain/ports/solicitud.repositorio';
 
 const CON_DETALLE = {
   documentos: true,
@@ -112,6 +116,22 @@ export class SolicitudPrismaRepositorio implements SolicitudRepositorio {
       include: CON_DETALLE,
     });
     return fila === null ? null : aDominio(fila);
+  }
+
+  async paraReporte(f: FiltroSolicitudesReporte): Promise<Solicitud[]> {
+    const estados = (f.estados ?? Object.values(NombreEstado)).filter(
+      (e) => e !== NombreEstado.BORRADOR,
+    );
+    const filas = await this.prisma.solicitud.findMany({
+      where: {
+        convocatoriaId: f.convocatoriaId,
+        estado: { in: estados },
+        enviadaEn: { not: null, gte: f.enviadasDesde, lte: f.enviadasHasta },
+      },
+      include: CON_DETALLE,
+      orderBy: { numero: 'asc' },
+    });
+    return filas.map(aDominio);
   }
 
   contarBecasConPrefijo(prefijo: string): Promise<number> {

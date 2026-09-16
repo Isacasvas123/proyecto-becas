@@ -3,6 +3,13 @@ import { NombreEstado } from '../enums/solicitud.enums';
 
 export const SOLICITUD_REPOSITORIO = Symbol('SolicitudRepositorio');
 
+export interface FiltroSolicitudesReporte {
+  readonly convocatoriaId?: string;
+  readonly estados?: readonly NombreEstado[];
+  readonly enviadasDesde?: Date;
+  readonly enviadasHasta?: Date;
+}
+
 export interface SolicitudRepositorio {
   buscarPorId(id: string): Promise<Solicitud | null>;
 
@@ -37,6 +44,12 @@ export interface SolicitudRepositorio {
   buscarPorNumero(numero: string): Promise<Solicitud | null>;
 
   contarBecasConPrefijo(prefijo: string): Promise<number>;
+
+  /**
+   * EPIC-06. Las solicitudes RECIBIDAS (nunca las que siguen en borrador) que cumplan el filtro.
+   * El rango de fechas se aplica a la fecha de envío.
+   */
+  paraReporte(filtro: FiltroSolicitudesReporte): Promise<Solicitud[]>;
 }
 
 /** El mensaje de US-023, criterio 4. Lo usan los dos adaptadores para que no difieran. */
