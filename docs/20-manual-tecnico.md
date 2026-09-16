@@ -86,6 +86,7 @@ proyecto-becas/
 │   │   │   │   ├── convocatorias/   Programas de beca
 │   │   │   │   ├── estudiantes/     Perfil académico (US-011)
 │   │   │   │   ├── solicitudes/     Solicitudes, documentos e historial (EPIC-03)
+│   │   │   │   ├── evaluaciones/    Comités, asignación, dictámenes y consolidado (EPIC-04)
 │   │   │   │   └── salud/           /health y /ready
 │   │   │   ├── shared/
 │   │   │   │   ├── exceptions/      Filtro global de errores de dominio
@@ -122,6 +123,8 @@ Es la evidencia del patrón **Adapter** y la tabla que demuestra la inversión d
 | `solicitudes/domain/ports/almacenamiento-documentos` | `AlmacenamientoLocalAdapter` · `AlmacenamientoMemoriaAdapter` | Dónde se guardan los archivos |
 | `solicitudes/domain/ports/notificador-solicitudes` | `NotificadorConsolaAdapter` | El canal de avisos (correo en US-022) |
 | `solicitudes/domain/ports/consultas-externas` | `ConsultaConvocatoriasAdapter` · `ConsultaPerfilesAdapter` | Los otros módulos: se les pregunta por su capa de aplicación, nunca por su dominio |
+| `evaluaciones/domain/ports/comite.repositorio` · `dictamen.repositorio` | `ComitePrismaRepositorio` · `DictamenPrismaRepositorio` y sus dobles en memoria | La persistencia. El de dictámenes **solo crea y lee** |
+| `evaluaciones/domain/ports/consultas-externas` | Cuatro adaptadores hacia `solicitudes`, `convocatorias`, `estudiantes` y `usuarios` | Los otros módulos. Ninguno de ellos depende de `evaluaciones` |
 
 El enlace ocurre en un único punto por módulo, el archivo `*.module.ts`:
 
@@ -159,6 +162,17 @@ Base local: `http://localhost:3000`
 | `PUT`  | `/solicitudes/:id/documentos/:tipo` | **ESTUDIANTE** | Carga o reemplaza un documento; multipart, campo `archivo` (US-013) |
 | `GET`  | `/solicitudes/:id/documentos/:tipo` | **ESTUDIANTE** | Descarga el propio documento |
 | `POST` | `/solicitudes/:id/enviar` | **ESTUDIANTE** | La envía (US-014) |
+| `GET` · `POST` | `/evaluadores` | **ADMINISTRADOR** | Lista o crea cuentas de evaluador (US-017). Mismo cuerpo que el registro |
+| `GET` · `POST` | `/comites` | **ADMINISTRADOR** | Lista o crea comités (US-017) |
+| `GET` | `/comites/:id` | **ADMINISTRADOR** | Detalle, con carga de cada integrante |
+| `POST` | `/comites/:id/evaluadores` | **ADMINISTRADOR** | Agrega integrantes |
+| `GET` | `/comites/:id/por-asignar` | **ADMINISTRADOR** | Las solicitudes ENVIADAS de su convocatoria (US-018) |
+| `POST` | `/comites/:id/asignaciones` | **ADMINISTRADOR** | `{ "modo": "AUTOMATICO", "porSolicitud": 2 }` o `{ "modo": "MANUAL", "asignaciones": [...] }` (US-018) |
+| `GET` | `/comites/:id/consolidado` | **ADMINISTRADOR** | Puntaje promedio y ranking (US-021) |
+| `GET` | `/evaluaciones/asignadas` | **EVALUADOR** | Las propias (US-020) |
+| `GET` | `/evaluaciones/solicitudes/:id` | **EVALUADOR** | Solicitante, documentos y puntaje calculado. Si no está asignada: **403** |
+| `GET` | `/evaluaciones/solicitudes/:id/documentos/:tipo` | **EVALUADOR** | Descarga un documento de una solicitud asignada |
+| `POST` | `/evaluaciones/solicitudes/:id/dictamen` | **EVALUADOR** | `{ "recomendacion", "observacion" }`. El puntaje **no se manda**: mandarlo es 400 (US-019) |
 
 > **El id del estudiante nunca viaja en la URL ni en el cuerpo.** Sale del token con el decorador
 > `@UsuarioActual()`. No existe una forma de pedir "las solicitudes del estudiante X".
@@ -310,7 +324,7 @@ diferencia, y una prueba la fija para que nadie la "arregle" agregándolo al esq
 
 ## 5. Base de datos
 
-Seis tablas hoy. El dominio declara sus propios enums en lugar de importar los de Prisma, para no
+Diez tablas hoy. El dominio declara sus propios enums en lugar de importar los de Prisma, para no
 meter el ORM dentro de `domain/`; el precio es mantener dos listas sincronizadas, y se mitiga con
 una prueba que las compara y falla en CI si divergen.
 
@@ -369,7 +383,19 @@ cumplir un requisito. `departamento` es el enum `Departamento` (22 valores).
 Guardar una solicitud es **una transacción**: la fila, sus documentos y las entradas nuevas del
 historial. Si algo falla, no queda un documento guardado con la solicitud en el estado anterior.
 
-### 5.5 Migraciones
+### 5.5 Comités, asignaciones y dictámenes (EPIC-04)
+
+| Tabla | Lo importante |
+|---|---|
+| `comites` | `convocatoria_id` **único**: una convocatoria, un comité (CU-13, 3a). Guarda quién lo creó |
+| `comite_evaluadores` | Clave compuesta `(comite_id, evaluador_id)` |
+| `asignaciones_evaluacion` | Único por `(solicitud_id, evaluador_id)`: repetir una asignación no la duplica. Guarda quién asignó y cuándo |
+| `dictamenes` | Único por `(solicitud_id, evaluador_id)`. `puntaje` `DECIMAL(5,2)`, `desglose` JSON con el cálculo tal como se hizo. La aplicación **solo inserta** |
+
+Borrar un usuario, una solicitud o una convocatoria con comités, asignaciones o dictámenes está
+**restringido** en la base.
+
+### 5.6 Migraciones
 
 Versionadas en `apps/api/prisma/migrations/`. **Nunca se modifica la base a mano.**
 
@@ -399,6 +425,7 @@ Todo por variables de entorno. **Nada de direcciones ni secretos en el código.*
 | `VITE_API_URL`    | URL de la API para el frontend               |                                              |
 | `ALMACENAMIENTO_TIPO` | Adaptador de documentos (`local`)       | Otro valor impide arrancar: todavía no existe |
 | `ALMACENAMIENTO_RUTA_LOCAL` | Carpeta de documentos (`./uploads`) | Está en `.gitignore`. En Staging el disco se borra en cada despliegue |
+| `EVALUADOR_*` | Evaluador de prueba del seed | Solo desarrollo, igual que `ADMIN_*` |
 
 > ⚠️ Las credenciales de `ADMIN_*` en `.env.example` son **solo para el seed de desarrollo local**.
 > El seed **no se ejecuta en Staging**: crearía un administrador con credenciales que están escritas
@@ -475,7 +502,7 @@ El orden importa: **de dentro hacia fuera**, igual que apuntan las dependencias.
 | **Adapter**      | Estructural    | ✅ Implementado — **sin pruebas (0 %)** | 1      |
 | **Factory Method** | Creacional   | ✅ Implementado y probado (12 Sep)      | 3      |
 | **State**        | Comportamiento | ✅ Implementado y probado (16 Sep)      | 4      |
-| Strategy         | Comportamiento | 🔴 Pendiente                            | 5      |
+| **Strategy**     | Comportamiento | ✅ Implementado y probado (16 Sep)      | 5      |
 | Facade           | Estructural    | 🔴 Pendiente                            | 6      |
 | Builder          | Creacional     | 🔴 Pendiente                            | 7      |
 
@@ -499,4 +526,8 @@ Se documenta para que quien mantenga el sistema no la descubra a golpes:
 | El dominio duplica los enums de Prisma                          | Pueden desincronizarse                           | Mitigado con una prueba |
 | Los documentos se guardan en el disco del servidor               | En Staging (Render) se pierden en cada despliegue | Adaptador de nube cuando haya proveedor; el puerto ya existe |
 | El número de solicitud se calcula contando las del año           | Dos creaciones simultáneas: la segunda falla contra el índice único (no se duplica) | Aceptado, igual que el código de convocatoria |
-| Los repositorios Prisma de `estudiantes` y `solicitudes` sin prueba automática contra la base | El SQL real solo se verificó a mano (16 Sep) | Mismo plan que el Issue #6 |
+| Los repositorios Prisma de `estudiantes`, `solicitudes` y `evaluaciones` sin prueba automática contra la base | El SQL real solo se verificó a mano (16 Sep) | Mismo plan que el Issue #6 |
+| Las fórmulas de puntaje son una propuesta del equipo | Pueden no coincidir con la política del Ministerio | **Confirmar con el Product Owner**; cambiar es editar una clase |
+| El perfil del estudiante se puede editar después de enviar la solicitud | El puntaje se calcula con el perfil del momento de evaluar | Mitigado: el dictamen guarda los datos usados en su desglose. Solución completa: congelar el perfil al enviar |
+| No se pueden quitar integrantes de un comité (CU-13, 5a) | Un evaluador que se retira sigue en el comité | Siguiente iteración de US-017 |
+| La prueba de integración de EPIC-04 no importa `EvaluacionesModule` | Jest no carga `@nestjs/jwt` en esta rama | Se corrige con el PR #12; entonces se simplifica la prueba |

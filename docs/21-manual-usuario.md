@@ -13,7 +13,7 @@
 > ### Lea esto antes de seguir
 >
 > **La plataforma está en construcción.** Este manual describe **únicamente lo que ya funciona** al
-> 16 de septiembre de 2026. La sección 6 lista lo que todavía no existe, con la fecha prevista.
+> 16 de septiembre de 2026. La sección 8 lista lo que todavía no existe, con la fecha prevista.
 >
 > Se escribe así a propósito: un manual que describa pantallas que no existen hace perder el
 > tiempo a quien lo lee y no sirve para nada.
@@ -233,12 +233,47 @@ muestra cada cambio de estado con su fecha.
 > 🔒 **Nadie más ve sus solicitudes.** Si otra persona intenta abrir el enlace de la suya, el
 > servidor se lo niega.
 
-## 5. Cerrar sesión
+## 5. Evaluar solicitudes (evaluadores)
+
+Con una cuenta de **evaluador**, al entrar llega a **Mis evaluaciones**: las solicitudes que le
+asignaron, primero las pendientes. No verá ninguna otra.
+
+1. Abra una solicitud con **Evaluar**.
+2. Revise los **datos del solicitante** y abra cada **documento** con su nombre.
+3. El **puntaje** ya viene calculado según el tipo de beca, con el detalle de cómo se obtuvo. Usted
+   no lo escribe.
+4. Elija **Favorable** o **Desfavorable** y escriba una **observación** de al menos 20 caracteres que
+   justifique su decisión.
+5. Presione **Emitir dictamen** y confirme.
+
+> ⚠️ **Un dictamen no se puede modificar.** Queda registrado con su nombre, la fecha y la hora.
+> Revise antes de confirmar.
+
+| Tipo de beca | Cómo se calcula el puntaje |
+|---|---|
+| Nivel medio y posgrado | **Mérito académico**: el promedio del estudiante |
+| Universitaria | **Mixto**: 60 % el promedio y 40 % la necesidad económica (menos ingreso por persona del hogar, más puntos) |
+
+> Estas fórmulas son provisionales y pueden cambiar cuando el Ministerio las confirme.
+
+## 6. Comités y asignación (administración)
+
+- **Evaluadores**: cree aquí las cuentas de quienes van a evaluar. Entrégueles su usuario y su
+  contraseña inicial por un canal seguro.
+- **Comités**: cada convocatoria tiene **un** comité, con al menos un evaluador. Sus integrantes
+  podrán ver los datos y documentos de los aspirantes de esa convocatoria.
+- Dentro del comité, **Por asignar** muestra las solicitudes enviadas. Puede repartirlas todas de
+  forma **equitativa** (elija cuántos evaluadores por solicitud) o asignar una por una. Al
+  asignarlas pasan a **En evaluación** y el estudiante lo ve en su historial.
+- El **Consolidado** muestra el puntaje promedio de cada solicitud y el orden resultante. Las filas
+  resaltadas caben en los cupos. Es una referencia: aprobar o rechazar es un paso aparte.
+
+## 7. Cerrar sesión
 
 Use la opción de cerrar sesión del encabezado. Hágalo siempre que use una computadora que no sea
 suya.
 
-## 6. Lo que todavía no está disponible
+## 8. Lo que todavía no está disponible
 
 Esta es la parte honesta del manual. Lo siguiente **aún no funciona**, con la fecha prevista:
 
@@ -247,19 +282,20 @@ Esta es la parte honesta del manual. Lo siguiente **aún no funciona**, con la f
 | Cambiar su nombre, correo o contraseña (US-004) | 🔴 No disponible | Sprint 4   |
 | Recuperar una contraseña olvidada            | 🔴 No disponible | Sprint 4      |
 | Recibir los avisos por correo (hoy quedan registrados en el sistema) | 🔴 No disponible | Sprint 5 |
-| Evaluar solicitudes (evaluadores)            | 🔴 No disponible | Sprint 5      |
+| Quitar integrantes de un comité              | 🔴 No disponible | Sprint 5      |
+| Aprobar, rechazar y adjudicar becas          | 🔴 No disponible | Sprint 6      |
 | Consulta pública sin cuenta                  | 🔴 No disponible | Sprint 6      |
 | Reportes y estadísticas                      | 🔴 No disponible | Sprint 7      |
 
 
 
-### 6.1 Un defecto que ya está corregido
+### 8.1 Un defecto que ya está corregido
 
 Hasta el 12 de septiembre de 2026 había que iniciar sesión para ver las convocatorias, y eso estaba
 mal: consultarlas debe poder hacerlo cualquier persona, por transparencia. **Ya no hace falta
 cuenta.**
 
-## 7. Preguntas frecuentes
+## 9. Preguntas frecuentes
 
 **¿Puedo postular a más de una convocatoria?**
 Sí, una solicitud por convocatoria. Si una le fue rechazada, puede volver a postular a esa misma.
@@ -281,7 +317,7 @@ Está usando una versión de prueba, no la oficial. Los datos que vea ahí no so
 **¿Por qué se cerró mi sesión sola?**
 Las sesiones duran 8 horas por seguridad. Vuelva a entrar.
 
-## 8. A quién acudir
+## 10. A quién acudir
 
 | Si...                                          | Acuda a                                             |
 | ---------------------------------------------- | --------------------------------------------------- |

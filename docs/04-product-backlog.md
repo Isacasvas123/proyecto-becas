@@ -43,6 +43,11 @@
 | **US-014** Enviar solicitud | 🟡 **Criterios cumplidos** — falta Staging | Un solo mensaje con todo lo que falta. La notificación sale por consola hasta US-022 (correo). Adelantada del Sprint 4 |
 | **US-015** Ver mis solicitudes | 🟡 **Criterios cumplidos** — falta Staging | Otro estudiante recibe 403 (US-003). Adelantada del Sprint 4 |
 | **US-016** Historial de la solicitud | 🟡 **Criterios cumplidos** — falta Staging | Cada transición guarda fecha, autor y motivo; solo se insertan filas. Adelantada del Sprint 4 |
+| **US-017** Crear comité evaluador | 🟡 **Implementada** — falta Staging | Sin criterios escritos: se tomaron los de CU-13 (un comité por convocatoria, al menos un evaluador, sin repetidos, auditoría). Incluye crear cuentas de evaluador (decisión del 16 Sep). Quitar integrantes (5a) queda pendiente. Adelantada del Sprint 5 |
+| **US-018** Asignar solicitudes | 🟡 **Criterios cumplidos** — falta Staging | Manual y reparto automático equitativo que respeta la carga previa. Adelantada del Sprint 5 |
+| **US-019** Evaluar una solicitud | 🟡 **Criterios cumplidos** — falta Staging | Con el patrón **Strategy**. El puntaje lo calcula el sistema; **las fórmulas están pendientes de confirmar con el Product Owner**. Adelantada del Sprint 5 |
+| **US-020** Ver mis solicitudes asignadas | 🟡 **Implementada** — falta Staging | Solo las propias, pendientes primero. Otro evaluador recibe 403. Adelantada del Sprint 5 |
+| **US-021** Consolidar dictámenes | 🟡 **Implementada** — falta Staging | Promedio, ranking y referencia de cupos. No aprueba nada: eso es US-023. Adelantada del Sprint 5 |
 | Resto | ⬜ Pendiente | Según el calendario de sprints |
 
 > **Nota para la Sprint Review.** Ninguna de estas historias puede marcarse como *Completada*
