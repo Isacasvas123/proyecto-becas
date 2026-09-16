@@ -88,6 +88,7 @@ proyecto-becas/
 │   │   │   │   ├── solicitudes/     Solicitudes, documentos e historial (EPIC-03)
 │   │   │   │   ├── evaluaciones/    Comités, asignación, dictámenes y consolidado (EPIC-04)
 │   │   │   │   ├── resoluciones/    Resolución, adjudicación y consulta pública (EPIC-05)
+│   │   │   │   ├── reportes/        Reportes, panel y exportación (EPIC-06; solo lee)
 │   │   │   │   └── salud/           /health y /ready
 │   │   │   ├── shared/
 │   │   │   │   ├── exceptions/      Filtro global de errores de dominio
@@ -128,6 +129,8 @@ Es la evidencia del patrón **Adapter** y la tabla que demuestra la inversión d
 | `evaluaciones/domain/ports/consultas-externas` | Cuatro adaptadores hacia `solicitudes`, `convocatorias`, `estudiantes` y `usuarios` | Los otros módulos. Ninguno de ellos depende de `evaluaciones` |
 | `resoluciones/domain/ports/consultas-externas` | Cuatro adaptadores hacia `solicitudes`, `evaluaciones`, `convocatorias` y `usuarios` | Los colaboradores de la fachada. `resoluciones` es el módulo más alto: nadie depende de él |
 | `resoluciones/domain/ports/notificador-resoluciones` | `NotificadorResolucionesConsolaAdapter` | El aviso de resolución y adjudicación (correo en US-022) |
+| `reportes/domain/ports/puertos` (fuentes) | Tres adaptadores hacia `solicitudes`, `estudiantes` y `convocatorias` | De dónde salen los datos. `reportes` no escribe nada |
+| `reportes/domain/ports/puertos` (`ExportadorReporte`) | `CsvExportador` · `PdfExportador` | El formato de salida. Uno nuevo es una clase más en la lista `EXPORTADORES` |
 
 El enlace ocurre en un único punto por módulo, el archivo `*.module.ts`:
 
@@ -179,6 +182,9 @@ Base local: `http://localhost:3000`
 | `POST` | `/resoluciones/solicitudes/:id` | **ADMINISTRADOR** | `{ "decision": "APROBAR" \| "RECHAZAR", "motivo" }` (US-023). Sin cupo: 422 |
 | `POST` | `/resoluciones/solicitudes/:id/adjudicar` | **ADMINISTRADOR** | Adjudica una APROBADA y crea la beca (US-024) |
 | `GET` | `/resoluciones/convocatorias/:id/cupos` | **ADMINISTRADOR** | Cupos totales, aprobadas, adjudicadas y disponibles |
+| `GET` | `/reportes/solicitudes` | **ADMINISTRADOR** | US-028. Parámetros opcionales: `convocatoriaId`, `estado` (lista separada por comas), `nivel`, `departamento`, `desde`, `hasta` (AAAA-MM-DD, hora de Guatemala, inclusivas), `agruparPor`, `ordenarPor`, `formato` (`JSON`, `CSV`, `PDF`). Combinaciones sin sentido: 422 |
+| `GET` | `/reportes/panel` | **ADMINISTRADOR** | US-029. `convocatoriaId` opcional |
+| `GET` | `/reportes/regiones` | **ADMINISTRADOR** | US-031. `convocatoriaId` y `formato` opcionales |
 | `POST` | `/consulta-publica` | **Público** | `{ "numero", "cui" }` → solo `numero`, `estado`, `ultimoCambio` (US-025). 404 genérico; 429 tras 10 consultas por minuto |
 
 > **El id del estudiante nunca viaja en la URL ni en el cuerpo.** Sale del token con el decorador
@@ -521,7 +527,7 @@ El orden importa: **de dentro hacia fuera**, igual que apuntan las dependencias.
 | **State**        | Comportamiento | ✅ Implementado y probado (16 Sep)      | 4      |
 | **Strategy**     | Comportamiento | ✅ Implementado y probado (16 Sep)      | 5      |
 | **Facade**       | Estructural    | ✅ Implementado y probado (16 Sep)      | 6      |
-| Builder          | Creacional     | 🔴 Pendiente                            | 7      |
+| **Builder**      | Creacional     | ✅ Implementado y probado (16 Sep)      | 7      |
 
 La justificación de cada uno —qué problema resuelve, qué alternativas había, por qué se eligió y
 qué aporta— está en `06-patrones.md`. **Los patrones se implementan cuando aparece el problema que
@@ -550,4 +556,6 @@ Se documenta para que quien mantenga el sistema no la descubra a golpes:
 | El límite de la consulta pública cuenta en la memoria del proceso | Con varias instancias, cada una cuenta por su lado; se reinicia al reiniciar | Suficiente con una instancia; con más, un almacén compartido |
 | El límite depende de la dirección real del cliente | Detrás del proxy de Render se usa `trust proxy` (un salto) en producción | Revisar si cambia la infraestructura |
 | Resolver no genera acta | La decisión queda en el historial, pero no en un documento | US-026, como un colaborador más de la fachada |
+| Los reportes combinan en memoria datos de tres módulos | Suficiente para miles de solicitudes, no para cientos de miles | Cambiar la fuente por una vista en la base; el servicio no cambia |
+| El PDF usa las fuentes estándar (WinAnsi) | Cubre el español; otros alfabetos salen como "?" | Si hace falta, cambiar `pdf-simple.ts` por una biblioteca |
 | La prueba de integración de EPIC-04 no importa `EvaluacionesModule` | Jest no carga `@nestjs/jwt` en esta rama | Se corrige con el PR #12; entonces se simplifica la prueba |

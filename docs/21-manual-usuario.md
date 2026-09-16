@@ -13,7 +13,7 @@
 > ### Lea esto antes de seguir
 >
 > **La plataforma está en construcción.** Este manual describe **únicamente lo que ya funciona** al
-> 16 de septiembre de 2026. La sección 10 lista lo que todavía no existe, con la fecha prevista.
+> 16 de septiembre de 2026. La sección 11 lista lo que todavía no existe, con la fecha prevista.
 >
 > Se escribe así a propósito: un manual que describa pantallas que no existen hace perder el
 > tiempo a quien lo lee y no sirve para nada.
@@ -306,12 +306,31 @@ documentos ni puntajes.
 | *"No encontramos una solicitud con ese número y ese CUI"* | Uno de los dos datos no es correcto. Por seguridad no se dice cuál |
 | *"Hizo demasiadas consultas seguidas"* | Espere un minuto e intente de nuevo |
 
-## 9. Cerrar sesión
+## 9. Reportes (administración)
+
+En **Reportes** hay tres vistas:
+
+- **Panel**: solicitudes recibidas, tasa de aprobación, cupos disponibles y días promedio que toma
+  resolver una solicitud; para todo el programa o para una convocatoria. La tasa se calcula solo
+  sobre las solicitudes que ya tienen decisión.
+- **Solicitudes**: elija los filtros que necesite (todos son opcionales), cómo agrupar y cómo
+  ordenar, y presione **Generar reporte**. Si pide algo que no tiene sentido —por ejemplo, agrupar
+  por estado habiendo elegido un solo estado— el sistema le dice qué cambiar.
+- **Por región**: becas adjudicadas en cada uno de los 22 departamentos, también los que no tienen
+  ninguna.
+
+Los reportes de solicitudes y por región se pueden **exportar a CSV** (para Excel) o **a PDF**. Se
+exporta exactamente lo que está viendo.
+
+> 🔒 Los reportes no incluyen nombres, CUI ni datos económicos de los aspirantes: se pueden compartir
+> para rendir cuentas.
+
+## 10. Cerrar sesión
 
 Use la opción de cerrar sesión del encabezado. Hágalo siempre que use una computadora que no sea
 suya.
 
-## 10. Lo que todavía no está disponible
+## 11. Lo que todavía no está disponible
 
 Esta es la parte honesta del manual. Lo siguiente **aún no funciona**, con la fecha prevista:
 
@@ -322,17 +341,16 @@ Esta es la parte honesta del manual. Lo siguiente **aún no funciona**, con la f
 | Recibir los avisos por correo (hoy quedan registrados en el sistema) | 🔴 No disponible | Sprint 5 |
 | Quitar integrantes de un comité              | 🔴 No disponible | Sprint 5      |
 | Acta de resolución y lista pública de becas adjudicadas | 🔴 No disponible | Sprint 6 |
-| Reportes y estadísticas                      | 🔴 No disponible | Sprint 7      |
 
 
 
-### 10.1 Un defecto que ya está corregido
+### 11.1 Un defecto que ya está corregido
 
 Hasta el 12 de septiembre de 2026 había que iniciar sesión para ver las convocatorias, y eso estaba
 mal: consultarlas debe poder hacerlo cualquier persona, por transparencia. **Ya no hace falta
 cuenta.**
 
-## 11. Preguntas frecuentes
+## 12. Preguntas frecuentes
 
 **¿Puedo postular a más de una convocatoria?**
 Sí, una solicitud por convocatoria. Si una le fue rechazada, puede volver a postular a esa misma.
@@ -354,7 +372,7 @@ Está usando una versión de prueba, no la oficial. Los datos que vea ahí no so
 **¿Por qué se cerró mi sesión sola?**
 Las sesiones duran 8 horas por seguridad. Vuelva a entrar.
 
-## 12. A quién acudir
+## 13. A quién acudir
 
 | Si...                                          | Acuda a                                             |
 | ---------------------------------------------- | --------------------------------------------------- |

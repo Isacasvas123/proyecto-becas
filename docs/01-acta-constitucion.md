@@ -203,7 +203,7 @@ Sprints semanales de **jueves a miércoles**. Ceremonias todos los jueves.
 | 6.2 | Consulta pública del estado de una beca | ~~Mié 14 Oct~~ → **entregado Mié 16 Sep** | Fernando | Sin autenticación (US-025) · con límite de consultas |
 | 6.3 | Patrón Facade + análisis de impacto de cambio del PO | Mié 14 Oct · **Facade entregado 16 Sep** | Ivan | Estructural 2 · queda el análisis de impacto |
 | 7 | **Sprint 7 — Reportes y calidad** | Mié 21 Oct 2026 | Equipo | Feriado 20 Oct |
-| 7.1 | Módulo de reportes + patrón Builder | Mié 21 Oct | Stuard, Isaac | Creacional 2 · EPIC-06 |
+| 7.1 | Módulo de reportes + patrón Builder | ~~Mié 21 Oct~~ → **entregado Mié 16 Sep** | Stuard, Isaac | Creacional 2 · EPIC-06 completa (US-028 a US-031) |
 | 7.2 | QAP y Plan de Pruebas finales | Mié 21 Oct | Fernando | Anexos 6 y 7 |
 | 7.3 | Pruebas de integración, regresión y cobertura ≥60% | Mié 21 Oct | Fernando, Ivan | |
 | 8 | **Sprint 8 — Cierre técnico** | Mié 28 Oct 2026 | Equipo | |
