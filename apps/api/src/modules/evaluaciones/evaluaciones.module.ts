@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { ComitesService } from './application/services/comites.service';
 import { ConsolidadoService } from './application/services/consolidado.service';
+import { DictamenesDeSolicitudService } from './application/services/dictamenes-de-solicitud.service';
 import { EvaluacionService } from './application/services/evaluacion.service';
 import { COMITE_REPOSITORIO } from './domain/ports/comite.repositorio';
 import {
@@ -41,6 +42,7 @@ import { UsuariosModule } from '../usuarios/usuarios.module';
     ComitesService,
     EvaluacionService,
     ConsolidadoService,
+    DictamenesDeSolicitudService,
     { provide: COMITE_REPOSITORIO, useClass: ComitePrismaRepositorio },
     { provide: DICTAMEN_REPOSITORIO, useClass: DictamenPrismaRepositorio },
     { provide: CONSULTA_SOLICITUDES, useClass: ConsultaSolicitudesAdapter },
@@ -51,5 +53,7 @@ import { UsuariosModule } from '../usuarios/usuarios.module';
     { provide: CONSULTA_PERFILES_EVALUACION, useClass: ConsultaPerfilesEvaluacionAdapter },
     { provide: CONSULTA_CUENTAS, useClass: ConsultaCuentasAdapter },
   ],
+  // Para `resoluciones` (EPIC-05): cuántos dictámenes tiene una solicitud.
+  exports: [DictamenesDeSolicitudService],
 })
 export class EvaluacionesModule {}

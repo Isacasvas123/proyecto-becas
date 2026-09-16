@@ -46,5 +46,9 @@ export function aSolicitudDto(
     })),
     creadaEn: solicitud.creadaEn.toISOString(),
     enviadaEn: solicitud.enviadaEn?.toISOString() ?? null,
+    beca:
+      solicitud.beca === null
+        ? null
+        : { codigo: solicitud.beca.codigo, otorgadaEn: solicitud.beca.otorgadaEn.toISOString() },
   };
 }
