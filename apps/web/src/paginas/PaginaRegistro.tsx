@@ -4,9 +4,9 @@
  * Misma composición de dos columnas que el inicio de sesión: quien llega a crear una cuenta en un
  * portal del Estado necesita ver primero ante qué institución la está creando y para qué.
  *
- * Criterio 5 de US-001: al registrarse la persona queda autenticada y va a su panel. El panel
- * del estudiante —sus solicitudes— es de la EPIC-03 y aún no existe, así que por ahora "su panel"
- * es el listado de convocatorias, que es desde donde postulará.
+ * Criterio 5 de US-001: al registrarse la persona queda autenticada y va a su panel. Recién
+ * registrada no tiene solicitudes, y no puede postular sin perfil completo (US-011, criterio 3),
+ * así que su primer paso útil es el perfil.
  */
 import { useEffect, type ReactElement } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -15,7 +15,7 @@ import { FormularioRegistro } from '../componentes/FormularioRegistro';
 import { Emblema, IconoDocumento, IconoEscudo, IconoLupa } from '../componentes/Iconos';
 import { useSesion } from '../sesion/ContextoSesion';
 
-const PANEL_ESTUDIANTE = '/convocatorias';
+const PANEL_ESTUDIANTE = '/perfil';
 
 export function PaginaRegistro(): ReactElement {
   const { sesion, iniciar } = useSesion();

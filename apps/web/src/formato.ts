@@ -86,3 +86,33 @@ export function estadoPlazo(isoCierre: string, ahora: Date = new Date()): Estado
 
   return { texto: `Cierra en ${dias} días`, clase: 'holgado' };
 }
+
+/** Nombre legible de cada estado de una solicitud (patrón State en el backend). */
+const NOMBRE_ESTADO_SOLICITUD: Record<string, string> = {
+  BORRADOR: 'Borrador',
+  ENVIADA: 'Enviada',
+  EN_EVALUACION: 'En evaluación',
+  APROBADA: 'Aprobada',
+  RECHAZADA: 'Rechazada',
+  ADJUDICADA: 'Adjudicada',
+};
+
+export function nombreEstadoSolicitud(estado: string): string {
+  return NOMBRE_ESTADO_SOLICITUD[estado] ?? estado;
+}
+
+export function formatearFechaHora(iso: string): string {
+  return new Date(iso).toLocaleString('es-GT', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+export function formatearTamano(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
