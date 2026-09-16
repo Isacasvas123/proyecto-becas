@@ -18,13 +18,31 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 
 import { AutenticarUsuarioService } from '../../application/services/autenticar-usuario.service';
+import { RegistrarEstudianteService } from '../../application/services/registrar-estudiante.service';
 import { SesionIniciadaDto } from '../../application/dto/sesion-iniciada.dto';
 import { LoginRequestDto } from '../dto/login-request.dto';
+import { RegistroRequestDto } from '../dto/registro-request.dto';
 import { Publico } from '../guards/decoradores';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly autenticarUsuario: AutenticarUsuarioService) {}
+  constructor(
+    private readonly autenticarUsuario: AutenticarUsuarioService,
+    private readonly registrarEstudiante: RegistrarEstudianteService,
+  ) {}
+
+  /**
+   * US-001 — Registro de estudiante. Devuelve la sesión ya iniciada (criterio 5).
+   *
+   * Pública por necesidad, como el login: quien se registra todavía no tiene cuenta. Es la
+   * única forma de crear cuentas desde fuera, y solo crea cuentas de ESTUDIANTE.
+   */
+  @Publico()
+  @Post('registro')
+  @HttpCode(HttpStatus.CREATED)
+  async registrar(@Body() peticion: RegistroRequestDto): Promise<SesionIniciadaDto> {
+    return this.registrarEstudiante.ejecutar(peticion);
+  }
 
   /**
    * US-002 — Iniciar sesión.
@@ -33,7 +51,7 @@ export class AuthController {
    * creando ningún recurso, solo verificando credenciales.
    */
   // Ruta abierta por necesidad: es el punto donde se OBTIENE la sesión, así que no puede
-  // exigirla. Es una de las tres únicas rutas públicas del sistema, y cada una tiene su
+  // exigirla. Es una de las pocas rutas públicas del sistema, y cada una tiene su
   // justificación escrita (US-003).
   @Publico()
   @Post('login')

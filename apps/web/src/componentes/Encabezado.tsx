@@ -54,9 +54,14 @@ export function Encabezado({ sesion = null, onCerrarSesion }: Props): ReactEleme
           </nav>
 
           {sesion === null && (
-            <Link to="/login" className="boton pequeno">
-              Iniciar sesión
-            </Link>
+            <div className="acciones-visitante">
+              <Link to="/registro" className="boton fantasma pequeno">
+                Crear cuenta
+              </Link>
+              <Link to="/login" className="boton pequeno">
+                Iniciar sesión
+              </Link>
+            </div>
           )}
 
           {sesion !== null && (
