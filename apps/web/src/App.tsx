@@ -14,6 +14,11 @@
  *   /perfil        → PaginaPerfil        (sesión + rol ESTUDIANTE — US-011)
  *   /solicitudes   → PaginaMisSolicitudes (sesión + rol ESTUDIANTE — US-015)
  *   /solicitudes/:id → PaginaSolicitud   (sesión + rol ESTUDIANTE — US-013, US-014, US-016)
+ *   /evaluadores   → PaginaEvaluadores   (sesión + rol ADMINISTRADOR — US-017)
+ *   /comites       → PaginaComites       (sesión + rol ADMINISTRADOR — US-017)
+ *   /comites/:id   → PaginaComite        (sesión + rol ADMINISTRADOR — US-017, US-018, US-021)
+ *   /evaluaciones  → PaginaEvaluaciones  (sesión + rol EVALUADOR — US-020)
+ *   /evaluaciones/:id → PaginaEvaluar    (sesión + rol EVALUADOR — US-019)
  *   cualquier otra → redirige a /convocatorias
  *
  * EL CAMBIO DEL SPRINT 3
@@ -24,7 +29,12 @@
 import type { ReactElement } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
+import { PaginaComite } from './paginas/PaginaComite';
+import { PaginaComites } from './paginas/PaginaComites';
 import { PaginaConvocatorias } from './paginas/PaginaConvocatorias';
+import { PaginaEvaluaciones } from './paginas/PaginaEvaluaciones';
+import { PaginaEvaluadores } from './paginas/PaginaEvaluadores';
+import { PaginaEvaluar } from './paginas/PaginaEvaluar';
 import { PaginaGestion } from './paginas/PaginaGestion';
 import { PaginaLogin } from './paginas/PaginaLogin';
 import { PaginaMisSolicitudes } from './paginas/PaginaMisSolicitudes';
@@ -36,6 +46,12 @@ import { RutaProtegida } from './sesion/RutaProtegida';
 
 export const ROL_ADMINISTRADOR = 'ADMINISTRADOR';
 export const ROL_ESTUDIANTE = 'ESTUDIANTE';
+export const ROL_EVALUADOR = 'EVALUADOR';
+
+/** Una ruta que exige un rol. Solo usabilidad: la seguridad la pone el backend. */
+const conRol = (rol: string, pagina: ReactElement) => (
+  <RutaProtegida rol={rol}>{pagina}</RutaProtegida>
+);
 
 export function App(): ReactElement {
   return (
@@ -80,6 +96,11 @@ export function App(): ReactElement {
               </RutaProtegida>
             }
           />
+          <Route path="/evaluadores" element={conRol(ROL_ADMINISTRADOR, <PaginaEvaluadores />)} />
+          <Route path="/comites" element={conRol(ROL_ADMINISTRADOR, <PaginaComites />)} />
+          <Route path="/comites/:id" element={conRol(ROL_ADMINISTRADOR, <PaginaComite />)} />
+          <Route path="/evaluaciones" element={conRol(ROL_EVALUADOR, <PaginaEvaluaciones />)} />
+          <Route path="/evaluaciones/:id" element={conRol(ROL_EVALUADOR, <PaginaEvaluar />)} />
           {/* Una ruta inexistente no debe dejar la pantalla en blanco. */}
           <Route path="*" element={<Navigate to="/convocatorias" replace />} />
         </Routes>
