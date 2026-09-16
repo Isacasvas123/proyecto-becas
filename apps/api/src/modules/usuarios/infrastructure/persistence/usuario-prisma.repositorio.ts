@@ -10,6 +10,7 @@ import { Prisma } from '@prisma/client';
 import { RecursoDuplicadoError } from '../../../../shared/exceptions/errores-dominio';
 import { PrismaService } from '../../../../shared/persistence/prisma.service';
 import { normalizarCorreo, Usuario } from '../../domain/entities/usuario.entity';
+import { RolUsuario } from '../../domain/enums/rol-usuario.enum';
 import { CamposDuplicados, UsuarioRepositorio } from '../../domain/ports/usuario.repositorio';
 import { Cui } from '../../domain/value-objects/cui.vo';
 import { NombreUsuario } from '../../domain/value-objects/nombre-usuario.vo';
@@ -95,5 +96,19 @@ export class UsuarioPrismaRepositorio implements UsuarioRepositorio {
       }
       throw error;
     }
+  }
+
+  async listarPorRol(rol: RolUsuario): Promise<Usuario[]> {
+    const filas = await this.prisma.usuario.findMany({
+      where: { rol: aRolPersistible(rol) },
+      orderBy: [{ nombreCompleto: 'asc' }, { nombreUsuario: 'asc' }],
+    });
+    return filas.map(aDominio);
+  }
+
+  async buscarPorIds(ids: readonly string[]): Promise<Usuario[]> {
+    if (ids.length === 0) return [];
+    const filas = await this.prisma.usuario.findMany({ where: { id: { in: [...ids] } } });
+    return filas.map(aDominio);
   }
 }

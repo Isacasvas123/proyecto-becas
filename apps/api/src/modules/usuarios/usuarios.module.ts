@@ -19,6 +19,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 
 import { AutenticarUsuarioService } from './application/services/autenticar-usuario.service';
+import { CuentasEvaluadorService } from './application/services/cuentas-evaluador.service';
 import { RegistrarEstudianteService } from './application/services/registrar-estudiante.service';
 import { GENERADOR_TOKEN } from './domain/ports/generador-token';
 import { HASHER_PASSWORD } from './domain/ports/hasher-password';
@@ -29,6 +30,7 @@ import { JwtGeneradorTokenAdapter } from './infrastructure/adapters/jwt-generado
 import { JwtVerificadorTokenAdapter } from './infrastructure/adapters/jwt-verificador-token.adapter';
 import { UsuarioPrismaRepositorio } from './infrastructure/persistence/usuario-prisma.repositorio';
 import { AuthController } from './presentation/controllers/auth.controller';
+import { EvaluadoresController } from './presentation/controllers/evaluadores.controller';
 import { AutenticacionGuard } from './presentation/guards/autenticacion.guard';
 import { RolesGuard } from './presentation/guards/roles.guard';
 
@@ -53,10 +55,11 @@ import { RolesGuard } from './presentation/guards/roles.guard';
       },
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, EvaluadoresController],
   providers: [
     AutenticarUsuarioService,
     RegistrarEstudianteService,
+    CuentasEvaluadorService,
     { provide: USUARIO_REPOSITORIO, useClass: UsuarioPrismaRepositorio },
     { provide: HASHER_PASSWORD, useClass: BcryptHasherAdapter },
     { provide: GENERADOR_TOKEN, useClass: JwtGeneradorTokenAdapter },
@@ -78,6 +81,8 @@ import { RolesGuard } from './presentation/guards/roles.guard';
   // registro (US-001). El repositorio NO se exporta, por la misma razón que en
   // `convocatorias`: otros módulos pasan por la capa de aplicación, nunca por la
   // persistencia ajena.
-  exports: [AutenticarUsuarioService, HASHER_PASSWORD],
+  //
+  // `CuentasEvaluadorService` se exporta para que `evaluaciones` conozca nombres y roles.
+  exports: [AutenticarUsuarioService, CuentasEvaluadorService, HASHER_PASSWORD],
 })
 export class UsuariosModule {}

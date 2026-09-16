@@ -94,6 +94,7 @@ async function main(): Promise<void> {
   });
 
   await sembrarAdministrador();
+  await sembrarEvaluador();
 
   console.log('Datos de prueba cargados.');
 }
@@ -143,6 +144,40 @@ async function sembrarAdministrador(): Promise<void> {
   });
 
   console.log(`Administrador listo: ${nombreUsuario} (rol ADMINISTRADOR)`);
+}
+
+/**
+ * Un evaluador de prueba (EPIC-04), con el mismo cuidado que el administrador: credenciales del
+ * `.env` (`EVALUADOR_USUARIO`, `EVALUADOR_PASSWORD`, `EVALUADOR_CORREO`), hash bcrypt, y solo en
+ * desarrollo. En Staging los evaluadores los crea un administrador desde la gestión.
+ */
+async function sembrarEvaluador(): Promise<void> {
+  const nombreUsuario = (process.env.EVALUADOR_USUARIO ?? '').trim().toLowerCase();
+  const password = process.env.EVALUADOR_PASSWORD ?? '';
+  const correo = process.env.EVALUADOR_CORREO ?? '';
+
+  if (nombreUsuario === '' || password === '' || correo === '') {
+    console.warn('Se omite el evaluador de prueba: faltan EVALUADOR_* en el .env');
+    return;
+  }
+
+  const rondas = Number(process.env.BCRYPT_ROUNDS ?? 10);
+  const hashPassword = await hash(password, Number.isInteger(rondas) ? rondas : 10);
+
+  await prisma.usuario.upsert({
+    where: { nombreUsuario },
+    update: { hashPassword, correo, rol: RolUsuario.EVALUADOR, activo: true },
+    create: {
+      nombreUsuario,
+      correo,
+      hashPassword,
+      nombreCompleto: 'Evaluadora de Prueba',
+      rol: RolUsuario.EVALUADOR,
+      activo: true,
+    },
+  });
+
+  console.log(`Evaluador listo: ${nombreUsuario} (rol EVALUADOR)`);
 }
 
 main()

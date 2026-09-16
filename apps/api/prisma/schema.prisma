@@ -5,8 +5,9 @@
 //   - `Convocatoria` — con requisitos y documentos (US-006, US-007).
 //   - `Estudiante` — perfil académico y socioeconómico (US-011).
 //   - `Solicitud`, `DocumentoSolicitud`, `HistorialEstadoSolicitud` — EPIC-03.
+//   - `Comite`, `ComiteEvaluador`, `AsignacionEvaluacion`, `Dictamen` — EPIC-04.
 //
-// Lo que falta (Evaluacion, Comite, Beca) se agrega con sus historias, conforme a
+// Lo que falta (Beca) se agrega con sus historias, conforme a
 // docs/05-arquitectura.md §3.3.
 //
 // IMPORTANTE: este esquema es el modelo de PERSISTENCIA, no el modelo de DOMINIO.
@@ -55,6 +56,12 @@ model Usuario {
 
   perfilEstudiante Estudiante?
   solicitudes      Solicitud[]
+
+  comitesCreados     Comite[]               @relation("ComiteCreadoPor")
+  comites            ComiteEvaluador[]
+  asignaciones       AsignacionEvaluacion[] @relation("AsignacionEvaluador")
+  asignacionesHechas AsignacionEvaluacion[] @relation("AsignacionAutor")
+  dictamenes         Dictamen[]
 
   @@map("usuarios")
 }
@@ -113,6 +120,7 @@ model Convocatoria {
   actualizadaEn      DateTime           @updatedAt @map("actualizada_en")
 
   solicitudes Solicitud[]
+  comite      Comite?
 
   // El listado público filtra por estado y fecha de cierre; el NFR de rendimiento
   // exige responder en menos de 1 segundo (docs/04-product-backlog.md).
@@ -201,8 +209,10 @@ model Solicitud {
   creadaEn           DateTime        @default(now()) @map("creada_en")
   actualizadaEn      DateTime        @updatedAt @map("actualizada_en")
 
-  documentos DocumentoSolicitud[]
-  historial  HistorialEstadoSolicitud[]
+  documentos   DocumentoSolicitud[]
+  historial    HistorialEstadoSolicitud[]
+  asignaciones AsignacionEvaluacion[]
+  dictamenes   Dictamen[]
 
   // US-015 lista por estudiante; US-012 busca la activa por estudiante y convocatoria.
   @@index([estudianteId, convocatoriaId])
@@ -240,4 +250,78 @@ model HistorialEstadoSolicitud {
 
   @@index([solicitudId, ocurridoEn])
   @@map("historial_estado_solicitud")
+}
+
+// ─── EPIC-04 · Evaluación y comités ────────────────────────────────────────────
+
+/// US-017. Una convocatoria, un comité (índice único): CU-13, flujo 3a.
+model Comite {
+  id             String       @id
+  nombre         String
+  convocatoriaId String       @unique @map("convocatoria_id")
+  convocatoria   Convocatoria @relation(fields: [convocatoriaId], references: [id], onDelete: Restrict)
+  creadoPorId    String       @map("creado_por_id")
+  creadoPor      Usuario      @relation("ComiteCreadoPor", fields: [creadoPorId], references: [id], onDelete: Restrict)
+  creadoEn       DateTime     @map("creado_en")
+
+  integrantes  ComiteEvaluador[]
+  asignaciones AsignacionEvaluacion[]
+
+  @@map("comites")
+}
+
+model ComiteEvaluador {
+  comiteId    String   @map("comite_id")
+  comite      Comite   @relation(fields: [comiteId], references: [id], onDelete: Cascade)
+  evaluadorId String   @map("evaluador_id")
+  evaluador   Usuario  @relation(fields: [evaluadorId], references: [id], onDelete: Restrict)
+  agregadoEn  DateTime @default(now()) @map("agregado_en")
+
+  @@id([comiteId, evaluadorId])
+  @@map("comite_evaluadores")
+}
+
+/// US-018. Único por (solicitud, evaluador): asignar dos veces lo mismo no duplica.
+model AsignacionEvaluacion {
+  id            String    @id @default(uuid())
+  comiteId      String    @map("comite_id")
+  comite        Comite    @relation(fields: [comiteId], references: [id], onDelete: Restrict)
+  solicitudId   String    @map("solicitud_id")
+  solicitud     Solicitud @relation(fields: [solicitudId], references: [id], onDelete: Restrict)
+  evaluadorId   String    @map("evaluador_id")
+  evaluador     Usuario   @relation("AsignacionEvaluador", fields: [evaluadorId], references: [id], onDelete: Restrict)
+  asignadaPorId String    @map("asignada_por_id")
+  asignadaPor   Usuario   @relation("AsignacionAutor", fields: [asignadaPorId], references: [id], onDelete: Restrict)
+  asignadaEn    DateTime  @map("asignada_en")
+
+  @@unique([solicitudId, evaluadorId])
+  @@index([evaluadorId])
+  @@index([comiteId])
+  @@map("asignaciones_evaluacion")
+}
+
+enum Recomendacion {
+  FAVORABLE
+  DESFAVORABLE
+}
+
+/// US-019. Inmutable: la aplicación solo inserta. Uno por evaluador y solicitud.
+model Dictamen {
+  id            String        @id
+  solicitudId   String        @map("solicitud_id")
+  solicitud     Solicitud     @relation(fields: [solicitudId], references: [id], onDelete: Restrict)
+  evaluadorId   String        @map("evaluador_id")
+  evaluador     Usuario       @relation(fields: [evaluadorId], references: [id], onDelete: Restrict)
+  // El nombre del criterio y el desglose se guardan tal como se calcularon: si la fórmula o el
+  // perfil cambian después, el dictamen sigue explicando su propio puntaje.
+  criterio      String
+  puntaje       Decimal       @db.Decimal(5, 2)
+  desglose      Json
+  recomendacion Recomendacion
+  observacion   String
+  emitidoEn     DateTime      @map("emitido_en")
+
+  @@unique([solicitudId, evaluadorId])
+  @@index([evaluadorId])
+  @@map("dictamenes")
 }
