@@ -10,8 +10,15 @@
  *
  * Esa jerarquía no es decorativa: en un trámite público el ciudadano necesita
  * saber de inmediato ante qué institución está actuando.
+ *
+ * NAVEGACIÓN (Sprint 3)
+ *   Desde que el listado es público, el encabezado tiene que servir a dos personas: al
+ *   visitante, que necesita un camino para iniciar sesión, y al administrador, que necesita
+ *   llegar a la gestión. El enlace de gestión solo se muestra con ese rol; esconderlo no
+ *   protege nada —lo protege el backend—, solo evita ofrecer una puerta que devolvería 403.
  */
 import type { ReactElement } from 'react';
+import { Link, NavLink } from 'react-router-dom';
 
 import { Emblema } from './Iconos';
 import type { Sesion } from '../api/cliente';
@@ -40,6 +47,17 @@ export function Encabezado({ sesion = null, onCerrarSesion }: Props): ReactEleme
               <div className="titulo">Plataforma Nacional de Becas</div>
             </div>
           </div>
+
+          <nav className="navegacion" aria-label="Secciones">
+            <NavLink to="/convocatorias">Convocatorias</NavLink>
+            {sesion?.usuario.rol === 'ADMINISTRADOR' && <NavLink to="/gestion">Gestión</NavLink>}
+          </nav>
+
+          {sesion === null && (
+            <Link to="/login" className="boton pequeno">
+              Iniciar sesión
+            </Link>
+          )}
 
           {sesion !== null && (
             <div className="sesion-chip">

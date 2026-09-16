@@ -30,4 +30,26 @@ export class ConvocatoriaEnMemoriaRepositorio implements ConvocatoriaRepositorio
       .filter((convocatoria) => convocatoria.esVisiblePublicamente(ahora))
       .sort((a, b) => a.periodo.cierre.getTime() - b.periodo.cierre.getTime());
   }
+
+  async buscarTodas(): Promise<Convocatoria[]> {
+    return [...this.convocatorias].reverse();
+  }
+
+  async buscarPorId(id: string): Promise<Convocatoria | null> {
+    return this.convocatorias.find((convocatoria) => convocatoria.id === id) ?? null;
+  }
+
+  async guardar(convocatoria: Convocatoria): Promise<void> {
+    const indice = this.convocatorias.findIndex((existente) => existente.id === convocatoria.id);
+    if (indice >= 0) {
+      this.convocatorias[indice] = convocatoria;
+    } else {
+      this.convocatorias.push(convocatoria);
+    }
+  }
+
+  async contarConPrefijoDeCodigo(prefijo: string): Promise<number> {
+    return this.convocatorias.filter((convocatoria) => convocatoria.codigo.startsWith(prefijo))
+      .length;
+  }
 }
