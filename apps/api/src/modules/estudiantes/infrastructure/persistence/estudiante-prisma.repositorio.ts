@@ -15,6 +15,14 @@ export class EstudiantePrismaRepositorio implements EstudianteRepositorio {
     return fila === null ? null : aDominio(fila);
   }
 
+  async buscarPorUsuarios(usuarioIds: readonly string[]): Promise<Estudiante[]> {
+    if (usuarioIds.length === 0) return [];
+    const filas = await this.prisma.estudiante.findMany({
+      where: { usuarioId: { in: [...usuarioIds] } },
+    });
+    return filas.map(aDominio);
+  }
+
   async guardar(estudiante: Estudiante): Promise<void> {
     const datos = {
       centroEducativo: estudiante.centroEducativo,

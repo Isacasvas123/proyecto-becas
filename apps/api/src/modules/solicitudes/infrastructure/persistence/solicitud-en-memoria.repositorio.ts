@@ -1,7 +1,11 @@
 import { ReglaDeNegocioError } from '../../../../shared/exceptions/errores-dominio';
 import { Solicitud } from '../../domain/entities/solicitud.entity';
 import { NombreEstado } from '../../domain/enums/solicitud.enums';
-import { mensajeSinCupo, SolicitudRepositorio } from '../../domain/ports/solicitud.repositorio';
+import {
+  FiltroSolicitudesReporte,
+  mensajeSinCupo,
+  SolicitudRepositorio,
+} from '../../domain/ports/solicitud.repositorio';
 
 /**
  * Doble para pruebas: mismo contrato que el adaptador de Prisma.
@@ -82,6 +86,20 @@ export class SolicitudEnMemoriaRepositorio implements SolicitudRepositorio {
 
   contarBecasConPrefijo(prefijo: string): Promise<number> {
     return Promise.resolve(this.varias((s) => s.beca?.codigo.startsWith(prefijo) ?? false).length);
+  }
+
+  paraReporte(f: FiltroSolicitudesReporte): Promise<Solicitud[]> {
+    return Promise.resolve(
+      this.varias(
+        (s) =>
+          s.nombreEstado !== NombreEstado.BORRADOR &&
+          s.enviadaEn !== null &&
+          (f.convocatoriaId === undefined || s.convocatoriaId === f.convocatoriaId) &&
+          (f.estados === undefined || f.estados.includes(s.nombreEstado)) &&
+          (f.enviadasDesde === undefined || s.enviadaEn >= f.enviadasDesde) &&
+          (f.enviadasHasta === undefined || s.enviadaEn <= f.enviadasHasta),
+      ).sort((a, b) => a.numero.localeCompare(b.numero)),
+    );
   }
 
   guardar(solicitud: Solicitud): Promise<void> {

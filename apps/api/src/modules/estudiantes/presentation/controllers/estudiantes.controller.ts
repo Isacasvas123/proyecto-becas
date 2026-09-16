@@ -4,7 +4,6 @@ import {
   PerfilDto,
   PerfilEstudianteService,
 } from '../../application/services/perfil-estudiante.service';
-import { NOMBRE_DEPARTAMENTO } from '../../domain/enums/catalogos';
 import { PerfilRequestDto } from '../dto/perfil-request.dto';
 import { RolUsuario } from '../../../usuarios/domain/enums/rol-usuario.enum';
 import { Roles, UsuarioActual } from '../../../usuarios/presentation/guards/decoradores';
@@ -34,6 +33,6 @@ export class EstudiantesController {
   /** Los 22 departamentos con su nombre, para el formulario. */
   @Get('departamentos')
   departamentos(): { codigo: string; nombre: string }[] {
-    return Object.entries(NOMBRE_DEPARTAMENTO).map(([codigo, nombre]) => ({ codigo, nombre }));
+    return this.perfiles.departamentos();
   }
 }
