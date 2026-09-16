@@ -19,6 +19,7 @@
  *   /comites       → PaginaComites       (sesión + rol ADMINISTRADOR — US-017)
  *   /comites/:id   → PaginaComite        (sesión + rol ADMINISTRADOR — US-017, US-018, US-021)
  *   /evaluaciones  → PaginaEvaluaciones  (sesión + rol EVALUADOR — US-020)
+ *   /reportes      → PaginaReportes      (sesión + rol ADMINISTRADOR — US-028 a US-031)
  *   /evaluaciones/:id → PaginaEvaluar    (sesión + rol EVALUADOR — US-019)
  *   cualquier otra → redirige a /convocatorias
  *
@@ -42,6 +43,7 @@ import { PaginaLogin } from './paginas/PaginaLogin';
 import { PaginaMisSolicitudes } from './paginas/PaginaMisSolicitudes';
 import { PaginaPerfil } from './paginas/PaginaPerfil';
 import { PaginaRegistro } from './paginas/PaginaRegistro';
+import { PaginaReportes } from './paginas/PaginaReportes';
 import { PaginaSolicitud } from './paginas/PaginaSolicitud';
 import { ProveedorSesion } from './sesion/ContextoSesion';
 import { RutaProtegida } from './sesion/RutaProtegida';
@@ -102,6 +104,7 @@ export function App(): ReactElement {
           <Route path="/evaluadores" element={conRol(ROL_ADMINISTRADOR, <PaginaEvaluadores />)} />
           <Route path="/comites" element={conRol(ROL_ADMINISTRADOR, <PaginaComites />)} />
           <Route path="/comites/:id" element={conRol(ROL_ADMINISTRADOR, <PaginaComite />)} />
+          <Route path="/reportes" element={conRol(ROL_ADMINISTRADOR, <PaginaReportes />)} />
           <Route path="/evaluaciones" element={conRol(ROL_EVALUADOR, <PaginaEvaluaciones />)} />
           <Route path="/evaluaciones/:id" element={conRol(ROL_EVALUADOR, <PaginaEvaluar />)} />
           {/* Una ruta inexistente no debe dejar la pantalla en blanco. */}

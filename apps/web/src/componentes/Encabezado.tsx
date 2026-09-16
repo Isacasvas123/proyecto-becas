@@ -58,6 +58,7 @@ export function Encabezado({ sesion = null, onCerrarSesion }: Props): ReactEleme
                 <NavLink to="/gestion">Gestión</NavLink>
                 <NavLink to="/comites">Comités</NavLink>
                 <NavLink to="/evaluadores">Evaluadores</NavLink>
+                <NavLink to="/reportes">Reportes</NavLink>
               </>
             )}
             {sesion?.usuario.rol === 'EVALUADOR' && (
