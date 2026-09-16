@@ -12,7 +12,7 @@
  *   lo note. Con este criterio el olvido produce un 401 molesto pero visible, no una fuga
  *   silenciosa. Se prefiere fallar cerrado.
  */
-import { SetMetadata } from '@nestjs/common';
+import { createParamDecorator, ExecutionContext, SetMetadata } from '@nestjs/common';
 
 import { RolUsuario } from '../../domain/enums/rol-usuario.enum';
 
@@ -35,3 +35,23 @@ export const Publico = () => SetMetadata(CLAVE_PUBLICO, true);
  * token tenga ese rol. Sin este decorador basta con estar autenticado.
  */
 export const Roles = (...roles: RolUsuario[]) => SetMetadata(CLAVE_ROLES, roles);
+
+/**
+ * Inyecta en el controlador el id del usuario que hace la petición.
+ *
+ * Lo deja `AutenticacionGuard` tras verificar el token. Los controladores lo toman de AQUÍ y
+ * nunca de un parámetro de la URL o del cuerpo: si el id viniera del cliente, bastaría cambiarlo
+ * para operar sobre las solicitudes de otra persona. Es el criterio de US-003 *"un estudiante
+ * solo ve sus propias solicitudes"* resuelto en la frontera.
+ *
+ * Usarlo en una ruta `@Publico()` es un error de programación, y falla fuerte.
+ */
+export const UsuarioActual = createParamDecorator((_dato: unknown, contexto: ExecutionContext) => {
+  const peticion = contexto.switchToHttp().getRequest<{ portador?: { usuarioId: string } }>();
+
+  if (peticion.portador === undefined) {
+    throw new Error('@UsuarioActual() se usó en una ruta sin sesión verificada');
+  }
+
+  return peticion.portador.usuarioId;
+});

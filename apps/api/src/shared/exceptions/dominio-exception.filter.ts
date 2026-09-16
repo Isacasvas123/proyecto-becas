@@ -11,6 +11,7 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus, Logger } from '@nest
 import type { Response } from 'express';
 
 import {
+  AccesoDenegadoError,
   AutenticacionFallidaError,
   ErrorDeDominio,
   RecursoDuplicadoError,
@@ -38,6 +39,8 @@ export class DominioExceptionFilter implements ExceptionFilter<ErrorDeDominio> {
     let estado: HttpStatus;
     if (excepcion instanceof AutenticacionFallidaError) {
       estado = HttpStatus.UNAUTHORIZED;
+    } else if (excepcion instanceof AccesoDenegadoError) {
+      estado = HttpStatus.FORBIDDEN;
     } else if (excepcion instanceof RecursoNoEncontradoError) {
       estado = HttpStatus.NOT_FOUND;
     } else if (
