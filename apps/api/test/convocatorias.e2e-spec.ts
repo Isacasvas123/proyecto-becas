@@ -21,7 +21,9 @@ import type { App } from 'supertest/types';
 import { ConvocatoriasModule } from '../src/modules/convocatorias/convocatorias.module';
 import { Convocatoria } from '../src/modules/convocatorias/domain/entities/convocatoria.entity';
 import { EstadoConvocatoria } from '../src/modules/convocatorias/domain/enums/estado-convocatoria.enum';
+import { Requisito } from '../src/modules/convocatorias/domain/enums/requisito.enum';
 import { TipoBeca } from '../src/modules/convocatorias/domain/enums/tipo-beca.enum';
+import { TipoDocumento } from '../src/modules/convocatorias/domain/enums/tipo-documento.enum';
 import { CONVOCATORIA_REPOSITORIO } from '../src/modules/convocatorias/domain/ports/convocatoria.repositorio';
 import { PeriodoPostulacion } from '../src/modules/convocatorias/domain/value-objects/periodo-postulacion.vo';
 import { ConvocatoriaEnMemoriaRepositorio } from '../src/modules/convocatorias/infrastructure/persistence/convocatoria-en-memoria.repositorio';
@@ -42,6 +44,8 @@ function convocatoria(codigo: string, estado: EstadoConvocatoria): Convocatoria 
     estado,
     cupos: 40,
     periodo: PeriodoPostulacion.crear(enDias(-5), enDias(30)),
+    requisitos: [Requisito.TITULO_UNIVERSITARIO],
+    documentosExigidos: [TipoDocumento.DPI],
   });
 }
 

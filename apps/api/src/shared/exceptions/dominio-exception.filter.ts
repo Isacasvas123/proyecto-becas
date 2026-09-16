@@ -13,6 +13,7 @@ import type { Response } from 'express';
 import {
   AutenticacionFallidaError,
   ErrorDeDominio,
+  RecursoNoEncontradoError,
   TransicionInvalidaError,
 } from './errores-dominio';
 
@@ -36,6 +37,8 @@ export class DominioExceptionFilter implements ExceptionFilter<ErrorDeDominio> {
     let estado: HttpStatus;
     if (excepcion instanceof AutenticacionFallidaError) {
       estado = HttpStatus.UNAUTHORIZED;
+    } else if (excepcion instanceof RecursoNoEncontradoError) {
+      estado = HttpStatus.NOT_FOUND;
     } else if (excepcion instanceof TransicionInvalidaError) {
       estado = HttpStatus.CONFLICT;
     } else {

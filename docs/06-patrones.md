@@ -15,7 +15,7 @@
 
 | Tipo | Patrón | Dónde vive | Sprint | Estado |
 |---|---|---|---|---|
-| Creacional | Factory Method | `modules/convocatorias/domain/factories/` | 3 | Pendiente |
+| Creacional | **Factory Method** | `modules/convocatorias/domain/factories/` | **3** | ✅ **Implementado** (adelantado al 12 Sep) |
 | Creacional | Builder | `modules/reportes/application/builders/` | 7 | Pendiente |
 | Estructural | **Adapter** | `modules/usuarios/infrastructure/adapters/` | **1** | ✅ **Implementado** |
 | Estructural | Facade | `modules/solicitudes/application/facades/` | 6 | Pendiente |
@@ -78,47 +78,65 @@ del código existente.
 - **Imposible crear una convocatoria en estado inválido**: la fábrica garantiza las invariantes.
 - **Testeable**: cada fábrica concreta se prueba de forma aislada.
 
-### Esquema
+### Implementación real — Sprint 3
+
+**✅ IMPLEMENTADO** en `modules/convocatorias/domain/factories/convocatoria.factory.ts`, con 18
+pruebas propias en `convocatoria.factory.spec.ts`.
 
 ```ts
-// domain/factories/convocatoria.factory.ts
 export abstract class ConvocatoriaFactory {
-  // Template: el algoritmo de creación es común; los detalles los define cada subclase.
-  crear(datos: DatosConvocatoria): Convocatoria {
-    const convocatoria = new Convocatoria({
-      ...datos,
-      tipo: this.tipo(),
-      requisitos: this.requisitosPorDefecto(),
-      documentosExigidos: this.documentosExigidos(),
-      criterioEvaluacion: this.criterioPorDefecto(),
-    });
+  // EL MÉTODO PLANTILLA: igual para todos los tipos; no se sobrescribe.
+  crear(datos: DatosNuevaConvocatoria): Convocatoria {
     this.validarCupos(datos.cupos);
-    return convocatoria;
+    return Convocatoria.nuevaEnBorrador({
+      ...,
+      tipo: this.tipo(),
+      requisitos: datos.requisitos ?? this.requisitosPorDefecto(),
+      documentosExigidos: datos.documentosExigidos ?? this.documentosPorDefecto(),
+    });
   }
 
-  protected abstract tipo(): TipoBeca;
-  protected abstract requisitosPorDefecto(): Requisito[];
-  protected abstract documentosExigidos(): TipoDocumento[];
-  protected abstract criterioPorDefecto(): TipoCriterio;
-  protected abstract validarCupos(cupos: number): void;
+  abstract tipo(): TipoBeca;
+  abstract prefijoCodigo(): string;                      // UNIV-2026-001
+  abstract requisitosPorDefecto(): readonly Requisito[];
+  abstract documentosPorDefecto(): readonly TipoDocumento[];
+  protected validarCupos(_cupos: number): void {}        // gancho opcional
 }
 
 export class ConvocatoriaPosgradoFactory extends ConvocatoriaFactory {
-  protected tipo() { return TipoBeca.POSGRADO; }
-  protected requisitosPorDefecto() {
-    return [Requisito.TITULO_UNIVERSITARIO, Requisito.PROMEDIO_MINIMO_80,
-            Requisito.CARTA_RECOMENDACION];
-  }
-  protected documentosExigidos() {
-    return [TipoDocumento.DPI, TipoDocumento.TITULO, TipoDocumento.CERTIFICADO_CURSOS,
-            TipoDocumento.CARTA_RECOMENDACION];
-  }
-  protected criterioPorDefecto() { return TipoCriterio.MERITO_ACADEMICO; }
   protected validarCupos(cupos: number) {
-    if (cupos > 50) throw new ReglaDeNegocioError('Posgrado admite máximo 50 cupos');
+    if (cupos > 50) throw new ReglaDeNegocioError('... como máximo 50 cupos.');
   }
+  // ...
 }
+
+// El único punto que asocia tipo y fábrica. `satisfies` hace que olvidar un tipo sea
+// un error de COMPILACIÓN, no un fallo en producción.
+export const FABRICAS_CONVOCATORIA = {
+  [TipoBeca.NIVEL_MEDIO]:   new ConvocatoriaNivelMedioFactory(),
+  [TipoBeca.UNIVERSITARIA]: new ConvocatoriaUniversitariaFactory(),
+  [TipoBeca.POSGRADO]:      new ConvocatoriaPosgradoFactory(),
+} as const satisfies Readonly<Record<TipoBeca, ConvocatoriaFactory>>;
 ```
+
+El servicio de aplicación no tiene ni un `if` por tipo: pide la fábrica y le dice "crea".
+
+### Diferencias con el diseño original, y por qué
+
+| Diseño original | Implementación | Motivo |
+|---|---|---|
+| `criterioPorDefecto()` en cada fábrica | **No está** | El criterio de evaluación es el patrón Strategy del Sprint 5. Declararlo hoy sería un método sin nadie que lo use |
+| — | `prefijoCodigo()` | Apareció al implementar: el código correlativo también varía por tipo, y es exactamente la clase de regla que el patrón encapsula |
+| — | Registro `FABRICAS_CONVOCATORIA` | El diseño no decía cómo elegir la fábrica. Un mapa y no un `switch`, por la misma razón que existe el patrón |
+| "Un tipo nuevo sin tocar código existente" | Casi | Hay que agregar una línea al registro y el valor en `TipoBeca`. No se toca ninguna fábrica ni el servicio. Se dice tal cual en el código |
+
+**Valores por defecto de cada tipo**, verificables en el código y en `GET /convocatorias/catalogo`:
+
+| Tipo | Requisitos | Documentos | Regla propia |
+|---|---|---|---|
+| Nivel medio | Nacionalidad, inscrito en nivel medio, promedio ≥70, ingreso familiar limitado | **Certificado de nacimiento** (no DPI: la mayoría son menores de edad), inscripción, notas, ingresos | — |
+| Universitaria | Nacionalidad, inscrito en universidad, promedio ≥75 | DPI, inscripción, notas, ingresos | — |
+| Posgrado | Título universitario, promedio ≥80, carta de recomendación | DPI, título, notas, carta | **Máximo 50 cupos** ⚠️ pendiente de confirmar con el PO |
 
 ---
 

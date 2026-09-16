@@ -14,6 +14,11 @@
  * decoradores de `class-validator` (`@IsString()`, `@IsInt()`, `@Min(1)`), y los
  * decoradores necesitan una clase que exista en tiempo de ejecución.
  */
+export class ElementoCatalogoResponseDto {
+  codigo!: string;
+  descripcion!: string;
+}
+
 export class ConvocatoriaResponseDto {
   id!: string;
   codigo!: string;
@@ -24,4 +29,6 @@ export class ConvocatoriaResponseDto {
   cupos!: number;
   fechaApertura!: string;
   fechaCierre!: string;
+  requisitos!: readonly ElementoCatalogoResponseDto[];
+  documentosExigidos!: readonly ElementoCatalogoResponseDto[];
 }
