@@ -1342,3 +1342,318 @@ a.boton {
 .campo input[aria-invalid='true'] {
   border-color: var(--rojo);
 }
+
+/* ============================================================================
+   ESTUDIANTE — perfil, solicitudes y expediente (EPIC-03)
+   ========================================================================== */
+
+.estudiante {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+.estudiante .barra-resultados {
+  margin-bottom: 0;
+}
+
+.aviso.pendiente {
+  color: var(--ambar);
+  background: var(--ambar-bg);
+  border: 1px solid #f5d9a8;
+  border-left: 3px solid var(--ambar);
+  text-align: left;
+}
+
+.estudiante .aviso {
+  text-align: left;
+}
+
+.aviso a {
+  font-weight: 700;
+}
+
+.formulario-perfil {
+  padding: var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.formulario-perfil fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.formulario-perfil legend {
+  margin-bottom: var(--sp-3);
+  font-size: var(--txt-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tinta-3);
+}
+
+.confirmacion {
+  align-self: center;
+  font-size: var(--txt-sm);
+  font-weight: 600;
+  color: var(--verde);
+}
+
+/* Acción al pie de la tarjeta de convocatoria */
+.accion-tarjeta {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--sp-3);
+}
+
+/* Estados de la solicitud: forma además de color, como los de la convocatoria. */
+.estado.e-enviada {
+  color: var(--gob-700);
+  background: var(--gob-100);
+  border: 1px solid var(--gob-300);
+}
+
+.estado.e-en_evaluacion {
+  color: var(--ambar);
+  background: var(--ambar-bg);
+  border: 1px solid #f5d9a8;
+}
+
+.estado.e-aprobada,
+.estado.e-adjudicada {
+  color: var(--verde);
+  background: var(--verde-bg);
+  border: 1px solid #bfe3d0;
+}
+
+.estado.e-adjudicada {
+  border-width: 2px;
+}
+
+.estado.e-rechazada {
+  color: var(--rojo);
+  background: var(--rojo-bg);
+  border: 1px solid #f3c9c5;
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.estado.grande {
+  padding: var(--sp-1) var(--sp-3);
+  font-size: var(--txt-xs);
+}
+
+/* Mis solicitudes */
+.solicitud-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--papel);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-1);
+}
+
+.solicitud-fila .cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-3);
+  margin-bottom: var(--sp-2);
+}
+
+.solicitud-fila h3 {
+  margin: 0;
+  font-size: var(--txt-md);
+}
+
+.solicitud-fila h3 a {
+  color: var(--tinta);
+}
+
+.solicitud-fila .meta {
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* Expediente */
+.migas {
+  margin: 0;
+  font-size: var(--txt-sm);
+}
+
+.expediente {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(16rem, 1fr);
+  gap: var(--sp-4);
+  align-items: start;
+}
+
+.lateral {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.documentos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.documentos li {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-top: 1px solid var(--linea-2);
+}
+
+.documentos li:first-child {
+  border-top: 0;
+}
+
+.marca-doc {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  font-weight: 800;
+}
+
+.documentos .cargado .marca-doc {
+  color: var(--verde);
+  background: var(--verde-bg);
+}
+
+.documentos .pendiente .marca-doc {
+  color: var(--tinta-3);
+  background: var(--fondo);
+  border: 1px dashed var(--tinta-3);
+}
+
+.doc-texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.doc-nombre {
+  font-weight: 600;
+  color: var(--tinta);
+}
+
+.doc-detalle {
+  font-size: var(--txt-xs);
+  color: var(--tinta-3);
+  overflow-wrap: anywhere;
+}
+
+.enlace {
+  padding: 0;
+  font: inherit;
+  color: var(--gob-600);
+  background: none;
+  border: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.envio-cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+}
+
+.envio-cuerpo p {
+  margin: 0;
+  font-size: var(--txt-sm);
+}
+
+.envio-cuerpo .pista {
+  font-size: var(--txt-xs);
+  color: var(--tinta-3);
+}
+
+.confirmar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  background: var(--ambar-bg);
+  border-radius: var(--radio);
+}
+
+.linea-tiempo {
+  margin: 0;
+  padding: var(--sp-4) var(--sp-4) var(--sp-4) var(--sp-6);
+  list-style: none;
+}
+
+.linea-tiempo li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-1);
+  padding-bottom: var(--sp-4);
+}
+
+.linea-tiempo li::before {
+  position: absolute;
+  top: 0.35rem;
+  left: calc(-1 * var(--sp-4));
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--gob-500);
+  border-radius: 50%;
+  content: '';
+}
+
+.linea-tiempo li:not(:last-child)::after {
+  position: absolute;
+  top: 1rem;
+  bottom: 0;
+  left: calc(-1 * var(--sp-4) + 0.2rem);
+  width: 1px;
+  background: var(--linea);
+  content: '';
+}
+
+.linea-tiempo time,
+.linea-tiempo .detalle {
+  font-size: var(--txt-xs);
+  color: var(--tinta-3);
+}
+
+@media (max-width: 860px) {
+  .expediente {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .solicitud-fila {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .documentos li {
+    flex-wrap: wrap;
+  }
+
+  .documentos li .boton {
+    width: 100%;
+  }
+}

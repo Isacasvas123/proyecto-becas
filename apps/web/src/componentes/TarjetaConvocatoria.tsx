@@ -16,16 +16,25 @@
  *   tarjeta, la lista dejaría de poder compararse de un vistazo. Es un elemento nativo del
  *   navegador, así que funciona con teclado y lector de pantalla sin código extra.
  */
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 
 import { IconoCalendario, IconoCodigo, IconoCupos, IconoReloj } from './Iconos';
 import type { Convocatoria } from '../api/cliente';
 import { claseTipo, estadoPlazo, formatearFecha, inicialTipo, nombreTipo } from '../formato';
 
+const cantidad = (n: number, singular: string, plural: string): string =>
+  `${n} ${n === 1 ? singular : plural}`;
+
+/**
+ * `accion` es lo que va al pie de la tarjeta: «Postular» para un estudiante, un enlace al login
+ * para un visitante. La tarjeta no decide cuál: no sabe nada de sesiones.
+ */
 export function TarjetaConvocatoria({
   convocatoria,
+  accion,
 }: {
   convocatoria: Convocatoria;
+  accion?: ReactNode;
 }): ReactElement {
   const plazo = estadoPlazo(convocatoria.fechaCierre);
 
@@ -77,8 +86,8 @@ export function TarjetaConvocatoria({
             <summary>
               Requisitos y documentos
               <span className="cuenta">
-                {convocatoria.requisitos.length} requisitos ·{' '}
-                {convocatoria.documentosExigidos.length} documentos
+                {cantidad(convocatoria.requisitos.length, 'requisito', 'requisitos')} ·{' '}
+                {cantidad(convocatoria.documentosExigidos.length, 'documento', 'documentos')}
               </span>
             </summary>
             <div className="requisitos-cuerpo">
@@ -101,6 +110,8 @@ export function TarjetaConvocatoria({
             </div>
           </details>
         )}
+
+        {accion !== undefined && <div className="accion-tarjeta">{accion}</div>}
       </div>
     </li>
   );
