@@ -10,6 +10,7 @@
  *   /convocatorias → PaginaConvocatorias (PÚBLICA — US-008)
  *   /login         → PaginaLogin         (pública)
  *   /registro      → PaginaRegistro      (pública — US-001)
+ *   /consulta      → PaginaConsulta      (pública — US-025)
  *   /gestion       → PaginaGestion       (sesión + rol ADMINISTRADOR — US-006, US-007)
  *   /perfil        → PaginaPerfil        (sesión + rol ESTUDIANTE — US-011)
  *   /solicitudes   → PaginaMisSolicitudes (sesión + rol ESTUDIANTE — US-015)
@@ -31,6 +32,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import { PaginaComite } from './paginas/PaginaComite';
 import { PaginaComites } from './paginas/PaginaComites';
+import { PaginaConsulta } from './paginas/PaginaConsulta';
 import { PaginaConvocatorias } from './paginas/PaginaConvocatorias';
 import { PaginaEvaluaciones } from './paginas/PaginaEvaluaciones';
 import { PaginaEvaluadores } from './paginas/PaginaEvaluadores';
@@ -64,6 +66,7 @@ export function App(): ReactElement {
           <Route path="/convocatorias" element={<PaginaConvocatorias />} />
           <Route path="/login" element={<PaginaLogin />} />
           <Route path="/registro" element={<PaginaRegistro />} />
+          <Route path="/consulta" element={<PaginaConsulta />} />
           <Route
             path="/gestion"
             element={

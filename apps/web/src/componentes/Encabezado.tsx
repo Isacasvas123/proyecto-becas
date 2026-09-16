@@ -50,6 +50,9 @@ export function Encabezado({ sesion = null, onCerrarSesion }: Props): ReactEleme
 
           <nav className="navegacion" aria-label="Secciones">
             <NavLink to="/convocatorias">Convocatorias</NavLink>
+            {sesion?.usuario.rol !== 'ADMINISTRADOR' && sesion?.usuario.rol !== 'EVALUADOR' && (
+              <NavLink to="/consulta">Consultar estado</NavLink>
+            )}
             {sesion?.usuario.rol === 'ADMINISTRADOR' && (
               <>
                 <NavLink to="/gestion">Gestión</NavLink>

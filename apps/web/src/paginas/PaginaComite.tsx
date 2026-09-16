@@ -10,21 +10,31 @@
  *   reparto automático pide confirmación.
  *
  * EL CONSOLIDADO NO DECIDE
- *   Ordena y marca lo que cabría en los cupos. Aprobar o rechazar es US-023.
+ *   Ordena y marca lo que cabría en los cupos. La decisión la toma el administrador fila por fila:
+ *
+ * RESOLVER Y ADJUDICAR (US-023, US-024)
+ *   Desde cada fila del consolidado. Resolver exige elegir y escribir el motivo, y confirmar; los
+ *   cupos disponibles se ven arriba en todo momento. Las reglas (dictámenes, cupo, transición) las
+ *   aplica el servidor, que responde con el mensaje exacto.
  */
 import { useCallback, useEffect, useState, type ReactElement } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import {
+  adjudicarBeca,
   agregarIntegrantes,
   asignarSolicitudes,
   listarEvaluadores,
   obtenerComite,
   obtenerConsolidado,
+  obtenerCupos,
+  resolverSolicitud,
   solicitudesPorAsignar,
   type Comite,
   type Consolidado,
   type CuentaEvaluador,
+  type Cupos,
+  type FilaConsolidado,
   type SolicitudPorAsignar,
 } from '../api/cliente';
 import { MarcoPrivado } from '../componentes/MarcoPrivado';
@@ -49,6 +59,8 @@ export function PaginaComite(): ReactElement {
   const [confirmando, setConfirmando] = useState(false);
   const [manual, setManual] = useState<Record<string, string>>({});
   const [nuevoIntegrante, setNuevoIntegrante] = useState('');
+  const [cupos, setCupos] = useState<Cupos | null>(null);
+  const [seleccion, setSeleccion] = useState<FilaConsolidado | null>(null);
 
   const cargar = useCallback(async () => {
     try {
@@ -61,6 +73,7 @@ export function PaginaComite(): ReactElement {
       setComite(c);
       setPendientes(p);
       setConsolidado(cons);
+      setCupos(await obtenerCupos(c.convocatoria.id));
       setEvaluadores(ev.filter((e) => e.activo));
       setErrorCarga(null);
     } catch (causa: unknown) {
@@ -112,6 +125,20 @@ export function PaginaComite(): ReactElement {
       return 'Integrante agregado.';
     });
 
+  const resolver = (fila: FilaConsolidado, decision: 'APROBAR' | 'RECHAZAR', motivo: string) =>
+    ejecutar(async () => {
+      const r = await resolverSolicitud(fila.solicitudId, decision, motivo);
+      setSeleccion(null);
+      return `${r.numero} ${decision === 'APROBAR' ? 'aprobada' : 'rechazada'}. Quedan ${r.cupos.disponibles} cupo(s).`;
+    });
+
+  const adjudicar = (fila: FilaConsolidado) =>
+    ejecutar(async () => {
+      const r = await adjudicarBeca(fila.solicitudId);
+      setSeleccion(null);
+      return `${r.numero} adjudicada. Beca ${r.beca?.codigo ?? ''}.`;
+    });
+
   const disponibles = evaluadores.filter(
     (e) => !(comite?.integrantes ?? []).some((i) => i.id === e.id),
   );
@@ -141,6 +168,12 @@ export function PaginaComite(): ReactElement {
                 <strong>{comite.convocatoria.codigo}</strong> · {comite.convocatoria.titulo} ·{' '}
                 {nombreTipo(comite.convocatoria.tipo)} · {comite.convocatoria.cupos} cupos
               </p>
+              {cupos !== null && (
+                <p className="conteo">
+                  <strong>{cupos.disponibles}</strong> cupos disponibles · {cupos.aprobadas}{' '}
+                  aprobadas · {cupos.adjudicadas} adjudicadas
+                </p>
+              )}
               <p className="conteo">
                 Criterio de puntaje: <strong>{comite.criterio}</strong> · creado por{' '}
                 {comite.creadoPor} el {formatearFechaHora(comite.creadoEn)}
@@ -314,6 +347,9 @@ export function PaginaComite(): ReactElement {
                         <th scope="col" className="num">
                           Puntaje
                         </th>
+                        <th scope="col">
+                          <span className="solo-lector">Acciones</span>
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -336,11 +372,44 @@ export function PaginaComite(): ReactElement {
                           <td className="num">
                             <strong>{f.puntajePromedio?.toFixed(2) ?? 'Pendiente'}</strong>
                           </td>
+                          <td className="accion">
+                            {f.estado === 'EN_EVALUACION' && f.dictamenesEmitidos > 0 && (
+                              <button
+                                type="button"
+                                className="boton pequeno fantasma"
+                                disabled={ocupado}
+                                onClick={() => setSeleccion(f)}
+                              >
+                                Resolver
+                              </button>
+                            )}
+                            {f.estado === 'APROBADA' && (
+                              <button
+                                type="button"
+                                className="boton pequeno"
+                                disabled={ocupado}
+                                onClick={() => setSeleccion(f)}
+                              >
+                                Adjudicar
+                              </button>
+                            )}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
+              )}
+              {seleccion !== null && (
+                <PanelDecision
+                  key={seleccion.solicitudId}
+                  fila={seleccion}
+                  disponibles={cupos?.disponibles ?? 0}
+                  ocupado={ocupado}
+                  onResolver={(decision, motivo) => void resolver(seleccion, decision, motivo)}
+                  onAdjudicar={() => void adjudicar(seleccion)}
+                  onCancelar={() => setSeleccion(null)}
+                />
               )}
               <p className="nota-panel">
                 Las filas resaltadas caben en los {consolidado.cupos} cupos de la convocatoria. Es
@@ -351,5 +420,130 @@ export function PaginaComite(): ReactElement {
         </>
       )}
     </MarcoPrivado>
+  );
+}
+
+const MINIMO_MOTIVO = 15;
+
+interface PropsDecision {
+  fila: FilaConsolidado;
+  disponibles: number;
+  ocupado: boolean;
+  onResolver: (decision: 'APROBAR' | 'RECHAZAR', motivo: string) => void;
+  onAdjudicar: () => void;
+  onCancelar: () => void;
+}
+
+/**
+ * La decisión sobre UNA solicitud. Para resolver: elegir, escribir el motivo y confirmar. Para
+ * adjudicar: confirmar. Las dos son irreversibles, por eso piden dos pasos.
+ */
+function PanelDecision({
+  fila,
+  disponibles,
+  ocupado,
+  onResolver,
+  onAdjudicar,
+  onCancelar,
+}: PropsDecision): ReactElement {
+  const [decision, setDecision] = useState<'APROBAR' | 'RECHAZAR' | ''>('');
+  const [motivo, setMotivo] = useState('');
+  const [confirmando, setConfirmando] = useState(false);
+  const largo = motivo.trim().length;
+  const adjudicando = fila.estado === 'APROBADA';
+
+  return (
+    <div className="decision" role="region" aria-label={`Decisión sobre ${fila.numero}`}>
+      <h3>
+        {adjudicando ? 'Adjudicar beca' : 'Resolver'} · {fila.numero} · {fila.estudiante}
+      </h3>
+      <p className="pista">
+        Puntaje {fila.puntajePromedio?.toFixed(2) ?? '—'} · {fila.favorables} a favor y{' '}
+        {fila.desfavorables} en contra · {fila.dictamenesEmitidos} de {fila.evaluadoresAsignados}{' '}
+        dictámenes · {disponibles} cupo(s) disponible(s)
+      </p>
+
+      {adjudicando ? (
+        <p>
+          Se registrará la beca con su código y la solicitud quedará <strong>adjudicada</strong>.
+        </p>
+      ) : (
+        <>
+          {fila.dictamenesEmitidos < fila.evaluadoresAsignados && (
+            <p className="aviso pendiente">
+              Todavía faltan dictámenes de este comité. Puede resolver, pero considere esperarlos.
+            </p>
+          )}
+          <fieldset className="opciones en-linea">
+            <legend>Decisión</legend>
+            <label>
+              <input
+                type="radio"
+                name="decision"
+                checked={decision === 'APROBAR'}
+                disabled={disponibles === 0}
+                onChange={() => setDecision('APROBAR')}
+              />
+              Aprobar {disponibles === 0 && <span className="cuenta">(sin cupos)</span>}
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="decision"
+                checked={decision === 'RECHAZAR'}
+                onChange={() => setDecision('RECHAZAR')}
+              />
+              Rechazar
+            </label>
+          </fieldset>
+          <div className="campo">
+            <label htmlFor="motivo">Motivo</label>
+            <textarea
+              id="motivo"
+              rows={3}
+              maxLength={2000}
+              value={motivo}
+              onChange={(e) => setMotivo(e.target.value)}
+              placeholder="El estudiante lo verá en el historial de su solicitud."
+            />
+            <span className={`pista ${largo > 0 && largo < MINIMO_MOTIVO ? 'alerta' : ''}`}>
+              Obligatorio, al menos {MINIMO_MOTIVO} caracteres (lleva {largo}).
+            </span>
+          </div>
+        </>
+      )}
+
+      <div className="acciones">
+        <button type="button" className="boton fantasma" disabled={ocupado} onClick={onCancelar}>
+          Cancelar
+        </button>
+        {!confirmando ? (
+          <button
+            type="button"
+            className="boton"
+            disabled={ocupado || (!adjudicando && (decision === '' || largo < MINIMO_MOTIVO))}
+            onClick={() => setConfirmando(true)}
+          >
+            Continuar
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="boton"
+            disabled={ocupado}
+            onClick={() =>
+              adjudicando ? onAdjudicar() : decision !== '' && onResolver(decision, motivo)
+            }
+          >
+            {ocupado
+              ? 'Guardando…'
+              : adjudicando
+                ? 'Sí, adjudicar'
+                : `Sí, ${decision === 'APROBAR' ? 'aprobar' : 'rechazar'}`}
+          </button>
+        )}
+      </div>
+      {confirmando && <p className="pista">Esta decisión no se puede deshacer desde el sistema.</p>}
+    </div>
   );
 }
