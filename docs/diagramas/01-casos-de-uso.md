@@ -623,4 +623,4 @@ constructor telescópico de ocho parámetros opcionales.
 | CU-13 | Gestionar comités | US-017 | — | 🟡 Crear, agregar integrantes, 3a, 4a y 6a · falta quitar integrantes (5a) |
 | CU-15 | Aprobar o rechazar | US-023 | Facade | 🟢 Criterios cumplidos · sin acta (US-026) · falta Staging |
 | CU-16 | Aprobar o rechazar | US-024 | — | 🟢 Implementado · falta Staging |
-| CU-17 | Generar reportes | US-028 a 031 | Builder | 🔴 Sprint 7 |
+| CU-17 | Generar reportes | US-028 a 031 | Builder | 🟢 Implementado · falta Staging |

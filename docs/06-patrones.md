@@ -16,7 +16,7 @@
 | Tipo | Patrón | Dónde vive | Sprint | Estado |
 |---|---|---|---|---|
 | Creacional | **Factory Method** | `modules/convocatorias/domain/factories/` | **3** | ✅ **Implementado** (adelantado al 12 Sep) |
-| Creacional | Builder | `modules/reportes/application/builders/` | 7 | Pendiente |
+| Creacional | **Builder** | `modules/reportes/application/builders/` | **7** | ✅ **Implementado** (adelantado al 16 Sep) |
 | Estructural | **Adapter** | `modules/usuarios/infrastructure/adapters/` | **1** | ✅ **Implementado** |
 | Estructural | **Facade** | `modules/resoluciones/application/facades/` | **6** | ✅ **Implementado** (adelantado al 16 Sep) |
 | Comportamiento | **State** | `modules/solicitudes/domain/estados/` | **4** | ✅ **Implementado** (adelantado al 16 Sep) |
@@ -142,7 +142,11 @@ El servicio de aplicación no tiene ni un `if` por tipo: pide la fábrica y le d
 
 ## 2. Builder — `ReporteBuilder`
 
+**✅ IMPLEMENTADO EL 16 DE SEPTIEMBRE** (previsto para el Sprint 7; llegó con US-028). Con él, **los seis
+patrones están implementados**.
+
 **Ubicación:** `modules/reportes/application/builders/reporte.builder.ts`
+**Pruebas:** `reporte.builder.spec.ts`.
 
 ### ¿Qué problema resuelve?
 
@@ -179,18 +183,36 @@ reporte.
 - Habilita **reutilización**: el mismo builder alimenta la vista web, la exportación a CSV y la
   exportación a PDF.
 
-### Esquema
+### Esquema — tal como quedó implementado
 
 ```ts
-const reporte = new ReporteBuilder()
-  .deConvocatoria(convocatoriaId)
-  .conEstado(EstadoSolicitud.APROBADA)
-  .entreFechas(inicio, fin)
-  .porDepartamento('Quetzaltenango')
-  .agrupadoPor(Agrupacion.CENTRO_EDUCATIVO)
-  .enFormato(FormatoSalida.CSV)
-  .build();   // valida coherencia y devuelve el Reporte listo
+const spec = new ReporteBuilder()
+  .conEstados(['APROBADA', 'ADJUDICADA'])
+  .deNivel('POSGRADO')
+  .deDepartamento('QUETZALTENANGO')
+  .entreFechas(inicio, fin)                 // por fecha de envío
+  .agrupadoPor('CENTRO_EDUCATIVO')
+  .ordenadoPor('ENVIO_RECIENTE')
+  .enFormato('CSV')
+  .build();                                 // valida y devuelve una especificación congelada
+
+const reporte = await generarReporte.generar(spec);   // independiente del formato
+const archivo = exportadores.find((e) => e.formato === spec.formato).exportar(reporte);
 ```
+
+**Qué rechaza `build()`.** Fechas al revés, una lista de estados vacía y agrupar por el mismo dato
+por el que se filtró (todo caería en un solo grupo). Cada paso, además, rechaza valores fuera de
+catálogo: un borrador no es una solicitud recibida, `XLSX` no es un formato disponible.
+
+**Dónde se ve la ventaja.** En el controlador, cada parámetro de la consulta es opcional y solo se
+llama al paso que corresponde a los que llegaron: no hay un `if` por combinación ni un constructor de
+nueve argumentos. Y el reporte de becas por región (US-031) se pide con el mismo builder —solo
+adjudicadas, agrupadas por departamento— en lugar de tener su propia consulta.
+
+**Dos diferencias con la versión 1.0.** El builder produce una **especificación**, no el reporte: los
+datos los junta un servicio aparte y el formato lo aplica un exportador (CSV o PDF), de modo que un
+formato nuevo sirve para todos los reportes. Y el departamento es un **código** del catálogo, no el
+nombre escrito, por la misma razón que en el perfil (US-011).
 
 ---
 
