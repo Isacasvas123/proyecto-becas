@@ -25,6 +25,7 @@ import { HASHER_PASSWORD, HasherPassword } from '../../domain/ports/hasher-passw
 import { USUARIO_REPOSITORIO, UsuarioRepositorio } from '../../domain/ports/usuario.repositorio';
 import { AutenticacionFallidaError } from '../../../../shared/exceptions/errores-dominio';
 import { SesionIniciadaDto } from '../dto/sesion-iniciada.dto';
+import { aSesionIniciada } from '../mappers/sesion.mapper';
 
 @Injectable()
 export class AutenticarUsuarioService {
@@ -113,16 +114,7 @@ export class AutenticarUsuarioService {
     const token = await this.generadorToken.emitir(usuario);
     this.logger.log(`Sesión iniciada: ${usuario.nombreUsuario.valor} (${usuario.rol})`);
 
-    return {
-      token: token.valor,
-      expiraEn: token.expiraEn.toISOString(),
-      usuario: {
-        id: usuario.id,
-        nombreUsuario: usuario.nombreUsuario.valor,
-        correo: usuario.correo,
-        rol: usuario.rol,
-      },
-    };
+    return aSesionIniciada(usuario, token);
   }
 }
 

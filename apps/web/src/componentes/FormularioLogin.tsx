@@ -11,6 +11,8 @@
  */
 import { useState, type FormEvent, type ReactElement } from 'react';
 
+import { Link } from 'react-router-dom';
+
 import { iniciarSesion, type Sesion } from '../api/cliente';
 
 interface Props {
@@ -85,6 +87,10 @@ export function FormularioLogin({ onSesionIniciada }: Props): ReactElement {
       <button type="submit" className="boton ancho" disabled={enviando}>
         {enviando ? 'Verificando…' : 'Iniciar sesión'}
       </button>
+
+      <p className="enlace-alterno">
+        ¿Todavía no tiene cuenta? <Link to="/registro">Regístrese aquí</Link>
+      </p>
 
       {/* Ayuda para la revisión del equipo y la demostración al Product Owner.
           Se elimina antes de desplegar a producción: en Staging el

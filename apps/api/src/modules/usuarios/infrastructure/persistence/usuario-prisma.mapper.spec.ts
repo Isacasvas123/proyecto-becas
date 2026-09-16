@@ -49,6 +49,8 @@ describe('usuario-prisma.mapper', () => {
       activo: true,
       intentosFallidos: 0,
       bloqueadoHasta: null,
+      nombreCompleto: null,
+      cui: null,
       creadoEn: new Date('2026-09-01T00:00:00.000Z'),
       actualizadoEn: new Date('2026-09-01T00:00:00.000Z'),
     });
@@ -70,6 +72,8 @@ describe('usuario-prisma.mapper', () => {
       activo: true,
       intentosFallidos: 0,
       bloqueadoHasta: null,
+      nombreCompleto: null,
+      cui: null,
       creadoEn: new Date(),
       actualizadoEn: new Date(),
     });
@@ -92,6 +96,8 @@ describe('usuario-prisma.mapper', () => {
       activo: true,
       intentosFallidos: 3,
       bloqueadoHasta,
+      nombreCompleto: 'Ana López',
+      cui: '2456789010101',
       creadoEn: new Date(),
       actualizadoEn: new Date(),
     });
@@ -99,5 +105,25 @@ describe('usuario-prisma.mapper', () => {
     expect(usuario.intentosFallidos).toBe(3);
     expect(usuario.bloqueadoHasta).toEqual(bloqueadoHasta);
     expect(usuario.estaBloqueado(new Date('2026-09-12T15:00:00.000Z'))).toBe(true);
+  });
+
+  it('traduce la identidad de la persona (US-001)', () => {
+    const usuario = aDominio({
+      id: 'id-4',
+      nombreUsuario: 'ana',
+      correo: 'ana@becas.gob.gt',
+      hashPassword: '$2b$10$hash',
+      rol: RolPrisma.ESTUDIANTE,
+      activo: true,
+      intentosFallidos: 0,
+      bloqueadoHasta: null,
+      nombreCompleto: 'Ana López',
+      cui: '2456789010101',
+      creadoEn: new Date(),
+      actualizadoEn: new Date(),
+    });
+
+    expect(usuario.nombreCompleto).toBe('Ana López');
+    expect(usuario.cui?.valor).toBe('2456789010101');
   });
 });

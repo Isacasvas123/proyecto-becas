@@ -203,6 +203,20 @@ export function publicarConvocatoria(id: string): Promise<Convocatoria> {
   return enviar<Convocatoria>(`/convocatorias/${encodeURIComponent(id)}/publicar`);
 }
 
+/** Cuerpo de `POST /auth/registro` (US-001). */
+export interface NuevoEstudiante {
+  nombreCompleto: string;
+  cui: string;
+  correo: string;
+  nombreUsuario: string;
+  password: string;
+}
+
+/** US-001 — Registro de estudiante. Devuelve la sesión ya iniciada. */
+export function registrarEstudiante(datos: NuevoEstudiante): Promise<Sesion> {
+  return enviar<Sesion>('/auth/registro', datos);
+}
+
 /** US-002 — Iniciar sesión. */
 export function iniciarSesion(nombreUsuario: string, password: string): Promise<Sesion> {
   return enviar<Sesion>('/auth/login', { nombreUsuario, password });

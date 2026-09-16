@@ -27,13 +27,16 @@
 
 ---
 
-## Estado de avance — actualizado el 12 de septiembre de 2026
+## Estado de avance — actualizado el 16 de septiembre de 2026
 
 | Historia | Estado | Nota |
 |---|---|---|
+| **US-001** Registro de estudiante | 🟡 **Criterios cumplidos** — falta Staging | Los cinco criterios implementados y probados, incluido el inicio de sesión automático. Adelantada del Sprint 3 |
 | **US-002** Inicio de sesión | 🟡 **Criterios cumplidos** — falta Staging | Los tres criterios implementados y probados. El bloqueo tras 5 intentos se completó el 12 Sep |
 | **US-003** Control de acceso por rol | 🟡 **Criterios cumplidos** — falta Staging | Guard global *seguro por defecto*, los 4 roles, 403 verificado con pruebas de integración |
-| **US-008** Listado público de convocatorias | ⚠️ **Parcial** | El backend lo expone sin sesión, pero el frontend lo sigue poniendo **detrás del login**. Sprint 3 |
+| **US-006** Crear convocatoria | 🟡 **Criterios cumplidos** — falta Staging | Con el patrón **Factory Method**. Adelantada del Sprint 3 |
+| **US-007** Publicar convocatoria | 🟡 **Criterios cumplidos** — falta Staging | El criterio 3 (no editar publicadas) queda como regla del dominio; la edición es US-010 |
+| **US-008** Listado público de convocatorias | 🟡 **Criterios cumplidos** — falta Staging | Público y sin cuenta, con requisitos y documentos. Corregido el 12 Sep |
 | Resto | ⬜ Pendiente | Según el calendario de sprints |
 
 > **Nota para la Sprint Review.** Ninguna de estas historias puede marcarse como *Completada*

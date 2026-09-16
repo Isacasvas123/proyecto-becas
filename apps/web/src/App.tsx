@@ -9,6 +9,7 @@
  *   /              → redirige a /convocatorias
  *   /convocatorias → PaginaConvocatorias (PÚBLICA — US-008)
  *   /login         → PaginaLogin         (pública)
+ *   /registro      → PaginaRegistro      (pública — US-001)
  *   /gestion       → PaginaGestion       (sesión + rol ADMINISTRADOR — US-006, US-007)
  *   cualquier otra → redirige a /convocatorias
  *
@@ -23,6 +24,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { PaginaConvocatorias } from './paginas/PaginaConvocatorias';
 import { PaginaGestion } from './paginas/PaginaGestion';
 import { PaginaLogin } from './paginas/PaginaLogin';
+import { PaginaRegistro } from './paginas/PaginaRegistro';
 import { ProveedorSesion } from './sesion/ContextoSesion';
 import { RutaProtegida } from './sesion/RutaProtegida';
 
@@ -38,6 +40,7 @@ export function App(): ReactElement {
           <Route path="/" element={<Navigate to="/convocatorias" replace />} />
           <Route path="/convocatorias" element={<PaginaConvocatorias />} />
           <Route path="/login" element={<PaginaLogin />} />
+          <Route path="/registro" element={<PaginaRegistro />} />
           <Route
             path="/gestion"
             element={

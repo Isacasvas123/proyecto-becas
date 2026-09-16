@@ -44,6 +44,16 @@ export class RecursoNoEncontradoError extends ErrorDeDominio {
 }
 
 /**
+ * Ya existe algo que debía ser único: un correo, un CUI o un nombre de usuario (US-001).
+ * El filtro lo traduce a HTTP 409.
+ */
+export class RecursoDuplicadoError extends ErrorDeDominio {
+  constructor(mensaje: string) {
+    super(mensaje);
+  }
+}
+
+/**
  * Las credenciales no son válidas o la cuenta no puede iniciar sesión (US-002).
  *
  * SEGURIDAD: el `mensaje` que llegue al cliente debe ser siempre genérico. Distinguir
