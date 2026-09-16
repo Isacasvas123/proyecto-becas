@@ -87,6 +87,7 @@ proyecto-becas/
 │   │   │   │   ├── estudiantes/     Perfil académico (US-011)
 │   │   │   │   ├── solicitudes/     Solicitudes, documentos e historial (EPIC-03)
 │   │   │   │   ├── evaluaciones/    Comités, asignación, dictámenes y consolidado (EPIC-04)
+│   │   │   │   ├── resoluciones/    Resolución, adjudicación y consulta pública (EPIC-05)
 │   │   │   │   └── salud/           /health y /ready
 │   │   │   ├── shared/
 │   │   │   │   ├── exceptions/      Filtro global de errores de dominio
@@ -125,6 +126,8 @@ Es la evidencia del patrón **Adapter** y la tabla que demuestra la inversión d
 | `solicitudes/domain/ports/consultas-externas` | `ConsultaConvocatoriasAdapter` · `ConsultaPerfilesAdapter` | Los otros módulos: se les pregunta por su capa de aplicación, nunca por su dominio |
 | `evaluaciones/domain/ports/comite.repositorio` · `dictamen.repositorio` | `ComitePrismaRepositorio` · `DictamenPrismaRepositorio` y sus dobles en memoria | La persistencia. El de dictámenes **solo crea y lee** |
 | `evaluaciones/domain/ports/consultas-externas` | Cuatro adaptadores hacia `solicitudes`, `convocatorias`, `estudiantes` y `usuarios` | Los otros módulos. Ninguno de ellos depende de `evaluaciones` |
+| `resoluciones/domain/ports/consultas-externas` | Cuatro adaptadores hacia `solicitudes`, `evaluaciones`, `convocatorias` y `usuarios` | Los colaboradores de la fachada. `resoluciones` es el módulo más alto: nadie depende de él |
+| `resoluciones/domain/ports/notificador-resoluciones` | `NotificadorResolucionesConsolaAdapter` | El aviso de resolución y adjudicación (correo en US-022) |
 
 El enlace ocurre en un único punto por módulo, el archivo `*.module.ts`:
 
@@ -173,6 +176,10 @@ Base local: `http://localhost:3000`
 | `GET` | `/evaluaciones/solicitudes/:id` | **EVALUADOR** | Solicitante, documentos y puntaje calculado. Si no está asignada: **403** |
 | `GET` | `/evaluaciones/solicitudes/:id/documentos/:tipo` | **EVALUADOR** | Descarga un documento de una solicitud asignada |
 | `POST` | `/evaluaciones/solicitudes/:id/dictamen` | **EVALUADOR** | `{ "recomendacion", "observacion" }`. El puntaje **no se manda**: mandarlo es 400 (US-019) |
+| `POST` | `/resoluciones/solicitudes/:id` | **ADMINISTRADOR** | `{ "decision": "APROBAR" \| "RECHAZAR", "motivo" }` (US-023). Sin cupo: 422 |
+| `POST` | `/resoluciones/solicitudes/:id/adjudicar` | **ADMINISTRADOR** | Adjudica una APROBADA y crea la beca (US-024) |
+| `GET` | `/resoluciones/convocatorias/:id/cupos` | **ADMINISTRADOR** | Cupos totales, aprobadas, adjudicadas y disponibles |
+| `POST` | `/consulta-publica` | **Público** | `{ "numero", "cui" }` → solo `numero`, `estado`, `ultimoCambio` (US-025). 404 genérico; 429 tras 10 consultas por minuto |
 
 > **El id del estudiante nunca viaja en la URL ni en el cuerpo.** Sale del token con el decorador
 > `@UsuarioActual()`. No existe una forma de pedir "las solicitudes del estudiante X".
@@ -324,7 +331,7 @@ diferencia, y una prueba la fija para que nadie la "arregle" agregándolo al esq
 
 ## 5. Base de datos
 
-Diez tablas hoy. El dominio declara sus propios enums en lugar de importar los de Prisma, para no
+Once tablas hoy. El dominio declara sus propios enums en lugar de importar los de Prisma, para no
 meter el ORM dentro de `domain/`; el precio es mantener dos listas sincronizadas, y se mitiga con
 una prueba que las compara y falla en CI si divergen.
 
@@ -395,7 +402,17 @@ historial. Si algo falla, no queda un documento guardado con la solicitud en el 
 Borrar un usuario, una solicitud o una convocatoria con comités, asignaciones o dictámenes está
 **restringido** en la base.
 
-### 5.6 Migraciones
+### 5.6 `Beca` (EPIC-05)
+
+Tabla `becas`: `codigo` **único** (`BECA-2026-000001`) y `solicitud_id` **único** (una beca por
+solicitud). Se escribe en la misma transacción que el cambio de la solicitud a ADJUDICADA.
+
+**Cupos.** No hay una columna de "cupos usados": se cuentan las solicitudes APROBADAS y ADJUDICADAS
+de la convocatoria. Aprobar **reserva** el cupo; adjudicar lo formaliza. La aprobación bloquea la
+fila de la convocatoria (`FOR UPDATE`) antes de contar, para que dos aprobaciones simultáneas no
+pasen por el mismo cupo.
+
+### 5.7 Migraciones
 
 Versionadas en `apps/api/prisma/migrations/`. **Nunca se modifica la base a mano.**
 
@@ -503,7 +520,7 @@ El orden importa: **de dentro hacia fuera**, igual que apuntan las dependencias.
 | **Factory Method** | Creacional   | ✅ Implementado y probado (12 Sep)      | 3      |
 | **State**        | Comportamiento | ✅ Implementado y probado (16 Sep)      | 4      |
 | **Strategy**     | Comportamiento | ✅ Implementado y probado (16 Sep)      | 5      |
-| Facade           | Estructural    | 🔴 Pendiente                            | 6      |
+| **Facade**       | Estructural    | ✅ Implementado y probado (16 Sep)      | 6      |
 | Builder          | Creacional     | 🔴 Pendiente                            | 7      |
 
 La justificación de cada uno —qué problema resuelve, qué alternativas había, por qué se eligió y
@@ -530,4 +547,7 @@ Se documenta para que quien mantenga el sistema no la descubra a golpes:
 | Las fórmulas de puntaje son una propuesta del equipo | Pueden no coincidir con la política del Ministerio | **Confirmar con el Product Owner**; cambiar es editar una clase |
 | El perfil del estudiante se puede editar después de enviar la solicitud | El puntaje se calcula con el perfil del momento de evaluar | Mitigado: el dictamen guarda los datos usados en su desglose. Solución completa: congelar el perfil al enviar |
 | No se pueden quitar integrantes de un comité (CU-13, 5a) | Un evaluador que se retira sigue en el comité | Siguiente iteración de US-017 |
+| El límite de la consulta pública cuenta en la memoria del proceso | Con varias instancias, cada una cuenta por su lado; se reinicia al reiniciar | Suficiente con una instancia; con más, un almacén compartido |
+| El límite depende de la dirección real del cliente | Detrás del proxy de Render se usa `trust proxy` (un salto) en producción | Revisar si cambia la infraestructura |
+| Resolver no genera acta | La decisión queda en el historial, pero no en un documento | US-026, como un colaborador más de la fachada |
 | La prueba de integración de EPIC-04 no importa `EvaluacionesModule` | Jest no carga `@nestjs/jwt` en esta rama | Se corrige con el PR #12; entonces se simplifica la prueba |
