@@ -45,8 +45,8 @@ Los nueve objetivos específicos del proyecto, y dónde se resuelve cada uno.
 | 4 | Cargar documentación | EPIC-03 | US-013 | `solicitudes` | 4 | 🟢 PDF/JPG/PNG hasta 5 MB, validados por contenido · falta Staging |
 | 5 | Administrar evaluaciones | EPIC-04 | US-019, US-021 | `evaluaciones` | 5 | 🟢 Dictamen con puntaje calculado y consolidado · fórmulas por confirmar con el PO · falta Staging |
 | 6 | Gestionar comités evaluadores | EPIC-04 | US-017, US-018, US-020 | `evaluaciones` | 5 | 🟢 Comités, cuentas de evaluador y asignación · falta quitar integrantes y Staging |
-| 7 | Aprobar o rechazar solicitudes | EPIC-05 | US-023, US-024, US-026 | `solicitudes` | 6 | 🔴 Pendiente |
-| 8 | Consultar el estado de una beca | EPIC-05 | US-025, US-027 | `solicitudes` | 6 | 🔴 Pendiente |
+| 7 | Aprobar o rechazar solicitudes | EPIC-05 | US-023, US-024, US-026 | `resoluciones` | 6 | 🟡 Aprobar, rechazar y adjudicar · falta el acta (US-026) y Staging |
+| 8 | Consultar el estado de una beca | EPIC-05 | US-025, US-027 | `resoluciones` | 6 | 🟡 Consulta pública hecha · falta la publicación de resultados (US-027) y Staging |
 | 9 | Generar reportes básicos | EPIC-06 | US-028 a US-031 | `reportes` | 7 | 🔴 Pendiente |
 
 **Requisitos transversales**, que no son objetivos funcionales pero el enunciado evalúa:
@@ -55,7 +55,7 @@ Los nueve objetivos específicos del proyecto, y dónde se resuelve cada uno.
 |---|---|---|
 | Control de acceso por rol | `usuarios` · US-002, US-003 | 🟢 Guard global *seguro por defecto*, 4 roles, 403 verificado con pruebas e2e |
 | Trazabilidad del proceso | `solicitudes` · US-016, historial de estados | 🟢 Cada transición queda con fecha, autor y motivo; la tabla solo recibe inserciones |
-| Transparencia | Consulta pública sin autenticación · US-025 | 🔴 Sprint 6 |
+| Transparencia | Consulta pública sin autenticación · US-025 | 🟢 Número + CUI, sin datos personales, con límite de consultas. Falta US-027 (resultados publicados) |
 
 🟢 Terminado · 🟡 Parcial · 🔴 Pendiente
 
@@ -102,13 +102,13 @@ Si no se puede nombrar el problema concreto y la historia que lo origina, el pat
 
 | | **Facade** |
 |---|---|
-| **Problema real** | Resolver una solicitud coordina seis colaboradores: dictámenes, cupos, transición de estado, auditoría, acta y notificación |
+| **Problema real** | Resolver una solicitud coordina colaboradores de cuatro módulos: dictámenes, cupos, transición de estado con su registro de auditoría y notificación (el acta llega con US-026) |
 | **Origen** | US-023 |
 | **Alternativa descartada** | Que el controlador orqueste los seis: filtra lógica de negocio a presentación y la duplica en cada punto de entrada |
-| **Ubicación** | `modules/solicitudes/application/facades/solicitud.facade.ts` |
-| **Prueba que lo verifica** | Que una aprobación sin cupos disponibles falle sin dejar el expediente a medias |
+| **Ubicación** | `modules/resoluciones/application/facades/resolucion.facade.ts` (módulo propio: dentro de `solicitudes` habría creado un ciclo con `evaluaciones`) |
+| **Prueba que lo verifica** | Que una aprobación sin cupos disponibles falle sin dejar el expediente a medias — `casos-de-uso-resoluciones.spec.ts`, y la prueba de humo con tres aprobaciones simultáneas |
 | **Sprint** | 6 · Responsable: Ivan |
-| **Estado** | 🔴 Pendiente |
+| **Estado** | 🟢 **Implementado y probado** (16 Sep) |
 
 ### De comportamiento
 
@@ -138,12 +138,12 @@ Si no se puede nombrar el problema concreto y la historia que lo origina, el pat
 | Categoría | Exigido | Definidos | Implementados |
 |---|---|---|---|
 | Creacionales | 2 | 2 | **1** (Factory Method) |
-| Estructurales | 2 | 2 | **1** (Adapter) |
+| Estructurales | 2 | 2 | **2** (Adapter, Facade) ✅ |
 | De comportamiento | 2 | 2 | **2** (State, Strategy) ✅ |
 
 > **Cómo presentar esto sin adornarlo:** los seis están definidos con su problema, su alternativa
-> descartada y su ubicación prevista; **cuatro están implementados y probados** (los dos de
-> comportamiento completos). Facade y Builder entran con US-023 y US-028. Implementarlos antes sería
+> descartada y su ubicación prevista; **cinco están implementados y probados**: los dos
+> estructurales y los dos de comportamiento completos. Solo falta Builder, que entra con US-028. Implementarlos antes sería
 > escribir código sin problema que resolver, que es justo lo que el enunciado descarta.
 
 ---

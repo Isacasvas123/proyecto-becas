@@ -340,7 +340,7 @@ válido. Además el compilador impide confundirlo con cualquier otro texto.
 | `Documento` | solicitudes | 🟢 Implementado como `DocumentoCargado` dentro de `Solicitud` (composición), con `ArchivoDocumento` como objeto de valor |
 | `Evaluacion` + estrategias | evaluaciones | 🟢 Implementada como `Dictamen` (16 Sep): inmutable, con el desglose del criterio. Estrategias en §3 |
 | `Comite` | evaluaciones | 🟢 Implementado (16 Sep) con el reparto equitativo. Las asignaciones son `Asignacion` |
-| `Beca` | solicitudes | 🔴 Sprint 6 |
+| `Beca` | solicitudes | 🟢 Implementada (16 Sep) como `BecaOtorgada` dentro de `Solicitud` (composición 0..1): se guarda en la misma transacción que la adjudicación. Tiene código y fecha; el acta es US-026 |
 | `HistorialEstado` | solicitudes | 🟢 Implementado como `EntradaHistorial` (16 Sep): solo crece |
 
 ### ² Nota sobre `Convocatoria`
@@ -681,7 +681,7 @@ válido. Además el compilador impide confundirlo con cualquier otro texto.
 | `Documento` | solicitudes | 🔴 Sprint 4 |
 | `Evaluacion` + estrategias | evaluaciones | 🟢 Implementada como `Dictamen` (16 Sep): inmutable, con el desglose del criterio. Estrategias en §3 |
 | `Comite` | evaluaciones | 🟢 Implementado (16 Sep) con el reparto equitativo. Las asignaciones son `Asignacion` |
-| `Beca` | solicitudes | 🔴 Sprint 6 |
+| `Beca` | solicitudes | 🟢 Implementada (16 Sep) como `BecaOtorgada` dentro de `Solicitud` (composición 0..1): se guarda en la misma transacción que la adjudicación. Tiene código y fecha; el acta es US-026 |
 | `HistorialEstado` | solicitudes | 🔴 Sprint 4 |
 
 ### ² Nota sobre `Convocatoria`
