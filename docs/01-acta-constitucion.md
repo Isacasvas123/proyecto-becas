@@ -186,7 +186,7 @@ Sprints semanales de **jueves a miércoles**. Ceremonias todos los jueves.
 | 3.1 | Módulo de convocatorias (CRUD y publicación) | Mié 23 Sep | Isaac, Fernando | EPIC-02 |
 | 3.2 | Patrón Factory Method implementado y documentado | Mié 23 Sep | Stuard | Creacional 1 |
 | 3.3 | ~~Entorno de Staging desplegado y accesible~~ | **movido al 2.7** | Ivan | Se adelantó al Sprint 2 por bloquear la DoD completa |
-| 3.4 | Registro de estudiante (US-001) + bloqueo tras 5 intentos (US-002) | Mié 23 Sep | Isaac, Stuard | Movido del 2.4 |
+| 3.4 | Registro de estudiante (US-001) + bloqueo tras 5 intentos (US-002) | Mié 23 Sep · **bloqueo entregado Sáb 12 Sep** | Isaac, Stuard | Movido del 2.4. El bloqueo se adelantó; queda US-001 |
 | 3.5 | Cerrar las 4 revisiones documentales del Sprint 1 (S1-07 a S1-10) | Mié 23 Sep | Fernando, Stuard, Ivan | Deuda declarada del Sprint 1 |
 | 3.6 | Detalle de los casos de uso CU-03, CU-13 y CU-16 | Mié 23 Sep | Fernando | Completa el 2.1 |
 | 4 | **Sprint 4 — Estudiantes y solicitudes** | Mié 30 Sep 2026 | Equipo | |

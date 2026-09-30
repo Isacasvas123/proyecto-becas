@@ -22,4 +22,14 @@ export interface UsuarioRepositorio {
    * registro (US-001) y la recuperación de contraseña (US-005).
    */
   buscarPorNombreUsuario(nombreUsuario: NombreUsuario): Promise<Usuario | null>;
+
+  /**
+   * Persiste el contador de intentos fallidos y el bloqueo (US-002, criterio 3).
+   *
+   * POR QUÉ UN MÉTODO TAN ESTRECHO Y NO UN `guardar(usuario)` GENERAL
+   *   Porque el inicio de sesión solo tiene derecho a tocar esos dos campos. Un `guardar`
+   *   general permitiría que un error en este caso de uso sobrescribiera el rol, el correo o
+   *   el hash. El puerto expresa lo que el caso de uso necesita, no lo que la tabla permite.
+   */
+  actualizarEstadoDeAcceso(usuario: Usuario): Promise<void>;
 }
