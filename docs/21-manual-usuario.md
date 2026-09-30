@@ -98,7 +98,8 @@ sesión abierta en una computadora compartida, no queda abierta indefinidamente.
 
 ## 3. Ver las convocatorias
 
-Al entrar llega a **"Convocatorias abiertas"**, la pantalla principal.
+**No necesita cuenta para ver las convocatorias.** Entre a la plataforma y llegará directamente al
+listado, **"Convocatorias vigentes"**.
 
 ### 3.1 Qué muestra
 
@@ -156,22 +157,16 @@ Esta es la parte honesta del manual. Lo siguiente **aún no funciona**, con la f
 | Subir documentos de respaldo                 | 🔴 No disponible | Sprint 4      |
 | Consultar el estado de su solicitud          | 🔴 No disponible | Sprint 4      |
 | Evaluar solicitudes (evaluadores)            | 🔴 No disponible | Sprint 5      |
-| Crear y publicar convocatorias (administradores) | 🔴 No disponible | Sprint 3  |
 | Consulta pública sin cuenta                  | 🔴 No disponible | Sprint 6      |
 | Reportes y estadísticas                      | 🔴 No disponible | Sprint 7      |
 
 **Mientras tanto**, si necesita una cuenta, la crea el personal del Ministerio.
 
-### 5.1 Un defecto conocido que le afecta
+### 5.1 Un defecto que ya está corregido
 
-**Hoy hay que iniciar sesión para ver las convocatorias**, y eso **está mal**: la consulta de
-convocatorias abiertas debería poder hacerla cualquier persona sin cuenta, por transparencia.
-
-El sistema por dentro ya permite consultarlas sin sesión; lo que falta es separar la pantalla
-pública del panel de quien ya entró. **Está previsto para el Sprint 3.**
-
-Se documenta en lugar de disimularlo porque afecta directamente a quien quiere informarse antes de
-decidir si postula.
+Hasta el 12 de septiembre de 2026 había que iniciar sesión para ver las convocatorias, y eso estaba
+mal: consultarlas debe poder hacerlo cualquier persona, por transparencia. **Ya no hace falta
+cuenta.**
 
 ## 6. Preguntas frecuentes
 

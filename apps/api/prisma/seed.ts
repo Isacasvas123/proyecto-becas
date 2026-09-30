@@ -11,12 +11,30 @@ import { EstadoConvocatoria, PrismaClient, RolUsuario, TipoBeca } from '@prisma/
 import { hash } from 'bcryptjs';
 import { config } from 'dotenv';
 
+import { FABRICAS_CONVOCATORIA } from '../src/modules/convocatorias/domain/factories/convocatoria.factory';
+
 // Este script se ejecuta con `ts-node` desde `apps/api`, fuera del contenedor de
 // NestJS, así que no pasa por el `ConfigModule`. Cargamos el `.env` de la raíz a
 // mano, apuntando al mismo archivo que declara `app.module.ts`.
 config({ path: resolve(__dirname, '../../../.env') });
 
 const prisma = new PrismaClient();
+
+/**
+ * Requisitos y documentos por defecto de un tipo, leídos de su FÁBRICA (US-006).
+ *
+ * El seed no tiene su propia lista: si la tuviera, el día que cambien los documentos de
+ * posgrado los datos de prueba dejarían de parecerse a lo que crea la aplicación. Se usa en
+ * `update` además de en `create`, para que una base sembrada antes de US-006 —cuando las
+ * convocatorias no tenían requisitos— quede al día al volver a ejecutar el seed.
+ */
+function catalogoDe(tipo: TipoBeca) {
+  const fabrica = FABRICAS_CONVOCATORIA[tipo];
+  return {
+    requisitos: [...fabrica.requisitosPorDefecto()],
+    documentosExigidos: [...fabrica.documentosPorDefecto()],
+  };
+}
 
 function enDias(dias: number): Date {
   const fecha = new Date();
@@ -27,7 +45,7 @@ function enDias(dias: number): Date {
 async function main(): Promise<void> {
   await prisma.convocatoria.upsert({
     where: { codigo: 'CONV-2026-001' },
-    update: {},
+    update: catalogoDe(TipoBeca.UNIVERSITARIA),
     create: {
       codigo: 'CONV-2026-001',
       titulo: 'Beca Universitaria Nacional 2026',
@@ -38,12 +56,13 @@ async function main(): Promise<void> {
       cupos: 500,
       fechaApertura: enDias(-10),
       fechaCierre: enDias(45),
+      ...catalogoDe(TipoBeca.UNIVERSITARIA),
     },
   });
 
   await prisma.convocatoria.upsert({
     where: { codigo: 'CONV-2026-002' },
-    update: {},
+    update: catalogoDe(TipoBeca.POSGRADO),
     create: {
       codigo: 'CONV-2026-002',
       titulo: 'Beca de Posgrado en Ciencia y Tecnología 2026',
@@ -53,13 +72,14 @@ async function main(): Promise<void> {
       cupos: 40,
       fechaApertura: enDias(-3),
       fechaCierre: enDias(60),
+      ...catalogoDe(TipoBeca.POSGRADO),
     },
   });
 
   // En BORRADOR: sirve para comprobar que el listado público NO la devuelve.
   await prisma.convocatoria.upsert({
     where: { codigo: 'CONV-2026-003' },
-    update: {},
+    update: catalogoDe(TipoBeca.NIVEL_MEDIO),
     create: {
       codigo: 'CONV-2026-003',
       titulo: 'Beca de Nivel Medio 2026 (en preparación)',
@@ -69,6 +89,7 @@ async function main(): Promise<void> {
       cupos: 1200,
       fechaApertura: enDias(20),
       fechaCierre: enDias(80),
+      ...catalogoDe(TipoBeca.NIVEL_MEDIO),
     },
   });
 
