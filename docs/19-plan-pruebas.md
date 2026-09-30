@@ -218,7 +218,7 @@ Product Backlog priorizados por el Product Owner como cualquier otra historia.
 | DEF-02   | Los tres adaptadores del patrón Adapter a 0 % de cobertura              | Medio     | Comprometido en Sprint 2   |
 | DEF-03   | La medición de cobertura excluye las pruebas de integración              | Medio     | Comprometido en Sprint 2   |
 | US-008   | El listado público quedó detrás del login: criterio incumplido           | **Alto**  | Diferido al Sprint 3 con decisión escrita |
-| US-002   | Falta el bloqueo tras 5 intentos fallidos: criterio incumplido           | Medio     | Diferido al Sprint 3       |
+| US-002   | Falta el bloqueo tras 5 intentos fallidos: criterio incumplido           | Medio     | ✅ Corregido 12 Sep        |
 
 > Los dos últimos son **criterios de aceptación incumplidos**, no errores de programación. Se
 > registran igual: para el Product Owner la diferencia es irrelevante, porque en ambos casos el
