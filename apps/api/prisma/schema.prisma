@@ -43,6 +43,10 @@ model Usuario {
   hashPassword   String     @map("hash_password")
   rol            RolUsuario @default(ESTUDIANTE)
   activo         Boolean    @default(true)
+  // Bloqueo tras 5 intentos fallidos consecutivos (US-002, criterio 3). La regla vive en
+  // la entidad del dominio; aquí solo se guarda el estado.
+  intentosFallidos Int       @default(0) @map("intentos_fallidos")
+  bloqueadoHasta   DateTime? @map("bloqueado_hasta")
   creadoEn       DateTime   @default(now()) @map("creado_en")
   actualizadoEn  DateTime   @updatedAt @map("actualizado_en")
 

@@ -63,11 +63,32 @@ Presione el botón para entrar.
 
 | Lo que ve                                          | Qué significa y qué hacer                                                                 |
 | -------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| *"Correo o contraseña incorrectos"*                | Uno de los dos está mal. **El mensaje no dice cuál a propósito**, por seguridad: si dijera "ese usuario no existe", cualquiera podría averiguar qué usuarios hay. Revise los dos |
+| *"Usuario o contraseña incorrectos"*               | Uno de los dos está mal. **El mensaje no dice cuál a propósito**, por seguridad: si dijera "ese usuario no existe", cualquiera podría averiguar qué usuarios hay. Revise los dos |
 | *"El usuario es obligatorio"*                      | Dejó el campo vacío                                                                        |
 | La página no carga                                 | Revise su conexión. Si persiste, avise al Ministerio                                        |
 
-### 2.4 Su sesión dura 8 horas
+### 2.4 Si se equivoca cinco veces seguidas
+
+**Tras 5 intentos fallidos seguidos, su cuenta se bloquea durante 15 minutos.** Es una protección
+contra quien intente adivinar su contraseña probando muchas.
+
+Lo que conviene saber:
+
+- **Durante esos 15 minutos no podrá entrar ni siquiera con la contraseña correcta.** Verá el
+  mismo mensaje de siempre, *"Usuario o contraseña incorrectos"*. No es que la haya olvidado: es
+  el bloqueo.
+- **Se desbloquea sola.** No tiene que llamar a nadie; espere 15 minutos y vuelva a intentar.
+- **Si entra bien, el contador vuelve a cero.** Equivocarse de vez en cuando no la bloquea: solo
+  cinco errores seguidos.
+
+> 💡 **¿Por qué el mensaje no dice "cuenta bloqueada"?** Porque le diría a quien está intentando
+> entrar sin permiso que ese usuario existe. Es preferible que un usuario legítimo espere unos
+> minutos a regalarle esa información a un intruso.
+
+> ⚠️ **Si se bloquea sin haber sido usted**, alguien intentó entrar a su cuenta. Cuando recupere el
+> acceso, avise al Ministerio.
+
+### 2.5 Su sesión dura 8 horas
 
 Pasado ese tiempo se cierra sola y hay que volver a entrar. Es una medida de seguridad: si deja la
 sesión abierta en una computadora compartida, no queda abierta indefinidamente.

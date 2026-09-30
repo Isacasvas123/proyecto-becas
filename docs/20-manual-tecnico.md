@@ -189,6 +189,21 @@ saturar la CPU.
 **Respuesta 401** — mensaje **genérico a propósito**: no revela si falló el usuario o la
 contraseña. Distinguirlos le diría a quien tantea si va por buen camino.
 
+**Bloqueo tras intentos fallidos** (criterio 3 de US-002). Tras **5 intentos fallidos
+consecutivos** la cuenta queda bloqueada **15 minutos**:
+
+| Comportamiento | Por qué |
+|---|---|
+| Durante el bloqueo se rechaza **incluso la contraseña correcta** | Si no, el atacante seguiría probando y sabría cuándo acertó |
+| Durante el bloqueo **no se verifica la contraseña real**, pero se gasta el mismo tiempo contra un hash señuelo | Una cuenta bloqueada no debe responder más rápido que una activa |
+| El mensaje sigue siendo el genérico, **no dice "cuenta bloqueada"** | Decirlo confirmaría a un atacante que el usuario existe. Se prefirió no confirmar |
+| El bloqueo **caduca solo** a los 15 minutos | No depende de una tarea programada que, si fallara, dejaría cuentas bloqueadas para siempre |
+| Un acceso correcto **reinicia el contador** | El criterio dice intentos *consecutivos* |
+
+La política (5 y 15) son constantes del **dominio**, `MAX_INTENTOS_FALLIDOS` y
+`MINUTOS_DE_BLOQUEO` en `usuario.entity.ts`, y no variables de entorno: son un criterio de
+aceptación acordado con el Product Owner, no un ajuste operativo.
+
 ### 4.3 `GET /convocatorias`
 
 Devuelve un arreglo de convocatorias **publicadas y vigentes**, ordenadas por fecha de cierre más
@@ -429,6 +444,6 @@ Se documenta para que quien mantenga el sistema no la descubra a golpes:
 | La medición de cobertura excluye las pruebas de integración      | El número reportado es más bajo que el real      | Sprint 2 (DEF-03)       |
 | `ConvocatoriaPrismaRepositorio` sin pruebas                    | El SQL real no se ejercita                       | Issue #6                |
 | El listado público quedó detrás del login en el frontend        | Incumple US-008                                  | Sprint 3                |
-| Falta el bloqueo tras 5 intentos fallidos                       | Incumple un criterio de US-002                   | Sprint 3                |
+| El contador de intentos es lectura-modificación-escritura        | Peticiones fallidas simultáneas podrían contar menos | Aceptado: riesgo bajo, documentado en el repositorio |
 | `main` y `develop` sin protección de rama                       | El flujo depende de que el equipo se acuerde     | Al entrar GitHub Pro    |
 | El dominio duplica los enums de Prisma                          | Pueden desincronizarse                           | Mitigado con una prueba |
