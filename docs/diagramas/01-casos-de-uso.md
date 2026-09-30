@@ -169,9 +169,9 @@ flowchart LR
 **Requisitos no funcionales aplicables**
 Debe responder en menos de 1 segundo. Debe ser usable desde 360 px de ancho.
 
-> ⚠️ **Incumplimiento conocido.** Hoy este caso de uso exige sesión iniciada, lo que contradice
-> su propia precondición. Se corrige en el Sprint 3 separando el listado público del panel de
-> administración.
+> ✅ **Incumplimiento corregido el 12 de septiembre de 2026.** Hasta entonces este caso de uso
+> exigía sesión iniciada, lo que contradecía su propia precondición. El listado público y el panel
+> de administración quedaron separados: `/convocatorias` es pública y `/gestion` exige rol.
 
 ---
 
@@ -611,7 +611,7 @@ constructor telescópico de ocho parámetros opcionales.
 
 | Caso de uso | Objetivo del enunciado | Historias | Patrón | Estado |
 |---|---|---|---|---|
-| CU-01 | Administrar convocatorias | US-008 | — | 🟡 Parcial |
+| CU-01 | Administrar convocatorias | US-008 | — | 🟢 Criterios cumplidos · falta Staging |
 | CU-02 | Consultar estado de una beca | US-025 | — | 🔴 Sprint 6 |
 | CU-03 | Registrar estudiantes | US-001 | — | 🔴 Sprint 3 |
 | CU-04 | — (transversal) | US-002 | Adapter | 🟢 **Implementado** |
@@ -619,7 +619,7 @@ constructor telescópico de ocho parámetros opcionales.
 | CU-07 | Cargar documentación | US-013 | Adapter | 🔴 Sprint 4 |
 | CU-08 | Gestionar solicitudes | US-014 | State | 🔴 Sprint 4 |
 | CU-10 | Administrar evaluaciones | US-019 | Strategy | 🔴 Sprint 5 |
-| CU-12 | Administrar convocatorias | US-006, 007, 009, 010 | Factory Method | 🔴 Sprint 3 |
+| CU-12 | Administrar convocatorias | US-006, 007, 009, 010 | Factory Method | 🟡 Crear y publicar hechos · faltan cerrar (US-009) y editar (US-010) |
 | CU-13 | Gestionar comités | US-017 | — | 🔴 Sprint 5 |
 | CU-15 | Aprobar o rechazar | US-023 | Facade | 🔴 Sprint 6 |
 | CU-16 | Aprobar o rechazar | US-024 | — | 🔴 Sprint 6 |

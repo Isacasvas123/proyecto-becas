@@ -6,18 +6,17 @@
  * presentación, porque la tarea real del usuario es **comparar** convocatorias
  * y decidir a cuál postular, no leer un texto corrido.
  *
- * ⚠️  NOTA PARA EL EQUIPO — CONFLICTO CONOCIDO CON EL BACKLOG
- *   Hoy esta página está PROTEGIDA: exige sesión iniciada. Pero US-008 dice
- *   textualmente: "Como **visitante**, quiero ver las convocatorias vigentes
- *   con sus requisitos y fechas, **sin necesidad de tener cuenta**", y esa es
- *   la necesidad de Ana, la aspirante de provincia (docs/03-vision-producto.md).
+ * PÁGINA PÚBLICA (US-008)
+ *   Sin sesión. La historia dice textualmente: "Como **visitante**, quiero ver las
+ *   convocatorias vigentes con sus requisitos y fechas, **sin necesidad de tener
+ *   cuenta**". Es la necesidad de Ana, la aspirante de provincia
+ *   (docs/03-vision-producto.md), y un requisito de transparencia del enunciado.
  *
- *   En el Sprint 3 hay que separarlo: el listado público va en una ruta abierta
- *   y lo que queda detrás del login es el panel de administración (crear,
- *   publicar y cerrar convocatorias: US-006, US-007, US-009).
+ *   Hasta el Sprint 3 esta página exigía sesión, lo que incumplía la historia: era el
+ *   defecto 3 del esqueleto. La gestión de convocatorias vive ahora en /gestion.
  *
- * ALCANCE (Sprint 1 · US-S1-08): solo lectura. El filtro es local, sobre lo ya
- * descargado; el filtrado en servidor con paginación es del Sprint 3.
+ * El filtro es local, sobre lo ya descargado. El filtrado en servidor con paginación
+ * se hará cuando el volumen lo justifique.
  */
 import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -80,7 +79,8 @@ export function PaginaConvocatorias(): ReactElement {
 
   function cerrarSesion(): void {
     cerrar();
-    navegar('/login', { replace: true });
+    // Se queda en el listado: es público, no hace falta echarlo al login.
+    navegar('/convocatorias', { replace: true });
   }
 
   return (

@@ -18,7 +18,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../../shared/persistence/prisma.service';
 import { Convocatoria } from '../../domain/entities/convocatoria.entity';
 import { ConvocatoriaRepositorio } from '../../domain/ports/convocatoria.repositorio';
-import { aDominio } from './convocatoria-prisma.mapper';
+import { aDominio, aPersistencia } from './convocatoria-prisma.mapper';
 
 @Injectable()
 export class ConvocatoriaPrismaRepositorio implements ConvocatoriaRepositorio {
@@ -38,5 +38,29 @@ export class ConvocatoriaPrismaRepositorio implements ConvocatoriaRepositorio {
     });
 
     return filas.map(aDominio);
+  }
+
+  async buscarTodas(): Promise<Convocatoria[]> {
+    // Las más recientes primero: es lo que el administrador busca al entrar al panel.
+    const filas = await this.prisma.convocatoria.findMany({ orderBy: { creadaEn: 'desc' } });
+    return filas.map(aDominio);
+  }
+
+  async buscarPorId(id: string): Promise<Convocatoria | null> {
+    const fila = await this.prisma.convocatoria.findUnique({ where: { id } });
+    return fila === null ? null : aDominio(fila);
+  }
+
+  async guardar(convocatoria: Convocatoria): Promise<void> {
+    const datos = aPersistencia(convocatoria);
+    await this.prisma.convocatoria.upsert({
+      where: { id: convocatoria.id },
+      create: datos,
+      update: datos,
+    });
+  }
+
+  async contarConPrefijoDeCodigo(prefijo: string): Promise<number> {
+    return this.prisma.convocatoria.count({ where: { codigo: { startsWith: prefijo } } });
   }
 }

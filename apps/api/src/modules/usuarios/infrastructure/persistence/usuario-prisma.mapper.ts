@@ -23,6 +23,8 @@ export function aDominio(fila: UsuarioPrisma): Usuario {
     hashPassword: fila.hashPassword,
     rol: aRolDominio(fila.rol),
     activo: fila.activo,
+    intentosFallidos: fila.intentosFallidos,
+    bloqueadoHasta: fila.bloqueadoHasta,
   });
 }
 
