@@ -28,6 +28,7 @@ import type { App } from 'supertest/types';
 
 import { DominioExceptionFilter } from '../src/shared/exceptions/dominio-exception.filter';
 import { AutenticarUsuarioService } from '../src/modules/usuarios/application/services/autenticar-usuario.service';
+import { RegistrarEstudianteService } from '../src/modules/usuarios/application/services/registrar-estudiante.service';
 import { Usuario } from '../src/modules/usuarios/domain/entities/usuario.entity';
 import { RolUsuario } from '../src/modules/usuarios/domain/enums/rol-usuario.enum';
 import {
@@ -78,6 +79,9 @@ describe('US-002 · El error de autenticación no revela nada (e2e)', () => {
       controllers: [AuthController],
       providers: [
         AutenticarUsuarioService,
+        // `AuthController` expone también el registro (US-001), así que Nest exige su
+        // servicio aunque estas pruebas no lo usen. Se alimenta de los mismos tres puertos.
+        RegistrarEstudianteService,
         {
           provide: USUARIO_REPOSITORIO,
           useValue: new UsuarioEnMemoriaRepositorio([
