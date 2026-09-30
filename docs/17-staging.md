@@ -88,15 +88,27 @@ Requiere una cuenta y por eso no está hecho. Son unos 20 minutos.
    todos los repositorios de la cuenta.
 
 3. **Crear el Blueprint.** En el panel: **New → Blueprint**, elegir `proyecto-becas`, rama
-   `develop`. Render lee `render.yaml` y muestra los tres recursos que va a crear. Confirmar.
+   `develop`. Render lee `render.yaml` y muestra los tres recursos que va a crear.
+
+   **Render va a pedir dos valores a mano.** Escribirlos **con `https://`**:
+
+   | Variable | Servicio | Valor |
+   |---|---|---|
+   | `CORS_ORIGEN` | `becas-api-staging` | `https://becas-web-staging.onrender.com` |
+   | `VITE_API_URL` | `becas-web-staging` | `https://becas-api-staging.onrender.com` |
+
+   ⚠️ Sin `https://`, o con una barra `/` al final, el despliegue sale en verde pero **el
+   navegador rechaza las peticiones por CORS** y la aplicación no carga datos. Confirmar.
 
 4. **Esperar el primer despliegue.** Tarda entre 5 y 10 minutos. La base de datos se crea primero;
    la API arranca después y aplica las migraciones sola. La imagen ya está verificada localmente
    (ver el cuadro del inicio), así que si falla aquí el problema será de configuración de Render o
    de variables de entorno, no del Dockerfile.
 
-5. **Copiar la URL de la API.** Queda algo como `https://becas-api-staging.onrender.com`.
-   Comprobar a mano, una sola vez, que `<URL>/ready` responde `200`.
+5. **Comprobar las URLs reales.** Si Render asignó un nombre distinto al esperado (agrega un
+   sufijo cuando el nombre ya está tomado), **corregir `CORS_ORIGEN` y `VITE_API_URL`** en
+   *Environment* de cada servicio y volver a desplegar el frontend. Después abrir
+   `<URL de la API>/ready` y verificar que responde `200`.
 
 6. **Crear el administrador de Staging.** El seed no corre, así que hay que crear la cuenta a
    mano, con una contraseña **distinta** a la de desarrollo. Desde **Render → becas-staging-db →
