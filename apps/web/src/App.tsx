@@ -1,27 +1,32 @@
 /**
  * Definición de rutas de la aplicación.
  *
- * Este archivo ya no dibuja pantallas: solo declara qué ruta muestra qué página y cuáles
+ * Este archivo no dibuja pantallas: solo declara qué ruta muestra qué página y cuáles
  * exigen sesión. Es el equivalente en el frontend a `app.module.ts` en el backend — una
  * raíz de composición, sin lógica propia.
  *
  * MAPA DE RUTAS
  *   /              → redirige a /convocatorias
- *   /login         → PaginaLogin        (pública)
- *   /convocatorias → PaginaConvocatorias (protegida)
+ *   /convocatorias → PaginaConvocatorias (PÚBLICA — US-008)
+ *   /login         → PaginaLogin         (pública)
+ *   /gestion       → PaginaGestion       (sesión + rol ADMINISTRADOR — US-006, US-007)
  *   cualquier otra → redirige a /convocatorias
  *
- * SPRINT 2 y 3: aquí se agregarán /registro (US-001), /perfil (US-004), /solicitudes
- * (EPIC-03) y el panel de administración. Cuando esta lista crezca, conviene separarla
- * en `src/rutas/`.
+ * EL CAMBIO DEL SPRINT 3
+ *   Hasta aquí /convocatorias exigía sesión, y eso incumplía US-008: la historia pide que un
+ *   VISITANTE vea las convocatorias sin cuenta. Era el defecto 3 del esqueleto. Ahora el
+ *   listado es público y lo que queda detrás del login es la gestión.
  */
 import type { ReactElement } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import { PaginaConvocatorias } from './paginas/PaginaConvocatorias';
+import { PaginaGestion } from './paginas/PaginaGestion';
 import { PaginaLogin } from './paginas/PaginaLogin';
 import { ProveedorSesion } from './sesion/ContextoSesion';
 import { RutaProtegida } from './sesion/RutaProtegida';
+
+export const ROL_ADMINISTRADOR = 'ADMINISTRADOR';
 
 export function App(): ReactElement {
   return (
@@ -31,12 +36,13 @@ export function App(): ReactElement {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/convocatorias" replace />} />
+          <Route path="/convocatorias" element={<PaginaConvocatorias />} />
           <Route path="/login" element={<PaginaLogin />} />
           <Route
-            path="/convocatorias"
+            path="/gestion"
             element={
-              <RutaProtegida>
-                <PaginaConvocatorias />
+              <RutaProtegida rol={ROL_ADMINISTRADOR}>
+                <PaginaGestion />
               </RutaProtegida>
             }
           />

@@ -43,6 +43,10 @@ model Usuario {
   hashPassword   String     @map("hash_password")
   rol            RolUsuario @default(ESTUDIANTE)
   activo         Boolean    @default(true)
+  // Bloqueo tras 5 intentos fallidos consecutivos (US-002, criterio 3). La regla vive en
+  // la entidad del dominio; aquí solo se guarda el estado.
+  intentosFallidos Int       @default(0) @map("intentos_fallidos")
+  bloqueadoHasta   DateTime? @map("bloqueado_hasta")
   creadoEn       DateTime   @default(now()) @map("creado_en")
   actualizadoEn  DateTime   @updatedAt @map("actualizado_en")
 
@@ -54,6 +58,28 @@ enum TipoBeca {
   NIVEL_MEDIO
   UNIVERSITARIA
   POSGRADO
+}
+
+enum Requisito {
+  NACIONALIDAD_GUATEMALTECA
+  ESTUDIANTE_NIVEL_MEDIO_INSCRITO
+  ESTUDIANTE_UNIVERSITARIO_INSCRITO
+  TITULO_UNIVERSITARIO
+  PROMEDIO_MINIMO_70
+  PROMEDIO_MINIMO_75
+  PROMEDIO_MINIMO_80
+  INGRESO_FAMILIAR_LIMITADO
+  CARTA_RECOMENDACION
+}
+
+enum TipoDocumento {
+  DPI
+  CERTIFICADO_NACIMIENTO
+  CONSTANCIA_INSCRIPCION
+  CERTIFICADO_NOTAS
+  TITULO_UNIVERSITARIO
+  CONSTANCIA_INGRESOS
+  CARTA_RECOMENDACION
 }
 
 /// Ciclo de vida de una convocatoria (US-006, US-007, US-009).
@@ -73,6 +99,10 @@ model Convocatoria {
   cupos          Int
   fechaApertura  DateTime           @map("fecha_apertura")
   fechaCierre    DateTime           @map("fecha_cierre")
+  // US-006. Cada tipo de beca trae los suyos por defecto (Factory Method). Listas de enums
+  // de PostgreSQL: un valor fuera del catálogo lo rechaza la base, no solo la aplicación.
+  requisitos         Requisito[]     @default([])
+  documentosExigidos TipoDocumento[] @default([]) @map("documentos_exigidos")
   creadaEn       DateTime           @default(now()) @map("creada_en")
   actualizadaEn  DateTime           @updatedAt @map("actualizada_en")
 

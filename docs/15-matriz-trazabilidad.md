@@ -39,7 +39,7 @@ Los nueve objetivos específicos del proyecto, y dónde se resuelve cada uno.
 
 | # | Objetivo del enunciado | Epic | Historias | Módulo | Sprint | Estado |
 |---|---|---|---|---|---|---|
-| 1 | Administrar convocatorias | EPIC-02 | US-006 a US-010 | `convocatorias` | 3 | 🟡 Solo lectura |
+| 1 | Administrar convocatorias | EPIC-02 | US-006 a US-010 | `convocatorias` | 3 | 🟡 Crear, publicar y listado público · faltan cerrar y editar |
 | 2 | Registrar estudiantes | EPIC-01, EPIC-03 | US-001, US-011 | `usuarios`, `estudiantes` | 2, 4 | 🔴 Pendiente |
 | 3 | Gestionar solicitudes | EPIC-03 | US-012, US-014 a US-016 | `solicitudes` | 4 | 🔴 Pendiente |
 | 4 | Cargar documentación | EPIC-03 | US-013 | `solicitudes` | 4 | 🔴 Pendiente |

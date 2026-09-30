@@ -19,7 +19,11 @@
  */
 import { Module } from '@nestjs/common';
 
+import { CrearConvocatoriaService } from './application/services/crear-convocatoria.service';
+import { ListarConvocatoriasGestionService } from './application/services/listar-convocatorias-gestion.service';
 import { ListarConvocatoriasPublicadasService } from './application/services/listar-convocatorias-publicadas.service';
+import { ObtenerCatalogoConvocatoriasService } from './application/services/obtener-catalogo-convocatorias.service';
+import { PublicarConvocatoriaService } from './application/services/publicar-convocatoria.service';
 import { CONVOCATORIA_REPOSITORIO } from './domain/ports/convocatoria.repositorio';
 import { ConvocatoriaPrismaRepositorio } from './infrastructure/persistence/convocatoria-prisma.repositorio';
 import { ConvocatoriasController } from './presentation/controllers/convocatorias.controller';
@@ -28,6 +32,10 @@ import { ConvocatoriasController } from './presentation/controllers/convocatoria
   controllers: [ConvocatoriasController],
   providers: [
     ListarConvocatoriasPublicadasService,
+    ListarConvocatoriasGestionService,
+    CrearConvocatoriaService,
+    PublicarConvocatoriaService,
+    ObtenerCatalogoConvocatoriasService,
     {
       provide: CONVOCATORIA_REPOSITORIO,
       useClass: ConvocatoriaPrismaRepositorio,

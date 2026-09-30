@@ -27,13 +27,13 @@
 
 ---
 
-## Estado de avance — actualizado el 3 de septiembre de 2026
+## Estado de avance — actualizado el 12 de septiembre de 2026
 
 | Historia | Estado | Nota |
 |---|---|---|
-| **US-002** Inicio de sesión | ✅ **Terminada** — pendiente de aceptación del PO | Adelantada del Sprint 2. Implementada con tres puertos invertidos y 67 pruebas en verde |
-| **US-008** Listado público de convocatorias | ⚠️ **Parcial** | El listado funciona, pero quedó **detrás del login**. La historia exige que un visitante lo vea **sin cuenta**. Debe resolverse en el Sprint 3 separando el listado público del panel de administración |
-| **US-003** Control de acceso por rol | ⚠️ **Parcial** | El rol viaja en el token y el frontend redirige, pero **falta el guard del backend** que valide el token en cada petición. Sin eso no hay seguridad real: la guardia del frontend es solo usabilidad |
+| **US-002** Inicio de sesión | 🟡 **Criterios cumplidos** — falta Staging | Los tres criterios implementados y probados. El bloqueo tras 5 intentos se completó el 12 Sep |
+| **US-003** Control de acceso por rol | 🟡 **Criterios cumplidos** — falta Staging | Guard global *seguro por defecto*, los 4 roles, 403 verificado con pruebas de integración |
+| **US-008** Listado público de convocatorias | ⚠️ **Parcial** | El backend lo expone sin sesión, pero el frontend lo sigue poniendo **detrás del login**. Sprint 3 |
 | Resto | ⬜ Pendiente | Según el calendario de sprints |
 
 > **Nota para la Sprint Review.** Ninguna de estas historias puede marcarse como *Completada*

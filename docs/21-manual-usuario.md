@@ -63,11 +63,32 @@ Presione el botón para entrar.
 
 | Lo que ve                                          | Qué significa y qué hacer                                                                 |
 | -------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| *"Correo o contraseña incorrectos"*                | Uno de los dos está mal. **El mensaje no dice cuál a propósito**, por seguridad: si dijera "ese usuario no existe", cualquiera podría averiguar qué usuarios hay. Revise los dos |
+| *"Usuario o contraseña incorrectos"*               | Uno de los dos está mal. **El mensaje no dice cuál a propósito**, por seguridad: si dijera "ese usuario no existe", cualquiera podría averiguar qué usuarios hay. Revise los dos |
 | *"El usuario es obligatorio"*                      | Dejó el campo vacío                                                                        |
 | La página no carga                                 | Revise su conexión. Si persiste, avise al Ministerio                                        |
 
-### 2.4 Su sesión dura 8 horas
+### 2.4 Si se equivoca cinco veces seguidas
+
+**Tras 5 intentos fallidos seguidos, su cuenta se bloquea durante 15 minutos.** Es una protección
+contra quien intente adivinar su contraseña probando muchas.
+
+Lo que conviene saber:
+
+- **Durante esos 15 minutos no podrá entrar ni siquiera con la contraseña correcta.** Verá el
+  mismo mensaje de siempre, *"Usuario o contraseña incorrectos"*. No es que la haya olvidado: es
+  el bloqueo.
+- **Se desbloquea sola.** No tiene que llamar a nadie; espere 15 minutos y vuelva a intentar.
+- **Si entra bien, el contador vuelve a cero.** Equivocarse de vez en cuando no la bloquea: solo
+  cinco errores seguidos.
+
+> 💡 **¿Por qué el mensaje no dice "cuenta bloqueada"?** Porque le diría a quien está intentando
+> entrar sin permiso que ese usuario existe. Es preferible que un usuario legítimo espere unos
+> minutos a regalarle esa información a un intruso.
+
+> ⚠️ **Si se bloquea sin haber sido usted**, alguien intentó entrar a su cuenta. Cuando recupere el
+> acceso, avise al Ministerio.
+
+### 2.5 Su sesión dura 8 horas
 
 Pasado ese tiempo se cierra sola y hay que volver a entrar. Es una medida de seguridad: si deja la
 sesión abierta en una computadora compartida, no queda abierta indefinidamente.
@@ -77,7 +98,8 @@ sesión abierta en una computadora compartida, no queda abierta indefinidamente.
 
 ## 3. Ver las convocatorias
 
-Al entrar llega a **"Convocatorias abiertas"**, la pantalla principal.
+**No necesita cuenta para ver las convocatorias.** Entre a la plataforma y llegará directamente al
+listado, **"Convocatorias vigentes"**.
 
 ### 3.1 Qué muestra
 
@@ -135,22 +157,16 @@ Esta es la parte honesta del manual. Lo siguiente **aún no funciona**, con la f
 | Subir documentos de respaldo                 | 🔴 No disponible | Sprint 4      |
 | Consultar el estado de su solicitud          | 🔴 No disponible | Sprint 4      |
 | Evaluar solicitudes (evaluadores)            | 🔴 No disponible | Sprint 5      |
-| Crear y publicar convocatorias (administradores) | 🔴 No disponible | Sprint 3  |
 | Consulta pública sin cuenta                  | 🔴 No disponible | Sprint 6      |
 | Reportes y estadísticas                      | 🔴 No disponible | Sprint 7      |
 
 **Mientras tanto**, si necesita una cuenta, la crea el personal del Ministerio.
 
-### 5.1 Un defecto conocido que le afecta
+### 5.1 Un defecto que ya está corregido
 
-**Hoy hay que iniciar sesión para ver las convocatorias**, y eso **está mal**: la consulta de
-convocatorias abiertas debería poder hacerla cualquier persona sin cuenta, por transparencia.
-
-El sistema por dentro ya permite consultarlas sin sesión; lo que falta es separar la pantalla
-pública del panel de quien ya entró. **Está previsto para el Sprint 3.**
-
-Se documenta en lugar de disimularlo porque afecta directamente a quien quiere informarse antes de
-decidir si postula.
+Hasta el 12 de septiembre de 2026 había que iniciar sesión para ver las convocatorias, y eso estaba
+mal: consultarlas debe poder hacerlo cualquier persona, por transparencia. **Ya no hace falta
+cuenta.**
 
 ## 6. Preguntas frecuentes
 
