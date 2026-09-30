@@ -24,4 +24,14 @@ export class UsuarioEnMemoriaRepositorio implements UsuarioRepositorio {
 
     return Promise.resolve(encontrado ?? null);
   }
+
+  actualizarEstadoDeAcceso(usuario: Usuario): Promise<void> {
+    const indice = this.usuarios.findIndex((existente) => existente.id === usuario.id);
+
+    if (indice >= 0) {
+      this.usuarios[indice] = usuario;
+    }
+
+    return Promise.resolve();
+  }
 }
