@@ -44,7 +44,31 @@ documentos extraviados y falta de transparencia.
 Escriba la dirección de la plataforma en su navegador. Funciona en **Chrome, Firefox y Edge**
 actualizados, en computadora y en teléfono.
 
-### 2.2 Iniciar sesión
+### 2.2 Crear su cuenta
+
+Si todavía no tiene cuenta, use **"Crear cuenta"** en la parte de arriba. Le pedirá:
+
+| Dato                 | Qué escribir                                                              |
+| -------------------- | ------------------------------------------------------------------------- |
+| **Nombre completo**  | Tal como aparece en su documento de identificación                        |
+| **CUI**              | Los 13 dígitos de su DPI o, si es menor de edad, de su certificado de nacimiento del RENAP. Puede escribirlos con espacios |
+| **Correo**           | Uno que revise: por ahí le llegarán los avisos de su solicitud            |
+| **Nombre de usuario**| El que usará para entrar. Letras, números, punto o guion                  |
+| **Contraseña**       | Al menos 8 caracteres, con una mayúscula y un número                      |
+
+Mientras escribe la contraseña, la lista de abajo le marca qué condiciones ya cumple. Al terminar,
+**queda dentro de la plataforma** sin tener que volver a escribir sus datos.
+
+| Si ve este mensaje                                   | Qué significa                                                     |
+| ---------------------------------------------------- | ----------------------------------------------------------------- |
+| *"Ya existe una cuenta con ese CUI"*                 | Usted ya se registró antes. Inicie sesión en vez de crear otra cuenta |
+| *"Ya existe una cuenta con ese correo"*              | Ese correo ya se usó. Use otro, o inicie sesión si es suyo        |
+| *"El CUI debe tener exactamente 13 dígitos"*         | Revise el número: le sobra o le falta alguno                      |
+| *"La contraseña debe tener…"*                        | El mensaje dice exactamente qué le falta                          |
+
+> 💡 **Una persona, una cuenta.** El CUI es único: no se pueden tener dos cuentas con el mismo.
+
+### 2.3 Iniciar sesión
 
 Verá la pantalla **"Ingrese a su cuenta"** con dos campos:
 
@@ -59,7 +83,7 @@ Presione el botón para entrar.
 > ni siquiera el personal del Ministerio puede verla. Por eso, si la olvida, nadie se la puede
 > decir — habrá que restablecerla.
 
-### 2.3 Si no puede entrar
+### 2.4 Si no puede entrar
 
 | Lo que ve                                          | Qué significa y qué hacer                                                                 |
 | -------------------------------------------------- | ----------------------------------------------------------------------------------------- |
@@ -67,7 +91,7 @@ Presione el botón para entrar.
 | *"El usuario es obligatorio"*                      | Dejó el campo vacío                                                                        |
 | La página no carga                                 | Revise su conexión. Si persiste, avise al Ministerio                                        |
 
-### 2.4 Si se equivoca cinco veces seguidas
+### 2.5 Si se equivoca cinco veces seguidas
 
 **Tras 5 intentos fallidos seguidos, su cuenta se bloquea durante 15 minutos.** Es una protección
 contra quien intente adivinar su contraseña probando muchas.
@@ -88,7 +112,7 @@ Lo que conviene saber:
 > ⚠️ **Si se bloquea sin haber sido usted**, alguien intentó entrar a su cuenta. Cuando recupere el
 > acceso, avise al Ministerio.
 
-### 2.5 Su sesión dura 8 horas
+### 2.6 Su sesión dura 8 horas
 
 Pasado ese tiempo se cierra sola y hay que volver a entrar. Es una medida de seguridad: si deja la
 sesión abierta en una computadora compartida, no queda abierta indefinidamente.
@@ -150,7 +174,6 @@ Esta es la parte honesta del manual. Lo siguiente **aún no funciona**, con la f
 
 | Funcionalidad                                | Estado           | Previsto para |
 | -------------------------------------------- | ---------------- | ------------- |
-| Crear una cuenta usted mismo (registro)      | 🔴 No disponible | Sprint 3      |
 | Ver y editar sus datos personales            | 🔴 No disponible | Sprint 4      |
 | Recuperar una contraseña olvidada            | 🔴 No disponible | Sprint 4      |
 | Postular a una convocatoria                  | 🔴 No disponible | Sprint 4      |
@@ -160,7 +183,7 @@ Esta es la parte honesta del manual. Lo siguiente **aún no funciona**, con la f
 | Consulta pública sin cuenta                  | 🔴 No disponible | Sprint 6      |
 | Reportes y estadísticas                      | 🔴 No disponible | Sprint 7      |
 
-**Mientras tanto**, si necesita una cuenta, la crea el personal del Ministerio.
+
 
 ### 5.1 Un defecto que ya está corregido
 

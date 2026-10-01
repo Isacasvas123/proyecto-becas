@@ -5,6 +5,7 @@
  * el dominio declara QUÉ necesita, infrastructure decide CÓMO.
  */
 import { Usuario } from '../entities/usuario.entity';
+import { Cui } from '../value-objects/cui.vo';
 import { NombreUsuario } from '../value-objects/nombre-usuario.vo';
 
 export const USUARIO_REPOSITORIO = Symbol('UsuarioRepositorio');
@@ -32,4 +33,30 @@ export interface UsuarioRepositorio {
    *   el hash. El puerto expresa lo que el caso de uso necesita, no lo que la tabla permite.
    */
   actualizarEstadoDeAcceso(usuario: Usuario): Promise<void>;
+
+  /**
+   * US-001: ¿qué datos de un registro nuevo ya están tomados? Se consulta todo junto para poder
+   * decirle a la persona exactamente cuál es el problema en una sola respuesta.
+   */
+  buscarDuplicados(datos: {
+    correo: string;
+    cui: Cui;
+    nombreUsuario: NombreUsuario;
+  }): Promise<CamposDuplicados>;
+
+  /**
+   * US-001: guarda una cuenta nueva.
+   *
+   * Si otra petición registró el mismo correo, CUI o nombre de usuario entre la comprobación y
+   * la escritura, el adaptador DEBE lanzar `RecursoDuplicadoError`. La base de datos es la
+   * única que puede garantizar la unicidad bajo concurrencia; la comprobación previa solo sirve
+   * para dar un buen mensaje.
+   */
+  crear(usuario: Usuario): Promise<void>;
+}
+
+export interface CamposDuplicados {
+  readonly correo: boolean;
+  readonly cui: boolean;
+  readonly nombreUsuario: boolean;
 }

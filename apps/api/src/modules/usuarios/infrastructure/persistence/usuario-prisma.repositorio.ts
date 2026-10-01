@@ -5,12 +5,18 @@
  * detrás hay PostgreSQL.
  */
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 
+import { RecursoDuplicadoError } from '../../../../shared/exceptions/errores-dominio';
 import { PrismaService } from '../../../../shared/persistence/prisma.service';
-import { Usuario } from '../../domain/entities/usuario.entity';
-import { UsuarioRepositorio } from '../../domain/ports/usuario.repositorio';
+import { normalizarCorreo, Usuario } from '../../domain/entities/usuario.entity';
+import { CamposDuplicados, UsuarioRepositorio } from '../../domain/ports/usuario.repositorio';
+import { Cui } from '../../domain/value-objects/cui.vo';
 import { NombreUsuario } from '../../domain/value-objects/nombre-usuario.vo';
-import { aDominio } from './usuario-prisma.mapper';
+import { aDominio, aRolPersistible } from './usuario-prisma.mapper';
+
+/** Código de Prisma para "se violó una restricción de unicidad". */
+const VIOLACION_UNICIDAD = 'P2002';
 
 @Injectable()
 export class UsuarioPrismaRepositorio implements UsuarioRepositorio {
@@ -41,5 +47,53 @@ export class UsuarioPrismaRepositorio implements UsuarioRepositorio {
         bloqueadoHasta: usuario.bloqueadoHasta,
       },
     });
+  }
+
+  async buscarDuplicados(datos: {
+    correo: string;
+    cui: Cui;
+    nombreUsuario: NombreUsuario;
+  }): Promise<CamposDuplicados> {
+    const correo = normalizarCorreo(datos.correo);
+    const filas = await this.prisma.usuario.findMany({
+      where: {
+        OR: [{ correo }, { cui: datos.cui.valor }, { nombreUsuario: datos.nombreUsuario.valor }],
+      },
+      select: { correo: true, cui: true, nombreUsuario: true },
+    });
+
+    return {
+      correo: filas.some((f) => f.correo === correo),
+      cui: filas.some((f) => f.cui === datos.cui.valor),
+      nombreUsuario: filas.some((f) => f.nombreUsuario === datos.nombreUsuario.valor),
+    };
+  }
+
+  async crear(usuario: Usuario): Promise<void> {
+    try {
+      await this.prisma.usuario.create({
+        data: {
+          id: usuario.id,
+          nombreUsuario: usuario.nombreUsuario.valor,
+          correo: usuario.correo,
+          hashPassword: usuario.hashAlmacenado(),
+          rol: aRolPersistible(usuario.rol),
+          activo: usuario.activo,
+          nombreCompleto: usuario.nombreCompleto,
+          cui: usuario.cui?.valor ?? null,
+        },
+      });
+    } catch (error) {
+      // Dos registros simultáneos con el mismo CUI pasan los dos la comprobación previa; la
+      // base rechaza el segundo. Se traduce al error del dominio para que el cliente reciba un
+      // 409 claro y no un 500.
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === VIOLACION_UNICIDAD
+      ) {
+        throw new RecursoDuplicadoError('Ya existe una cuenta con esos datos.');
+      }
+      throw error;
+    }
   }
 }
