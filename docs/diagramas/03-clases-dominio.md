@@ -28,15 +28,22 @@ classDiagram
         +String correo
         +RolUsuario rol
         +boolean activo
+        +String nombreCompleto
+        +Cui cui
+        +int intentosFallidos
+        +Date bloqueadoHasta
         -String hashPassword
+        +nuevoEstudiante(Datos)$ Usuario
         +hashAlmacenado() String
+        +estaBloqueado(Date) boolean
+        +conIntentoFallido(Date) Usuario
+        +conAccesoCorrecto() Usuario
         +asegurarPuedeIniciarSesion() void
         +esAdministrador() boolean
     }
 
     class Estudiante {
         +String id
-        +Cui cui
         +String centroEducativo
         +NivelAcademico nivel
         +Promedio promedio
@@ -319,7 +326,7 @@ válido. Además el compilador impide confundirlo con cualquier otro texto.
 
 | Clase | Módulo | Estado |
 |---|---|---|
-| `Usuario` | usuarios | 🟢 Implementada y probada — el diagrama coincide miembro por miembro |
+| `Usuario` | usuarios | 🟢 Implementada y probada — el diagrama coincide miembro por miembro. Ver la nota ³ |
 | `Convocatoria` | convocatorias | 🟡 Implementada salvo cerrar y descontar cupo — ver la nota ² |
 | `Estudiante` | estudiantes | 🔴 Sprint 4 |
 | `Solicitud` + jerarquía de estados | solicitudes | 🔴 Sprint 4 |
@@ -692,3 +699,19 @@ y **el código todavía no tiene** son los tres métodos que mutan el estado:
 > puede ser visible al público y ya no admitir solicitudes— y el diagrama no lo reflejaba. La
 > confusión de un solo método que responde dos preguntas es justo el tipo de cosa que un diagrama
 > desalineado esconde, y es la razón por la que se verifica contra el código y no al revés.
+
+### ³ Nota sobre `Usuario` y `Estudiante` — cambio del 16 de septiembre
+
+La versión 1.0 ponía el **CUI en `Estudiante`**. Al implementar el registro (US-001) se movió a
+**`Usuario`**, junto con el nombre completo:
+
+- **US-001 pertenece al EPIC-01** —gestión de cuentas— y su criterio exige que el CUI sea único
+  *para crear la cuenta*. Sin cuenta todavía no existe perfil académico.
+- **El CUI identifica a la persona, no a su perfil académico.** Un evaluador también es una
+  persona con CUI.
+- `Estudiante` queda para los **datos académicos y socioeconómicos** de US-011 —centro
+  educativo, nivel, promedio, ingreso familiar—, que se completan después del registro.
+
+En `Usuario` son opcionales porque las cuentas creadas por el Ministerio no pasan por el registro
+público. También se agregan al diagrama los miembros del bloqueo por intentos fallidos (US-002),
+que ya existían en el código.

@@ -10,9 +10,9 @@
  * En móvil las columnas se apilan y la lista de garantías se oculta: ahí lo
  * único que importa es entrar.
  *
- * ALCANCE: solo el inicio de sesión. Los enlaces a "crear cuenta"
- * (US-001) y "olvidé mi contraseña" (US-005) aparecerán en el Sprint 2, cuando
- * esas historias existan. No se ponen enlaces que no llevan a ningún lado.
+ * ALCANCE: el inicio de sesión y el enlace a crear cuenta (US-001). El de
+ * "olvidé mi contraseña" (US-005) aparecerá cuando esa historia exista: no se
+ * ponen enlaces que no llevan a ningún lado.
  */
 import { useEffect, type ReactElement } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';

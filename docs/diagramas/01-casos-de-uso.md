@@ -613,7 +613,7 @@ constructor telescópico de ocho parámetros opcionales.
 |---|---|---|---|---|
 | CU-01 | Administrar convocatorias | US-008 | — | 🟢 Criterios cumplidos · falta Staging |
 | CU-02 | Consultar estado de una beca | US-025 | — | 🔴 Sprint 6 |
-| CU-03 | Registrar estudiantes | US-001 | — | 🔴 Sprint 3 |
+| CU-03 | Registrar estudiantes | US-001 | — | 🟢 Criterios cumplidos · falta Staging |
 | CU-04 | — (transversal) | US-002 | Adapter | 🟢 **Implementado** |
 | CU-06 | Gestionar solicitudes | US-012 | State | 🔴 Sprint 4 |
 | CU-07 | Cargar documentación | US-013 | Adapter | 🔴 Sprint 4 |

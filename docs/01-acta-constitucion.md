@@ -183,10 +183,10 @@ Sprints semanales de **jueves a miércoles**. Ceremonias todos los jueves.
 | 2.8 | Probar los tres adaptadores del patrón Adapter | Mié 16 Sep | Fernando | Hoy a 0 % de cobertura: es el único patrón implementado y el que se presentará al PO |
 | 2.9 | Corregir la medición de cobertura para que incluya las e2e | Mié 16 Sep | Ivan | El número actual (41.89 %) está medido solo con las unitarias |
 | 3 | **Sprint 3 — Convocatorias** | Mié 23 Sep 2026 | Equipo | |
-| 3.1 | Módulo de convocatorias (CRUD y publicación) | Mié 23 Sep | Isaac, Fernando | EPIC-02 |
-| 3.2 | Patrón Factory Method implementado y documentado | Mié 23 Sep | Stuard | Creacional 1 |
+| 3.1 | Módulo de convocatorias (CRUD y publicación) | Mié 23 Sep · **crear, publicar y listado entregados Sáb 12 Sep** | Isaac, Fernando | EPIC-02 · faltan cerrar (US-009) y editar (US-010) |
+| 3.2 | Patrón Factory Method implementado y documentado | ~~Mié 23 Sep~~ → **entregado Sáb 12 Sep** | Stuard | Creacional 1 · 18 pruebas propias |
 | 3.3 | ~~Entorno de Staging desplegado y accesible~~ | **movido al 2.7** | Ivan | Se adelantó al Sprint 2 por bloquear la DoD completa |
-| 3.4 | Registro de estudiante (US-001) + bloqueo tras 5 intentos (US-002) | Mié 23 Sep · **bloqueo entregado Sáb 12 Sep** | Isaac, Stuard | Movido del 2.4. El bloqueo se adelantó; queda US-001 |
+| 3.4 | Registro de estudiante (US-001) + bloqueo tras 5 intentos (US-002) | ~~Mié 23 Sep~~ → **entregado** (bloqueo 12 Sep, registro 16 Sep) | Isaac, Stuard | Movido del 2.4. Adelantado completo |
 | 3.5 | Cerrar las 4 revisiones documentales del Sprint 1 (S1-07 a S1-10) | Mié 23 Sep | Fernando, Stuard, Ivan | Deuda declarada del Sprint 1 |
 | 3.6 | Detalle de los casos de uso CU-03, CU-13 y CU-16 | Mié 23 Sep | Fernando | Completa el 2.1 |
 | 4 | **Sprint 4 — Estudiantes y solicitudes** | Mié 30 Sep 2026 | Equipo | |

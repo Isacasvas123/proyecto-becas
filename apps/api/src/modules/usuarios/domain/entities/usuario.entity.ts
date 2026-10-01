@@ -16,9 +16,13 @@
  *   aunque alguien serializara un `Usuario` por error, no hay contraseña que filtrar.
  */
 import { RolUsuario } from '../enums/rol-usuario.enum';
+import { Cui } from '../value-objects/cui.vo';
 import { NombreUsuario } from '../value-objects/nombre-usuario.vo';
 
-import { AutenticacionFallidaError } from '../../../../shared/exceptions/errores-dominio';
+import {
+  AutenticacionFallidaError,
+  ReglaDeNegocioError,
+} from '../../../../shared/exceptions/errores-dominio';
 
 /**
  * POLÍTICA DE BLOQUEO — criterio 3 de US-002, textual:
@@ -42,6 +46,22 @@ interface PropiedadesUsuario {
   readonly intentosFallidos?: number;
   /** Hasta cuándo está bloqueada la cuenta. `null` si no lo está. */
   readonly bloqueadoHasta?: Date | null;
+  /**
+   * Identidad de la persona (US-001). Opcionales porque las cuentas creadas por el Ministerio
+   * —el administrador inicial— no pasan por el registro público.
+   */
+  readonly nombreCompleto?: string | null;
+  readonly cui?: Cui | null;
+}
+
+/** Lo que hace falta para registrar a un aspirante (US-001). */
+export interface DatosNuevoEstudiante {
+  readonly id: string;
+  readonly nombreUsuario: NombreUsuario;
+  readonly correo: string;
+  readonly hashPassword: string;
+  readonly nombreCompleto: string;
+  readonly cui: Cui;
 }
 
 export class Usuario {
@@ -52,6 +72,8 @@ export class Usuario {
   readonly activo: boolean;
   readonly intentosFallidos: number;
   readonly bloqueadoHasta: Date | null;
+  readonly nombreCompleto: string | null;
+  readonly cui: Cui | null;
 
   /**
    * CAMPO PRIVADO DE JAVASCRIPT (`#`), NO `private` DE TYPESCRIPT.
@@ -81,6 +103,34 @@ export class Usuario {
     this.activo = props.activo;
     this.intentosFallidos = props.intentosFallidos ?? 0;
     this.bloqueadoHasta = props.bloqueadoHasta ?? null;
+    this.nombreCompleto = props.nombreCompleto ?? null;
+    this.cui = props.cui ?? null;
+  }
+
+  /**
+   * US-001 — la cuenta de un aspirante que se registra por su cuenta.
+   *
+   * El rol y el estado NO son parámetros: quien se registra por la vía pública es siempre
+   * `ESTUDIANTE` y empieza activo. Si el rol viniera del exterior, bastaría mandar
+   * `"rol": "ADMINISTRADOR"` en el formulario para darse privilegios. Aquí no hay por dónde.
+   */
+  static nuevoEstudiante(datos: DatosNuevoEstudiante): Usuario {
+    const nombreCompleto = datos.nombreCompleto.trim().replace(/\s+/g, ' ');
+
+    if (nombreCompleto.length < 3) {
+      throw new ReglaDeNegocioError('El nombre completo es obligatorio.');
+    }
+
+    return new Usuario({
+      id: datos.id,
+      nombreUsuario: datos.nombreUsuario,
+      correo: normalizarCorreo(datos.correo),
+      hashPassword: datos.hashPassword,
+      rol: RolUsuario.ESTUDIANTE,
+      activo: true,
+      nombreCompleto,
+      cui: datos.cui,
+    });
   }
 
   /**
@@ -166,6 +216,8 @@ export class Usuario {
       hashPassword: this.hashAlmacenado(),
       rol: this.rol,
       activo: this.activo,
+      nombreCompleto: this.nombreCompleto,
+      cui: this.cui,
       ...cambios,
     });
   }
@@ -174,4 +226,12 @@ export class Usuario {
   esAdministrador(): boolean {
     return this.rol === RolUsuario.ADMINISTRADOR;
   }
+}
+
+/**
+ * Los correos se comparan sin distinguir mayúsculas: `Ana@Mail.com` y `ana@mail.com` son el
+ * mismo buzón, y tienen que chocar contra la misma restricción de unicidad.
+ */
+export function normalizarCorreo(correo: string): string {
+  return correo.trim().toLowerCase();
 }

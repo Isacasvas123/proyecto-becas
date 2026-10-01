@@ -12,8 +12,10 @@
  *   verificación de que el principio de sustitución de Liskov se cumple
  *   (docs/05-arquitectura.md §2.4).
  */
-import { Usuario } from '../../domain/entities/usuario.entity';
-import { UsuarioRepositorio } from '../../domain/ports/usuario.repositorio';
+import { RecursoDuplicadoError } from '../../../../shared/exceptions/errores-dominio';
+import { normalizarCorreo, Usuario } from '../../domain/entities/usuario.entity';
+import { Cui } from '../../domain/value-objects/cui.vo';
+import { CamposDuplicados, UsuarioRepositorio } from '../../domain/ports/usuario.repositorio';
 import { NombreUsuario } from '../../domain/value-objects/nombre-usuario.vo';
 
 export class UsuarioEnMemoriaRepositorio implements UsuarioRepositorio {
@@ -32,6 +34,35 @@ export class UsuarioEnMemoriaRepositorio implements UsuarioRepositorio {
       this.usuarios[indice] = usuario;
     }
 
+    return Promise.resolve();
+  }
+
+  buscarDuplicados(datos: {
+    correo: string;
+    cui: Cui;
+    nombreUsuario: NombreUsuario;
+  }): Promise<CamposDuplicados> {
+    const correo = normalizarCorreo(datos.correo);
+    return Promise.resolve({
+      correo: this.usuarios.some((u) => u.correo === correo),
+      cui: this.usuarios.some((u) => u.cui !== null && u.cui.equals(datos.cui)),
+      nombreUsuario: this.usuarios.some((u) => u.nombreUsuario.equals(datos.nombreUsuario)),
+    });
+  }
+
+  crear(usuario: Usuario): Promise<void> {
+    // Mismo contrato que la base de datos: la unicidad se garantiza al escribir, no solo en la
+    // comprobación previa del caso de uso.
+    const choca = this.usuarios.some(
+      (u) =>
+        u.correo === usuario.correo ||
+        u.nombreUsuario.equals(usuario.nombreUsuario) ||
+        (u.cui !== null && usuario.cui !== null && u.cui.equals(usuario.cui)),
+    );
+    if (choca) {
+      return Promise.reject(new RecursoDuplicadoError('Ya existe una cuenta con esos datos.'));
+    }
+    this.usuarios.push(usuario);
     return Promise.resolve();
   }
 }

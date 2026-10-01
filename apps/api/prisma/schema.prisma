@@ -47,6 +47,10 @@ model Usuario {
   // la entidad del dominio; aquí solo se guarda el estado.
   intentosFallidos Int       @default(0) @map("intentos_fallidos")
   bloqueadoHasta   DateTime? @map("bloqueado_hasta")
+  // US-001. Opcionales: el administrador inicial no pasa por el registro público. `cui` es
+  // único para que una persona no tenga dos cuentas; PostgreSQL admite varios NULL.
+  nombreCompleto   String?   @map("nombre_completo")
+  cui              String?   @unique
   creadoEn       DateTime   @default(now()) @map("creado_en")
   actualizadoEn  DateTime   @updatedAt @map("actualizado_en")
 

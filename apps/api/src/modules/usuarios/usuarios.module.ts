@@ -19,6 +19,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 
 import { AutenticarUsuarioService } from './application/services/autenticar-usuario.service';
+import { RegistrarEstudianteService } from './application/services/registrar-estudiante.service';
 import { GENERADOR_TOKEN } from './domain/ports/generador-token';
 import { HASHER_PASSWORD } from './domain/ports/hasher-password';
 import { USUARIO_REPOSITORIO } from './domain/ports/usuario.repositorio';
@@ -55,6 +56,7 @@ import { RolesGuard } from './presentation/guards/roles.guard';
   controllers: [AuthController],
   providers: [
     AutenticarUsuarioService,
+    RegistrarEstudianteService,
     { provide: USUARIO_REPOSITORIO, useClass: UsuarioPrismaRepositorio },
     { provide: HASHER_PASSWORD, useClass: BcryptHasherAdapter },
     { provide: GENERADOR_TOKEN, useClass: JwtGeneradorTokenAdapter },

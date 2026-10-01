@@ -143,6 +143,7 @@ Base local: `http://localhost:3000`
 | `GET`  | `/convocatorias/catalogo` | **ADMINISTRADOR** | Requisitos, documentos y valores por defecto de cada tipo |
 | `POST` | `/convocatorias`  | **ADMINISTRADOR** | Crea una convocatoria en BORRADOR (US-006) |
 | `POST` | `/convocatorias/:id/publicar` | **ADMINISTRADOR** | La publica (US-007) |
+| `POST` | `/auth/registro`  | Público  | Registra un estudiante y devuelve la sesión iniciada (US-001) |
 
 > **Las públicas lo son deliberadamente**, no por olvido. El guard de autenticación es **global y
 > seguro por defecto**: toda ruta exige sesión salvo que se marque con `@Publico()`. Cada una de
@@ -303,7 +304,16 @@ una prueba que las compara y falla en CI si divergen.
 | `hash_password`  | texto        | bcrypt. **Nunca en texto plano**   |
 | `rol`            | `RolUsuario` | Por defecto `ESTUDIANTE`           |
 | `activo`         | booleano     | Por defecto `true`                 |
+| `intentos_fallidos` · `bloqueado_hasta` | entero · timestamp | Bloqueo tras 5 intentos (US-002) |
+| `nombre_completo` | texto, opcional | US-001                        |
+| `cui`            | texto, opcional | **Único**. 13 dígitos, sin espacios. Varios `NULL` permitidos |
 | `creado_en` · `actualizado_en` | timestamp | Automáticos           |
+
+**`POST /auth/registro`** recibe `nombreCompleto`, `cui`, `correo`, `nombreUsuario` y `password`.
+Responde **201** con la misma forma que el login, **409** si el CUI, el correo o el nombre de usuario
+ya existen —diciendo cuál—, y **422** si el CUI no tiene 13 dígitos o la contraseña no cumple la
+política. No acepta `rol`: una petición que lo mande recibe 400, y toda cuenta registrada por
+esta vía es `ESTUDIANTE`.
 
 ### 5.2 `Convocatoria`
 

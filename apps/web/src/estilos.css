@@ -1297,3 +1297,48 @@ a.boton {
     width: 100%;
   }
 }
+
+/* ============================================================================
+   REGISTRO DE ESTUDIANTE (US-001)
+   ========================================================================== */
+
+.acciones-visitante {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.enlace-alterno {
+  margin: 0;
+  font-size: var(--txt-sm);
+  text-align: center;
+  color: var(--tinta-2);
+}
+
+.enlace-alterno a {
+  font-weight: 700;
+}
+
+/* La lista se lee por forma además de por color: un punto o una marca de verificación. */
+.condiciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--txt-xs);
+  color: var(--tinta-3);
+}
+
+.condiciones li.cumple {
+  color: var(--verde);
+  font-weight: 600;
+}
+
+.campo .pista.alerta {
+  color: var(--rojo);
+}
+
+.campo input[aria-invalid='true'] {
+  border-color: var(--rojo);
+}
