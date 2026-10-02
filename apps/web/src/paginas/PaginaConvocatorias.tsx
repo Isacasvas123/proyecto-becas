@@ -15,13 +15,18 @@
  *   Hasta el Sprint 3 esta página exigía sesión, lo que incumplía la historia: era el
  *   defecto 3 del esqueleto. La gestión de convocatorias vive ahora en /gestion.
  *
+ * POSTULAR (US-012)
+ *   Un estudiante ve «Postular» en cada tarjeta; un visitante, una invitación a iniciar sesión. Si
+ *   el servidor rechaza la postulación porque falta el perfil, el aviso lleva directo a
+ *   completarlo, con el camino de vuelta.
+ *
  * El filtro es local, sobre lo ya descargado. El filtrado en servidor con paginación
  * se hará cuando el volumen lo justifique.
  */
-import { useEffect, useMemo, useState, type ReactElement } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
-import { listarConvocatorias, type Convocatoria } from '../api/cliente';
+import { crearSolicitud, listarConvocatorias, type Convocatoria } from '../api/cliente';
 import { BandaEstadisticas } from '../componentes/BandaEstadisticas';
 import { Encabezado } from '../componentes/Encabezado';
 import { PanelFiltros } from '../componentes/PanelFiltros';
@@ -45,6 +50,18 @@ export function PaginaConvocatorias(): ReactElement {
     cargando: true,
   });
   const [tipoActivo, setTipoActivo] = useState<string | null>(null);
+  const [postulando, setPostulando] = useState<string | null>(null);
+  const [errorPostulacion, setErrorPostulacion] = useState<string | null>(null);
+  const esEstudiante = sesion?.usuario.rol === 'ESTUDIANTE';
+  const avisoPostulacion = useRef<HTMLParagraphElement>(null);
+
+  // El botón está en la tarjeta y el aviso arriba de la lista: en un teléfono quedarían a varias
+  // pantallas de distancia y la persona creería que no pasó nada.
+  useEffect(() => {
+    if (errorPostulacion !== null) {
+      avisoPostulacion.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [errorPostulacion]);
 
   useEffect(() => {
     let cancelado = false;
@@ -77,6 +94,42 @@ export function PaginaConvocatorias(): ReactElement {
     [todas, tipoActivo],
   );
 
+  async function postular(convocatoria: Convocatoria): Promise<void> {
+    setErrorPostulacion(null);
+    setPostulando(convocatoria.id);
+    try {
+      const solicitud = await crearSolicitud(convocatoria.id);
+      navegar(`/solicitudes/${solicitud.id}`);
+    } catch (causa: unknown) {
+      setErrorPostulacion(
+        causa instanceof Error ? causa.message : 'No se pudo iniciar la solicitud.',
+      );
+    } finally {
+      setPostulando(null);
+    }
+  }
+
+  function accionPara(convocatoria: Convocatoria) {
+    if (sesion === null) {
+      return (
+        <Link to="/login" state={{ destino: '/convocatorias' }} className="boton fantasma pequeno">
+          Inicie sesión para postular
+        </Link>
+      );
+    }
+    if (!esEstudiante) return undefined;
+    return (
+      <button
+        type="button"
+        className="boton pequeno"
+        disabled={postulando !== null}
+        onClick={() => void postular(convocatoria)}
+      >
+        {postulando === convocatoria.id ? 'Iniciando…' : 'Postular'}
+      </button>
+    );
+  }
+
   function cerrarSesion(): void {
     cerrar();
     // Se queda en el listado: es público, no hace falta echarlo al login.
@@ -106,6 +159,20 @@ export function PaginaConvocatorias(): ReactElement {
                 </p>
               )}
             </div>
+
+            {errorPostulacion !== null && (
+              <p className="aviso error" role="alert" ref={avisoPostulacion}>
+                {errorPostulacion}{' '}
+                {errorPostulacion.startsWith('Complete su perfil') && (
+                  <Link to="/perfil" state={{ volverA: '/convocatorias' }}>
+                    Completar mi perfil
+                  </Link>
+                )}
+                {errorPostulacion.startsWith('Ya tiene una solicitud') && (
+                  <Link to="/solicitudes">Ver mis solicitudes</Link>
+                )}
+              </p>
+            )}
 
             {consulta.cargando && (
               <ul className="lista" aria-busy="true" aria-label="Cargando convocatorias">
@@ -142,7 +209,11 @@ export function PaginaConvocatorias(): ReactElement {
             {visibles.length > 0 && (
               <ul className="lista">
                 {visibles.map((convocatoria) => (
-                  <TarjetaConvocatoria key={convocatoria.id} convocatoria={convocatoria} />
+                  <TarjetaConvocatoria
+                    key={convocatoria.id}
+                    convocatoria={convocatoria}
+                    accion={accionPara(convocatoria)}
+                  />
                 ))}
               </ul>
             )}

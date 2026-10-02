@@ -19,6 +19,7 @@
  */
 import { Module } from '@nestjs/common';
 
+import { ConsultarConvocatoriaService } from './application/services/consultar-convocatoria.service';
 import { CrearConvocatoriaService } from './application/services/crear-convocatoria.service';
 import { ListarConvocatoriasGestionService } from './application/services/listar-convocatorias-gestion.service';
 import { ListarConvocatoriasPublicadasService } from './application/services/listar-convocatorias-publicadas.service';
@@ -36,6 +37,7 @@ import { ConvocatoriasController } from './presentation/controllers/convocatoria
     CrearConvocatoriaService,
     PublicarConvocatoriaService,
     ObtenerCatalogoConvocatoriasService,
+    ConsultarConvocatoriaService,
     {
       provide: CONVOCATORIA_REPOSITORIO,
       useClass: ConvocatoriaPrismaRepositorio,
@@ -45,6 +47,6 @@ import { ConvocatoriasController } from './presentation/controllers/convocatoria
   // pasa por la capa de aplicación; nunca por el repositorio ni por las entidades de este
   // módulo. Es la mitigación del riesgo nº4 de docs/05-arquitectura.md §2.2
   // ("monolito distribuido interno") y se verifica en el code review.
-  exports: [ListarConvocatoriasPublicadasService],
+  exports: [ListarConvocatoriasPublicadasService, ConsultarConvocatoriaService],
 })
 export class ConvocatoriasModule {}

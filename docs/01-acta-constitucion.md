@@ -190,10 +190,10 @@ Sprints semanales de **jueves a miércoles**. Ceremonias todos los jueves.
 | 3.5 | Cerrar las 4 revisiones documentales del Sprint 1 (S1-07 a S1-10) | Mié 23 Sep | Fernando, Stuard, Ivan | Deuda declarada del Sprint 1 |
 | 3.6 | Detalle de los casos de uso CU-03, CU-13 y CU-16 | Mié 23 Sep | Fernando | Completa el 2.1 |
 | 4 | **Sprint 4 — Estudiantes y solicitudes** | Mié 30 Sep 2026 | Equipo | |
-| 4.1 | Creación de solicitudes | Mié 30 Sep | Isaac, Ivan | EPIC-03 · el registro de estudiante se movió al 3.4 |
+| 4.1 | Creación de solicitudes | ~~Mié 30 Sep~~ → **entregado Mié 16 Sep** | Isaac, Ivan | EPIC-03 completa: perfil (US-011), crear, cargar, enviar, listar e historial (US-012 a US-016) |
 | 4.4 | Gestión de perfil (US-004) y recuperación de contraseña (US-005) | Mié 30 Sep | Isaac, Stuard | Movidos del 2.4 |
-| 4.2 | Patrón State (ciclo de vida de la solicitud) | Mié 30 Sep | Stuard | Comportamiento 1 |
-| 4.3 | Carga de documentación + patrón Adapter | Mié 30 Sep | Fernando | Estructural 1 |
+| 4.2 | Patrón State (ciclo de vida de la solicitud) | ~~Mié 30 Sep~~ → **entregado Mié 16 Sep** | Stuard | Comportamiento 1 · los 30 pares estado × acción probados |
+| 4.3 | Carga de documentación + patrón Adapter | ~~Mié 30 Sep~~ → **entregado Mié 16 Sep** | Fernando | Estructural 1 · almacenamiento local; el de nube queda para cuando haya proveedor |
 | 5 | **Sprint 5 — Evaluación** | Mié 7 Oct 2026 | Equipo | |
 | 5.1 | Comités evaluadores y asignación de solicitudes | Mié 7 Oct | Isaac, Fernando | EPIC-04 |
 | 5.2 | Patrón Strategy (criterios de puntuación) | Mié 7 Oct | Stuard | Comportamiento 2 |
