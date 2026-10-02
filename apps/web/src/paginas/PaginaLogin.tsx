@@ -32,12 +32,13 @@ export function PaginaLogin(): ReactElement {
 
   const destinoPedido = (ubicacion.state as EstadoNavegacion | null)?.destino;
 
-  // Si venía de una ruta concreta, se le devuelve ahí. Si no, el administrador va a su panel y
-  // cualquier otro rol al listado: entrar al sistema para aterrizar en una página que ya podía
-  // ver sin cuenta no le sirve de nada al administrador.
+  // Si venía de una ruta concreta, se le devuelve ahí. Si no, cada rol va a su panel: entrar al
+  // sistema para aterrizar en una página que ya podía ver sin cuenta no le sirve a nadie.
   function destinoPara(rol: string): string {
     if (destinoPedido !== undefined) return destinoPedido;
-    return rol === 'ADMINISTRADOR' ? '/gestion' : '/convocatorias';
+    if (rol === 'ADMINISTRADOR') return '/gestion';
+    if (rol === 'ESTUDIANTE') return '/solicitudes';
+    return '/convocatorias';
   }
 
   // Si ya hay sesión no tiene sentido mostrar el formulario. Va en un efecto y

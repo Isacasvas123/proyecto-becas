@@ -1,13 +1,12 @@
 // Esquema de persistencia — Prisma + PostgreSQL.
 //
 // ALCANCE ACTUAL:
-//   - `Convocatoria` — walking skeleton (Sprint 1, US-S1-08).
-//   - `Usuario` — solo lo que exige el inicio de sesión (US-002). NO están aquí el
-//     registro público (US-001), el perfil (US-004) ni la recuperación de contraseña
-//     (US-005): son del Sprint 2 y se agregan con sus historias.
+//   - `Usuario` — inicio de sesión (US-002) y registro público (US-001).
+//   - `Convocatoria` — con requisitos y documentos (US-006, US-007).
+//   - `Estudiante` — perfil académico y socioeconómico (US-011).
+//   - `Solicitud`, `DocumentoSolicitud`, `HistorialEstadoSolicitud` — EPIC-03.
 //
-// El resto del modelo de dominio (Estudiante, Solicitud, Documento, Evaluacion, Comite,
-// Beca, HistorialEstado) se agrega en los sprints 2 a 8, conforme a
+// Lo que falta (Evaluacion, Comite, Beca) se agrega con sus historias, conforme a
 // docs/05-arquitectura.md §3.3.
 //
 // IMPORTANTE: este esquema es el modelo de PERSISTENCIA, no el modelo de DOMINIO.
@@ -35,24 +34,27 @@ enum RolUsuario {
 }
 
 model Usuario {
-  id             String     @id @default(uuid())
-  nombreUsuario  String     @unique @map("nombre_usuario")
-  correo         String     @unique
+  id               String     @id @default(uuid())
+  nombreUsuario    String     @unique @map("nombre_usuario")
+  correo           String     @unique
   // Hash bcrypt, NUNCA la contraseña en claro (NFR de seguridad,
   // docs/04-product-backlog.md §5).
-  hashPassword   String     @map("hash_password")
-  rol            RolUsuario @default(ESTUDIANTE)
-  activo         Boolean    @default(true)
+  hashPassword     String     @map("hash_password")
+  rol              RolUsuario @default(ESTUDIANTE)
+  activo           Boolean    @default(true)
   // Bloqueo tras 5 intentos fallidos consecutivos (US-002, criterio 3). La regla vive en
   // la entidad del dominio; aquí solo se guarda el estado.
-  intentosFallidos Int       @default(0) @map("intentos_fallidos")
-  bloqueadoHasta   DateTime? @map("bloqueado_hasta")
+  intentosFallidos Int        @default(0) @map("intentos_fallidos")
+  bloqueadoHasta   DateTime?  @map("bloqueado_hasta")
   // US-001. Opcionales: el administrador inicial no pasa por el registro público. `cui` es
   // único para que una persona no tenga dos cuentas; PostgreSQL admite varios NULL.
-  nombreCompleto   String?   @map("nombre_completo")
-  cui              String?   @unique
-  creadoEn       DateTime   @default(now()) @map("creado_en")
-  actualizadoEn  DateTime   @updatedAt @map("actualizado_en")
+  nombreCompleto   String?    @map("nombre_completo")
+  cui              String?    @unique
+  creadoEn         DateTime   @default(now()) @map("creado_en")
+  actualizadoEn    DateTime   @updatedAt @map("actualizado_en")
+
+  perfilEstudiante Estudiante?
+  solicitudes      Solicitud[]
 
   @@map("usuarios")
 }
@@ -94,24 +96,148 @@ enum EstadoConvocatoria {
 }
 
 model Convocatoria {
-  id             String             @id @default(uuid())
-  codigo         String             @unique
-  titulo         String
-  descripcion    String
-  tipo           TipoBeca
-  estado         EstadoConvocatoria @default(BORRADOR)
-  cupos          Int
-  fechaApertura  DateTime           @map("fecha_apertura")
-  fechaCierre    DateTime           @map("fecha_cierre")
+  id                 String             @id @default(uuid())
+  codigo             String             @unique
+  titulo             String
+  descripcion        String
+  tipo               TipoBeca
+  estado             EstadoConvocatoria @default(BORRADOR)
+  cupos              Int
+  fechaApertura      DateTime           @map("fecha_apertura")
+  fechaCierre        DateTime           @map("fecha_cierre")
   // US-006. Cada tipo de beca trae los suyos por defecto (Factory Method). Listas de enums
   // de PostgreSQL: un valor fuera del catálogo lo rechaza la base, no solo la aplicación.
-  requisitos         Requisito[]     @default([])
-  documentosExigidos TipoDocumento[] @default([]) @map("documentos_exigidos")
-  creadaEn       DateTime           @default(now()) @map("creada_en")
-  actualizadaEn  DateTime           @updatedAt @map("actualizada_en")
+  requisitos         Requisito[]        @default([])
+  documentosExigidos TipoDocumento[]    @default([]) @map("documentos_exigidos")
+  creadaEn           DateTime           @default(now()) @map("creada_en")
+  actualizadaEn      DateTime           @updatedAt @map("actualizada_en")
+
+  solicitudes Solicitud[]
 
   // El listado público filtra por estado y fecha de cierre; el NFR de rendimiento
   // exige responder en menos de 1 segundo (docs/04-product-backlog.md).
   @@index([estado, fechaCierre])
   @@map("convocatorias")
+}
+
+// ─── EPIC-02 · Perfil del estudiante (US-011) ──────────────────────────────────
+
+enum NivelAcademico {
+  NIVEL_MEDIO
+  UNIVERSITARIO
+  POSGRADO
+}
+
+/// Los 22 departamentos de Guatemala. Catálogo cerrado para el reporte por región (US-031).
+enum Departamento {
+  ALTA_VERAPAZ
+  BAJA_VERAPAZ
+  CHIMALTENANGO
+  CHIQUIMULA
+  EL_PROGRESO
+  ESCUINTLA
+  GUATEMALA
+  HUEHUETENANGO
+  IZABAL
+  JALAPA
+  JUTIAPA
+  PETEN
+  QUETZALTENANGO
+  QUICHE
+  RETALHULEU
+  SACATEPEQUEZ
+  SAN_MARCOS
+  SANTA_ROSA
+  SOLOLA
+  SUCHITEPEQUEZ
+  TOTONICAPAN
+  ZACAPA
+}
+
+/// Perfil del estudiante. Uno por usuario; todos los campos opcionales porque se llena por
+/// partes. Que esté completo lo decide la entidad del dominio, no la base.
+model Estudiante {
+  id                     String          @id @default(uuid())
+  usuarioId              String          @unique @map("usuario_id")
+  usuario                Usuario         @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  centroEducativo        String?         @map("centro_educativo")
+  nivel                  NivelAcademico?
+  // Decimal exacto: un promedio de 69.995 no debe redondearse a 70 y cumplir un requisito.
+  promedio               Decimal?        @db.Decimal(5, 2)
+  ingresoFamiliarMensual Decimal?        @map("ingreso_familiar_mensual") @db.Decimal(12, 2)
+  dependientes           Int?
+  departamento           Departamento?
+  municipio              String?
+  creadoEn               DateTime        @default(now()) @map("creado_en")
+  actualizadoEn          DateTime        @updatedAt @map("actualizado_en")
+
+  @@map("estudiantes")
+}
+
+// ─── EPIC-03 · Solicitudes ─────────────────────────────────────────────────────
+
+/// Ciclo de vida de una solicitud (patrón State, docs/06-patrones.md §5).
+enum EstadoSolicitud {
+  BORRADOR
+  ENVIADA
+  EN_EVALUACION
+  APROBADA
+  RECHAZADA
+  ADJUDICADA
+}
+
+model Solicitud {
+  id                 String          @id @default(uuid())
+  // SOL-2026-000001
+  numero             String          @unique
+  estudianteId       String          @map("estudiante_id")
+  estudiante         Usuario         @relation(fields: [estudianteId], references: [id], onDelete: Restrict)
+  convocatoriaId     String          @map("convocatoria_id")
+  convocatoria       Convocatoria    @relation(fields: [convocatoriaId], references: [id], onDelete: Restrict)
+  estado             EstadoSolicitud @default(BORRADOR)
+  // Foto de lo que exigía la convocatoria al crear la solicitud (ver la entidad).
+  documentosExigidos String[]        @default([]) @map("documentos_exigidos")
+  enviadaEn          DateTime?       @map("enviada_en")
+  creadaEn           DateTime        @default(now()) @map("creada_en")
+  actualizadaEn      DateTime        @updatedAt @map("actualizada_en")
+
+  documentos DocumentoSolicitud[]
+  historial  HistorialEstadoSolicitud[]
+
+  // US-015 lista por estudiante; US-012 busca la activa por estudiante y convocatoria.
+  @@index([estudianteId, convocatoriaId])
+  @@index([convocatoriaId, estado])
+  @@map("solicitudes")
+}
+
+/// Un archivo por tipo de documento: reemplazar es actualizar la fila (US-013, criterio 3).
+model DocumentoSolicitud {
+  id            String    @id @default(uuid())
+  solicitudId   String    @map("solicitud_id")
+  solicitud     Solicitud @relation(fields: [solicitudId], references: [id], onDelete: Cascade)
+  tipo          String
+  nombreArchivo String    @map("nombre_archivo")
+  tipoContenido String    @map("tipo_contenido")
+  tamanoBytes   Int       @map("tamano_bytes")
+  // Dónde lo guardó el adaptador de almacenamiento. Nunca se expone al cliente.
+  referencia    String
+  cargadoEn     DateTime  @map("cargado_en")
+
+  @@unique([solicitudId, tipo])
+  @@map("documentos_solicitud")
+}
+
+/// US-016. Solo se insertan filas; la aplicación nunca las modifica ni las borra.
+model HistorialEstadoSolicitud {
+  id          String           @id
+  solicitudId String           @map("solicitud_id")
+  solicitud   Solicitud        @relation(fields: [solicitudId], references: [id], onDelete: Cascade)
+  desde       EstadoSolicitud?
+  hacia       EstadoSolicitud
+  autorId     String           @map("autor_id")
+  motivo      String?
+  ocurridoEn  DateTime         @map("ocurrido_en")
+
+  @@index([solicitudId, ocurridoEn])
+  @@map("historial_estado_solicitud")
 }

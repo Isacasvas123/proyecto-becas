@@ -84,6 +84,8 @@ proyecto-becas/
 │   │   │   ├── modules/
 │   │   │   │   ├── usuarios/        Autenticación y control de acceso
 │   │   │   │   ├── convocatorias/   Programas de beca
+│   │   │   │   ├── estudiantes/     Perfil académico (US-011)
+│   │   │   │   ├── solicitudes/     Solicitudes, documentos e historial (EPIC-03)
 │   │   │   │   └── salud/           /health y /ready
 │   │   │   ├── shared/
 │   │   │   │   ├── exceptions/      Filtro global de errores de dominio
@@ -115,6 +117,11 @@ Es la evidencia del patrón **Adapter** y la tabla que demuestra la inversión d
 | `usuarios/domain/ports/verificador-token`| `JwtVerificadorTokenAdapter`                                    | La validación de sesión    |
 | `usuarios/domain/ports/usuario.repositorio` | `UsuarioPrismaRepositorio` · `UsuarioEnMemoriaRepositorio`    | La persistencia            |
 | `convocatorias/domain/ports/convocatoria.repositorio` | `ConvocatoriaPrismaRepositorio` · `ConvocatoriaEnMemoriaRepositorio` | La persistencia |
+| `estudiantes/domain/ports/estudiante.repositorio` | `EstudiantePrismaRepositorio` · `EstudianteEnMemoriaRepositorio` | La persistencia |
+| `solicitudes/domain/ports/solicitud.repositorio` | `SolicitudPrismaRepositorio` · `SolicitudEnMemoriaRepositorio` | La persistencia (solicitud, documentos e historial en una transacción) |
+| `solicitudes/domain/ports/almacenamiento-documentos` | `AlmacenamientoLocalAdapter` · `AlmacenamientoMemoriaAdapter` | Dónde se guardan los archivos |
+| `solicitudes/domain/ports/notificador-solicitudes` | `NotificadorConsolaAdapter` | El canal de avisos (correo en US-022) |
+| `solicitudes/domain/ports/consultas-externas` | `ConsultaConvocatoriasAdapter` · `ConsultaPerfilesAdapter` | Los otros módulos: se les pregunta por su capa de aplicación, nunca por su dominio |
 
 El enlace ocurre en un único punto por módulo, el archivo `*.module.ts`:
 
@@ -144,6 +151,17 @@ Base local: `http://localhost:3000`
 | `POST` | `/convocatorias`  | **ADMINISTRADOR** | Crea una convocatoria en BORRADOR (US-006) |
 | `POST` | `/convocatorias/:id/publicar` | **ADMINISTRADOR** | La publica (US-007) |
 | `POST` | `/auth/registro`  | Público  | Registra un estudiante y devuelve la sesión iniciada (US-001) |
+| `GET` · `PUT` | `/estudiantes/perfil` | **ESTUDIANTE** | Consulta o guarda el propio perfil (US-011) |
+| `GET`  | `/estudiantes/departamentos` | **ESTUDIANTE** | Los 22 departamentos, para el formulario |
+| `POST` | `/solicitudes` | **ESTUDIANTE** | Crea una solicitud en BORRADOR (US-012) |
+| `GET`  | `/solicitudes` | **ESTUDIANTE** | Las propias, con estado, documentos e historial (US-015, US-016) |
+| `GET`  | `/solicitudes/:id` | **ESTUDIANTE** | Una propia. La de otra persona responde **403** |
+| `PUT`  | `/solicitudes/:id/documentos/:tipo` | **ESTUDIANTE** | Carga o reemplaza un documento; multipart, campo `archivo` (US-013) |
+| `GET`  | `/solicitudes/:id/documentos/:tipo` | **ESTUDIANTE** | Descarga el propio documento |
+| `POST` | `/solicitudes/:id/enviar` | **ESTUDIANTE** | La envía (US-014) |
+
+> **El id del estudiante nunca viaja en la URL ni en el cuerpo.** Sale del token con el decorador
+> `@UsuarioActual()`. No existe una forma de pedir "las solicitudes del estudiante X".
 
 > **Las públicas lo son deliberadamente**, no por olvido. El guard de autenticación es **global y
 > seguro por defecto**: toda ruta exige sesión salvo que se marque con `@Publico()`. Cada una de
@@ -158,7 +176,9 @@ Base local: `http://localhost:3000`
 | 400 | Datos con forma inválida: tipo inexistente, requisito fuera del catálogo, id que no es UUID, o un campo no permitido como `estado` |
 | 404 | La convocatoria no existe |
 | 409 | Transición inválida: publicar algo que no está en BORRADOR |
-| 422 | Regla de negocio: cierre anterior a la apertura, posgrado con más de 50 cupos, publicar sin requisitos |
+| 403 | Recurso ajeno: la solicitud de otro estudiante (`AccesoDenegadoError`, US-003) |
+| 413 | Archivo de más de 5 MB (lo corta la recepción antes de leerlo entero) |
+| 422 | Regla de negocio: cierre anterior a la apertura, posgrado con más de 50 cupos, publicar sin requisitos, perfil incompleto, archivo que no es lo que dice ser, enviar con documentos faltantes |
 
 ### 4.2 `POST /auth/login`
 
@@ -290,7 +310,7 @@ diferencia, y una prueba la fija para que nadie la "arregle" agregándolo al esq
 
 ## 5. Base de datos
 
-Dos tablas hoy. El dominio declara sus propios enums en lugar de importar los de Prisma, para no
+Seis tablas hoy. El dominio declara sus propios enums en lugar de importar los de Prisma, para no
 meter el ORM dentro de `domain/`; el precio es mantener dos listas sincronizadas, y se mitiga con
 una prueba que las compara y falla en CI si divergen.
 
@@ -331,7 +351,25 @@ esta vía es `ESTUDIANTE`.
 > El índice compuesto `[estado, fecha_cierre]` existe para una consulta concreta: el listado
 > público. Es el NFR de rendimiento —responder en menos de 1 segundo— resuelto en el esquema.
 
-### 5.3 Migraciones
+### 5.3 `Estudiante` (tabla `estudiantes`)
+
+Uno por usuario (`usuario_id` único). Todos los datos son opcionales porque el perfil se llena por
+partes; si está completo lo decide la entidad. `promedio` es `DECIMAL(5,2)` e
+`ingreso_familiar_mensual` `DECIMAL(12,2)`: un promedio de 69.995 no debe redondearse a 70 y
+cumplir un requisito. `departamento` es el enum `Departamento` (22 valores).
+
+### 5.4 `Solicitud`, `DocumentoSolicitud` y `HistorialEstadoSolicitud`
+
+| Tabla | Lo importante |
+|---|---|
+| `solicitudes` | `numero` **único** (`SOL-2026-000001`). `estado` es el enum `EstadoSolicitud`. `documentos_exigidos` es una **copia** de lo que pedía la convocatoria al crearla. Borrar un usuario o una convocatoria con solicitudes está **restringido** |
+| `documentos_solicitud` | Único por `(solicitud_id, tipo)`: reemplazar es actualizar la fila. `referencia` es la ruta que dio el adaptador; nunca se expone al cliente |
+| `historial_estado_solicitud` | El id lo pone la entidad; la aplicación **solo inserta** (`createMany` con `skipDuplicates`). Índice por `(solicitud_id, ocurrido_en)` |
+
+Guardar una solicitud es **una transacción**: la fila, sus documentos y las entradas nuevas del
+historial. Si algo falla, no queda un documento guardado con la solicitud en el estado anterior.
+
+### 5.5 Migraciones
 
 Versionadas en `apps/api/prisma/migrations/`. **Nunca se modifica la base a mano.**
 
@@ -359,6 +397,8 @@ Todo por variables de entorno. **Nada de direcciones ni secretos en el código.*
 | `JWT_EXPIRACION`  | Vigencia (`8h`)                              |                                              |
 | `BCRYPT_ROUNDS`   | Coste del hash (10 local, 12 Staging)        | Más alto = más seguro y más lento            |
 | `VITE_API_URL`    | URL de la API para el frontend               |                                              |
+| `ALMACENAMIENTO_TIPO` | Adaptador de documentos (`local`)       | Otro valor impide arrancar: todavía no existe |
+| `ALMACENAMIENTO_RUTA_LOCAL` | Carpeta de documentos (`./uploads`) | Está en `.gitignore`. En Staging el disco se borra en cada despliegue |
 
 > ⚠️ Las credenciales de `ADMIN_*` en `.env.example` son **solo para el seed de desarrollo local**.
 > El seed **no se ejecuta en Staging**: crearía un administrador con credenciales que están escritas
@@ -433,8 +473,8 @@ El orden importa: **de dentro hacia fuera**, igual que apuntan las dependencias.
 | Patrón           | Tipo           | Estado                                 | Sprint |
 | ---------------- | -------------- | -------------------------------------- | ------ |
 | **Adapter**      | Estructural    | ✅ Implementado — **sin pruebas (0 %)** | 1      |
-| Factory Method   | Creacional     | 🔴 Pendiente                            | 3      |
-| State            | Comportamiento | 🔴 Pendiente                            | 4      |
+| **Factory Method** | Creacional   | ✅ Implementado y probado (12 Sep)      | 3      |
+| **State**        | Comportamiento | ✅ Implementado y probado (16 Sep)      | 4      |
 | Strategy         | Comportamiento | 🔴 Pendiente                            | 5      |
 | Facade           | Estructural    | 🔴 Pendiente                            | 6      |
 | Builder          | Creacional     | 🔴 Pendiente                            | 7      |
@@ -457,3 +497,6 @@ Se documenta para que quien mantenga el sistema no la descubra a golpes:
 | El contador de intentos es lectura-modificación-escritura        | Peticiones fallidas simultáneas podrían contar menos | Aceptado: riesgo bajo, documentado en el repositorio |
 | `main` y `develop` sin protección de rama                       | El flujo depende de que el equipo se acuerde     | Al entrar GitHub Pro    |
 | El dominio duplica los enums de Prisma                          | Pueden desincronizarse                           | Mitigado con una prueba |
+| Los documentos se guardan en el disco del servidor               | En Staging (Render) se pierden en cada despliegue | Adaptador de nube cuando haya proveedor; el puerto ya existe |
+| El número de solicitud se calcula contando las del año           | Dos creaciones simultáneas: la segunda falla contra el índice único (no se duplica) | Aceptado, igual que el código de convocatoria |
+| Los repositorios Prisma de `estudiantes` y `solicitudes` sin prueba automática contra la base | El SQL real solo se verificó a mano (16 Sep) | Mismo plan que el Issue #6 |

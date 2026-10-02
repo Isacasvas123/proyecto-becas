@@ -44,6 +44,18 @@ export class RecursoNoEncontradoError extends ErrorDeDominio {
 }
 
 /**
+ * Alguien autenticado intenta operar sobre algo que no es suyo: la solicitud de otro estudiante.
+ *
+ * US-003, criterio textual: *"Un acceso no autorizado devuelve HTTP 403, no 404 ni el recurso."*
+ * El filtro lo traduce a 403.
+ */
+export class AccesoDenegadoError extends ErrorDeDominio {
+  constructor(mensaje: string) {
+    super(mensaje);
+  }
+}
+
+/**
  * Ya existe algo que debía ser único: un correo, un CUI o un nombre de usuario (US-001).
  * El filtro lo traduce a HTTP 409.
  */

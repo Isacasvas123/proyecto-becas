@@ -159,14 +159,22 @@ async function obtener<T>(ruta: string): Promise<T> {
   return (await respuesta.json()) as T;
 }
 
-async function enviar<T>(ruta: string, cuerpo?: unknown): Promise<T> {
+async function enviar<T>(
+  ruta: string,
+  cuerpo?: unknown,
+  metodo: 'POST' | 'PUT' = 'POST',
+): Promise<T> {
   // Con cabecera de sesión: hasta el Sprint 3 el único POST era el login, que no la
   // necesitaba. Crear y publicar convocatorias sí, y olvidarla aquí daría un 401 en cada
   // intento del administrador.
+  //
+  // Un archivo va como `FormData` y SIN `Content-Type`: el navegador lo pone él mismo con
+  // el separador de partes. Si se fijara a mano, el servidor no podría leer el archivo.
+  const esArchivo = cuerpo instanceof FormData;
   const respuesta = await fetch(`${URL_BASE}${ruta}`, {
-    method: 'POST',
-    headers: cabecerasAutenticadas({ 'Content-Type': 'application/json' }),
-    body: cuerpo === undefined ? undefined : JSON.stringify(cuerpo),
+    method: metodo,
+    headers: cabecerasAutenticadas(esArchivo ? {} : { 'Content-Type': 'application/json' }),
+    body: cuerpo === undefined ? undefined : esArchivo ? cuerpo : JSON.stringify(cuerpo),
   });
 
   if (!respuesta.ok) {
@@ -220,4 +228,111 @@ export function registrarEstudiante(datos: NuevoEstudiante): Promise<Sesion> {
 /** US-002 — Iniciar sesión. */
 export function iniciarSesion(nombreUsuario: string, password: string): Promise<Sesion> {
   return enviar<Sesion>('/auth/login', { nombreUsuario, password });
+}
+
+// ─── EPIC-03 · Perfil del estudiante (US-011) ─────────────────────────────────
+
+/** Los datos editables del perfil. `null` es "todavía no lo llené". */
+export interface DatosPerfil {
+  centroEducativo: string | null;
+  nivel: string | null;
+  promedio: number | null;
+  ingresoFamiliarMensual: number | null;
+  dependientes: number | null;
+  departamento: string | null;
+  municipio: string | null;
+}
+
+/** Contrato de `GET/PUT /estudiantes/perfil`. */
+export interface PerfilEstudiante extends DatosPerfil {
+  completo: boolean;
+  camposFaltantes: string[];
+}
+
+export function obtenerPerfil(): Promise<PerfilEstudiante> {
+  return obtener<PerfilEstudiante>('/estudiantes/perfil');
+}
+
+export function guardarPerfil(datos: DatosPerfil): Promise<PerfilEstudiante> {
+  return enviar<PerfilEstudiante>('/estudiantes/perfil', datos, 'PUT');
+}
+
+export function listarDepartamentos(): Promise<ElementoCatalogo[]> {
+  return obtener<{ codigo: string; nombre: string }[]>('/estudiantes/departamentos').then((lista) =>
+    lista.map((d) => ({ codigo: d.codigo, descripcion: d.nombre })),
+  );
+}
+
+// ─── EPIC-03 · Solicitudes (US-012 a US-016) ──────────────────────────────────
+
+export interface DocumentoDeSolicitud {
+  tipo: string;
+  descripcion: string;
+  cargado: boolean;
+  nombreArchivo: string | null;
+  tamanoBytes: number | null;
+  cargadoEn: string | null;
+}
+
+export interface EntradaHistorial {
+  desde: string | null;
+  hacia: string;
+  motivo: string | null;
+  ocurridoEn: string;
+}
+
+/** Refleja `SolicitudDto` del backend. */
+export interface Solicitud {
+  id: string;
+  numero: string;
+  estado: string;
+  editable: boolean;
+  convocatoria: { id: string; codigo: string; titulo: string; fechaCierre: string | null };
+  documentos: DocumentoDeSolicitud[];
+  documentosFaltantes: string[];
+  historial: EntradaHistorial[];
+  creadaEn: string;
+  enviadaEn: string | null;
+}
+
+/** US-012. */
+export function crearSolicitud(convocatoriaId: string): Promise<Solicitud> {
+  return enviar<Solicitud>('/solicitudes', { convocatoriaId });
+}
+
+/** US-015. */
+export function listarMisSolicitudes(): Promise<Solicitud[]> {
+  return obtener<Solicitud[]>('/solicitudes');
+}
+
+export function obtenerSolicitud(id: string): Promise<Solicitud> {
+  return obtener<Solicitud>(`/solicitudes/${encodeURIComponent(id)}`);
+}
+
+const rutaDocumento = (id: string, tipo: string) =>
+  `/solicitudes/${encodeURIComponent(id)}/documentos/${encodeURIComponent(tipo)}`;
+
+/** US-013. Carga o reemplaza el documento de ese tipo. */
+export function cargarDocumento(id: string, tipo: string, archivo: File): Promise<Solicitud> {
+  const formulario = new FormData();
+  formulario.append('archivo', archivo);
+  return enviar<Solicitud>(rutaDocumento(id, tipo), formulario, 'PUT');
+}
+
+/**
+ * El documento tal como se subió. Se descarga con la cabecera de sesión, por eso no basta un
+ * enlace normal: el navegador no mandaría el token.
+ */
+export async function descargarDocumento(id: string, tipo: string): Promise<Blob> {
+  const ruta = rutaDocumento(id, tipo);
+  const respuesta = await fetch(`${URL_BASE}${ruta}`, { headers: cabecerasAutenticadas() });
+  if (!respuesta.ok) {
+    throw new Error(await mensajeDelError(respuesta, ruta));
+  }
+  return respuesta.blob();
+}
+
+/** US-014. */
+export function enviarSolicitud(id: string): Promise<Solicitud> {
+  return enviar<Solicitud>(`/solicitudes/${encodeURIComponent(id)}/enviar`);
 }

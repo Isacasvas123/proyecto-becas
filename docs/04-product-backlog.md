@@ -37,6 +37,12 @@
 | **US-006** Crear convocatoria | 🟡 **Criterios cumplidos** — falta Staging | Con el patrón **Factory Method**. Adelantada del Sprint 3 |
 | **US-007** Publicar convocatoria | 🟡 **Criterios cumplidos** — falta Staging | El criterio 3 (no editar publicadas) queda como regla del dominio; la edición es US-010 |
 | **US-008** Listado público de convocatorias | 🟡 **Criterios cumplidos** — falta Staging | Público y sin cuenta, con requisitos y documentos. Corregido el 12 Sep |
+| **US-011** Completar perfil académico | 🟡 **Criterios cumplidos** — falta Staging | Se guarda por partes; dice qué falta. Departamento como catálogo cerrado para el reporte por región (US-031). Adelantada del Sprint 4 |
+| **US-012** Crear solicitud | 🟡 **Criterios cumplidos** — falta Staging | Con el patrón **State**. Número `SOL-AAAA-NNNNNN`. Exige perfil completo (precondición de CU-06). Adelantada del Sprint 4 |
+| **US-013** Cargar documentación | 🟡 **Criterios cumplidos** — falta Staging | Formato comprobado **por contenido**, no por nombre. Almacenamiento con **Adapter** (disco local). Adelantada del Sprint 4 |
+| **US-014** Enviar solicitud | 🟡 **Criterios cumplidos** — falta Staging | Un solo mensaje con todo lo que falta. La notificación sale por consola hasta US-022 (correo). Adelantada del Sprint 4 |
+| **US-015** Ver mis solicitudes | 🟡 **Criterios cumplidos** — falta Staging | Otro estudiante recibe 403 (US-003). Adelantada del Sprint 4 |
+| **US-016** Historial de la solicitud | 🟡 **Criterios cumplidos** — falta Staging | Cada transición guarda fecha, autor y motivo; solo se insertan filas. Adelantada del Sprint 4 |
 | Resto | ⬜ Pendiente | Según el calendario de sprints |
 
 > **Nota para la Sprint Review.** Ninguna de estas historias puede marcarse como *Completada*

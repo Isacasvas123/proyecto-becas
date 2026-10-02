@@ -11,6 +11,9 @@
  *   /login         → PaginaLogin         (pública)
  *   /registro      → PaginaRegistro      (pública — US-001)
  *   /gestion       → PaginaGestion       (sesión + rol ADMINISTRADOR — US-006, US-007)
+ *   /perfil        → PaginaPerfil        (sesión + rol ESTUDIANTE — US-011)
+ *   /solicitudes   → PaginaMisSolicitudes (sesión + rol ESTUDIANTE — US-015)
+ *   /solicitudes/:id → PaginaSolicitud   (sesión + rol ESTUDIANTE — US-013, US-014, US-016)
  *   cualquier otra → redirige a /convocatorias
  *
  * EL CAMBIO DEL SPRINT 3
@@ -24,11 +27,15 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { PaginaConvocatorias } from './paginas/PaginaConvocatorias';
 import { PaginaGestion } from './paginas/PaginaGestion';
 import { PaginaLogin } from './paginas/PaginaLogin';
+import { PaginaMisSolicitudes } from './paginas/PaginaMisSolicitudes';
+import { PaginaPerfil } from './paginas/PaginaPerfil';
 import { PaginaRegistro } from './paginas/PaginaRegistro';
+import { PaginaSolicitud } from './paginas/PaginaSolicitud';
 import { ProveedorSesion } from './sesion/ContextoSesion';
 import { RutaProtegida } from './sesion/RutaProtegida';
 
 export const ROL_ADMINISTRADOR = 'ADMINISTRADOR';
+export const ROL_ESTUDIANTE = 'ESTUDIANTE';
 
 export function App(): ReactElement {
   return (
@@ -46,6 +53,30 @@ export function App(): ReactElement {
             element={
               <RutaProtegida rol={ROL_ADMINISTRADOR}>
                 <PaginaGestion />
+              </RutaProtegida>
+            }
+          />
+          <Route
+            path="/perfil"
+            element={
+              <RutaProtegida rol={ROL_ESTUDIANTE}>
+                <PaginaPerfil />
+              </RutaProtegida>
+            }
+          />
+          <Route
+            path="/solicitudes"
+            element={
+              <RutaProtegida rol={ROL_ESTUDIANTE}>
+                <PaginaMisSolicitudes />
+              </RutaProtegida>
+            }
+          />
+          <Route
+            path="/solicitudes/:id"
+            element={
+              <RutaProtegida rol={ROL_ESTUDIANTE}>
+                <PaginaSolicitud />
               </RutaProtegida>
             }
           />
