@@ -50,13 +50,20 @@ services:
         value: '12'
       - key: NODE_ENV
         value: production
-      # Origen exacto del frontend de Staging. El código ya lee esta variable
-      # (apps/api/src/main.ts), así que no hay nada que tocar para habilitarlo.
+      # Origen exacto del frontend de Staging, CON https://. El código ya lee esta variable
+      # (apps/api/src/main.ts).
+      #
+      # POR QUÉ `sync: false` Y NO `fromService`
+      #   La primera versión usaba `fromService … property: host`, y estaba mal: según la
+      #   documentación de Render, `host` es "el hostname en la red PRIVADA", sin esquema. El
+      #   navegador habría rechazado todas las peticiones por CORS y la aplicación no habría
+      #   funcionado aunque el despliegue saliera en verde.
+      #
+      #   La URL pública no se conoce hasta crear el servicio (Render puede añadir un sufijo si
+      #   el nombre está tomado), así que `sync: false` hace que Render la pida al crear el
+      #   Blueprint. Valor esperado: https://becas-web-staging.onrender.com
       - key: CORS_ORIGEN
-        fromService:
-          name: becas-web-staging
-          type: web
-          property: host
+        sync: false
 
   # ── Frontend ───────────────────────────────────────────────────────────────
   - type: web
@@ -67,11 +74,12 @@ services:
     buildCommand: npm ci && npm run build --workspace apps/web
     staticPublishPath: ./apps/web/dist
     envVars:
+      # URL pública de la API, CON https://. Se incrusta en el JavaScript al compilar: si cambia,
+      # hay que volver a desplegar el frontend. Mismo motivo que CORS_ORIGEN para `sync: false`,
+      # y además `fromService` no aplica a sitios estáticos.
+      # Valor esperado: https://becas-api-staging.onrender.com
       - key: VITE_API_URL
-        fromService:
-          name: becas-api-staging
-          type: web
-          property: host
+        sync: false
     routes:
       # La aplicación usa enrutador del lado del cliente: cualquier ruta desconocida debe
       # devolver el index.html para que el enrutador la resuelva, en vez de un 404 del
