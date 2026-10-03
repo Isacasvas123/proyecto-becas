@@ -5,6 +5,7 @@
  * el dominio declara QUÉ necesita, infrastructure decide CÓMO.
  */
 import { Usuario } from '../entities/usuario.entity';
+import { RolUsuario } from '../enums/rol-usuario.enum';
 import { Cui } from '../value-objects/cui.vo';
 import { NombreUsuario } from '../value-objects/nombre-usuario.vo';
 
@@ -53,6 +54,12 @@ export interface UsuarioRepositorio {
    * para dar un buen mensaje.
    */
   crear(usuario: Usuario): Promise<void>;
+
+  /** US-017: las cuentas de un rol, ordenadas por nombre. Para elegir integrantes de un comité. */
+  listarPorRol(rol: RolUsuario): Promise<Usuario[]>;
+
+  /** Varias cuentas por id. Los ids que no existan simplemente no aparecen. */
+  buscarPorIds(ids: readonly string[]): Promise<Usuario[]>;
 }
 
 export interface CamposDuplicados {

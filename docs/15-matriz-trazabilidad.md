@@ -43,8 +43,8 @@ Los nueve objetivos específicos del proyecto, y dónde se resuelve cada uno.
 | 2 | Registrar estudiantes | EPIC-01, EPIC-03 | US-001, US-011 | `usuarios`, `estudiantes` | 2, 4 | 🟢 Registro (US-001) y perfil académico (US-011) · falta Staging |
 | 3 | Gestionar solicitudes | EPIC-03 | US-012, US-014 a US-016 | `solicitudes` | 4 | 🟢 Crear, enviar, listar e historial · falta Staging |
 | 4 | Cargar documentación | EPIC-03 | US-013 | `solicitudes` | 4 | 🟢 PDF/JPG/PNG hasta 5 MB, validados por contenido · falta Staging |
-| 5 | Administrar evaluaciones | EPIC-04 | US-019, US-021 | `evaluaciones` | 5 | 🔴 Pendiente |
-| 6 | Gestionar comités evaluadores | EPIC-04 | US-017, US-018, US-020 | `evaluaciones` | 5 | 🔴 Pendiente |
+| 5 | Administrar evaluaciones | EPIC-04 | US-019, US-021 | `evaluaciones` | 5 | 🟢 Dictamen con puntaje calculado y consolidado · fórmulas por confirmar con el PO · falta Staging |
+| 6 | Gestionar comités evaluadores | EPIC-04 | US-017, US-018, US-020 | `evaluaciones` | 5 | 🟢 Comités, cuentas de evaluador y asignación · falta quitar integrantes y Staging |
 | 7 | Aprobar o rechazar solicitudes | EPIC-05 | US-023, US-024, US-026 | `solicitudes` | 6 | 🔴 Pendiente |
 | 8 | Consultar el estado de una beca | EPIC-05 | US-025, US-027 | `solicitudes` | 6 | 🔴 Pendiente |
 | 9 | Generar reportes básicos | EPIC-06 | US-028 a US-031 | `reportes` | 7 | 🔴 Pendiente |
@@ -129,8 +129,9 @@ Si no se puede nombrar el problema concreto y la historia que lo origina, el pat
 | **Alternativa descartada** | Fórmula configurable en base de datos: no es testeable unitariamente, y un cálculo que asigna fondos públicos debe estar versionado y auditado por code review |
 | **Ubicación** | `modules/evaluaciones/domain/strategies/` |
 | **Prueba que lo verifica** | Cada fórmula con sus casos límite, y que `CriterioMixto` componga las otras dos en vez de duplicarlas |
+| **Ubicación real** | `criterio-merito-academico.ts`, `criterio-necesidad-socioeconomica.ts`, `criterio-mixto.ts` y `criterio-por-tipo-beca.ts` (qué tipo usa cuál) |
 | **Sprint** | 5 · Responsable: Stuard |
-| **Estado** | 🔴 Pendiente |
+| **Estado** | 🟢 **Implementado y probado** (16 Sep) — `criterios.spec.ts`, incluida la prueba de que el mixto compone y no copia |
 
 ### Resumen del cumplimiento
 
@@ -138,11 +139,11 @@ Si no se puede nombrar el problema concreto y la historia que lo origina, el pat
 |---|---|---|---|
 | Creacionales | 2 | 2 | **1** (Factory Method) |
 | Estructurales | 2 | 2 | **1** (Adapter) |
-| De comportamiento | 2 | 2 | **1** (State) |
+| De comportamiento | 2 | 2 | **2** (State, Strategy) ✅ |
 
 > **Cómo presentar esto sin adornarlo:** los seis están definidos con su problema, su alternativa
-> descartada y su ubicación prevista; **tres están implementados y probados**, uno de cada tipo.
-> Los otros tres entran en el sprint donde aparece la historia que los origina. Implementarlos antes sería
+> descartada y su ubicación prevista; **cuatro están implementados y probados** (los dos de
+> comportamiento completos). Facade y Builder entran con US-023 y US-028. Implementarlos antes sería
 > escribir código sin problema que resolver, que es justo lo que el enunciado descarta.
 
 ---

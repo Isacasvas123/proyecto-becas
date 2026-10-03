@@ -618,9 +618,9 @@ constructor telescópico de ocho parámetros opcionales.
 | CU-06 | Gestionar solicitudes | US-012 | State | 🟢 Criterios cumplidos · falta Staging |
 | CU-07 | Cargar documentación | US-013 | Adapter | 🟢 Criterios cumplidos, incluido el flujo 3a · falta Staging |
 | CU-08 | Gestionar solicitudes | US-014 | State | 🟢 Criterios cumplidos · falta Staging |
-| CU-10 | Administrar evaluaciones | US-019 | Strategy | 🔴 Sprint 5 |
+| CU-10 | Administrar evaluaciones | US-019 | Strategy | 🟢 Criterios cumplidos, incluido el 403 de 1a · falta Staging |
 | CU-12 | Administrar convocatorias | US-006, 007, 009, 010 | Factory Method | 🟡 Crear y publicar hechos · faltan cerrar (US-009) y editar (US-010) |
-| CU-13 | Gestionar comités | US-017 | — | 🔴 Sprint 5 |
+| CU-13 | Gestionar comités | US-017 | — | 🟡 Crear, agregar integrantes, 3a, 4a y 6a · falta quitar integrantes (5a) |
 | CU-15 | Aprobar o rechazar | US-023 | Facade | 🔴 Sprint 6 |
 | CU-16 | Aprobar o rechazar | US-024 | — | 🔴 Sprint 6 |
 | CU-17 | Generar reportes | US-028 a 031 | Builder | 🔴 Sprint 7 |

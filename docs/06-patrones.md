@@ -20,7 +20,7 @@
 | Estructural | **Adapter** | `modules/usuarios/infrastructure/adapters/` | **1** | ✅ **Implementado** |
 | Estructural | Facade | `modules/solicitudes/application/facades/` | 6 | Pendiente |
 | Comportamiento | **State** | `modules/solicitudes/domain/estados/` | **4** | ✅ **Implementado** (adelantado al 16 Sep) |
-| Comportamiento | Strategy | `modules/evaluaciones/domain/strategies/` | 5 | Pendiente |
+| Comportamiento | **Strategy** | `modules/evaluaciones/domain/strategies/` | **5** | ✅ **Implementado** (adelantado al 16 Sep) |
 | *Extra* | Observer | `shared/patterns/observer/` | 5 (opcional) | Pendiente |
 | *Extra* | Chain of Responsibility | `modules/solicitudes/domain/validaciones/` | 6 (opcional) | Pendiente |
 
@@ -485,7 +485,11 @@ los **casos de uso** que los disparan llegan con sus historias (US-018, US-023, 
 
 ## 6. Strategy — `CriterioEvaluacionStrategy`
 
+**✅ IMPLEMENTADO EL 16 DE SEPTIEMBRE** (previsto para el Sprint 5; llegó con US-019).
+
 **Ubicación:** `modules/evaluaciones/domain/strategies/`
+**Pruebas:** `criterios.spec.ts` — cada fórmula en sus extremos, y que el mixto use lo que devuelven
+los otros dos criterios en vez de repetir sus fórmulas.
 
 ### ¿Qué problema resuelve?
 
@@ -525,41 +529,59 @@ que el código cliente cambie.
 - **Elimina los condicionales** del servicio de evaluación.
 - Permite **comparar** el resultado de una misma solicitud bajo distintos criterios.
 
-### Esquema
+### Esquema — tal como quedó implementado
 
 ```ts
 export interface CriterioEvaluacionStrategy {
   readonly nombre: string;
-  calcular(solicitud: Solicitud): Puntaje;   // 0..100
-  desglose(solicitud: Solicitud): DesglosePuntaje;  // para justificar el dictamen
+  calcular(datos: DatosEvaluables): ResultadoCriterio;  // { criterio, puntaje 0..100, desglose }
 }
 
 export class CriterioMeritoAcademico implements CriterioEvaluacionStrategy {
   readonly nombre = 'Mérito académico';
-  calcular(s: Solicitud): Puntaje {
-    return Puntaje.de(
-      s.estudiante.promedio * 0.7 + s.estudiante.reconocimientos.length * 5,
-    );
-  }
-  desglose(s: Solicitud) { /* ... */ }
+  calcular(d: DatosEvaluables) { /* puntaje = promedio */ }
 }
 
-export class CriterioNecesidadSocioeconomica implements CriterioEvaluacionStrategy { /* ... */ }
+export class CriterioNecesidadSocioeconomica implements CriterioEvaluacionStrategy {
+  readonly nombre = 'Necesidad socioeconómica';
+  calcular(d: DatosEvaluables) { /* ingreso ÷ dependientes: 100 si ≤ Q500, 0 si ≥ Q5,000, lineal */ }
+}
 
 export class CriterioMixto implements CriterioEvaluacionStrategy {
   constructor(
     private readonly academico: CriterioEvaluacionStrategy,
     private readonly social: CriterioEvaluacionStrategy,
-    private readonly pesoAcademico = 0.5,
+    private readonly pesoAcademico: number,
   ) {}
-  calcular(s: Solicitud): Puntaje {
-    return Puntaje.de(
-      this.academico.calcular(s).valor * this.pesoAcademico +
-      this.social.calcular(s).valor * (1 - this.pesoAcademico),
-    );
+  calcular(d: DatosEvaluables) {
+    const a = this.academico.calcular(d);
+    const s = this.social.calcular(d);
+    return { puntaje: a.puntaje × peso + s.puntaje × (1 − peso), desglose: [...a, ...s] };
   }
 }
+
+// El único lugar que relaciona tipos con criterios:
+const CRITERIOS = {
+  NIVEL_MEDIO: merito,
+  UNIVERSITARIA: new CriterioMixto(merito, necesidad, 0.6),
+  POSGRADO: merito,
+};
+
+// En el caso de uso, sin un solo if sobre el tipo de beca:
+criterioPara(convocatoria.tipo).calcular(perfil);
 ```
+
+**Tres diferencias con la versión 1.0 de este esquema, y por qué.**
+
+1. **Recibe los datos, no la solicitud.** `DatosEvaluables` tiene solo promedio, ingreso y
+   dependientes. El criterio no necesita la solicitud entera, y así se prueba con tres números.
+2. **`calcular` devuelve el desglose junto con el puntaje**, en vez de dos métodos. Se guarda con
+   el dictamen: si el perfil o la fórmula cambian después, el dictamen sigue explicando su puntaje.
+3. **No hay "reconocimientos".** El perfil (US-011) no pide ese dato, y no se inventó un campo para
+   una fórmula.
+
+> ⚠️ **Las fórmulas y los umbrales son una propuesta del equipo** (16 Sep) y están **pendientes de
+> confirmar con el Product Owner**. Cambiarlos es editar una clase y sus pruebas; nada más.
 
 > Nótese que `CriterioMixto` **compone** otras dos estrategias en lugar de duplicar sus fórmulas:
 > composición sobre herencia.

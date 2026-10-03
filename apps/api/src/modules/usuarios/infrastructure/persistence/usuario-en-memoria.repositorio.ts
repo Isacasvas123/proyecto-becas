@@ -14,6 +14,7 @@
  */
 import { RecursoDuplicadoError } from '../../../../shared/exceptions/errores-dominio';
 import { normalizarCorreo, Usuario } from '../../domain/entities/usuario.entity';
+import { RolUsuario } from '../../domain/enums/rol-usuario.enum';
 import { Cui } from '../../domain/value-objects/cui.vo';
 import { CamposDuplicados, UsuarioRepositorio } from '../../domain/ports/usuario.repositorio';
 import { NombreUsuario } from '../../domain/value-objects/nombre-usuario.vo';
@@ -64,5 +65,17 @@ export class UsuarioEnMemoriaRepositorio implements UsuarioRepositorio {
     }
     this.usuarios.push(usuario);
     return Promise.resolve();
+  }
+
+  listarPorRol(rol: RolUsuario): Promise<Usuario[]> {
+    return Promise.resolve(
+      this.usuarios
+        .filter((u) => u.rol === rol)
+        .sort((a, b) => (a.nombreCompleto ?? '').localeCompare(b.nombreCompleto ?? '')),
+    );
+  }
+
+  buscarPorIds(ids: readonly string[]): Promise<Usuario[]> {
+    return Promise.resolve(this.usuarios.filter((u) => ids.includes(u.id)));
   }
 }

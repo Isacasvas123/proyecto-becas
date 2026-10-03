@@ -24,6 +24,7 @@ import {
   SolicitudRepositorio,
 } from '../../domain/ports/solicitud.repositorio';
 import { ArchivoDocumento, DatosArchivo } from '../../domain/value-objects/archivo-documento.vo';
+import { Solicitud } from '../../domain/entities/solicitud.entity';
 import { SolicitudDto } from '../dto/solicitud.dto';
 import { ExpedienteService } from './expediente.service';
 
@@ -84,14 +85,29 @@ export class CargarDocumentoService {
   /** Descarga del propio documento, para que el estudiante verifique lo que subió. */
   async descargar(estudianteId: string, solicitudId: string, tipo: string) {
     const solicitud = await this.expediente.cargarPropia(estudianteId, solicitudId);
-    const documento = solicitud.documento(tipo);
-    if (documento === null) {
-      return null;
-    }
-    return {
-      contenido: await this.almacenamiento.obtener(documento.referencia),
-      nombreArchivo: documento.nombreArchivo,
-      tipoContenido: documento.tipoContenido,
-    };
+    return leerDocumento(this.almacenamiento, solicitud, tipo);
   }
+}
+
+export interface ArchivoDescargable {
+  readonly contenido: Buffer;
+  readonly nombreArchivo: string;
+  readonly tipoContenido: string;
+}
+
+/** Lee un documento cargado. Quién puede pedirlo lo decide quien llama. */
+export async function leerDocumento(
+  almacenamiento: AlmacenamientoDocumentos,
+  solicitud: Solicitud,
+  tipo: string,
+): Promise<ArchivoDescargable | null> {
+  const documento = solicitud.documento(tipo);
+  if (documento === null) {
+    return null;
+  }
+  return {
+    contenido: await almacenamiento.obtener(documento.referencia),
+    nombreArchivo: documento.nombreArchivo,
+    tipoContenido: documento.tipoContenido,
+  };
 }

@@ -1285,6 +1285,7 @@ a.boton {
 
   .navegacion {
     order: 3;
+    flex-wrap: wrap;
     width: 100%;
     margin-left: 0;
   }
@@ -1347,7 +1348,7 @@ a.boton {
    ESTUDIANTE — perfil, solicitudes y expediente (EPIC-03)
    ========================================================================== */
 
-.estudiante {
+.privada {
   display: flex;
   flex-direction: column;
   gap: var(--sp-4);
@@ -1355,7 +1356,7 @@ a.boton {
   margin: 0 auto;
 }
 
-.estudiante .barra-resultados {
+.privada .barra-resultados {
   margin-bottom: 0;
 }
 
@@ -1367,7 +1368,7 @@ a.boton {
   text-align: left;
 }
 
-.estudiante .aviso {
+.privada .aviso {
   text-align: left;
 }
 
@@ -1655,5 +1656,133 @@ a.boton {
 
   .documentos li .boton {
     width: 100%;
+  }
+}
+
+/* ============================================================================
+   EVALUACIÓN Y COMITÉS (EPIC-04)
+   ========================================================================== */
+
+.reparto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--linea-2);
+  font-size: var(--txt-sm);
+}
+
+.reparto label {
+  font-weight: 700;
+}
+
+.reparto select,
+.documentos select {
+  padding: var(--sp-2);
+  font: inherit;
+  font-size: var(--txt-sm);
+  background: var(--papel);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+}
+
+.documentos select {
+  max-width: 14rem;
+}
+
+.confirmar-linea {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-2);
+  background: var(--ambar-bg);
+  border-radius: var(--radio);
+}
+
+.pista-fila {
+  font-size: var(--txt-xs);
+  color: var(--tinta-3);
+}
+
+/* En el consolidado: lo que cabría en los cupos. Borde además de color. */
+.tabla tr.en-cupo td {
+  background: var(--verde-bg);
+}
+
+.tabla tr.en-cupo td:first-child {
+  box-shadow: inset 3px 0 0 var(--verde);
+}
+
+.ficha {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--sp-2) var(--sp-4);
+  margin: 0;
+  padding: var(--sp-4);
+  font-size: var(--txt-sm);
+}
+
+.ficha dt {
+  color: var(--tinta-3);
+}
+
+.ficha dd {
+  margin: 0;
+  font-weight: 600;
+  color: var(--tinta);
+}
+
+.envio-cuerpo .puntaje-grande {
+  font-size: var(--txt-2xl);
+  font-weight: 800;
+  color: var(--gob-800);
+  line-height: 1;
+}
+
+.puntaje-grande span {
+  font-size: var(--txt-md);
+  font-weight: 600;
+  color: var(--tinta-3);
+}
+
+.desglose {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--linea-2);
+}
+
+.desglose li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--linea-2);
+  font-size: var(--txt-sm);
+}
+
+.desglose li > span:first-child {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.desglose .aporte {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.observacion {
+  white-space: pre-wrap;
+}
+
+@media (max-width: 640px) {
+  .documentos select {
+    max-width: none;
+    flex: 1;
   }
 }

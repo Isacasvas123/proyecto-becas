@@ -195,8 +195,8 @@ Sprints semanales de **jueves a miércoles**. Ceremonias todos los jueves.
 | 4.2 | Patrón State (ciclo de vida de la solicitud) | ~~Mié 30 Sep~~ → **entregado Mié 16 Sep** | Stuard | Comportamiento 1 · los 30 pares estado × acción probados |
 | 4.3 | Carga de documentación + patrón Adapter | ~~Mié 30 Sep~~ → **entregado Mié 16 Sep** | Fernando | Estructural 1 · almacenamiento local; el de nube queda para cuando haya proveedor |
 | 5 | **Sprint 5 — Evaluación** | Mié 7 Oct 2026 | Equipo | |
-| 5.1 | Comités evaluadores y asignación de solicitudes | Mié 7 Oct | Isaac, Fernando | EPIC-04 |
-| 5.2 | Patrón Strategy (criterios de puntuación) | Mié 7 Oct | Stuard | Comportamiento 2 |
+| 5.1 | Comités evaluadores y asignación de solicitudes | ~~Mié 7 Oct~~ → **entregado Mié 16 Sep** | Isaac, Fernando | EPIC-04 (US-017 a US-021) · falta quitar integrantes |
+| 5.2 | Patrón Strategy (criterios de puntuación) | ~~Mié 7 Oct~~ → **entregado Mié 16 Sep** | Stuard | Comportamiento 2 · **fórmulas por confirmar con el PO** |
 | 5.3 | Notificaciones de cambio de estado | Mié 7 Oct | Ivan | Observer (opcional) |
 | 6 | **Sprint 6 — Resolución y consulta** | Mié 14 Oct 2026 | Equipo | |
 | 6.1 | Aprobación, rechazo y adjudicación de becas | Mié 14 Oct | Isaac, Stuard | EPIC-05 |

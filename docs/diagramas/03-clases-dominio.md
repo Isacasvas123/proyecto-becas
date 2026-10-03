@@ -338,8 +338,8 @@ válido. Además el compilador impide confundirlo con cualquier otro texto.
 | `Estudiante` | estudiantes | 🟢 Implementada y probada (16 Sep). El departamento es un catálogo de 22 valores, no texto |
 | `Solicitud` + jerarquía de estados | solicitudes | 🟢 Implementada y probada (16 Sep) — ver §2 |
 | `Documento` | solicitudes | 🟢 Implementado como `DocumentoCargado` dentro de `Solicitud` (composición), con `ArchivoDocumento` como objeto de valor |
-| `Evaluacion` + estrategias | evaluaciones | 🔴 Sprint 5 |
-| `Comite` | evaluaciones | 🔴 Sprint 5 |
+| `Evaluacion` + estrategias | evaluaciones | 🟢 Implementada como `Dictamen` (16 Sep): inmutable, con el desglose del criterio. Estrategias en §3 |
+| `Comite` | evaluaciones | 🟢 Implementado (16 Sep) con el reparto equitativo. Las asignaciones son `Asignacion` |
 | `Beca` | solicitudes | 🔴 Sprint 6 |
 | `HistorialEstado` | solicitudes | 🟢 Implementado como `EntradaHistorial` (16 Sep): solo crece |
 
@@ -679,8 +679,8 @@ válido. Además el compilador impide confundirlo con cualquier otro texto.
 | `Estudiante` | estudiantes | 🔴 Sprint 4 |
 | `Solicitud` + jerarquía de estados | solicitudes | 🔴 Sprint 4 |
 | `Documento` | solicitudes | 🔴 Sprint 4 |
-| `Evaluacion` + estrategias | evaluaciones | 🔴 Sprint 5 |
-| `Comite` | evaluaciones | 🔴 Sprint 5 |
+| `Evaluacion` + estrategias | evaluaciones | 🟢 Implementada como `Dictamen` (16 Sep): inmutable, con el desglose del criterio. Estrategias en §3 |
+| `Comite` | evaluaciones | 🟢 Implementado (16 Sep) con el reparto equitativo. Las asignaciones son `Asignacion` |
 | `Beca` | solicitudes | 🔴 Sprint 6 |
 | `HistorialEstado` | solicitudes | 🔴 Sprint 4 |
 
