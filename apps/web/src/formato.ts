@@ -121,7 +121,7 @@ export function formatearTamano(bytes: number): string {
  * Nombre de cada departamento. El servidor guarda el código (catálogo cerrado, ver US-031); la
  * misma lista vive en el backend y la expone `GET /estudiantes/departamentos` para el formulario.
  */
-const NOMBRE_DEPARTAMENTO: Record<string, string> = {
+export const NOMBRE_DEPARTAMENTO: Record<string, string> = {
   ALTA_VERAPAZ: 'Alta Verapaz',
   BAJA_VERAPAZ: 'Baja Verapaz',
   CHIMALTENANGO: 'Chimaltenango',

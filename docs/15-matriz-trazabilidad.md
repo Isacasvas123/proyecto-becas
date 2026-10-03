@@ -47,7 +47,7 @@ Los nueve objetivos específicos del proyecto, y dónde se resuelve cada uno.
 | 6 | Gestionar comités evaluadores | EPIC-04 | US-017, US-018, US-020 | `evaluaciones` | 5 | 🟢 Comités, cuentas de evaluador y asignación · falta quitar integrantes y Staging |
 | 7 | Aprobar o rechazar solicitudes | EPIC-05 | US-023, US-024, US-026 | `resoluciones` | 6 | 🟡 Aprobar, rechazar y adjudicar · falta el acta (US-026) y Staging |
 | 8 | Consultar el estado de una beca | EPIC-05 | US-025, US-027 | `resoluciones` | 6 | 🟡 Consulta pública hecha · falta la publicación de resultados (US-027) y Staging |
-| 9 | Generar reportes básicos | EPIC-06 | US-028 a US-031 | `reportes` | 7 | 🔴 Pendiente |
+| 9 | Generar reportes básicos | EPIC-06 | US-028 a US-031 | `reportes` | 7 | 🟢 Reporte con filtros, panel, CSV/PDF y regiones · falta Staging |
 
 **Requisitos transversales**, que no son objetivos funcionales pero el enunciado evalúa:
 
@@ -84,9 +84,9 @@ Si no se puede nombrar el problema concreto y la historia que lo origina, el pat
 | **Origen** | US-028, y US-030 para el formato de salida |
 | **Alternativa descartada** | Objeto de configuración plano: no valida combinaciones incoherentes ni impide construir un reporte a medias |
 | **Ubicación** | `modules/reportes/application/builders/reporte.builder.ts` |
-| **Prueba que lo verifica** | Que `build()` rechace combinaciones inválidas de filtros |
+| **Prueba que lo verifica** | Que `build()` rechace combinaciones inválidas de filtros — `reporte.builder.spec.ts` (fechas al revés, agrupar por lo mismo que se filtró, valores fuera de catálogo, inmutabilidad de lo construido) |
 | **Sprint** | 7 · Responsable: Stuard |
-| **Estado** | 🔴 Pendiente |
+| **Estado** | 🟢 **Implementado y probado** (16 Sep) |
 
 ### Estructurales
 
@@ -137,13 +137,13 @@ Si no se puede nombrar el problema concreto y la historia que lo origina, el pat
 
 | Categoría | Exigido | Definidos | Implementados |
 |---|---|---|---|
-| Creacionales | 2 | 2 | **1** (Factory Method) |
+| Creacionales | 2 | 2 | **2** (Factory Method, Builder) ✅ |
 | Estructurales | 2 | 2 | **2** (Adapter, Facade) ✅ |
 | De comportamiento | 2 | 2 | **2** (State, Strategy) ✅ |
 
 > **Cómo presentar esto sin adornarlo:** los seis están definidos con su problema, su alternativa
-> descartada y su ubicación prevista; **cinco están implementados y probados**: los dos
-> estructurales y los dos de comportamiento completos. Solo falta Builder, que entra con US-028. Implementarlos antes sería
+> descartada y su ubicación prevista; **los seis están implementados y probados**, cada uno en la
+> historia donde apareció el problema que resuelve. Implementarlos antes sería
 > escribir código sin problema que resolver, que es justo lo que el enunciado descarta.
 
 ---

@@ -1280,7 +1280,7 @@ a.boton {
 @media (max-width: 640px) {
   .rejilla,
   .opciones-dobles {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .navegacion {
@@ -1847,4 +1847,187 @@ a.boton {
   display: flex;
   flex-direction: column;
   gap: var(--sp-4);
+}
+
+/* ============================================================================
+   REPORTES (EPIC-06)
+   ========================================================================== */
+
+.pestanas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.pestanas .faceta {
+  width: auto;
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--papel);
+  border: 1px solid var(--linea);
+}
+
+.pestanas .faceta[aria-pressed='true'] {
+  color: var(--papel);
+  background: var(--gob-700);
+  border-color: var(--gob-700);
+}
+
+.filtros-reporte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-4);
+}
+
+.rejilla.tres {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.tarjetas-indicadores {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--sp-3);
+}
+
+.indicador {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  padding: var(--sp-4);
+}
+
+.indicador .rotulo {
+  font-size: var(--txt-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tinta-3);
+}
+
+.indicador .cifra {
+  font-size: var(--txt-2xl);
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--gob-800);
+  font-variant-numeric: tabular-nums;
+}
+
+.indicador .pista {
+  font-size: var(--txt-xs);
+  color: var(--tinta-3);
+}
+
+.encabezado-reporte {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+}
+
+.filtros-aplicados {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--txt-sm);
+  color: var(--tinta-2);
+}
+
+.exportar {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.grupos {
+  padding: 0 var(--sp-4) var(--sp-4);
+}
+
+.grupos h3 {
+  margin: 0 0 var(--sp-2);
+  font-size: var(--txt-sm);
+}
+
+.grupos ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.grupos li {
+  display: grid;
+  grid-template-columns: minmax(8rem, 16rem) 1fr 3rem;
+  align-items: center;
+  gap: var(--sp-3);
+  font-size: var(--txt-sm);
+}
+
+.grupos .total {
+  font-weight: 700;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.barra {
+  display: block;
+  height: 0.6rem;
+  background: var(--linea-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.barra > span {
+  display: block;
+  height: 100%;
+  background: var(--gob-500);
+  border-radius: 999px;
+}
+
+.celda-barra {
+  width: 30%;
+  min-width: 6rem;
+}
+
+@media (max-width: 860px) {
+  .tarjetas-indicadores {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rejilla.tres {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .tarjetas-indicadores,
+  .rejilla.tres {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .grupos li {
+    grid-template-columns: 1fr 3rem;
+  }
+
+  .grupos .barra {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
+/* Un número de solicitud o una fecha partidos en dos líneas no se leen: la tabla se desplaza. */
+.tabla.reporte th,
+.tabla.reporte td {
+  white-space: nowrap;
+}
+
+/* Una opción larga no debe ensanchar el selector más allá de su columna. */
+.campo select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 }
