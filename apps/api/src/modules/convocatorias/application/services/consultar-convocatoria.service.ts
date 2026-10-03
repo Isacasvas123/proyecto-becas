@@ -32,12 +32,33 @@ export interface ConvocatoriaParaPostulacionDto {
   readonly documentosExigidos: readonly ElementoCatalogoDto[];
 }
 
+/** Para reportes (EPIC-06): lo mínimo de cada convocatoria. */
+export interface ConvocatoriaResumidaDto {
+  readonly id: string;
+  readonly codigo: string;
+  readonly titulo: string;
+  readonly tipo: string;
+  readonly estado: string;
+  readonly cupos: number;
+}
+
 @Injectable()
 export class ConsultarConvocatoriaService {
   constructor(
     @Inject(CONVOCATORIA_REPOSITORIO)
     private readonly repositorio: ConvocatoriaRepositorio,
   ) {}
+
+  async resumenes(): Promise<ConvocatoriaResumidaDto[]> {
+    return (await this.repositorio.buscarTodas()).map((c) => ({
+      id: c.id,
+      codigo: c.codigo,
+      titulo: c.titulo,
+      tipo: c.tipo,
+      estado: c.estado,
+      cupos: c.cupos,
+    }));
+  }
 
   async paraPostulacion(
     id: string,

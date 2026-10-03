@@ -51,6 +51,10 @@
 | **US-023** Aprobar o rechazar | 🟡 **Criterios cumplidos** — falta Staging | Con el patrón **Facade**. El cupo se comprueba de forma atómica (verificado con tres aprobaciones simultáneas por el último cupo). Sin acta: es US-026. Adelantada del Sprint 6 |
 | **US-024** Adjudicar beca | 🟡 **Implementada** — falta Staging | Beca con código `BECA-AAAA-NNNNNN`, guardada en la misma transacción que el cambio de estado. El cupo se reserva al aprobar. Adelantada del Sprint 6 |
 | **US-025** Consulta pública | 🟡 **Criterios cumplidos** — falta Staging | Número + CUI por POST (el CUI no va en la URL), solo estado y fecha, mismo mensaje para cualquier fallo y límite de 10 consultas por minuto por dirección. Adelantada del Sprint 6 |
+| **US-028** Reporte de solicitudes | 🟡 **Implementada** — falta Staging | Con el patrón **Builder**: filtros por convocatoria, estado, nivel, departamento y fechas de envío; agrupación y orden. Sin datos personales. Adelantada del Sprint 7 |
+| **US-029** Panel de estadísticas | 🟡 **Implementada** — falta Staging | Recibidas, tasa de aprobación (sobre las resueltas), cupos disponibles y días promedio de resolución, global y por convocatoria. Adelantada del Sprint 7 |
+| **US-030** Exportar reporte | 🟡 **Implementada** — falta Staging | CSV (UTF-8 con BOM, protegido contra fórmulas) y PDF propio sin dependencias nuevas. Adelantada del Sprint 7 |
+| **US-031** Becas por región | 🟡 **Implementada** — falta Staging | Los 22 departamentos, también los que no tienen becas. Adelantada del Sprint 7 |
 | Resto | ⬜ Pendiente | Según el calendario de sprints |
 
 > **Nota para la Sprint Review.** Ninguna de estas historias puede marcarse como *Completada*

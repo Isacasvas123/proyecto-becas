@@ -572,6 +572,90 @@ export function consultarEstadoPublico(numero: string, cui: string): Promise<Est
   return enviar<EstadoPublico>('/consulta-publica', { numero, cui });
 }
 
+// ─── EPIC-06 · Reportes y estadísticas (US-028 a US-031) ──────────────────────
+
+export type ValorReporte = string | number | null;
+
+/** Refleja `Reporte` del backend: la misma forma para todos los reportes. */
+export interface Reporte {
+  titulo: string;
+  nombre: string;
+  generadoEn: string;
+  filtros: { etiqueta: string; valor: string }[];
+  columnas: { clave: string; titulo: string; numerica?: boolean }[];
+  filas: Record<string, ValorReporte>[];
+  agrupacion: string | null;
+  grupos: { clave: string; etiqueta: string; total: number }[] | null;
+  total: number;
+}
+
+export interface FiltrosReporte {
+  convocatoriaId?: string;
+  estado?: string[];
+  nivel?: string;
+  departamento?: string;
+  desde?: string;
+  hasta?: string;
+  agruparPor?: string;
+  ordenarPor?: string;
+}
+
+export interface Indicadores {
+  recibidas: number;
+  pendientesDeAsignar: number;
+  enEvaluacion: number;
+  aprobadas: number;
+  rechazadas: number;
+  adjudicadas: number;
+  tasaAprobacion: number | null;
+  cuposTotales: number;
+  cuposDisponibles: number;
+  diasPromedioResolucion: number | null;
+}
+
+export interface Panel extends Indicadores {
+  generadoEn: string;
+  convocatorias: (Indicadores & { id: string; codigo: string; titulo: string; estado: string })[];
+}
+
+/** Solo los filtros con valor; los vacíos no viajan. */
+function consulta(parametros: Record<string, string | string[] | undefined>): string {
+  const q = new URLSearchParams();
+  for (const [clave, valor] of Object.entries(parametros)) {
+    if (Array.isArray(valor)) {
+      if (valor.length > 0) q.set(clave, valor.join(','));
+    } else if (valor) {
+      q.set(clave, valor);
+    }
+  }
+  const texto = q.toString();
+  return texto === '' ? '' : `?${texto}`;
+}
+
+/** US-028. */
+export function obtenerReporteSolicitudes(filtros: FiltrosReporte): Promise<Reporte> {
+  return obtener<Reporte>(`/reportes/solicitudes${consulta({ ...filtros })}`);
+}
+
+/** US-029. */
+export function obtenerPanel(convocatoriaId?: string): Promise<Panel> {
+  return obtener<Panel>(`/reportes/panel${consulta({ convocatoriaId })}`);
+}
+
+/** US-031. */
+export function obtenerReporteRegiones(convocatoriaId?: string): Promise<Reporte> {
+  return obtener<Reporte>(`/reportes/regiones${consulta({ convocatoriaId })}`);
+}
+
+/** US-030. Devuelve el archivo; el nombre lo decide quien llama. */
+export function exportarReporte(
+  tipo: 'solicitudes' | 'regiones',
+  filtros: FiltrosReporte,
+  formato: 'CSV' | 'PDF',
+): Promise<Blob> {
+  return descargarArchivo(`/reportes/${tipo}${consulta({ ...filtros, formato })}`);
+}
+
 /** US-019. El puntaje no se manda: lo calcula el servidor con el criterio del tipo de beca. */
 export function emitirDictamen(
   id: string,
