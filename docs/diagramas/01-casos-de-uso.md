@@ -612,7 +612,7 @@ constructor telescópico de ocho parámetros opcionales.
 | Caso de uso | Objetivo del enunciado | Historias | Patrón | Estado |
 |---|---|---|---|---|
 | CU-01 | Administrar convocatorias | US-008 | — | 🟢 Criterios cumplidos · falta Staging |
-| CU-02 | Consultar estado de una beca | US-025 | — | 🔴 Sprint 6 |
+| CU-02 | Consultar estado de una beca | US-025 | — | 🟢 Criterios cumplidos · falta Staging |
 | CU-03 | Registrar estudiantes | US-001 | — | 🟢 Criterios cumplidos · falta Staging |
 | CU-04 | — (transversal) | US-002 | Adapter | 🟢 **Implementado** |
 | CU-06 | Gestionar solicitudes | US-012 | State | 🟢 Criterios cumplidos · falta Staging |
@@ -621,6 +621,6 @@ constructor telescópico de ocho parámetros opcionales.
 | CU-10 | Administrar evaluaciones | US-019 | Strategy | 🟢 Criterios cumplidos, incluido el 403 de 1a · falta Staging |
 | CU-12 | Administrar convocatorias | US-006, 007, 009, 010 | Factory Method | 🟡 Crear y publicar hechos · faltan cerrar (US-009) y editar (US-010) |
 | CU-13 | Gestionar comités | US-017 | — | 🟡 Crear, agregar integrantes, 3a, 4a y 6a · falta quitar integrantes (5a) |
-| CU-15 | Aprobar o rechazar | US-023 | Facade | 🔴 Sprint 6 |
-| CU-16 | Aprobar o rechazar | US-024 | — | 🔴 Sprint 6 |
+| CU-15 | Aprobar o rechazar | US-023 | Facade | 🟢 Criterios cumplidos · sin acta (US-026) · falta Staging |
+| CU-16 | Aprobar o rechazar | US-024 | — | 🟢 Implementado · falta Staging |
 | CU-17 | Generar reportes | US-028 a 031 | Builder | 🔴 Sprint 7 |

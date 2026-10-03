@@ -4,11 +4,13 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../../../shared/persistence/prisma.service';
 import { Solicitud } from '../../domain/entities/solicitud.entity';
 import { NombreEstado } from '../../domain/enums/solicitud.enums';
-import { SolicitudRepositorio } from '../../domain/ports/solicitud.repositorio';
+import { ReglaDeNegocioError } from '../../../../shared/exceptions/errores-dominio';
+import { mensajeSinCupo, SolicitudRepositorio } from '../../domain/ports/solicitud.repositorio';
 
 const CON_DETALLE = {
   documentos: true,
   historial: { orderBy: { ocurridoEn: 'asc' } },
+  beca: true,
 } satisfies Prisma.SolicitudInclude;
 
 type FilaSolicitud = Prisma.SolicitudGetPayload<{ include: typeof CON_DETALLE }>;
@@ -69,50 +71,107 @@ export class SolicitudPrismaRepositorio implements SolicitudRepositorio {
    * Si algo falla no queda un documento guardado con la solicitud en el estado anterior.
    */
   async guardar(solicitud: Solicitud): Promise<void> {
-    const documentos = solicitud.listaDocumentos();
+    await this.prisma.$transaction((tx) => escribir(tx, solicitud));
+  }
 
+  /**
+   * Bloquea la fila de la convocatoria (`FOR UPDATE`) antes de contar: una segunda aprobación
+   * simultánea espera a que termine la primera y cuenta con su resultado. Sin el bloqueo, las dos
+   * verían un cupo libre.
+   */
+  async guardarSiHayCupo(solicitud: Solicitud, cupos: number): Promise<void> {
     await this.prisma.$transaction(async (tx) => {
-      const datos = {
-        estado: solicitud.nombreEstado,
-        enviadaEn: solicitud.enviadaEn,
-      };
-      await tx.solicitud.upsert({
-        where: { id: solicitud.id },
-        create: {
-          id: solicitud.id,
-          numero: solicitud.numero,
-          estudianteId: solicitud.estudianteId,
+      await tx.$queryRaw`SELECT id FROM convocatorias WHERE id = ${solicitud.convocatoriaId} FOR UPDATE`;
+      const ocupados = await tx.solicitud.count({
+        where: {
           convocatoriaId: solicitud.convocatoriaId,
-          documentosExigidos: [...solicitud.documentosExigidos],
-          creadaEn: solicitud.creadaEn,
-          ...datos,
+          estado: { in: [NombreEstado.APROBADA, NombreEstado.ADJUDICADA] },
+          id: { not: solicitud.id },
         },
-        update: datos,
       });
-
-      await tx.documentoSolicitud.deleteMany({
-        where: { solicitudId: solicitud.id, tipo: { notIn: documentos.map((d) => d.tipo) } },
-      });
-      for (const d of documentos) {
-        const campos = {
-          nombreArchivo: d.nombreArchivo,
-          tipoContenido: d.tipoContenido,
-          tamanoBytes: d.tamanoBytes,
-          referencia: d.referencia,
-          cargadoEn: d.cargadoEn,
-        };
-        await tx.documentoSolicitud.upsert({
-          where: { solicitudId_tipo: { solicitudId: solicitud.id, tipo: d.tipo } },
-          create: { solicitudId: solicitud.id, tipo: d.tipo, ...campos },
-          update: campos,
-        });
+      if (ocupados >= cupos) {
+        throw new ReglaDeNegocioError(mensajeSinCupo(cupos));
       }
+      await escribir(tx, solicitud);
+    });
+  }
 
-      // El historial solo crece: las entradas ya guardadas se ignoran por su id.
-      await tx.historialEstadoSolicitud.createMany({
-        data: solicitud.listaHistorial().map((h) => ({ ...h, solicitudId: solicitud.id })),
-        skipDuplicates: true,
-      });
+  async contarOcupacion(convocatoriaId: string) {
+    const grupos = await this.prisma.solicitud.groupBy({
+      by: ['estado'],
+      where: { convocatoriaId, estado: { in: [NombreEstado.APROBADA, NombreEstado.ADJUDICADA] } },
+      _count: { _all: true },
+    });
+    const de = (estado: NombreEstado) => grupos.find((g) => g.estado === estado)?._count._all ?? 0;
+    return { aprobadas: de(NombreEstado.APROBADA), adjudicadas: de(NombreEstado.ADJUDICADA) };
+  }
+
+  async buscarPorNumero(numero: string): Promise<Solicitud | null> {
+    const fila = await this.prisma.solicitud.findUnique({
+      where: { numero },
+      include: CON_DETALLE,
+    });
+    return fila === null ? null : aDominio(fila);
+  }
+
+  contarBecasConPrefijo(prefijo: string): Promise<number> {
+    return this.prisma.beca.count({ where: { codigo: { startsWith: prefijo } } });
+  }
+}
+
+/** Solicitud, documentos, historial nuevo y beca, dentro de la transacción que se reciba. */
+async function escribir(tx: Prisma.TransactionClient, solicitud: Solicitud): Promise<void> {
+  const documentos = solicitud.listaDocumentos();
+
+  const datos = {
+    estado: solicitud.nombreEstado,
+    enviadaEn: solicitud.enviadaEn,
+  };
+  await tx.solicitud.upsert({
+    where: { id: solicitud.id },
+    create: {
+      id: solicitud.id,
+      numero: solicitud.numero,
+      estudianteId: solicitud.estudianteId,
+      convocatoriaId: solicitud.convocatoriaId,
+      documentosExigidos: [...solicitud.documentosExigidos],
+      creadaEn: solicitud.creadaEn,
+      ...datos,
+    },
+    update: datos,
+  });
+
+  await tx.documentoSolicitud.deleteMany({
+    where: { solicitudId: solicitud.id, tipo: { notIn: documentos.map((d) => d.tipo) } },
+  });
+  for (const d of documentos) {
+    const campos = {
+      nombreArchivo: d.nombreArchivo,
+      tipoContenido: d.tipoContenido,
+      tamanoBytes: d.tamanoBytes,
+      referencia: d.referencia,
+      cargadoEn: d.cargadoEn,
+    };
+    await tx.documentoSolicitud.upsert({
+      where: { solicitudId_tipo: { solicitudId: solicitud.id, tipo: d.tipo } },
+      create: { solicitudId: solicitud.id, tipo: d.tipo, ...campos },
+      update: campos,
+    });
+  }
+
+  // El historial solo crece: las entradas ya guardadas se ignoran por su id.
+  await tx.historialEstadoSolicitud.createMany({
+    data: solicitud.listaHistorial().map((h) => ({ ...h, solicitudId: solicitud.id })),
+    skipDuplicates: true,
+  });
+
+  // US-024: la beca se crea una sola vez, en la misma transacción que el cambio de estado.
+  const beca = solicitud.beca;
+  if (beca !== null) {
+    await tx.beca.upsert({
+      where: { solicitudId: solicitud.id },
+      create: { solicitudId: solicitud.id, codigo: beca.codigo, otorgadaEn: beca.otorgadaEn },
+      update: {},
     });
   }
 }
@@ -143,5 +202,7 @@ function aDominio(fila: FilaSolicitud): Solicitud {
     })),
     enviadaEn: fila.enviadaEn,
     creadaEn: fila.creadaEn,
+    beca:
+      fila.beca === null ? null : { codigo: fila.beca.codigo, otorgadaEn: fila.beca.otorgadaEn },
   });
 }

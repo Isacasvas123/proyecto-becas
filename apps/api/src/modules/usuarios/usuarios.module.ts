@@ -20,6 +20,7 @@ import { JwtModule } from '@nestjs/jwt';
 
 import { AutenticarUsuarioService } from './application/services/autenticar-usuario.service';
 import { CuentasEvaluadorService } from './application/services/cuentas-evaluador.service';
+import { IdentidadService } from './application/services/identidad.service';
 import { RegistrarEstudianteService } from './application/services/registrar-estudiante.service';
 import { GENERADOR_TOKEN } from './domain/ports/generador-token';
 import { HASHER_PASSWORD } from './domain/ports/hasher-password';
@@ -60,6 +61,7 @@ import { RolesGuard } from './presentation/guards/roles.guard';
     AutenticarUsuarioService,
     RegistrarEstudianteService,
     CuentasEvaluadorService,
+    IdentidadService,
     { provide: USUARIO_REPOSITORIO, useClass: UsuarioPrismaRepositorio },
     { provide: HASHER_PASSWORD, useClass: BcryptHasherAdapter },
     { provide: GENERADOR_TOKEN, useClass: JwtGeneradorTokenAdapter },
@@ -83,6 +85,7 @@ import { RolesGuard } from './presentation/guards/roles.guard';
   // persistencia ajena.
   //
   // `CuentasEvaluadorService` se exporta para que `evaluaciones` conozca nombres y roles.
-  exports: [AutenticarUsuarioService, CuentasEvaluadorService, HASHER_PASSWORD],
+  // `IdentidadService`, para la consulta pública (US-025).
+  exports: [AutenticarUsuarioService, CuentasEvaluadorService, IdentidadService, HASHER_PASSWORD],
 })
 export class UsuariosModule {}

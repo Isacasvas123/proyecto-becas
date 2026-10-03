@@ -14,6 +14,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ConvocatoriasModule } from './modules/convocatorias/convocatorias.module';
 import { EstudiantesModule } from './modules/estudiantes/estudiantes.module';
 import { EvaluacionesModule } from './modules/evaluaciones/evaluaciones.module';
+import { ResolucionesModule } from './modules/resoluciones/resoluciones.module';
 import { SaludModule } from './modules/salud/salud.module';
 import { SolicitudesModule } from './modules/solicitudes/solicitudes.module';
 import { UsuariosModule } from './modules/usuarios/usuarios.module';
@@ -34,6 +35,7 @@ import { PrismaModule } from './shared/persistence/prisma.module';
     EstudiantesModule,
     SolicitudesModule,
     EvaluacionesModule,
+    ResolucionesModule,
   ],
 })
 export class AppModule {}

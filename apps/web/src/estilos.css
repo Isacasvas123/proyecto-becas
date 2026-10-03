@@ -1786,3 +1786,65 @@ a.boton {
     flex: 1;
   }
 }
+
+/* ============================================================================
+   RESOLUCIÓN Y CONSULTA PÚBLICA (EPIC-05)
+   ========================================================================== */
+
+.decision {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  margin: var(--sp-3) var(--sp-4) var(--sp-4);
+  padding: var(--sp-4);
+  background: var(--gob-50);
+  border: 1px solid var(--gob-100);
+  border-left: 3px solid var(--gob-600);
+  border-radius: var(--radio);
+}
+
+.decision h3 {
+  margin: 0;
+  font-size: var(--txt-md);
+}
+
+.decision p {
+  margin: 0;
+  font-size: var(--txt-sm);
+}
+
+.decision .pista {
+  font-size: var(--txt-xs);
+  color: var(--tinta-3);
+}
+
+.opciones.en-linea {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+}
+
+.aviso.beca {
+  font-size: var(--txt-base);
+}
+
+.consulta {
+  max-width: 44rem;
+}
+
+.nota-consulta {
+  margin: 0;
+  font-size: var(--txt-xs);
+  color: var(--tinta-3);
+}
+
+/* Sin respuesta todavía no ocupa lugar (ni el espacio entre bloques). */
+.respuesta-consulta:empty {
+  display: none;
+}
+
+.respuesta-consulta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}

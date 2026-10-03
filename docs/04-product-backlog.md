@@ -48,6 +48,9 @@
 | **US-019** Evaluar una solicitud | 🟡 **Criterios cumplidos** — falta Staging | Con el patrón **Strategy**. El puntaje lo calcula el sistema; **las fórmulas están pendientes de confirmar con el Product Owner**. Adelantada del Sprint 5 |
 | **US-020** Ver mis solicitudes asignadas | 🟡 **Implementada** — falta Staging | Solo las propias, pendientes primero. Otro evaluador recibe 403. Adelantada del Sprint 5 |
 | **US-021** Consolidar dictámenes | 🟡 **Implementada** — falta Staging | Promedio, ranking y referencia de cupos. No aprueba nada: eso es US-023. Adelantada del Sprint 5 |
+| **US-023** Aprobar o rechazar | 🟡 **Criterios cumplidos** — falta Staging | Con el patrón **Facade**. El cupo se comprueba de forma atómica (verificado con tres aprobaciones simultáneas por el último cupo). Sin acta: es US-026. Adelantada del Sprint 6 |
+| **US-024** Adjudicar beca | 🟡 **Implementada** — falta Staging | Beca con código `BECA-AAAA-NNNNNN`, guardada en la misma transacción que el cambio de estado. El cupo se reserva al aprobar. Adelantada del Sprint 6 |
+| **US-025** Consulta pública | 🟡 **Criterios cumplidos** — falta Staging | Número + CUI por POST (el CUI no va en la URL), solo estado y fecha, mismo mensaje para cualquier fallo y límite de 10 consultas por minuto por dirección. Adelantada del Sprint 6 |
 | Resto | ⬜ Pendiente | Según el calendario de sprints |
 
 > **Nota para la Sprint Review.** Ninguna de estas historias puede marcarse como *Completada*

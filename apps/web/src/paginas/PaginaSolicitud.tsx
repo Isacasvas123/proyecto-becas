@@ -175,6 +175,15 @@ export function PaginaSolicitud(): ReactElement {
             </span>
           </div>
 
+          {solicitud.beca !== null && (
+            <p className="aviso exito beca" role="status">
+              <strong>Beca adjudicada.</strong> Código <strong>{solicitud.beca.codigo}</strong>{' '}
+              (otorgada el {formatearFechaHora(solicitud.beca.otorgadaEn)}).
+              <br />
+              Consérvelo: es el identificador de su beca ante el Ministerio.
+            </p>
+          )}
+
           {aviso !== null && (
             <p
               ref={refAviso}

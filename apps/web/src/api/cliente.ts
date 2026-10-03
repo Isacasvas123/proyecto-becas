@@ -293,6 +293,8 @@ export interface Solicitud {
   historial: EntradaHistorial[];
   creadaEn: string;
   enviadaEn: string | null;
+  /** US-024. */
+  beca: { codigo: string; otorgadaEn: string } | null;
 }
 
 /** US-012. */
@@ -518,6 +520,56 @@ export function obtenerExpedienteEvaluacion(id: string): Promise<ExpedienteEvalu
 
 export function descargarDocumentoEvaluacion(id: string, tipo: string): Promise<Blob> {
   return descargarArchivo(`${rutaEvaluacion(id)}/documentos/${encodeURIComponent(tipo)}`);
+}
+
+// ─── EPIC-05 · Resolución, adjudicación y consulta pública (US-023 a US-025) ──
+
+export interface Cupos {
+  convocatoriaId: string;
+  cupos: number;
+  aprobadas: number;
+  adjudicadas: number;
+  disponibles: number;
+}
+
+export interface ResultadoResolucion {
+  solicitudId: string;
+  numero: string;
+  estado: string;
+  beca: { codigo: string; otorgadaEn: string } | null;
+  cupos: Cupos;
+}
+
+const rutaResolucion = (id: string) => `/resoluciones/solicitudes/${encodeURIComponent(id)}`;
+
+/** US-023. El motivo es obligatorio en los dos sentidos. */
+export function resolverSolicitud(
+  id: string,
+  decision: 'APROBAR' | 'RECHAZAR',
+  motivo: string,
+): Promise<ResultadoResolucion> {
+  return enviar<ResultadoResolucion>(rutaResolucion(id), { decision, motivo });
+}
+
+/** US-024. */
+export function adjudicarBeca(id: string): Promise<ResultadoResolucion> {
+  return enviar<ResultadoResolucion>(`${rutaResolucion(id)}/adjudicar`);
+}
+
+export function obtenerCupos(convocatoriaId: string): Promise<Cupos> {
+  return obtener<Cupos>(`/resoluciones/convocatorias/${encodeURIComponent(convocatoriaId)}/cupos`);
+}
+
+/** Contrato de `POST /consulta-publica`: nada más que esto, por diseño (US-025). */
+export interface EstadoPublico {
+  numero: string;
+  estado: string;
+  ultimoCambio: string;
+}
+
+/** US-025. Sin sesión. El CUI viaja en el cuerpo, nunca en la URL. */
+export function consultarEstadoPublico(numero: string, cui: string): Promise<EstadoPublico> {
+  return enviar<EstadoPublico>('/consulta-publica', { numero, cui });
 }
 
 /** US-019. El puntaje no se manda: lo calcula el servidor con el criterio del tipo de beca. */

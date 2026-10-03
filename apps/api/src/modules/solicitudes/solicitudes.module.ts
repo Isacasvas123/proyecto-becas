@@ -6,6 +6,7 @@ import { CrearSolicitudService } from './application/services/crear-solicitud.se
 import { EnviarSolicitudService } from './application/services/enviar-solicitud.service';
 import { ExpedienteService } from './application/services/expediente.service';
 import { SolicitudesParaEvaluacionService } from './application/services/solicitudes-para-evaluacion.service';
+import { SolicitudesParaResolucionService } from './application/services/solicitudes-para-resolucion.service';
 import { ALMACENAMIENTO_DOCUMENTOS } from './domain/ports/almacenamiento-documentos';
 import { CONSULTA_CONVOCATORIAS, CONSULTA_PERFILES } from './domain/ports/consultas-externas';
 import { NOTIFICADOR_SOLICITUDES } from './domain/ports/notificador-solicitudes';
@@ -36,6 +37,7 @@ import { EstudiantesModule } from '../estudiantes/estudiantes.module';
     CargarDocumentoService,
     EnviarSolicitudService,
     SolicitudesParaEvaluacionService,
+    SolicitudesParaResolucionService,
     { provide: SOLICITUD_REPOSITORIO, useClass: SolicitudPrismaRepositorio },
     { provide: CONSULTA_CONVOCATORIAS, useClass: ConsultaConvocatoriasAdapter },
     { provide: CONSULTA_PERFILES, useClass: ConsultaPerfilesAdapter },
@@ -56,7 +58,7 @@ import { EstudiantesModule } from '../estudiantes/estudiantes.module';
       },
     },
   ],
-  // Solo la puerta para `evaluaciones` (EPIC-04). Ver el comentario del servicio.
-  exports: [SolicitudesParaEvaluacionService],
+  // Solo las puertas para `evaluaciones` (EPIC-04) y `resoluciones` (EPIC-05).
+  exports: [SolicitudesParaEvaluacionService, SolicitudesParaResolucionService],
 })
 export class SolicitudesModule {}
