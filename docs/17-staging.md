@@ -87,6 +87,10 @@ Requiere una cuenta y por eso no está hecho. Son unos 20 minutos.
 2. **Autorizar el repositorio.** Render pedirá acceso; conceder solo a `proyecto-becas`, no a
    todos los repositorios de la cuenta.
 
+> ⚠️ **Si Render rechaza el Blueprint** con `services[1].plan no such plan free for service
+> type web`: es el sitio estatico. Render no admite `plan` en sitios estaticos, son gratuitos
+> siempre. Corregido el 3 de octubre de 2026.
+
 3. **Crear el Blueprint.** En el panel: **New → Blueprint**, elegir `proyecto-becas`, rama
    `develop`. Render lee `render.yaml` y muestra los tres recursos que va a crear.
 
