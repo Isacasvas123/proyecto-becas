@@ -140,7 +140,7 @@ en `domain/`; cada adaptador la implementa en `infrastructure/`.
 | `NotificacionPort` | `NotificacionConsolaAdapter`<br/>`NotificacionCorreoAdapter` | solicitudes | 🔴 Sprint 5 |
 
 > **Que cada puerto tenga dos adaptadores no es casualidad.** Uno real y uno de prueba. Es lo que
-> permite que las 75 pruebas unitarias corran en segundos sin levantar PostgreSQL, y es la demostración
+> permite que las 106 pruebas unitarias corran en segundos sin levantar PostgreSQL, y es la demostración
 > práctica del principio de sustitución de Liskov.
 
 ---
