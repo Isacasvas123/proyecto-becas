@@ -196,17 +196,18 @@ Pocas y medibles. Una métrica que nadie mide no es una métrica.
 
 | Métrica                              | Meta                    | Al 12 Sep 2026        | Dónde se mide                     |
 | ------------------------------------ | ----------------------- | --------------------- | --------------------------------- |
-| Pruebas automatizadas                | Creciente cada sprint   | **107** (75 + 32)     | Salida del CI                     |
-| Cobertura de sentencias              | ≥ 60 % al 21 Oct        | **41.89 %** ⚠️ mal medida | `npm run test:cov`            |
+| Pruebas automatizadas                | Creciente cada sprint   | **138** (106 + 32)    | Salida del CI                     |
+| Cobertura de sentencias              | ≥ 60 % al 21 Oct        | **84.35 %** ✅ (antes 41.89 %, mal medida) | `npm run test:cov` |
 | PRs con aprobación de otro integrante | 100 %                  | **40 %** (2 de 5)     | Historial de Pull Requests        |
 | Advertencias del linter              | 0                       | **0**                 | Salida del CI                     |
 | Defectos abiertos de severidad Alta   | 0 al cerrar el sprint  | **1** (US-008)        | Issues con etiqueta `bug`         |
-| Patrones implementados y probados     | 6 al 31 Oct            | **1** (Adapter, sin pruebas) | `06-patrones.md`           |
+| Patrones implementados y probados     | 6 al 31 Oct            | **1** (Adapter, ya probado) | `06-patrones.md`            |
 
-> **Las tres métricas en rojo son las que importan**, y se dicen antes de que nadie las descubra:
-> el 40 % de PRs revisados, la cobertura mal medida, y el único patrón implementado sin pruebas.
-> Las tres tienen una acción asignada en la Retrospectiva 1 o en el Sprint Backlog 2. Reportar una
-> métrica sin acción asociada es decorar.
+> **Al escribir este plan había tres métricas en rojo**, dichas antes de que nadie las descubriera:
+> el 40 % de PRs revisados, la cobertura mal medida y el único patrón implementado sin pruebas. **Dos
+> ya están resueltas** (DEF-02 y DEF-03, 12 de septiembre): la cobertura real es 84.35 % y el Adapter
+> tiene pruebas con las bibliotecas reales. Sigue en rojo la de PRs revisados, y la de patrones
+> sigue lejos de la meta. Reportar una métrica sin acción asociada es decorar.
 
 ## 10. Qué hacemos cuando la calidad falla
 

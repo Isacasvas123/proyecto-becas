@@ -51,11 +51,11 @@ jobs:
       - name: Aplicar migraciones
         run: npm run db:migrate:deploy
 
-      - name: Pruebas unitarias con cobertura
+      # test:cov corre las unitarias Y las de integración en una sola pasada, y mide la
+      # cobertura sobre las dos (DEF-03). Antes había un paso separado para las e2e, que ahora
+      # las ejecutaría dos veces.
+      - name: Pruebas unitarias e integración, con cobertura
         run: npm run test:cov
-
-      - name: Pruebas de integración
-        run: npm run test:e2e
 
       - name: Compilar
         run: npm run build

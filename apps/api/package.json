@@ -10,7 +10,7 @@
     "build": "nest build",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
+    "test:cov": "jest --config ./test/jest-cobertura.json --coverage --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "db:seed": "ts-node -P tsconfig.json prisma/seed.ts"
   },
@@ -51,7 +51,12 @@
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
+      "^.+\\.(t|j)s$": [
+        "ts-jest",
+        {
+          "tsconfig": "<rootDir>/../tsconfig.jest.json"
+        }
+      ]
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s"
@@ -61,6 +66,9 @@
       "main\\.ts$"
     ],
     "coverageDirectory": "../../../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "transformIgnorePatterns": [
+      "/node_modules/(?!@nestjs/jwt/)"
+    ]
   }
 }

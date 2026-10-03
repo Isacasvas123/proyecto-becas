@@ -8,7 +8,7 @@
 | **Responsable**      | Fernando Herrera (calidad y pruebas) · revisado por el equipo  |
 | **Versión**          | 1.0                                                            |
 | **Fecha**            | 12 de septiembre de 2026                                       |
-| **Estado de la suite al escribirlo** | 75 pruebas unitarias + 32 de integración, todas en verde |
+| **Estado de la suite**               | 106 pruebas unitarias + 32 de integración, todas en verde · cobertura 84.35 % |
 
 > Este plan es una **guía de alto nivel**. El plan de prueba detallado de cada historia son sus
 > **criterios de aceptación**, escritos en `04-product-backlog.md`. Aquí se define la estrategia;
@@ -92,7 +92,7 @@ Pirámide de pruebas: muchas rápidas y baratas abajo, pocas lentas y caras arri
 flowchart TB
     N3["<b>Nivel 3 — Sistema y Aceptación</b><br/>pocas · lentas · en Staging<br/>las hace el Product Owner"]
     N2["<b>Nivel 2 — Integración</b> · 32 pruebas<br/>HTTP real con supertest, sin base de datos<br/>las hacen los desarrolladores"]
-    N1["<b>Nivel 1 — Unitarias</b> · 75 pruebas<br/>milisegundos · sin Docker ni red<br/>las hacen los desarrolladores"]
+    N1["<b>Nivel 1 — Unitarias</b> · 106 pruebas<br/>milisegundos · sin Docker ni red<br/>las hacen los desarrolladores"]
 
     N3 --- N2 --- N1
 ```
@@ -149,8 +149,9 @@ Nacen de defectos reales encontrados en el Sprint 1, no de teoría:
 3. **Un doble de prueba no debe ser más listo que el código real.** Si el doble ordena, filtra o
    corrige por su cuenta, oculta la ausencia de esa lógica en el código. _(Defecto 5, otra vez.)_
 4. **El código que se va a presentar como evidencia tiene que estar probado.** Los tres adaptadores
-   del patrón Adapter están hoy a 0 % porque las pruebas los sustituyen por dobles: bcrypt y JWT
-   reales nunca se ejecutan. _(Defecto pendiente DEF-02.)_
+   del patrón Adapter estuvieron a 0 % porque las pruebas los sustituían por dobles: bcrypt y JWT
+   reales nunca se ejecutaban. _(Defecto DEF-02, corregido: ahora se prueban con las bibliotecas
+   reales, incluida la firma con otro secreto y los tokens vencidos.)_
 5. **Los criterios de aceptación se prueban textualmente.** Si el criterio dice "mensaje genérico
    que no revele cuál de los dos campos falló", la prueba compara los dos mensajes. No se
    parafrasea un criterio para que sea más fácil de probar.
@@ -159,11 +160,13 @@ Nacen de defectos reales encontrados en el Sprint 1, no de teoría:
 
 **Meta:** ≥ 60 % de sentencias para el **21 de octubre de 2026** (WBS 7.3).
 
-**Medición al 12 de septiembre de 2026:** 41.89 % de sentencias · 43.42 % de ramas.
+**Medición corregida al 12 de septiembre de 2026:** **84.35 %** de sentencias · 84.21 % de ramas.
+La meta ya está superada; a partir de aquí se vigila que no baje.
 
-> ### ⚠️ Ese número está mal medido, y por debajo de la realidad
+> ### Historia de este número — el primero que se reportó estaba mal medido
 >
-> `npm run test:cov` ejecuta **solo las pruebas unitarias**. La configuración de Jest para
+> La primera medición dio **41.89 %**, y era falsa por defecto. `npm run test:cov` ejecutaba **solo
+> las pruebas unitarias**. La configuración de Jest para
 > unitarias tiene `rootDir: "src"` y solo reconoce `*.spec.ts`; la de integración
 > (`test/jest-e2e.json`) usa otro `rootDir`, otro patrón, y **no declara cobertura en absoluto**.
 >
@@ -171,9 +174,15 @@ Nacen de defectos reales encontrados en el Sprint 1, no de teoría:
 > guards y validación— **no cuentan en el porcentaje**. Controladores que sí están probados de
 > punta a punta aparecen a 0 %.
 >
-> **Corregir la medición es requisito previo a perseguir la meta** (defecto DEF-03, comprometido
-> en el Sprint 2). Perseguir un 60 % contra un número que no sabemos leer llevaría a escribir
-> pruebas donde no hacen falta.
+> **Corrección (DEF-03, 12 de septiembre):** `test:cov` usa ahora `test/jest-cobertura.json`, que
+> recoge unitarias e integración en una sola pasada. Solo con eso el número pasó a **71.22 %**; con
+> las pruebas de DEF-02 llegó a 84.35 %. La lección: perseguir un 60 % contra un número mal leído
+> habría llevado a escribir pruebas donde no hacían falta.
+>
+> Hubo un segundo problema escondido: `@nestjs/jwt` v12 se publica **solo como ESM** y Jest corre
+> en CommonJS, así que **ninguna prueba podía importar los adaptadores de JWT**. Por eso nadie los
+> había probado. Se resolvió con `tsconfig.jest.json` (`allowJs`) y una excepción en
+> `transformIgnorePatterns` para ese paquete.
 
 **Qué se exige cubrir, por prioridad.** La cobertura es un indicador, no un objetivo: un 100 % con
 pruebas que no pueden fallar no vale nada.
@@ -215,8 +224,8 @@ Product Backlog priorizados por el Product Owner como cualquier otra historia.
 | ID       | Defecto                                                                | Severidad | Estado                     |
 | -------- | ---------------------------------------------------------------------- | --------- | -------------------------- |
 | DEF-01   | `ConvocatoriaPrismaRepositorio` sin cobertura de pruebas (issue #6)     | Medio     | Abierto                    |
-| DEF-02   | Los tres adaptadores del patrón Adapter a 0 % de cobertura              | Medio     | Comprometido en Sprint 2   |
-| DEF-03   | La medición de cobertura excluye las pruebas de integración              | Medio     | Comprometido en Sprint 2   |
+| DEF-02   | Los tres adaptadores del patrón Adapter a 0 % de cobertura              | Medio     | ✅ Corregido 12 Sep        |
+| DEF-03   | La medición de cobertura excluye las pruebas de integración              | Medio     | ✅ Corregido 12 Sep        |
 | US-008   | El listado público quedó detrás del login: criterio incumplido           | **Alto**  | Diferido al Sprint 3 con decisión escrita |
 | US-002   | Falta el bloqueo tras 5 intentos fallidos: criterio incumplido           | Medio     | ✅ Corregido 12 Sep        |
 
@@ -240,9 +249,9 @@ Las pruebas no producen un documento final, sino artefactos continuos:
 ## 9. Cómo se ejecuta
 
 ```bash
-npm run test        # 75 pruebas unitarias, sin Docker
+npm run test        # 106 pruebas unitarias, sin Docker
 npm run test:e2e    # 32 pruebas de integración
-npm run test:cov    # cobertura (ver la advertencia de §6)
+npm run test:cov    # unitarias + integración con cobertura (necesita Docker)
 npm run lint        # ESLint + Prettier
 ```
 
