@@ -116,3 +116,36 @@ export function formatearTamano(bytes: number): string {
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
+
+/**
+ * Nombre de cada departamento. El servidor guarda el código (catálogo cerrado, ver US-031); la
+ * misma lista vive en el backend y la expone `GET /estudiantes/departamentos` para el formulario.
+ */
+const NOMBRE_DEPARTAMENTO: Record<string, string> = {
+  ALTA_VERAPAZ: 'Alta Verapaz',
+  BAJA_VERAPAZ: 'Baja Verapaz',
+  CHIMALTENANGO: 'Chimaltenango',
+  CHIQUIMULA: 'Chiquimula',
+  EL_PROGRESO: 'El Progreso',
+  ESCUINTLA: 'Escuintla',
+  GUATEMALA: 'Guatemala',
+  HUEHUETENANGO: 'Huehuetenango',
+  IZABAL: 'Izabal',
+  JALAPA: 'Jalapa',
+  JUTIAPA: 'Jutiapa',
+  PETEN: 'Petén',
+  QUETZALTENANGO: 'Quetzaltenango',
+  QUICHE: 'Quiché',
+  RETALHULEU: 'Retalhuleu',
+  SACATEPEQUEZ: 'Sacatepéquez',
+  SAN_MARCOS: 'San Marcos',
+  SANTA_ROSA: 'Santa Rosa',
+  SOLOLA: 'Sololá',
+  SUCHITEPEQUEZ: 'Suchitepéquez',
+  TOTONICAPAN: 'Totonicapán',
+  ZACAPA: 'Zacapa',
+};
+
+export function nombreDepartamento(codigo: string | null): string | null {
+  return codigo === null ? null : (NOMBRE_DEPARTAMENTO[codigo] ?? codigo);
+}

@@ -38,6 +38,7 @@ export function PaginaLogin(): ReactElement {
     if (destinoPedido !== undefined) return destinoPedido;
     if (rol === 'ADMINISTRADOR') return '/gestion';
     if (rol === 'ESTUDIANTE') return '/solicitudes';
+    if (rol === 'EVALUADOR') return '/evaluaciones';
     return '/convocatorias';
   }
 

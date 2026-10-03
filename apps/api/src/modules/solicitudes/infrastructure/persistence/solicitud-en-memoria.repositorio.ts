@@ -1,4 +1,5 @@
 import { Solicitud } from '../../domain/entities/solicitud.entity';
+import { NombreEstado } from '../../domain/enums/solicitud.enums';
 import { SolicitudRepositorio } from '../../domain/ports/solicitud.repositorio';
 
 /** Doble para pruebas: mismo contrato que el adaptador de Prisma. */
@@ -34,6 +35,18 @@ export class SolicitudEnMemoriaRepositorio implements SolicitudRepositorio {
     return Promise.resolve(
       [...this.solicitudes.values()].filter((s) => s.numero.startsWith(prefijo)).length,
     );
+  }
+
+  buscarPorConvocatoriaYEstado(convocatoriaId: string, estado: NombreEstado): Promise<Solicitud[]> {
+    return Promise.resolve(
+      [...this.solicitudes.values()]
+        .filter((s) => s.convocatoriaId === convocatoriaId && s.nombreEstado === estado)
+        .sort((a, b) => (a.enviadaEn?.getTime() ?? 0) - (b.enviadaEn?.getTime() ?? 0)),
+    );
+  }
+
+  buscarPorIds(ids: readonly string[]): Promise<Solicitud[]> {
+    return Promise.resolve([...this.solicitudes.values()].filter((s) => ids.includes(s.id)));
   }
 
   guardar(solicitud: Solicitud): Promise<void> {

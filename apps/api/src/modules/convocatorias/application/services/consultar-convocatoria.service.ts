@@ -22,6 +22,10 @@ export interface ConvocatoriaParaPostulacionDto {
   readonly id: string;
   readonly codigo: string;
   readonly titulo: string;
+  /** Decide el criterio de evaluación (US-019). */
+  readonly tipo: string;
+  /** Tope de adjudicaciones; el consolidado lo usa como referencia (US-021). */
+  readonly cupos: number;
   /** La regla es de ESTE módulo: publicada y dentro del plazo (`Convocatoria.admiteSolicitudes`). */
   readonly admiteSolicitudes: boolean;
   readonly fechaCierre: Date;
@@ -49,6 +53,8 @@ export class ConsultarConvocatoriaService {
       id: convocatoria.id,
       codigo: convocatoria.codigo,
       titulo: convocatoria.titulo,
+      tipo: convocatoria.tipo,
+      cupos: convocatoria.cupos,
       admiteSolicitudes: convocatoria.admiteSolicitudes(ahora),
       fechaCierre: convocatoria.periodo.cierre,
       documentosExigidos: convocatoria.documentosExigidos.map(aDocumentoDto),

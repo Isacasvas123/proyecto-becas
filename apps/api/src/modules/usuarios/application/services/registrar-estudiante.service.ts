@@ -20,24 +20,15 @@ import { randomUUID } from 'node:crypto';
 
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
-import { RecursoDuplicadoError } from '../../../../shared/exceptions/errores-dominio';
-import { normalizarCorreo, Usuario } from '../../domain/entities/usuario.entity';
+import { Usuario } from '../../domain/entities/usuario.entity';
 import { GENERADOR_TOKEN, GeneradorToken } from '../../domain/ports/generador-token';
 import { HASHER_PASSWORD, HasherPassword } from '../../domain/ports/hasher-password';
 import { USUARIO_REPOSITORIO, UsuarioRepositorio } from '../../domain/ports/usuario.repositorio';
-import { Cui } from '../../domain/value-objects/cui.vo';
-import { NombreUsuario } from '../../domain/value-objects/nombre-usuario.vo';
-import { validarPoliticaContrasena } from '../../domain/value-objects/politica-contrasena';
 import { SesionIniciadaDto } from '../dto/sesion-iniciada.dto';
 import { aSesionIniciada } from '../mappers/sesion.mapper';
+import { ComandoCuentaNueva, prepararCuentaNueva } from './cuenta-nueva';
 
-export interface ComandoRegistrarEstudiante {
-  readonly nombreCompleto: string;
-  readonly cui: string;
-  readonly correo: string;
-  readonly nombreUsuario: string;
-  readonly password: string;
-}
+export type ComandoRegistrarEstudiante = ComandoCuentaNueva;
 
 @Injectable()
 export class RegistrarEstudianteService {
@@ -53,34 +44,9 @@ export class RegistrarEstudianteService {
   ) {}
 
   async ejecutar(comando: ComandoRegistrarEstudiante): Promise<SesionIniciadaDto> {
-    // Primero todo lo que se puede validar sin tocar la base: formato del CUI, del nombre de
-    // usuario y política de contraseña. Un error aquí no cuesta ninguna consulta.
-    const cui = Cui.crear(comando.cui);
-    const nombreUsuario = NombreUsuario.crear(comando.nombreUsuario);
-    const correo = normalizarCorreo(comando.correo);
-    validarPoliticaContrasena(comando.password);
-
-    const duplicados = await this.repositorio.buscarDuplicados({ correo, cui, nombreUsuario });
-    const problemas = [
-      duplicados.cui && 'ese CUI',
-      duplicados.correo && 'ese correo',
-      duplicados.nombreUsuario && 'ese nombre de usuario',
-    ].filter((p): p is string => typeof p === 'string');
-
-    if (problemas.length > 0) {
-      throw new RecursoDuplicadoError(`Ya existe una cuenta con ${enumerar(problemas)}.`);
-    }
-
-    // El hash se calcula DESPUÉS de comprobar duplicados: bcrypt es lento a propósito y no
-    // tiene sentido gastarlo en un registro que se va a rechazar.
-    const usuario = Usuario.nuevoEstudiante({
-      id: randomUUID(),
-      nombreUsuario,
-      correo,
-      hashPassword: await this.hasher.calcular(comando.password),
-      nombreCompleto: comando.nombreCompleto,
-      cui,
-    });
+    const usuario = Usuario.nuevoEstudiante(
+      await prepararCuentaNueva(comando, randomUUID(), this.repositorio, this.hasher),
+    );
 
     await this.repositorio.crear(usuario);
     this.logger.log(`Estudiante registrado: ${usuario.nombreUsuario.valor}`);
@@ -88,11 +54,4 @@ export class RegistrarEstudianteService {
     // Criterio 5: la persona queda autenticada sin tener que volver a escribir su contraseña.
     return aSesionIniciada(usuario, await this.generadorToken.emitir(usuario));
   }
-}
-
-/** "a", "a y b", "a, b y c". */
-function enumerar(partes: string[]): string {
-  return partes.length <= 1
-    ? partes.join('')
-    : `${partes.slice(0, -1).join(', ')} y ${partes[partes.length - 1]}`;
 }

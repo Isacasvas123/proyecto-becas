@@ -323,8 +323,11 @@ export function cargarDocumento(id: string, tipo: string, archivo: File): Promis
  * El documento tal como se subió. Se descarga con la cabecera de sesión, por eso no basta un
  * enlace normal: el navegador no mandaría el token.
  */
-export async function descargarDocumento(id: string, tipo: string): Promise<Blob> {
-  const ruta = rutaDocumento(id, tipo);
+export function descargarDocumento(id: string, tipo: string): Promise<Blob> {
+  return descargarArchivo(rutaDocumento(id, tipo));
+}
+
+async function descargarArchivo(ruta: string): Promise<Blob> {
   const respuesta = await fetch(`${URL_BASE}${ruta}`, { headers: cabecerasAutenticadas() });
   if (!respuesta.ok) {
     throw new Error(await mensajeDelError(respuesta, ruta));
@@ -335,4 +338,192 @@ export async function descargarDocumento(id: string, tipo: string): Promise<Blob
 /** US-014. */
 export function enviarSolicitud(id: string): Promise<Solicitud> {
   return enviar<Solicitud>(`/solicitudes/${encodeURIComponent(id)}/enviar`);
+}
+
+// ─── EPIC-04 · Evaluación y comités (US-017 a US-021) ─────────────────────────
+
+/** Contrato de `GET/POST /evaluadores`. Nunca trae el hash ni el CUI. */
+export interface CuentaEvaluador {
+  id: string;
+  nombreCompleto: string;
+  nombreUsuario: string;
+  correo: string;
+  rol: string;
+  activo: boolean;
+}
+
+export function listarEvaluadores(): Promise<CuentaEvaluador[]> {
+  return obtener<CuentaEvaluador[]>('/evaluadores');
+}
+
+/** Mismo cuerpo que el registro público; el rol lo pone el servidor. */
+export function crearEvaluador(datos: NuevoEstudiante): Promise<CuentaEvaluador> {
+  return enviar<CuentaEvaluador>('/evaluadores', datos);
+}
+
+export interface IntegranteComite {
+  id: string;
+  nombreCompleto: string;
+  nombreUsuario: string;
+  asignadas: number;
+  dictaminadas: number;
+}
+
+export interface Comite {
+  id: string;
+  nombre: string;
+  convocatoria: { id: string; codigo: string; titulo: string; tipo: string; cupos: number };
+  criterio: string;
+  integrantes: IntegranteComite[];
+  creadoPor: string;
+  creadoEn: string;
+}
+
+export interface SolicitudPorAsignar {
+  id: string;
+  numero: string;
+  enviadaEn: string | null;
+}
+
+export interface FilaConsolidado {
+  solicitudId: string;
+  numero: string;
+  estado: string;
+  estudiante: string;
+  evaluadoresAsignados: number;
+  dictamenesEmitidos: number;
+  puntajePromedio: number | null;
+  favorables: number;
+  desfavorables: number;
+  posicion: number | null;
+  dentroDeCupos: boolean;
+}
+
+export interface Consolidado {
+  comiteId: string;
+  convocatoria: string;
+  cupos: number;
+  completas: number;
+  filas: FilaConsolidado[];
+}
+
+export type PedidoAsignacion =
+  | { modo: 'AUTOMATICO'; porSolicitud: number }
+  | { modo: 'MANUAL'; asignaciones: { solicitudId: string; evaluadorIds: string[] }[] };
+
+const rutaComite = (id: string) => `/comites/${encodeURIComponent(id)}`;
+
+export function listarComites(): Promise<Comite[]> {
+  return obtener<Comite[]>('/comites');
+}
+
+export function obtenerComite(id: string): Promise<Comite> {
+  return obtener<Comite>(rutaComite(id));
+}
+
+/** US-017. */
+export function crearComite(datos: {
+  nombre: string;
+  convocatoriaId: string;
+  evaluadorIds: string[];
+}): Promise<Comite> {
+  return enviar<Comite>('/comites', datos);
+}
+
+export function agregarIntegrantes(id: string, evaluadorIds: string[]): Promise<Comite> {
+  return enviar<Comite>(`${rutaComite(id)}/evaluadores`, { evaluadorIds });
+}
+
+export function solicitudesPorAsignar(id: string): Promise<SolicitudPorAsignar[]> {
+  return obtener<SolicitudPorAsignar[]>(`${rutaComite(id)}/por-asignar`);
+}
+
+/** US-018. */
+export function asignarSolicitudes(
+  id: string,
+  pedido: PedidoAsignacion,
+): Promise<{ solicitudes: number; asignaciones: number }> {
+  return enviar(`${rutaComite(id)}/asignaciones`, pedido);
+}
+
+/** US-021. */
+export function obtenerConsolidado(id: string): Promise<Consolidado> {
+  return obtener<Consolidado>(`${rutaComite(id)}/consolidado`);
+}
+
+export interface LineaDesglose {
+  concepto: string;
+  valor: string;
+  aporte: number;
+}
+
+export interface Dictamen {
+  criterio: string;
+  puntaje: number;
+  desglose: LineaDesglose[];
+  recomendacion: 'FAVORABLE' | 'DESFAVORABLE';
+  observacion: string;
+  emitidoEn: string;
+}
+
+/** US-020. */
+export interface SolicitudAsignada {
+  solicitudId: string;
+  numero: string;
+  estado: string;
+  convocatoria: string;
+  asignadaEn: string;
+  dictaminada: boolean;
+  puntaje: number | null;
+  recomendacion: string | null;
+}
+
+export interface ExpedienteEvaluacion {
+  solicitudId: string;
+  numero: string;
+  estado: string;
+  convocatoria: string;
+  solicitante: {
+    nombreCompleto: string;
+    centroEducativo: string | null;
+    nivel: string | null;
+    promedio: number | null;
+    ingresoFamiliarMensual: number | null;
+    dependientes: number | null;
+    departamento: string | null;
+    municipio: string | null;
+  };
+  documentos: {
+    tipo: string;
+    descripcion: string;
+    cargado: boolean;
+    nombreArchivo: string | null;
+    tamanoBytes: number | null;
+  }[];
+  calculo: { criterio: string; puntaje: number; desglose: LineaDesglose[] } | null;
+  problemaCalculo: string | null;
+  puedeDictaminar: boolean;
+  dictamen: Dictamen | null;
+}
+
+const rutaEvaluacion = (id: string) => `/evaluaciones/solicitudes/${encodeURIComponent(id)}`;
+
+export function listarAsignadas(): Promise<SolicitudAsignada[]> {
+  return obtener<SolicitudAsignada[]>('/evaluaciones/asignadas');
+}
+
+export function obtenerExpedienteEvaluacion(id: string): Promise<ExpedienteEvaluacion> {
+  return obtener<ExpedienteEvaluacion>(rutaEvaluacion(id));
+}
+
+export function descargarDocumentoEvaluacion(id: string, tipo: string): Promise<Blob> {
+  return descargarArchivo(`${rutaEvaluacion(id)}/documentos/${encodeURIComponent(tipo)}`);
+}
+
+/** US-019. El puntaje no se manda: lo calcula el servidor con el criterio del tipo de beca. */
+export function emitirDictamen(
+  id: string,
+  datos: { recomendacion: 'FAVORABLE' | 'DESFAVORABLE'; observacion: string },
+): Promise<Dictamen> {
+  return enviar<Dictamen>(`${rutaEvaluacion(id)}/dictamen`, datos);
 }

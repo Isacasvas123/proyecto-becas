@@ -1,4 +1,5 @@
 import { Solicitud } from '../entities/solicitud.entity';
+import { NombreEstado } from '../enums/solicitud.enums';
 
 export const SOLICITUD_REPOSITORIO = Symbol('SolicitudRepositorio');
 
@@ -12,6 +13,12 @@ export interface SolicitudRepositorio {
   buscarActiva(estudianteId: string, convocatoriaId: string): Promise<Solicitud | null>;
 
   contarConPrefijoDeNumero(prefijo: string): Promise<number>;
+
+  /** US-018: las de una convocatoria en un estado, por orden de envío. */
+  buscarPorConvocatoriaYEstado(convocatoriaId: string, estado: NombreEstado): Promise<Solicitud[]>;
+
+  /** Varias por id. Las que no existan no aparecen. */
+  buscarPorIds(ids: readonly string[]): Promise<Solicitud[]>;
 
   /** Guarda la solicitud con sus documentos y su historial, todo o nada. */
   guardar(solicitud: Solicitud): Promise<void>;
