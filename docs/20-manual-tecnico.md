@@ -84,6 +84,11 @@ proyecto-becas/
 │   │   │   ├── modules/
 │   │   │   │   ├── usuarios/        Autenticación y control de acceso
 │   │   │   │   ├── convocatorias/   Programas de beca
+│   │   │   │   ├── estudiantes/     Perfil académico (US-011)
+│   │   │   │   ├── solicitudes/     Solicitudes, documentos e historial (EPIC-03)
+│   │   │   │   ├── evaluaciones/    Comités, asignación, dictámenes y consolidado (EPIC-04)
+│   │   │   │   ├── resoluciones/    Resolución, adjudicación y consulta pública (EPIC-05)
+│   │   │   │   ├── reportes/        Reportes, panel y exportación (EPIC-06; solo lee)
 │   │   │   │   └── salud/           /health y /ready
 │   │   │   ├── shared/
 │   │   │   │   ├── exceptions/      Filtro global de errores de dominio
@@ -115,6 +120,17 @@ Es la evidencia del patrón **Adapter** y la tabla que demuestra la inversión d
 | `usuarios/domain/ports/verificador-token`| `JwtVerificadorTokenAdapter`                                    | La validación de sesión    |
 | `usuarios/domain/ports/usuario.repositorio` | `UsuarioPrismaRepositorio` · `UsuarioEnMemoriaRepositorio`    | La persistencia            |
 | `convocatorias/domain/ports/convocatoria.repositorio` | `ConvocatoriaPrismaRepositorio` · `ConvocatoriaEnMemoriaRepositorio` | La persistencia |
+| `estudiantes/domain/ports/estudiante.repositorio` | `EstudiantePrismaRepositorio` · `EstudianteEnMemoriaRepositorio` | La persistencia |
+| `solicitudes/domain/ports/solicitud.repositorio` | `SolicitudPrismaRepositorio` · `SolicitudEnMemoriaRepositorio` | La persistencia (solicitud, documentos e historial en una transacción) |
+| `solicitudes/domain/ports/almacenamiento-documentos` | `AlmacenamientoLocalAdapter` · `AlmacenamientoMemoriaAdapter` | Dónde se guardan los archivos |
+| `solicitudes/domain/ports/notificador-solicitudes` | `NotificadorConsolaAdapter` | El canal de avisos (correo en US-022) |
+| `solicitudes/domain/ports/consultas-externas` | `ConsultaConvocatoriasAdapter` · `ConsultaPerfilesAdapter` | Los otros módulos: se les pregunta por su capa de aplicación, nunca por su dominio |
+| `evaluaciones/domain/ports/comite.repositorio` · `dictamen.repositorio` | `ComitePrismaRepositorio` · `DictamenPrismaRepositorio` y sus dobles en memoria | La persistencia. El de dictámenes **solo crea y lee** |
+| `evaluaciones/domain/ports/consultas-externas` | Cuatro adaptadores hacia `solicitudes`, `convocatorias`, `estudiantes` y `usuarios` | Los otros módulos. Ninguno de ellos depende de `evaluaciones` |
+| `resoluciones/domain/ports/consultas-externas` | Cuatro adaptadores hacia `solicitudes`, `evaluaciones`, `convocatorias` y `usuarios` | Los colaboradores de la fachada. `resoluciones` es el módulo más alto: nadie depende de él |
+| `resoluciones/domain/ports/notificador-resoluciones` | `NotificadorResolucionesConsolaAdapter` | El aviso de resolución y adjudicación (correo en US-022) |
+| `reportes/domain/ports/puertos` (fuentes) | Tres adaptadores hacia `solicitudes`, `estudiantes` y `convocatorias` | De dónde salen los datos. `reportes` no escribe nada |
+| `reportes/domain/ports/puertos` (`ExportadorReporte`) | `CsvExportador` · `PdfExportador` | El formato de salida. Uno nuevo es una clase más en la lista `EXPORTADORES` |
 
 El enlace ocurre en un único punto por módulo, el archivo `*.module.ts`:
 
@@ -139,12 +155,57 @@ Base local: `http://localhost:3000`
 | `GET`  | `/convocatorias`  | Público  | Lista las convocatorias publicadas y vigentes |
 | `GET`  | `/health`         | Público  | *Liveness*: ¿vive el proceso?               |
 | `GET`  | `/ready`          | Público  | *Readiness*: ¿responde PostgreSQL?          |
+| `GET`  | `/convocatorias/gestion` | **ADMINISTRADOR** | Todas, incluidos borradores |
+| `GET`  | `/convocatorias/catalogo` | **ADMINISTRADOR** | Requisitos, documentos y valores por defecto de cada tipo |
+| `POST` | `/convocatorias`  | **ADMINISTRADOR** | Crea una convocatoria en BORRADOR (US-006) |
+| `POST` | `/convocatorias/:id/publicar` | **ADMINISTRADOR** | La publica (US-007) |
+| `POST` | `/auth/registro`  | Público  | Registra un estudiante y devuelve la sesión iniciada (US-001) |
+| `GET` · `PUT` | `/estudiantes/perfil` | **ESTUDIANTE** | Consulta o guarda el propio perfil (US-011) |
+| `GET`  | `/estudiantes/departamentos` | **ESTUDIANTE** | Los 22 departamentos, para el formulario |
+| `POST` | `/solicitudes` | **ESTUDIANTE** | Crea una solicitud en BORRADOR (US-012) |
+| `GET`  | `/solicitudes` | **ESTUDIANTE** | Las propias, con estado, documentos e historial (US-015, US-016) |
+| `GET`  | `/solicitudes/:id` | **ESTUDIANTE** | Una propia. La de otra persona responde **403** |
+| `PUT`  | `/solicitudes/:id/documentos/:tipo` | **ESTUDIANTE** | Carga o reemplaza un documento; multipart, campo `archivo` (US-013) |
+| `GET`  | `/solicitudes/:id/documentos/:tipo` | **ESTUDIANTE** | Descarga el propio documento |
+| `POST` | `/solicitudes/:id/enviar` | **ESTUDIANTE** | La envía (US-014) |
+| `GET` · `POST` | `/evaluadores` | **ADMINISTRADOR** | Lista o crea cuentas de evaluador (US-017). Mismo cuerpo que el registro |
+| `GET` · `POST` | `/comites` | **ADMINISTRADOR** | Lista o crea comités (US-017) |
+| `GET` | `/comites/:id` | **ADMINISTRADOR** | Detalle, con carga de cada integrante |
+| `POST` | `/comites/:id/evaluadores` | **ADMINISTRADOR** | Agrega integrantes |
+| `GET` | `/comites/:id/por-asignar` | **ADMINISTRADOR** | Las solicitudes ENVIADAS de su convocatoria (US-018) |
+| `POST` | `/comites/:id/asignaciones` | **ADMINISTRADOR** | `{ "modo": "AUTOMATICO", "porSolicitud": 2 }` o `{ "modo": "MANUAL", "asignaciones": [...] }` (US-018) |
+| `GET` | `/comites/:id/consolidado` | **ADMINISTRADOR** | Puntaje promedio y ranking (US-021) |
+| `GET` | `/evaluaciones/asignadas` | **EVALUADOR** | Las propias (US-020) |
+| `GET` | `/evaluaciones/solicitudes/:id` | **EVALUADOR** | Solicitante, documentos y puntaje calculado. Si no está asignada: **403** |
+| `GET` | `/evaluaciones/solicitudes/:id/documentos/:tipo` | **EVALUADOR** | Descarga un documento de una solicitud asignada |
+| `POST` | `/evaluaciones/solicitudes/:id/dictamen` | **EVALUADOR** | `{ "recomendacion", "observacion" }`. El puntaje **no se manda**: mandarlo es 400 (US-019) |
+| `POST` | `/resoluciones/solicitudes/:id` | **ADMINISTRADOR** | `{ "decision": "APROBAR" \| "RECHAZAR", "motivo" }` (US-023). Sin cupo: 422 |
+| `POST` | `/resoluciones/solicitudes/:id/adjudicar` | **ADMINISTRADOR** | Adjudica una APROBADA y crea la beca (US-024) |
+| `GET` | `/resoluciones/convocatorias/:id/cupos` | **ADMINISTRADOR** | Cupos totales, aprobadas, adjudicadas y disponibles |
+| `GET` | `/reportes/solicitudes` | **ADMINISTRADOR** | US-028. Parámetros opcionales: `convocatoriaId`, `estado` (lista separada por comas), `nivel`, `departamento`, `desde`, `hasta` (AAAA-MM-DD, hora de Guatemala, inclusivas), `agruparPor`, `ordenarPor`, `formato` (`JSON`, `CSV`, `PDF`). Combinaciones sin sentido: 422 |
+| `GET` | `/reportes/panel` | **ADMINISTRADOR** | US-029. `convocatoriaId` opcional |
+| `GET` | `/reportes/regiones` | **ADMINISTRADOR** | US-031. `convocatoriaId` y `formato` opcionales |
+| `POST` | `/consulta-publica` | **Público** | `{ "numero", "cui" }` → solo `numero`, `estado`, `ultimoCambio` (US-025). 404 genérico; 429 tras 10 consultas por minuto |
 
-> **Las cuatro son públicas y eso es deliberado**, no un olvido. El guard de autenticación es
-> **global y seguro por defecto**: toda ruta exige sesión salvo que se marque con `@Publico()`.
-> Cada una de estas cuatro tiene su justificación escrita: el login es donde se *obtiene* la
-> sesión, el listado lo exige US-008 para visitantes sin cuenta, y los dos diagnósticos los
-> consume el monitoreo.
+> **El id del estudiante nunca viaja en la URL ni en el cuerpo.** Sale del token con el decorador
+> `@UsuarioActual()`. No existe una forma de pedir "las solicitudes del estudiante X".
+
+> **Las públicas lo son deliberadamente**, no por olvido. El guard de autenticación es **global y
+> seguro por defecto**: toda ruta exige sesión salvo que se marque con `@Publico()`. Cada una de
+> las cuatro públicas tiene su justificación escrita: el login es donde se *obtiene* la sesión, el
+> listado lo exige US-008 para visitantes sin cuenta, y los dos diagnósticos los consume el
+> monitoreo.
+
+**Códigos de error de las rutas de gestión**, que salen del filtro de excepciones del dominio:
+
+| Código | Cuándo |
+|---|---|
+| 400 | Datos con forma inválida: tipo inexistente, requisito fuera del catálogo, id que no es UUID, o un campo no permitido como `estado` |
+| 404 | La convocatoria no existe |
+| 409 | Transición inválida: publicar algo que no está en BORRADOR |
+| 403 | Recurso ajeno: la solicitud de otro estudiante (`AccesoDenegadoError`, US-003) |
+| 413 | Archivo de más de 5 MB (lo corta la recepción antes de leerlo entero) |
+| 422 | Regla de negocio: cierre anterior a la apertura, posgrado con más de 50 cupos, publicar sin requisitos, perfil incompleto, archivo que no es lo que dice ser, enviar con documentos faltantes |
 
 ### 4.2 `POST /auth/login`
 
@@ -175,6 +236,21 @@ saturar la CPU.
 
 **Respuesta 401** — mensaje **genérico a propósito**: no revela si falló el usuario o la
 contraseña. Distinguirlos le diría a quien tantea si va por buen camino.
+
+**Bloqueo tras intentos fallidos** (criterio 3 de US-002). Tras **5 intentos fallidos
+consecutivos** la cuenta queda bloqueada **15 minutos**:
+
+| Comportamiento | Por qué |
+|---|---|
+| Durante el bloqueo se rechaza **incluso la contraseña correcta** | Si no, el atacante seguiría probando y sabría cuándo acertó |
+| Durante el bloqueo **no se verifica la contraseña real**, pero se gasta el mismo tiempo contra un hash señuelo | Una cuenta bloqueada no debe responder más rápido que una activa |
+| El mensaje sigue siendo el genérico, **no dice "cuenta bloqueada"** | Decirlo confirmaría a un atacante que el usuario existe. Se prefirió no confirmar |
+| El bloqueo **caduca solo** a los 15 minutos | No depende de una tarea programada que, si fallara, dejaría cuentas bloqueadas para siempre |
+| Un acceso correcto **reinicia el contador** | El criterio dice intentos *consecutivos* |
+
+La política (5 y 15) son constantes del **dominio**, `MAX_INTENTOS_FALLIDOS` y
+`MINUTOS_DE_BLOQUEO` en `usuario.entity.ts`, y no variables de entorno: son un criterio de
+aceptación acordado con el Product Owner, no un ajuste operativo.
 
 ### 4.3 `GET /convocatorias`
 
@@ -261,7 +337,7 @@ diferencia, y una prueba la fija para que nadie la "arregle" agregándolo al esq
 
 ## 5. Base de datos
 
-Dos tablas hoy. El dominio declara sus propios enums en lugar de importar los de Prisma, para no
+Once tablas hoy. El dominio declara sus propios enums en lugar de importar los de Prisma, para no
 meter el ORM dentro de `domain/`; el precio es mantener dos listas sincronizadas, y se mitiga con
 una prueba que las compara y falla en CI si divergen.
 
@@ -275,7 +351,16 @@ una prueba que las compara y falla en CI si divergen.
 | `hash_password`  | texto        | bcrypt. **Nunca en texto plano**   |
 | `rol`            | `RolUsuario` | Por defecto `ESTUDIANTE`           |
 | `activo`         | booleano     | Por defecto `true`                 |
+| `intentos_fallidos` · `bloqueado_hasta` | entero · timestamp | Bloqueo tras 5 intentos (US-002) |
+| `nombre_completo` | texto, opcional | US-001                        |
+| `cui`            | texto, opcional | **Único**. 13 dígitos, sin espacios. Varios `NULL` permitidos |
 | `creado_en` · `actualizado_en` | timestamp | Automáticos           |
+
+**`POST /auth/registro`** recibe `nombreCompleto`, `cui`, `correo`, `nombreUsuario` y `password`.
+Responde **201** con la misma forma que el login, **409** si el CUI, el correo o el nombre de usuario
+ya existen —diciendo cuál—, y **422** si el CUI no tiene 13 dígitos o la contraseña no cumple la
+política. No acepta `rol`: una petición que lo mande recibe 400, y toda cuenta registrada por
+esta vía es `ESTUDIANTE`.
 
 ### 5.2 `Convocatoria`
 
@@ -293,7 +378,47 @@ una prueba que las compara y falla en CI si divergen.
 > El índice compuesto `[estado, fecha_cierre]` existe para una consulta concreta: el listado
 > público. Es el NFR de rendimiento —responder en menos de 1 segundo— resuelto en el esquema.
 
-### 5.3 Migraciones
+### 5.3 `Estudiante` (tabla `estudiantes`)
+
+Uno por usuario (`usuario_id` único). Todos los datos son opcionales porque el perfil se llena por
+partes; si está completo lo decide la entidad. `promedio` es `DECIMAL(5,2)` e
+`ingreso_familiar_mensual` `DECIMAL(12,2)`: un promedio de 69.995 no debe redondearse a 70 y
+cumplir un requisito. `departamento` es el enum `Departamento` (22 valores).
+
+### 5.4 `Solicitud`, `DocumentoSolicitud` y `HistorialEstadoSolicitud`
+
+| Tabla | Lo importante |
+|---|---|
+| `solicitudes` | `numero` **único** (`SOL-2026-000001`). `estado` es el enum `EstadoSolicitud`. `documentos_exigidos` es una **copia** de lo que pedía la convocatoria al crearla. Borrar un usuario o una convocatoria con solicitudes está **restringido** |
+| `documentos_solicitud` | Único por `(solicitud_id, tipo)`: reemplazar es actualizar la fila. `referencia` es la ruta que dio el adaptador; nunca se expone al cliente |
+| `historial_estado_solicitud` | El id lo pone la entidad; la aplicación **solo inserta** (`createMany` con `skipDuplicates`). Índice por `(solicitud_id, ocurrido_en)` |
+
+Guardar una solicitud es **una transacción**: la fila, sus documentos y las entradas nuevas del
+historial. Si algo falla, no queda un documento guardado con la solicitud en el estado anterior.
+
+### 5.5 Comités, asignaciones y dictámenes (EPIC-04)
+
+| Tabla | Lo importante |
+|---|---|
+| `comites` | `convocatoria_id` **único**: una convocatoria, un comité (CU-13, 3a). Guarda quién lo creó |
+| `comite_evaluadores` | Clave compuesta `(comite_id, evaluador_id)` |
+| `asignaciones_evaluacion` | Único por `(solicitud_id, evaluador_id)`: repetir una asignación no la duplica. Guarda quién asignó y cuándo |
+| `dictamenes` | Único por `(solicitud_id, evaluador_id)`. `puntaje` `DECIMAL(5,2)`, `desglose` JSON con el cálculo tal como se hizo. La aplicación **solo inserta** |
+
+Borrar un usuario, una solicitud o una convocatoria con comités, asignaciones o dictámenes está
+**restringido** en la base.
+
+### 5.6 `Beca` (EPIC-05)
+
+Tabla `becas`: `codigo` **único** (`BECA-2026-000001`) y `solicitud_id` **único** (una beca por
+solicitud). Se escribe en la misma transacción que el cambio de la solicitud a ADJUDICADA.
+
+**Cupos.** No hay una columna de "cupos usados": se cuentan las solicitudes APROBADAS y ADJUDICADAS
+de la convocatoria. Aprobar **reserva** el cupo; adjudicar lo formaliza. La aprobación bloquea la
+fila de la convocatoria (`FOR UPDATE`) antes de contar, para que dos aprobaciones simultáneas no
+pasen por el mismo cupo.
+
+### 5.7 Migraciones
 
 Versionadas en `apps/api/prisma/migrations/`. **Nunca se modifica la base a mano.**
 
@@ -321,6 +446,9 @@ Todo por variables de entorno. **Nada de direcciones ni secretos en el código.*
 | `JWT_EXPIRACION`  | Vigencia (`8h`)                              |                                              |
 | `BCRYPT_ROUNDS`   | Coste del hash (10 local, 12 Staging)        | Más alto = más seguro y más lento            |
 | `VITE_API_URL`    | URL de la API para el frontend               |                                              |
+| `ALMACENAMIENTO_TIPO` | Adaptador de documentos (`local`)       | Otro valor impide arrancar: todavía no existe |
+| `ALMACENAMIENTO_RUTA_LOCAL` | Carpeta de documentos (`./uploads`) | Está en `.gitignore`. En Staging el disco se borra en cada despliegue |
+| `EVALUADOR_*` | Evaluador de prueba del seed | Solo desarrollo, igual que `ADMIN_*` |
 
 > ⚠️ Las credenciales de `ADMIN_*` en `.env.example` son **solo para el seed de desarrollo local**.
 > El seed **no se ejecuta en Staging**: crearía un administrador con credenciales que están escritas
@@ -394,12 +522,12 @@ El orden importa: **de dentro hacia fuera**, igual que apuntan las dependencias.
 
 | Patrón           | Tipo           | Estado                                 | Sprint |
 | ---------------- | -------------- | -------------------------------------- | ------ |
-| **Adapter**      | Estructural    | ✅ Implementado y probado               | 1      |
-| Factory Method   | Creacional     | 🔴 Pendiente                            | 3      |
-| State            | Comportamiento | 🔴 Pendiente                            | 4      |
-| Strategy         | Comportamiento | 🔴 Pendiente                            | 5      |
-| Facade           | Estructural    | 🔴 Pendiente                            | 6      |
-| Builder          | Creacional     | 🔴 Pendiente                            | 7      |
+| **Adapter**      | Estructural    | ✅ Implementado y probado (DEF-03)      | 1      |
+| **Factory Method** | Creacional   | ✅ Implementado y probado (12 Sep)      | 3      |
+| **State**        | Comportamiento | ✅ Implementado y probado (16 Sep)      | 4      |
+| **Strategy**     | Comportamiento | ✅ Implementado y probado (16 Sep)      | 5      |
+| **Facade**       | Estructural    | ✅ Implementado y probado (16 Sep)      | 6      |
+| **Builder**      | Creacional     | ✅ Implementado y probado (16 Sep)      | 7      |
 
 La justificación de cada uno —qué problema resuelve, qué alternativas había, por qué se eligió y
 qué aporta— está en `06-patrones.md`. **Los patrones se implementan cuando aparece el problema que
@@ -415,6 +543,18 @@ Se documenta para que quien mantenga el sistema no la descubra a golpes:
 | `@nestjs/jwt` v12 es solo ESM                                    | Jest necesita transformarlo (`tsconfig.jest.json`) | Revisar si una versión futura publica CommonJS |
 | `ConvocatoriaPrismaRepositorio` sin pruebas                    | El SQL real no se ejercita                       | Issue #6                |
 | El listado público quedó detrás del login en el frontend        | Incumple US-008                                  | Sprint 3                |
-| Falta el bloqueo tras 5 intentos fallidos                       | Incumple un criterio de US-002                   | Sprint 3                |
+| El contador de intentos es lectura-modificación-escritura        | Peticiones fallidas simultáneas podrían contar menos | Aceptado: riesgo bajo, documentado en el repositorio |
 | `main` y `develop` sin protección de rama                       | El flujo depende de que el equipo se acuerde     | Al entrar GitHub Pro    |
 | El dominio duplica los enums de Prisma                          | Pueden desincronizarse                           | Mitigado con una prueba |
+| Los documentos se guardan en el disco del servidor               | En Staging (Render) se pierden en cada despliegue | Adaptador de nube cuando haya proveedor; el puerto ya existe |
+| El número de solicitud se calcula contando las del año           | Dos creaciones simultáneas: la segunda falla contra el índice único (no se duplica) | Aceptado, igual que el código de convocatoria |
+| Los repositorios Prisma de `estudiantes`, `solicitudes` y `evaluaciones` sin prueba automática contra la base | El SQL real solo se verificó a mano (16 Sep) | Mismo plan que el Issue #6 |
+| Las fórmulas de puntaje son una propuesta del equipo | Pueden no coincidir con la política del Ministerio | **Confirmar con el Product Owner**; cambiar es editar una clase |
+| El perfil del estudiante se puede editar después de enviar la solicitud | El puntaje se calcula con el perfil del momento de evaluar | Mitigado: el dictamen guarda los datos usados en su desglose. Solución completa: congelar el perfil al enviar |
+| No se pueden quitar integrantes de un comité (CU-13, 5a) | Un evaluador que se retira sigue en el comité | Siguiente iteración de US-017 |
+| El límite de la consulta pública cuenta en la memoria del proceso | Con varias instancias, cada una cuenta por su lado; se reinicia al reiniciar | Suficiente con una instancia; con más, un almacén compartido |
+| El límite depende de la dirección real del cliente | Detrás del proxy de Render se usa `trust proxy` (un salto) en producción | Revisar si cambia la infraestructura |
+| Resolver no genera acta | La decisión queda en el historial, pero no en un documento | US-026, como un colaborador más de la fachada |
+| Los reportes combinan en memoria datos de tres módulos | Suficiente para miles de solicitudes, no para cientos de miles | Cambiar la fuente por una vista en la base; el servicio no cambia |
+| El PDF usa las fuentes estándar (WinAnsi) | Cubre el español; otros alfabetos salen como "?" | Si hace falta, cambiar `pdf-simple.ts` por una biblioteca |
+| La prueba de integración de EPIC-04 no importa `EvaluacionesModule` | Jest no carga `@nestjs/jwt` en esta rama | Se corrige con el PR #12; entonces se simplifica la prueba |

@@ -10,9 +10,9 @@
  * En móvil las columnas se apilan y la lista de garantías se oculta: ahí lo
  * único que importa es entrar.
  *
- * ALCANCE (Sprint 1): solo el inicio de sesión. Los enlaces a "crear cuenta"
- * (US-001) y "olvidé mi contraseña" (US-005) aparecerán en el Sprint 2, cuando
- * esas historias existan. No se ponen enlaces que no llevan a ningún lado.
+ * ALCANCE: el inicio de sesión y el enlace a crear cuenta (US-001). El de
+ * "olvidé mi contraseña" (US-005) aparecerá cuando esa historia exista: no se
+ * ponen enlaces que no llevan a ningún lado.
  */
 import { useEffect, type ReactElement } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -30,16 +30,26 @@ export function PaginaLogin(): ReactElement {
   const navegar = useNavigate();
   const ubicacion = useLocation();
 
-  const destino = (ubicacion.state as EstadoNavegacion | null)?.destino ?? '/convocatorias';
+  const destinoPedido = (ubicacion.state as EstadoNavegacion | null)?.destino;
+
+  // Si venía de una ruta concreta, se le devuelve ahí. Si no, cada rol va a su panel: entrar al
+  // sistema para aterrizar en una página que ya podía ver sin cuenta no le sirve a nadie.
+  function destinoPara(rol: string): string {
+    if (destinoPedido !== undefined) return destinoPedido;
+    if (rol === 'ADMINISTRADOR') return '/gestion';
+    if (rol === 'ESTUDIANTE') return '/solicitudes';
+    if (rol === 'EVALUADOR') return '/evaluaciones';
+    return '/convocatorias';
+  }
 
   // Si ya hay sesión no tiene sentido mostrar el formulario. Va en un efecto y
   // no en el cuerpo del componente porque navegar es un efecto secundario, y
   // hacerlo durante el render es un error en React.
   useEffect(() => {
     if (sesion !== null) {
-      navegar(destino, { replace: true });
+      navegar(destinoPara(sesion.usuario.rol), { replace: true });
     }
-  }, [sesion, destino, navegar]);
+  }, [sesion, destinoPedido, navegar]);
 
   return (
     <div className="acceso">
@@ -98,7 +108,7 @@ export function PaginaLogin(): ReactElement {
         <FormularioLogin
           onSesionIniciada={(nueva) => {
             iniciar(nueva);
-            navegar(destino, { replace: true });
+            navegar(destinoPara(nueva.usuario.rol), { replace: true });
           }}
         />
       </section>

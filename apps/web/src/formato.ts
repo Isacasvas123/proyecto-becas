@@ -86,3 +86,66 @@ export function estadoPlazo(isoCierre: string, ahora: Date = new Date()): Estado
 
   return { texto: `Cierra en ${dias} días`, clase: 'holgado' };
 }
+
+/** Nombre legible de cada estado de una solicitud (patrón State en el backend). */
+const NOMBRE_ESTADO_SOLICITUD: Record<string, string> = {
+  BORRADOR: 'Borrador',
+  ENVIADA: 'Enviada',
+  EN_EVALUACION: 'En evaluación',
+  APROBADA: 'Aprobada',
+  RECHAZADA: 'Rechazada',
+  ADJUDICADA: 'Adjudicada',
+};
+
+export function nombreEstadoSolicitud(estado: string): string {
+  return NOMBRE_ESTADO_SOLICITUD[estado] ?? estado;
+}
+
+export function formatearFechaHora(iso: string): string {
+  return new Date(iso).toLocaleString('es-GT', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+export function formatearTamano(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
+
+/**
+ * Nombre de cada departamento. El servidor guarda el código (catálogo cerrado, ver US-031); la
+ * misma lista vive en el backend y la expone `GET /estudiantes/departamentos` para el formulario.
+ */
+export const NOMBRE_DEPARTAMENTO: Record<string, string> = {
+  ALTA_VERAPAZ: 'Alta Verapaz',
+  BAJA_VERAPAZ: 'Baja Verapaz',
+  CHIMALTENANGO: 'Chimaltenango',
+  CHIQUIMULA: 'Chiquimula',
+  EL_PROGRESO: 'El Progreso',
+  ESCUINTLA: 'Escuintla',
+  GUATEMALA: 'Guatemala',
+  HUEHUETENANGO: 'Huehuetenango',
+  IZABAL: 'Izabal',
+  JALAPA: 'Jalapa',
+  JUTIAPA: 'Jutiapa',
+  PETEN: 'Petén',
+  QUETZALTENANGO: 'Quetzaltenango',
+  QUICHE: 'Quiché',
+  RETALHULEU: 'Retalhuleu',
+  SACATEPEQUEZ: 'Sacatepéquez',
+  SAN_MARCOS: 'San Marcos',
+  SANTA_ROSA: 'Santa Rosa',
+  SOLOLA: 'Sololá',
+  SUCHITEPEQUEZ: 'Suchitepéquez',
+  TOTONICAPAN: 'Totonicapán',
+  ZACAPA: 'Zacapa',
+};
+
+export function nombreDepartamento(codigo: string | null): string | null {
+  return codigo === null ? null : (NOMBRE_DEPARTAMENTO[codigo] ?? codigo);
+}

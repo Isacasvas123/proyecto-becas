@@ -47,6 +47,10 @@ describe('usuario-prisma.mapper', () => {
       hashPassword: '$2b$10$hash',
       rol: RolPrisma.ADMINISTRADOR,
       activo: true,
+      intentosFallidos: 0,
+      bloqueadoHasta: null,
+      nombreCompleto: null,
+      cui: null,
       creadoEn: new Date('2026-09-01T00:00:00.000Z'),
       actualizadoEn: new Date('2026-09-01T00:00:00.000Z'),
     });
@@ -66,10 +70,60 @@ describe('usuario-prisma.mapper', () => {
       hashPassword: '$2b$10$hash',
       rol: RolPrisma.ESTUDIANTE,
       activo: true,
+      intentosFallidos: 0,
+      bloqueadoHasta: null,
+      nombreCompleto: null,
+      cui: null,
       creadoEn: new Date(),
       actualizadoEn: new Date(),
     });
 
     expect(usuario.nombreUsuario.valor).toBe('admin');
+  });
+
+  it('traduce el estado del bloqueo por intentos fallidos (US-002)', () => {
+    // Si el mapper olvidara estos dos campos, la cuenta se "desbloquearía" en cada lectura de
+    // la base y el criterio 3 de US-002 no funcionaría en producción aunque todas las pruebas
+    // del dominio pasaran. Es exactamente el hueco entre capas que esta prueba cierra.
+    const bloqueadoHasta = new Date('2026-09-12T15:15:00.000Z');
+
+    const usuario = aDominio({
+      id: 'id-3',
+      nombreUsuario: 'ana',
+      correo: 'ana@becas.gob.gt',
+      hashPassword: '$2b$10$hash',
+      rol: RolPrisma.ESTUDIANTE,
+      activo: true,
+      intentosFallidos: 3,
+      bloqueadoHasta,
+      nombreCompleto: 'Ana López',
+      cui: '2456789010101',
+      creadoEn: new Date(),
+      actualizadoEn: new Date(),
+    });
+
+    expect(usuario.intentosFallidos).toBe(3);
+    expect(usuario.bloqueadoHasta).toEqual(bloqueadoHasta);
+    expect(usuario.estaBloqueado(new Date('2026-09-12T15:00:00.000Z'))).toBe(true);
+  });
+
+  it('traduce la identidad de la persona (US-001)', () => {
+    const usuario = aDominio({
+      id: 'id-4',
+      nombreUsuario: 'ana',
+      correo: 'ana@becas.gob.gt',
+      hashPassword: '$2b$10$hash',
+      rol: RolPrisma.ESTUDIANTE,
+      activo: true,
+      intentosFallidos: 0,
+      bloqueadoHasta: null,
+      nombreCompleto: 'Ana López',
+      cui: '2456789010101',
+      creadoEn: new Date(),
+      actualizadoEn: new Date(),
+    });
+
+    expect(usuario.nombreCompleto).toBe('Ana López');
+    expect(usuario.cui?.valor).toBe('2456789010101');
   });
 });
