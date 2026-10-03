@@ -1,11 +1,7 @@
-/**
- * CAPA: application/
- *
- * Traduce la entidad de dominio al DTO de salida. Una sola responsabilidad (SOLID · S) y
- * un solo lugar donde cambiar el formato de las fechas del contrato público.
- */
 import { Convocatoria } from '../../domain/entities/convocatoria.entity';
-import { ConvocatoriaListadaDto } from '../dto/convocatoria-listada.dto';
+import { DESCRIPCION_REQUISITO, Requisito } from '../../domain/enums/requisito.enum';
+import { DESCRIPCION_DOCUMENTO, TipoDocumento } from '../../domain/enums/tipo-documento.enum';
+import { ConvocatoriaListadaDto, ElementoCatalogoDto } from '../dto/convocatoria-listada.dto';
 
 export function aConvocatoriaListadaDto(convocatoria: Convocatoria): ConvocatoriaListadaDto {
   return {
@@ -19,5 +15,15 @@ export function aConvocatoriaListadaDto(convocatoria: Convocatoria): Convocatori
     // ISO-8601 en el contrato: sin ambigüedad de zona horaria para el frontend.
     fechaApertura: convocatoria.periodo.apertura.toISOString(),
     fechaCierre: convocatoria.periodo.cierre.toISOString(),
+    requisitos: convocatoria.requisitos.map(aRequisitoDto),
+    documentosExigidos: convocatoria.documentosExigidos.map(aDocumentoDto),
   };
+}
+
+export function aRequisitoDto(requisito: Requisito): ElementoCatalogoDto {
+  return { codigo: requisito, descripcion: DESCRIPCION_REQUISITO[requisito] };
+}
+
+export function aDocumentoDto(documento: TipoDocumento): ElementoCatalogoDto {
+  return { codigo: documento, descripcion: DESCRIPCION_DOCUMENTO[documento] };
 }

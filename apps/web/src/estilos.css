@@ -941,3 +941,1093 @@ code {
     gap: var(--sp-2) var(--sp-4);
   }
 }
+
+/* ============================================================================
+   SPRINT 3 — NAVEGACIÓN, REQUISITOS EN LA TARJETA Y GESTIÓN (US-006 · US-007 · US-008)
+   ========================================================================== */
+
+.navegacion {
+  display: flex;
+  gap: var(--sp-1);
+  margin-left: auto;
+}
+
+.navegacion a {
+  padding: var(--sp-2) var(--sp-3);
+  font-size: var(--txt-sm);
+  font-weight: 700;
+  color: var(--tinta-2);
+  text-decoration: none;
+  border-radius: var(--radio);
+}
+
+.navegacion a:hover {
+  color: var(--gob-700);
+  background: var(--gob-50);
+}
+
+/* NavLink marca la ruta actual con `aria-current="page"`: se estiliza sobre el atributo de
+   accesibilidad y no sobre una clase propia, así el lector de pantalla y la vista dicen lo
+   mismo. */
+.navegacion a[aria-current='page'] {
+  color: var(--gob-700);
+  background: var(--gob-100);
+}
+
+a.boton {
+  text-decoration: none;
+}
+
+/* ---- Requisitos plegables en la tarjeta pública ---- */
+
+.requisitos {
+  margin-top: var(--sp-3);
+  border-top: 1px solid var(--linea-2);
+  padding-top: var(--sp-3);
+}
+
+.requisitos summary {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: baseline;
+  font-size: var(--txt-sm);
+  font-weight: 700;
+  color: var(--gob-700);
+  cursor: pointer;
+}
+
+.requisitos summary:focus-visible {
+  outline: 2px solid var(--gob-500);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+.requisitos .cuenta,
+.opciones .cuenta {
+  font-size: var(--txt-xs);
+  font-weight: 600;
+  color: var(--tinta-3);
+}
+
+.requisitos-cuerpo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--sp-4);
+  margin-top: var(--sp-3);
+}
+
+.requisitos h4 {
+  margin: 0 0 var(--sp-2);
+  font-size: var(--txt-2xs);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tinta-3);
+}
+
+.requisitos ul {
+  margin: 0;
+  padding-left: var(--sp-4);
+  font-size: var(--txt-sm);
+  color: var(--tinta-2);
+}
+
+.requisitos li + li {
+  margin-top: var(--sp-1);
+}
+
+/* ---- Página de gestión ---- */
+
+.gestion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.gestion .barra-resultados {
+  align-items: center;
+}
+
+.aviso.exito {
+  color: var(--verde);
+  background: var(--verde-bg);
+  border: 1px solid #bfe3d0;
+  border-left: 3px solid var(--verde);
+  text-align: left;
+}
+
+.gestion .aviso {
+  text-align: left;
+}
+
+.esqueleto.alto {
+  height: 220px;
+}
+
+/* La tabla desborda en horizontal dentro de su propio contenedor: la página nunca debe
+   hacer scroll lateral en un teléfono. */
+.tabla-contenedor {
+  overflow-x: auto;
+  background: var(--papel);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-lg);
+}
+
+.tabla {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: var(--txt-sm);
+}
+
+.tabla th {
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--txt-2xs);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+  color: var(--tinta-3);
+  background: var(--fondo);
+  border-bottom: 1px solid var(--linea);
+}
+
+.tabla td {
+  padding: var(--sp-3) var(--sp-4);
+  vertical-align: middle;
+  border-bottom: 1px solid var(--linea-2);
+}
+
+.tabla tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tabla tbody tr:hover {
+  background: var(--gob-50);
+}
+
+.tabla .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabla .codigo {
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-size: var(--txt-xs);
+  color: var(--tinta-2);
+  white-space: nowrap;
+}
+
+.tabla .titulo-fila {
+  margin-bottom: var(--sp-1);
+  font-weight: 700;
+  color: var(--tinta);
+}
+
+.tabla .accion {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* En la tabla la etiqueta de tipo lleva la clase directamente, no heredada de la tarjeta. */
+.etiqueta-tipo.t-nivel_medio {
+  color: var(--medio);
+  background: var(--medio-bg);
+}
+.etiqueta-tipo.t-universitaria {
+  color: var(--univ);
+  background: var(--univ-bg);
+}
+.etiqueta-tipo.t-posgrado {
+  color: var(--posg);
+  background: var(--posg-bg);
+}
+
+/* El estado se lee por forma y por color: un borrador lleva borde discontinuo, así no depende
+   solo del color para quien no distingue el verde del gris. */
+.estado {
+  display: inline-block;
+  padding: 2px var(--sp-2);
+  font-size: var(--txt-2xs);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.estado.e-borrador {
+  color: var(--tinta-2);
+  background: var(--linea-2);
+  border: 1px dashed var(--tinta-3);
+}
+
+.estado.e-publicada {
+  color: var(--verde);
+  background: var(--verde-bg);
+  border: 1px solid #bfe3d0;
+}
+
+.estado.e-cerrada {
+  color: var(--tinta-3);
+  background: var(--fondo);
+  border: 1px solid var(--linea);
+}
+
+.solo-lector {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---- Formulario de nueva convocatoria ---- */
+
+.formulario-convocatoria {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  padding: var(--sp-5);
+}
+
+.formulario-convocatoria .encabezado-form h2 {
+  font-size: var(--txt-lg);
+}
+
+.formulario-convocatoria .sub {
+  margin: var(--sp-1) 0 0;
+  font-size: var(--txt-sm);
+  color: var(--tinta-2);
+}
+
+.rejilla {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-4);
+}
+
+.rejilla .campo.ancho {
+  grid-column: 1 / -1;
+}
+
+.campo select,
+.campo textarea {
+  padding: var(--sp-3);
+  font: inherit;
+  font-size: var(--txt-base);
+  color: var(--tinta);
+  background: var(--papel);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+}
+
+.campo textarea {
+  resize: vertical;
+}
+
+.campo select:focus,
+.campo textarea:focus {
+  outline: none;
+  border-color: var(--gob-500);
+  box-shadow: 0 0 0 3px var(--gob-100);
+}
+
+.opciones-dobles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-4);
+}
+
+.opciones {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: var(--sp-4);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-lg);
+}
+
+.opciones legend {
+  padding: 0 var(--sp-2);
+  font-size: var(--txt-sm);
+  font-weight: 700;
+  color: var(--tinta);
+}
+
+.opciones label {
+  display: flex;
+  gap: var(--sp-2);
+  align-items: flex-start;
+  font-size: var(--txt-sm);
+  color: var(--tinta-2);
+  cursor: pointer;
+}
+
+.opciones input {
+  margin-top: 3px;
+  accent-color: var(--gob-600);
+}
+
+.acciones {
+  display: flex;
+  gap: var(--sp-3);
+  justify-content: flex-end;
+}
+
+@media (max-width: 640px) {
+  .rejilla,
+  .opciones-dobles {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .navegacion {
+    order: 3;
+    flex-wrap: wrap;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .acciones {
+    flex-direction: column-reverse;
+  }
+
+  .acciones .boton {
+    width: 100%;
+  }
+}
+
+/* ============================================================================
+   REGISTRO DE ESTUDIANTE (US-001)
+   ========================================================================== */
+
+.acciones-visitante {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.enlace-alterno {
+  margin: 0;
+  font-size: var(--txt-sm);
+  text-align: center;
+  color: var(--tinta-2);
+}
+
+.enlace-alterno a {
+  font-weight: 700;
+}
+
+/* La lista se lee por forma además de por color: un punto o una marca de verificación. */
+.condiciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--txt-xs);
+  color: var(--tinta-3);
+}
+
+.condiciones li.cumple {
+  color: var(--verde);
+  font-weight: 600;
+}
+
+.campo .pista.alerta {
+  color: var(--rojo);
+}
+
+.campo input[aria-invalid='true'] {
+  border-color: var(--rojo);
+}
+
+/* ============================================================================
+   ESTUDIANTE — perfil, solicitudes y expediente (EPIC-03)
+   ========================================================================== */
+
+.privada {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+.privada .barra-resultados {
+  margin-bottom: 0;
+}
+
+.aviso.pendiente {
+  color: var(--ambar);
+  background: var(--ambar-bg);
+  border: 1px solid #f5d9a8;
+  border-left: 3px solid var(--ambar);
+  text-align: left;
+}
+
+.privada .aviso {
+  text-align: left;
+}
+
+.aviso a {
+  font-weight: 700;
+}
+
+.formulario-perfil {
+  padding: var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.formulario-perfil fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.formulario-perfil legend {
+  margin-bottom: var(--sp-3);
+  font-size: var(--txt-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tinta-3);
+}
+
+.confirmacion {
+  align-self: center;
+  font-size: var(--txt-sm);
+  font-weight: 600;
+  color: var(--verde);
+}
+
+/* Acción al pie de la tarjeta de convocatoria */
+.accion-tarjeta {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--sp-3);
+}
+
+/* Estados de la solicitud: forma además de color, como los de la convocatoria. */
+.estado.e-enviada {
+  color: var(--gob-700);
+  background: var(--gob-100);
+  border: 1px solid var(--gob-300);
+}
+
+.estado.e-en_evaluacion {
+  color: var(--ambar);
+  background: var(--ambar-bg);
+  border: 1px solid #f5d9a8;
+}
+
+.estado.e-aprobada,
+.estado.e-adjudicada {
+  color: var(--verde);
+  background: var(--verde-bg);
+  border: 1px solid #bfe3d0;
+}
+
+.estado.e-adjudicada {
+  border-width: 2px;
+}
+
+.estado.e-rechazada {
+  color: var(--rojo);
+  background: var(--rojo-bg);
+  border: 1px solid #f3c9c5;
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.estado.grande {
+  padding: var(--sp-1) var(--sp-3);
+  font-size: var(--txt-xs);
+}
+
+/* Mis solicitudes */
+.solicitud-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--papel);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-1);
+}
+
+.solicitud-fila .cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-3);
+  margin-bottom: var(--sp-2);
+}
+
+.solicitud-fila h3 {
+  margin: 0;
+  font-size: var(--txt-md);
+}
+
+.solicitud-fila h3 a {
+  color: var(--tinta);
+}
+
+.solicitud-fila .meta {
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* Expediente */
+.migas {
+  margin: 0;
+  font-size: var(--txt-sm);
+}
+
+.expediente {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(16rem, 1fr);
+  gap: var(--sp-4);
+  align-items: start;
+}
+
+.lateral {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.documentos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.documentos li {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-top: 1px solid var(--linea-2);
+}
+
+.documentos li:first-child {
+  border-top: 0;
+}
+
+.marca-doc {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  font-weight: 800;
+}
+
+.documentos .cargado .marca-doc {
+  color: var(--verde);
+  background: var(--verde-bg);
+}
+
+.documentos .pendiente .marca-doc {
+  color: var(--tinta-3);
+  background: var(--fondo);
+  border: 1px dashed var(--tinta-3);
+}
+
+.doc-texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.doc-nombre {
+  font-weight: 600;
+  color: var(--tinta);
+}
+
+.doc-detalle {
+  font-size: var(--txt-xs);
+  color: var(--tinta-3);
+  overflow-wrap: anywhere;
+}
+
+.enlace {
+  padding: 0;
+  font: inherit;
+  color: var(--gob-600);
+  background: none;
+  border: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.envio-cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+}
+
+.envio-cuerpo p {
+  margin: 0;
+  font-size: var(--txt-sm);
+}
+
+.envio-cuerpo .pista {
+  font-size: var(--txt-xs);
+  color: var(--tinta-3);
+}
+
+.confirmar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  background: var(--ambar-bg);
+  border-radius: var(--radio);
+}
+
+.linea-tiempo {
+  margin: 0;
+  padding: var(--sp-4) var(--sp-4) var(--sp-4) var(--sp-6);
+  list-style: none;
+}
+
+.linea-tiempo li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-1);
+  padding-bottom: var(--sp-4);
+}
+
+.linea-tiempo li::before {
+  position: absolute;
+  top: 0.35rem;
+  left: calc(-1 * var(--sp-4));
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--gob-500);
+  border-radius: 50%;
+  content: '';
+}
+
+.linea-tiempo li:not(:last-child)::after {
+  position: absolute;
+  top: 1rem;
+  bottom: 0;
+  left: calc(-1 * var(--sp-4) + 0.2rem);
+  width: 1px;
+  background: var(--linea);
+  content: '';
+}
+
+.linea-tiempo time,
+.linea-tiempo .detalle {
+  font-size: var(--txt-xs);
+  color: var(--tinta-3);
+}
+
+@media (max-width: 860px) {
+  .expediente {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .solicitud-fila {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .documentos li {
+    flex-wrap: wrap;
+  }
+
+  .documentos li .boton {
+    width: 100%;
+  }
+}
+
+/* ============================================================================
+   EVALUACIÓN Y COMITÉS (EPIC-04)
+   ========================================================================== */
+
+.reparto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--linea-2);
+  font-size: var(--txt-sm);
+}
+
+.reparto label {
+  font-weight: 700;
+}
+
+.reparto select,
+.documentos select {
+  padding: var(--sp-2);
+  font: inherit;
+  font-size: var(--txt-sm);
+  background: var(--papel);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+}
+
+.documentos select {
+  max-width: 14rem;
+}
+
+.confirmar-linea {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-2);
+  background: var(--ambar-bg);
+  border-radius: var(--radio);
+}
+
+.pista-fila {
+  font-size: var(--txt-xs);
+  color: var(--tinta-3);
+}
+
+/* En el consolidado: lo que cabría en los cupos. Borde además de color. */
+.tabla tr.en-cupo td {
+  background: var(--verde-bg);
+}
+
+.tabla tr.en-cupo td:first-child {
+  box-shadow: inset 3px 0 0 var(--verde);
+}
+
+.ficha {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--sp-2) var(--sp-4);
+  margin: 0;
+  padding: var(--sp-4);
+  font-size: var(--txt-sm);
+}
+
+.ficha dt {
+  color: var(--tinta-3);
+}
+
+.ficha dd {
+  margin: 0;
+  font-weight: 600;
+  color: var(--tinta);
+}
+
+.envio-cuerpo .puntaje-grande {
+  font-size: var(--txt-2xl);
+  font-weight: 800;
+  color: var(--gob-800);
+  line-height: 1;
+}
+
+.puntaje-grande span {
+  font-size: var(--txt-md);
+  font-weight: 600;
+  color: var(--tinta-3);
+}
+
+.desglose {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--linea-2);
+}
+
+.desglose li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--linea-2);
+  font-size: var(--txt-sm);
+}
+
+.desglose li > span:first-child {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.desglose .aporte {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.observacion {
+  white-space: pre-wrap;
+}
+
+@media (max-width: 640px) {
+  .documentos select {
+    max-width: none;
+    flex: 1;
+  }
+}
+
+/* ============================================================================
+   RESOLUCIÓN Y CONSULTA PÚBLICA (EPIC-05)
+   ========================================================================== */
+
+.decision {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  margin: var(--sp-3) var(--sp-4) var(--sp-4);
+  padding: var(--sp-4);
+  background: var(--gob-50);
+  border: 1px solid var(--gob-100);
+  border-left: 3px solid var(--gob-600);
+  border-radius: var(--radio);
+}
+
+.decision h3 {
+  margin: 0;
+  font-size: var(--txt-md);
+}
+
+.decision p {
+  margin: 0;
+  font-size: var(--txt-sm);
+}
+
+.decision .pista {
+  font-size: var(--txt-xs);
+  color: var(--tinta-3);
+}
+
+.opciones.en-linea {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+}
+
+.aviso.beca {
+  font-size: var(--txt-base);
+}
+
+.consulta {
+  max-width: 44rem;
+}
+
+.nota-consulta {
+  margin: 0;
+  font-size: var(--txt-xs);
+  color: var(--tinta-3);
+}
+
+/* Sin respuesta todavía no ocupa lugar (ni el espacio entre bloques). */
+.respuesta-consulta:empty {
+  display: none;
+}
+
+.respuesta-consulta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+/* ============================================================================
+   REPORTES (EPIC-06)
+   ========================================================================== */
+
+.pestanas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.pestanas .faceta {
+  width: auto;
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--papel);
+  border: 1px solid var(--linea);
+}
+
+.pestanas .faceta[aria-pressed='true'] {
+  color: var(--papel);
+  background: var(--gob-700);
+  border-color: var(--gob-700);
+}
+
+.filtros-reporte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-4);
+}
+
+.rejilla.tres {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.tarjetas-indicadores {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--sp-3);
+}
+
+.indicador {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  padding: var(--sp-4);
+}
+
+.indicador .rotulo {
+  font-size: var(--txt-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tinta-3);
+}
+
+.indicador .cifra {
+  font-size: var(--txt-2xl);
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--gob-800);
+  font-variant-numeric: tabular-nums;
+}
+
+.indicador .pista {
+  font-size: var(--txt-xs);
+  color: var(--tinta-3);
+}
+
+.encabezado-reporte {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+}
+
+.filtros-aplicados {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--txt-sm);
+  color: var(--tinta-2);
+}
+
+.exportar {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.grupos {
+  padding: 0 var(--sp-4) var(--sp-4);
+}
+
+.grupos h3 {
+  margin: 0 0 var(--sp-2);
+  font-size: var(--txt-sm);
+}
+
+.grupos ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.grupos li {
+  display: grid;
+  grid-template-columns: minmax(8rem, 16rem) 1fr 3rem;
+  align-items: center;
+  gap: var(--sp-3);
+  font-size: var(--txt-sm);
+}
+
+.grupos .total {
+  font-weight: 700;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.barra {
+  display: block;
+  height: 0.6rem;
+  background: var(--linea-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.barra > span {
+  display: block;
+  height: 100%;
+  background: var(--gob-500);
+  border-radius: 999px;
+}
+
+.celda-barra {
+  width: 30%;
+  min-width: 6rem;
+}
+
+@media (max-width: 860px) {
+  .tarjetas-indicadores {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rejilla.tres {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .tarjetas-indicadores,
+  .rejilla.tres {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .grupos li {
+    grid-template-columns: 1fr 3rem;
+  }
+
+  .grupos .barra {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
+/* Un número de solicitud o una fecha partidos en dos líneas no se leen: la tabla se desplaza. */
+.tabla.reporte th,
+.tabla.reporte td {
+  white-space: nowrap;
+}
+
+/* Una opción larga no debe ensanchar el selector más allá de su columna. */
+.campo select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}

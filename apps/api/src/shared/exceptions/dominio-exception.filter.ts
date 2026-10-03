@@ -11,8 +11,11 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus, Logger } from '@nest
 import type { Response } from 'express';
 
 import {
+  AccesoDenegadoError,
   AutenticacionFallidaError,
   ErrorDeDominio,
+  RecursoDuplicadoError,
+  RecursoNoEncontradoError,
   TransicionInvalidaError,
 } from './errores-dominio';
 
@@ -36,7 +39,14 @@ export class DominioExceptionFilter implements ExceptionFilter<ErrorDeDominio> {
     let estado: HttpStatus;
     if (excepcion instanceof AutenticacionFallidaError) {
       estado = HttpStatus.UNAUTHORIZED;
-    } else if (excepcion instanceof TransicionInvalidaError) {
+    } else if (excepcion instanceof AccesoDenegadoError) {
+      estado = HttpStatus.FORBIDDEN;
+    } else if (excepcion instanceof RecursoNoEncontradoError) {
+      estado = HttpStatus.NOT_FOUND;
+    } else if (
+      excepcion instanceof TransicionInvalidaError ||
+      excepcion instanceof RecursoDuplicadoError
+    ) {
       estado = HttpStatus.CONFLICT;
     } else {
       estado = HttpStatus.UNPROCESSABLE_ENTITY;

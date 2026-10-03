@@ -32,6 +32,40 @@ export class TransicionInvalidaError extends ErrorDeDominio {
 }
 
 /**
+ * Se pidió operar sobre algo que no existe (una convocatoria con un id desconocido).
+ *
+ * Es un error de DOMINIO y no un `NotFoundException` de NestJS para que el caso de uso lo
+ * pueda lanzar sin depender del framework. El filtro lo traduce a HTTP 404.
+ */
+export class RecursoNoEncontradoError extends ErrorDeDominio {
+  constructor(mensaje: string) {
+    super(mensaje);
+  }
+}
+
+/**
+ * Alguien autenticado intenta operar sobre algo que no es suyo: la solicitud de otro estudiante.
+ *
+ * US-003, criterio textual: *"Un acceso no autorizado devuelve HTTP 403, no 404 ni el recurso."*
+ * El filtro lo traduce a 403.
+ */
+export class AccesoDenegadoError extends ErrorDeDominio {
+  constructor(mensaje: string) {
+    super(mensaje);
+  }
+}
+
+/**
+ * Ya existe algo que debía ser único: un correo, un CUI o un nombre de usuario (US-001).
+ * El filtro lo traduce a HTTP 409.
+ */
+export class RecursoDuplicadoError extends ErrorDeDominio {
+  constructor(mensaje: string) {
+    super(mensaje);
+  }
+}
+
+/**
  * Las credenciales no son válidas o la cuenta no puede iniciar sesión (US-002).
  *
  * SEGURIDAD: el `mensaje` que llegue al cliente debe ser siempre genérico. Distinguir

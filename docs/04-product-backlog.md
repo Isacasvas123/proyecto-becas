@@ -27,13 +27,34 @@
 
 ---
 
-## Estado de avance — actualizado el 3 de septiembre de 2026
+## Estado de avance — actualizado el 16 de septiembre de 2026
 
 | Historia | Estado | Nota |
 |---|---|---|
-| **US-002** Inicio de sesión | ✅ **Terminada** — pendiente de aceptación del PO | Adelantada del Sprint 2. Implementada con tres puertos invertidos y 67 pruebas en verde |
-| **US-008** Listado público de convocatorias | ⚠️ **Parcial** | El listado funciona, pero quedó **detrás del login**. La historia exige que un visitante lo vea **sin cuenta**. Debe resolverse en el Sprint 3 separando el listado público del panel de administración |
-| **US-003** Control de acceso por rol | ⚠️ **Parcial** | El rol viaja en el token y el frontend redirige, pero **falta el guard del backend** que valide el token en cada petición. Sin eso no hay seguridad real: la guardia del frontend es solo usabilidad |
+| **US-001** Registro de estudiante | 🟡 **Criterios cumplidos** — falta Staging | Los cinco criterios implementados y probados, incluido el inicio de sesión automático. Adelantada del Sprint 3 |
+| **US-002** Inicio de sesión | 🟡 **Criterios cumplidos** — falta Staging | Los tres criterios implementados y probados. El bloqueo tras 5 intentos se completó el 12 Sep |
+| **US-003** Control de acceso por rol | 🟡 **Criterios cumplidos** — falta Staging | Guard global *seguro por defecto*, los 4 roles, 403 verificado con pruebas de integración |
+| **US-006** Crear convocatoria | 🟡 **Criterios cumplidos** — falta Staging | Con el patrón **Factory Method**. Adelantada del Sprint 3 |
+| **US-007** Publicar convocatoria | 🟡 **Criterios cumplidos** — falta Staging | El criterio 3 (no editar publicadas) queda como regla del dominio; la edición es US-010 |
+| **US-008** Listado público de convocatorias | 🟡 **Criterios cumplidos** — falta Staging | Público y sin cuenta, con requisitos y documentos. Corregido el 12 Sep |
+| **US-011** Completar perfil académico | 🟡 **Criterios cumplidos** — falta Staging | Se guarda por partes; dice qué falta. Departamento como catálogo cerrado para el reporte por región (US-031). Adelantada del Sprint 4 |
+| **US-012** Crear solicitud | 🟡 **Criterios cumplidos** — falta Staging | Con el patrón **State**. Número `SOL-AAAA-NNNNNN`. Exige perfil completo (precondición de CU-06). Adelantada del Sprint 4 |
+| **US-013** Cargar documentación | 🟡 **Criterios cumplidos** — falta Staging | Formato comprobado **por contenido**, no por nombre. Almacenamiento con **Adapter** (disco local). Adelantada del Sprint 4 |
+| **US-014** Enviar solicitud | 🟡 **Criterios cumplidos** — falta Staging | Un solo mensaje con todo lo que falta. La notificación sale por consola hasta US-022 (correo). Adelantada del Sprint 4 |
+| **US-015** Ver mis solicitudes | 🟡 **Criterios cumplidos** — falta Staging | Otro estudiante recibe 403 (US-003). Adelantada del Sprint 4 |
+| **US-016** Historial de la solicitud | 🟡 **Criterios cumplidos** — falta Staging | Cada transición guarda fecha, autor y motivo; solo se insertan filas. Adelantada del Sprint 4 |
+| **US-017** Crear comité evaluador | 🟡 **Implementada** — falta Staging | Sin criterios escritos: se tomaron los de CU-13 (un comité por convocatoria, al menos un evaluador, sin repetidos, auditoría). Incluye crear cuentas de evaluador (decisión del 16 Sep). Quitar integrantes (5a) queda pendiente. Adelantada del Sprint 5 |
+| **US-018** Asignar solicitudes | 🟡 **Criterios cumplidos** — falta Staging | Manual y reparto automático equitativo que respeta la carga previa. Adelantada del Sprint 5 |
+| **US-019** Evaluar una solicitud | 🟡 **Criterios cumplidos** — falta Staging | Con el patrón **Strategy**. El puntaje lo calcula el sistema; **las fórmulas están pendientes de confirmar con el Product Owner**. Adelantada del Sprint 5 |
+| **US-020** Ver mis solicitudes asignadas | 🟡 **Implementada** — falta Staging | Solo las propias, pendientes primero. Otro evaluador recibe 403. Adelantada del Sprint 5 |
+| **US-021** Consolidar dictámenes | 🟡 **Implementada** — falta Staging | Promedio, ranking y referencia de cupos. No aprueba nada: eso es US-023. Adelantada del Sprint 5 |
+| **US-023** Aprobar o rechazar | 🟡 **Criterios cumplidos** — falta Staging | Con el patrón **Facade**. El cupo se comprueba de forma atómica (verificado con tres aprobaciones simultáneas por el último cupo). Sin acta: es US-026. Adelantada del Sprint 6 |
+| **US-024** Adjudicar beca | 🟡 **Implementada** — falta Staging | Beca con código `BECA-AAAA-NNNNNN`, guardada en la misma transacción que el cambio de estado. El cupo se reserva al aprobar. Adelantada del Sprint 6 |
+| **US-025** Consulta pública | 🟡 **Criterios cumplidos** — falta Staging | Número + CUI por POST (el CUI no va en la URL), solo estado y fecha, mismo mensaje para cualquier fallo y límite de 10 consultas por minuto por dirección. Adelantada del Sprint 6 |
+| **US-028** Reporte de solicitudes | 🟡 **Implementada** — falta Staging | Con el patrón **Builder**: filtros por convocatoria, estado, nivel, departamento y fechas de envío; agrupación y orden. Sin datos personales. Adelantada del Sprint 7 |
+| **US-029** Panel de estadísticas | 🟡 **Implementada** — falta Staging | Recibidas, tasa de aprobación (sobre las resueltas), cupos disponibles y días promedio de resolución, global y por convocatoria. Adelantada del Sprint 7 |
+| **US-030** Exportar reporte | 🟡 **Implementada** — falta Staging | CSV (UTF-8 con BOM, protegido contra fórmulas) y PDF propio sin dependencias nuevas. Adelantada del Sprint 7 |
+| **US-031** Becas por región | 🟡 **Implementada** — falta Staging | Los 22 departamentos, también los que no tienen becas. Adelantada del Sprint 7 |
 | Resto | ⬜ Pendiente | Según el calendario de sprints |
 
 > **Nota para la Sprint Review.** Ninguna de estas historias puede marcarse como *Completada*
