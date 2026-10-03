@@ -6,9 +6,9 @@
 //   - `Estudiante` — perfil académico y socioeconómico (US-011).
 //   - `Solicitud`, `DocumentoSolicitud`, `HistorialEstadoSolicitud` — EPIC-03.
 //   - `Comite`, `ComiteEvaluador`, `AsignacionEvaluacion`, `Dictamen` — EPIC-04.
+//   - `Beca` — EPIC-05 (US-024).
 //
-// Lo que falta (Beca) se agrega con sus historias, conforme a
-// docs/05-arquitectura.md §3.3.
+// Con esto está el modelo de docs/05-arquitectura.md §3.3 completo.
 //
 // IMPORTANTE: este esquema es el modelo de PERSISTENCIA, no el modelo de DOMINIO.
 // Son parecidos hoy y no tienen por qué seguir siéndolo mañana: la traducción entre
@@ -213,6 +213,7 @@ model Solicitud {
   historial    HistorialEstadoSolicitud[]
   asignaciones AsignacionEvaluacion[]
   dictamenes   Dictamen[]
+  beca         Beca?
 
   // US-015 lista por estudiante; US-012 busca la activa por estudiante y convocatoria.
   @@index([estudianteId, convocatoriaId])
@@ -324,4 +325,18 @@ model Dictamen {
   @@unique([solicitudId, evaluadorId])
   @@index([evaluadorId])
   @@map("dictamenes")
+}
+
+// ─── EPIC-05 · Adjudicación ────────────────────────────────────────────────────
+
+/// US-024. Una por solicitud. Se crea en la misma transacción que el cambio a ADJUDICADA.
+model Beca {
+  id          String    @id @default(uuid())
+  // BECA-2026-000001
+  codigo      String    @unique
+  solicitudId String    @unique @map("solicitud_id")
+  solicitud   Solicitud @relation(fields: [solicitudId], references: [id], onDelete: Restrict)
+  otorgadaEn  DateTime  @map("otorgada_en")
+
+  @@map("becas")
 }

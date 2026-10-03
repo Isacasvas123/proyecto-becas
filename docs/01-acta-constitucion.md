@@ -199,9 +199,9 @@ Sprints semanales de **jueves a miércoles**. Ceremonias todos los jueves.
 | 5.2 | Patrón Strategy (criterios de puntuación) | ~~Mié 7 Oct~~ → **entregado Mié 16 Sep** | Stuard | Comportamiento 2 · **fórmulas por confirmar con el PO** |
 | 5.3 | Notificaciones de cambio de estado | Mié 7 Oct | Ivan | Observer (opcional) |
 | 6 | **Sprint 6 — Resolución y consulta** | Mié 14 Oct 2026 | Equipo | |
-| 6.1 | Aprobación, rechazo y adjudicación de becas | Mié 14 Oct | Isaac, Stuard | EPIC-05 |
-| 6.2 | Consulta pública del estado de una beca | Mié 14 Oct | Fernando | Sin autenticación |
-| 6.3 | Patrón Facade + análisis de impacto de cambio del PO | Mié 14 Oct | Ivan | Estructural 2 |
+| 6.1 | Aprobación, rechazo y adjudicación de becas | ~~Mié 14 Oct~~ → **entregado Mié 16 Sep** | Isaac, Stuard | EPIC-05 (US-023, US-024) · falta el acta (US-026) |
+| 6.2 | Consulta pública del estado de una beca | ~~Mié 14 Oct~~ → **entregado Mié 16 Sep** | Fernando | Sin autenticación (US-025) · con límite de consultas |
+| 6.3 | Patrón Facade + análisis de impacto de cambio del PO | Mié 14 Oct · **Facade entregado 16 Sep** | Ivan | Estructural 2 · queda el análisis de impacto |
 | 7 | **Sprint 7 — Reportes y calidad** | Mié 21 Oct 2026 | Equipo | Feriado 20 Oct |
 | 7.1 | Módulo de reportes + patrón Builder | Mié 21 Oct | Stuard, Isaac | Creacional 2 · EPIC-06 |
 | 7.2 | QAP y Plan de Pruebas finales | Mié 21 Oct | Fernando | Anexos 6 y 7 |

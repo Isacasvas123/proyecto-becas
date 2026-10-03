@@ -35,4 +35,6 @@ export interface SolicitudDto {
   readonly historial: readonly EntradaHistorialDto[];
   readonly creadaEn: string;
   readonly enviadaEn: string | null;
+  /** US-024: el código de la beca, si se le adjudicó. */
+  readonly beca: { readonly codigo: string; readonly otorgadaEn: string } | null;
 }

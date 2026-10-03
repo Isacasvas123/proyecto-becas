@@ -13,7 +13,7 @@
 > ### Lea esto antes de seguir
 >
 > **La plataforma está en construcción.** Este manual describe **únicamente lo que ya funciona** al
-> 16 de septiembre de 2026. La sección 8 lista lo que todavía no existe, con la fecha prevista.
+> 16 de septiembre de 2026. La sección 10 lista lo que todavía no existe, con la fecha prevista.
 >
 > Se escribe así a propósito: un manual que describa pantallas que no existen hace perder el
 > tiempo a quien lo lee y no sirve para nada.
@@ -233,6 +233,10 @@ muestra cada cambio de estado con su fecha.
 > 🔒 **Nadie más ve sus solicitudes.** Si otra persona intenta abrir el enlace de la suya, el
 > servidor se lo niega.
 
+Si su solicitud se **aprueba** o se **rechaza**, el motivo aparece en el historial. Si se le
+**adjudica** la beca, arriba verá el **código de su beca** (por ejemplo `BECA-2026-000001`):
+consérvelo.
+
 ## 5. Evaluar solicitudes (evaluadores)
 
 Con una cuenta de **evaluador**, al entrar llega a **Mis evaluaciones**: las solicitudes que le
@@ -268,12 +272,46 @@ asignaron, primero las pendientes. No verá ninguna otra.
 - El **Consolidado** muestra el puntaje promedio de cada solicitud y el orden resultante. Las filas
   resaltadas caben en los cupos. Es una referencia: aprobar o rechazar es un paso aparte.
 
-## 7. Cerrar sesión
+## 7. Aprobar, rechazar y adjudicar (administración)
+
+Desde el **Consolidado** de cada comité:
+
+1. **Resolver** aparece en las solicitudes que están en evaluación y ya tienen al menos un dictamen.
+2. Elija **Aprobar** o **Rechazar** y escriba el **motivo** (obligatorio en los dos casos, al menos
+   15 caracteres). El estudiante lo verá en su historial.
+3. Presione **Continuar** y confirme.
+
+Arriba de la página siempre se ve cuántos **cupos disponibles** quedan. Aprobar ocupa un cupo; cuando
+se acaban, la opción **Aprobar** se desactiva y el sistema no deja aprobar más, aunque dos personas lo
+intenten al mismo tiempo.
+
+Las solicitudes aprobadas muestran **Adjudicar**: confirme y el sistema registra la beca con su
+código.
+
+> ⚠️ Ninguna de estas decisiones se puede deshacer desde el sistema.
+
+## 8. Consultar el estado sin cuenta
+
+Cualquier persona puede ver en qué va una solicitud desde **Consultar estado**, en el encabezado:
+
+1. Escriba el **número de solicitud** (por ejemplo `SOL-2026-000123`).
+2. Escriba el **CUI** de quien la presentó.
+3. Presione **Consultar**.
+
+Verá solo el **estado** y la **fecha del último cambio**. Por privacidad no se muestran nombres,
+documentos ni puntajes.
+
+| Si ve este mensaje | Qué significa |
+|---|---|
+| *"No encontramos una solicitud con ese número y ese CUI"* | Uno de los dos datos no es correcto. Por seguridad no se dice cuál |
+| *"Hizo demasiadas consultas seguidas"* | Espere un minuto e intente de nuevo |
+
+## 9. Cerrar sesión
 
 Use la opción de cerrar sesión del encabezado. Hágalo siempre que use una computadora que no sea
 suya.
 
-## 8. Lo que todavía no está disponible
+## 10. Lo que todavía no está disponible
 
 Esta es la parte honesta del manual. Lo siguiente **aún no funciona**, con la fecha prevista:
 
@@ -283,19 +321,18 @@ Esta es la parte honesta del manual. Lo siguiente **aún no funciona**, con la f
 | Recuperar una contraseña olvidada            | 🔴 No disponible | Sprint 4      |
 | Recibir los avisos por correo (hoy quedan registrados en el sistema) | 🔴 No disponible | Sprint 5 |
 | Quitar integrantes de un comité              | 🔴 No disponible | Sprint 5      |
-| Aprobar, rechazar y adjudicar becas          | 🔴 No disponible | Sprint 6      |
-| Consulta pública sin cuenta                  | 🔴 No disponible | Sprint 6      |
+| Acta de resolución y lista pública de becas adjudicadas | 🔴 No disponible | Sprint 6 |
 | Reportes y estadísticas                      | 🔴 No disponible | Sprint 7      |
 
 
 
-### 8.1 Un defecto que ya está corregido
+### 10.1 Un defecto que ya está corregido
 
 Hasta el 12 de septiembre de 2026 había que iniciar sesión para ver las convocatorias, y eso estaba
 mal: consultarlas debe poder hacerlo cualquier persona, por transparencia. **Ya no hace falta
 cuenta.**
 
-## 9. Preguntas frecuentes
+## 11. Preguntas frecuentes
 
 **¿Puedo postular a más de una convocatoria?**
 Sí, una solicitud por convocatoria. Si una le fue rechazada, puede volver a postular a esa misma.
@@ -317,7 +354,7 @@ Está usando una versión de prueba, no la oficial. Los datos que vea ahí no so
 **¿Por qué se cerró mi sesión sola?**
 Las sesiones duran 8 horas por seguridad. Vuelva a entrar.
 
-## 10. A quién acudir
+## 12. A quién acudir
 
 | Si...                                          | Acuda a                                             |
 | ---------------------------------------------- | --------------------------------------------------- |

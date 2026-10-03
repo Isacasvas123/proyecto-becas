@@ -44,6 +44,16 @@ export interface EntradaHistorial {
   readonly ocurridoEn: Date;
 }
 
+/**
+ * US-024. La constancia del otorgamiento. Vive DENTRO de la solicitud (composición `0..1` del
+ * diagrama de clases) para que el cambio a ADJUDICADA y la beca se guarden en la misma transacción:
+ * no puede haber una solicitud adjudicada sin beca, ni una beca de una solicitud que no lo está.
+ */
+export interface BecaOtorgada {
+  readonly codigo: string;
+  readonly otorgadaEn: Date;
+}
+
 export interface AtributosSolicitud {
   readonly id: string;
   readonly numero: string;
@@ -55,6 +65,7 @@ export interface AtributosSolicitud {
   readonly historial: readonly EntradaHistorial[];
   readonly enviadaEn: Date | null;
   readonly creadaEn: Date;
+  readonly beca?: BecaOtorgada | null;
 }
 
 export class Solicitud {
@@ -62,12 +73,14 @@ export class Solicitud {
   private readonly documentos: Map<string, DocumentoCargado>;
   private readonly historial: EntradaHistorial[];
   private _enviadaEn: Date | null;
+  private _beca: BecaOtorgada | null;
 
   private constructor(private readonly atributos: AtributosSolicitud) {
     this.estado = estadoDesde(atributos.estado);
     this.documentos = new Map(atributos.documentos.map((d) => [d.tipo, d]));
     this.historial = [...atributos.historial];
     this._enviadaEn = atributos.enviadaEn;
+    this._beca = atributos.beca ?? null;
   }
 
   /** US-012, criterio 3: nace en BORRADOR, con su primera entrada de historial. */
@@ -123,6 +136,13 @@ export class Solicitud {
   }
   get nombreEstado(): NombreEstado {
     return this.estado.nombre;
+  }
+  get beca(): BecaOtorgada | null {
+    return this._beca;
+  }
+  /** Fecha del último cambio de estado (US-025). */
+  get ultimoCambio(): Date {
+    return this.historial[this.historial.length - 1]?.ocurridoEn ?? this.atributos.creadaEn;
   }
   get documentosExigidos(): readonly string[] {
     return this.atributos.documentosExigidos;
@@ -202,8 +222,10 @@ export class Solicitud {
     this.transicionar(this.estado.resolver(decision), ahora, autorId, motivo.trim());
   }
 
-  adjudicar(ahora: Date, autorId: string): void {
+  /** US-024. El código de la beca lo asigna el caso de uso (correlativo). */
+  adjudicar(ahora: Date, autorId: string, codigoBeca: string): void {
     this.transicionar(this.estado.adjudicar(), ahora, autorId, null);
+    this._beca = { codigo: codigoBeca, otorgadaEn: ahora };
   }
 
   private transicionar(

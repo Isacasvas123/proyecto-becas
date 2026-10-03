@@ -18,7 +18,7 @@
 | Creacional | **Factory Method** | `modules/convocatorias/domain/factories/` | **3** | ✅ **Implementado** (adelantado al 12 Sep) |
 | Creacional | Builder | `modules/reportes/application/builders/` | 7 | Pendiente |
 | Estructural | **Adapter** | `modules/usuarios/infrastructure/adapters/` | **1** | ✅ **Implementado** |
-| Estructural | Facade | `modules/solicitudes/application/facades/` | 6 | Pendiente |
+| Estructural | **Facade** | `modules/resoluciones/application/facades/` | **6** | ✅ **Implementado** (adelantado al 16 Sep) |
 | Comportamiento | **State** | `modules/solicitudes/domain/estados/` | **4** | ✅ **Implementado** (adelantado al 16 Sep) |
 | Comportamiento | **Strategy** | `modules/evaluaciones/domain/strategies/` | **5** | ✅ **Implementado** (adelantado al 16 Sep) |
 | *Extra* | Observer | `shared/patterns/observer/` | 5 (opcional) | Pendiente |
@@ -307,9 +307,18 @@ adaptador en memoria, forzando el fallo del repositorio.
 
 ---
 
-## 4. Facade — `SolicitudFacade`
+## 4. Facade — `ResolucionFacade`
 
-**Ubicación:** `modules/solicitudes/application/facades/solicitud.facade.ts`
+**✅ IMPLEMENTADO EL 16 DE SEPTIEMBRE** (previsto para el Sprint 6; llegó con US-023).
+
+**Ubicación:** `modules/resoluciones/application/facades/resolucion.facade.ts`
+**Pruebas:** `casos-de-uso-resoluciones.spec.ts` con dobles de cada colaborador.
+
+> **Por qué cambió de lugar.** La versión 1.0 la ponía en `solicitudes`. Pero resolver necesita los
+> dictámenes de `evaluaciones`, y `evaluaciones` ya depende de `solicitudes`: la fachada ahí habría
+> creado un ciclo entre módulos. Vive en un módulo propio, `resoluciones`, del que nadie depende.
+> También cambió el nombre: `SolicitudFacade` sugería una fachada de todo lo que se hace con una
+> solicitud, y esta resuelve.
 
 ### ¿Qué problema resuelve?
 
@@ -349,32 +358,52 @@ especializado. Así se preserva la responsabilidad única de cada uno.
   aplica nada.
 - **Testeable de punta a punta** sin levantar el servidor HTTP.
 
-### Esquema
+### Esquema — tal como quedó implementado
 
 ```ts
-export class SolicitudFacade {
+@Injectable()
+export class ResolucionFacade {
   constructor(
-    private readonly solicitudes: SolicitudRepositorio,
-    private readonly cupos: VerificadorCuposService,
-    private readonly auditoria: AuditoriaService,
-    private readonly actas: GeneradorActaService,
-    private readonly notificador: NotificacionPort,
+    private readonly solicitudes: ConsultaSolicitudesResolucion,   // → solicitudes (State)
+    private readonly dictamenes: ConsultaDictamenes,               // → evaluaciones
+    private readonly convocatorias: ConsultaConvocatoriasResolucion, // → convocatorias (cupos)
+    private readonly notificador: NotificadorResoluciones,         // → aviso al estudiante
   ) {}
 
-  async resolver(id: SolicitudId, decision: Decision, motivo: string): Promise<Resolucion> {
-    const solicitud = await this.solicitudes.obtener(id);
-    if (decision === Decision.APROBAR) await this.cupos.verificarDisponibilidad(solicitud);
+  async resolver(solicitudId, decision, motivo, adminId) {
+    // 1. Validaciones que no cambian nada
+    exigirMotivo(motivo);                                           // criterio 2
+    const solicitud = await this.cargarSolicitud(solicitudId);
+    if ((await this.dictamenes.resumen(solicitud.id)).total === 0)  // criterio 1
+      throw new ReglaDeNegocioError('... no tiene ningún dictamen ...');
+    const convocatoria = await this.cargarConvocatoria(solicitud.convocatoriaId);
+    if (decision === 'APROBAR') (await this.ocupacion(convocatoria)).asegurarCupoParaAprobar();
 
-    solicitud.resolver(decision, motivo);        // el patrón State valida la transición
-    await this.solicitudes.guardar(solicitud);
+    // 2. La única escritura: transición (State) + historial + comprobación ATÓMICA del cupo
+    const resuelta = await this.solicitudes.resolver(solicitud.id, decision, motivo, adminId,
+                                                     convocatoria.cupos);   // criterios 3 y 4
 
-    await this.auditoria.registrar(solicitud, motivo);
-    const acta = await this.actas.generar(solicitud);
-    await this.notificador.enviar(solicitud.estudiante, PlantillaNotificacion.RESOLUCION);
-    return new Resolucion(solicitud, acta);
+    // 3. El aviso; si falla, la resolución ya está hecha
+    await this.avisar(resuelta, motivo);
+    return this.resultado(resuelta, convocatoria);
   }
 }
+
+// El controlador: una línea por operación, sin saber cuántos colaboradores hay detrás.
+resolver(@UsuarioActual() adminId, @Param('id') id, @Body() p) {
+  return this.fachada.resolver(id, p.decision, p.motivo, adminId);
+}
 ```
+
+**La comprobación del cupo ocurre dos veces, a propósito.** La de la fachada da un buen mensaje
+antes de intentar. La definitiva está en el repositorio de solicitudes: bloquea la fila de la
+convocatoria (`SELECT … FOR UPDATE`), cuenta y guarda en la misma transacción. Se verificó contra
+PostgreSQL lanzando **tres aprobaciones simultáneas por el último cupo: pasó una, las otras dos
+recibieron 422**. Sin el bloqueo, las tres habrían visto un cupo libre.
+
+**Auditoría:** no es un colaborador aparte porque ya la da el patrón State: cada transición queda en
+el historial con autor, fecha y motivo, en la misma transacción. **Acta:** es US-026; cuando exista,
+será un colaborador más de la fachada y el controlador no cambiará.
 
 ---
 
