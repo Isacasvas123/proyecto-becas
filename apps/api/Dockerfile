@@ -64,6 +64,14 @@ COPY --from=build --chown=node:node /app/apps/api/prisma ./apps/api/prisma
 COPY --from=build --chown=node:node /app/package.json ./package.json
 COPY --from=build --chown=node:node /app/apps/api/package.json ./apps/api/package.json
 
+# Carpeta donde el adaptador de almacenamiento guarda los documentos (US-013). Se crea aqui,
+# con dueño `node`, porque el proceso corre sin privilegios y no puede crear carpetas en /app.
+# Sin esto, subir un documento falla con un 500 al intentar escribir (visto en Staging).
+#
+# El contenido es EFIMERO: el disco del contenedor se pierde en cada despliegue. Es la deuda
+# ya declarada en docs/17-staging.md; el almacenamiento persistente sera otro adaptador.
+RUN mkdir -p /app/uploads && chown node:node /app/uploads
+
 USER node
 
 EXPOSE 3000
