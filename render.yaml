@@ -50,6 +50,19 @@ services:
         value: '12'
       - key: NODE_ENV
         value: production
+      # Almacenamiento de documentos (US-013). Se declaran aunque coincidan con los valores por
+      # defecto del código: en un entorno desplegado conviene que la configuración sea explícita
+      # y no herencia de un `?? './uploads'` escondido en un módulo.
+      #
+      # La carpeta la crea el Dockerfile con dueño `node`; sin eso, subir un documento devolvía
+      # 500 porque el proceso no puede escribir en /app.
+      - key: ALMACENAMIENTO_TIPO
+        value: local
+      - key: ALMACENAMIENTO_RUTA_LOCAL
+        value: /app/uploads
+      # Los avisos se escriben en el log mientras US-022 (correo) no exista.
+      - key: NOTIFICACIONES_TIPO
+        value: consola
       # Origen exacto del frontend de Staging, CON https://. El código ya lee esta variable
       # (apps/api/src/main.ts).
       #
