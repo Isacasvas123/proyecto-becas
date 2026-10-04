@@ -114,9 +114,23 @@ Requiere una cuenta y por eso no está hecho. Son unos 20 minutos.
    *Environment* de cada servicio y volver a desplegar el frontend. Después abrir
    `<URL de la API>/ready` y verificar que responde `200`.
 
-6. **Crear el administrador de Staging.** El seed no corre, así que hay que crear la cuenta a
-   mano, con una contraseña **distinta** a la de desarrollo. Desde **Render → becas-staging-db →
-   Connect → PSQL Command**, y con un hash bcrypt generado aparte. Nunca reutilizar `EC321`.
+6. **Crear el administrador de Staging.** El seed no corre, así que la cuenta se crea con
+   `node scripts/crear-admin-staging.mjs`. El script pide la contraseña sin mostrarla, calcula su
+   hash bcrypt y la inserta. Nunca reutilizar la de desarrollo.
+
+   Para que escriba en la base, hay que darle la **External Database URL** de Render
+   (**becas-staging-db → Connect → External**). Dos formas, la segunda más cómoda en PowerShell
+   porque no hay que pegar a ciegas en un campo oculto:
+
+   ```powershell
+   $env:STAGING_DB_URL = "<la URL de Render>"
+   node scripts/crear-admin-staging.mjs
+   Remove-Item Env:STAGING_DB_URL
+   ```
+
+   Si prefiere no darle acceso a la base, deje esa pregunta vacía: imprime el `INSERT` para
+   ejecutarlo donde quiera. Esa URL lleva la contraseña de PostgreSQL dentro; no se comparte por
+   chat ni se pega en el repositorio.
 
 7. **Registrar la URL en GitHub.** En el repositorio: **Settings → Secrets and variables →
    Actions → Variables → New repository variable**, con nombre `STAGING_API_URL` y la URL del
@@ -155,6 +169,20 @@ Staging no puede existir hasta que exista la primera ruta protegida real, en el 
 Decirlo aquí es preferible a inventar una comprobación que no comprueba nada.
 
 ---
+
+### Un fallo que costó encontrar: los documentos no se podían subir
+
+La primera vez que se subió un documento en Staging, la API devolvió **500**. El adaptador de
+almacenamiento guarda en `./uploads`, relativa al directorio de trabajo del proceso, y esa carpeta
+no existía en la imagen. El contenedor corre como el usuario `node`, que **no puede crear carpetas
+en `/app`** porque pertenece a root: `mkdir` fallaba y el fallo salía como error interno.
+
+Se corrigió creando la carpeta en el `Dockerfile` con dueño `node`, y declarando
+`ALMACENAMIENTO_TIPO` y `ALMACENAMIENTO_RUTA_LOCAL` en `render.yaml` en vez de depender de los
+valores por defecto del código.
+
+Es un buen ejemplo de algo que ningún entorno local detecta: en desarrollo la carpeta se crea sin
+problema porque el proceso corre con el usuario de la máquina.
 
 ## 4. Limitaciones conocidas del plan gratuito
 
