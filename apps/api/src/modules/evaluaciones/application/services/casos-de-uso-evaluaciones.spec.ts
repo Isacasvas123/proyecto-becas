@@ -53,6 +53,13 @@ class SolicitudesFalsas implements ConsultaSolicitudes {
       ),
     );
   }
+  enEvaluacionDe(convocatoriaId: string) {
+    return Promise.resolve(
+      [...this.datos.values()].filter(
+        (s) => s.convocatoriaId === convocatoriaId && s.estado === 'EN_EVALUACION',
+      ),
+    );
+  }
   resumenes(ids: readonly string[]) {
     return Promise.resolve([...this.datos.values()].filter((s) => ids.includes(s.id)));
   }
@@ -252,6 +259,83 @@ describe('Casos de uso de evaluaciones', () => {
       expect(dto.integrantes).toHaveLength(2);
       await expect(m.gestion.agregarEvaluadores(id, ['est-1'])).rejects.toThrow(
         ReglaDeNegocioError,
+      );
+    });
+  });
+
+  describe('quitar integrantes (US-017, CU-13 flujo 5a)', () => {
+    /** Comité de dos, con dos solicitudes repartidas entre ambos. */
+    async function conRepartoHecho() {
+      const m = montar();
+      m.solicitudes.agregar('s1');
+      m.solicitudes.agregar('s2');
+      const { id } = await crearComite(m);
+      await m.gestion.asignar(id, { modo: 'AUTOMATICO', porSolicitud: 1 }, 'admin');
+      return { m, id };
+    }
+
+    it('sin solicitudes pendientes lo quita de una vez', async () => {
+      const m = montar();
+      const { id } = await crearComite(m);
+
+      const dto = await m.gestion.quitarEvaluador(id, 'ev-2', false);
+
+      expect(dto.integrantes.map((i) => i.nombreCompleto)).toEqual(['Eva Uno']);
+    });
+
+    it('si tiene solicitudes pendientes, avisa cuántas y no lo quita (5a)', async () => {
+      const { m, id } = await conRepartoHecho();
+
+      await expect(m.gestion.quitarEvaluador(id, 'ev-1', false)).rejects.toThrow(
+        '1 solicitud quedaría sin evaluador. Confirme para continuar.',
+      );
+
+      const dto = await m.gestion.detalle(id);
+      expect(dto.integrantes).toHaveLength(2);
+    });
+
+    it('confirmando, lo quita y libera sus solicitudes pendientes', async () => {
+      const { m, id } = await conRepartoHecho();
+
+      const dto = await m.gestion.quitarEvaluador(id, 'ev-1', true);
+
+      expect(dto.integrantes.map((i) => i.nombreCompleto)).toEqual(['Eva Dos']);
+      const quedan = await m.comites.asignacionesDeComite(id);
+      expect(quedan.every((a) => a.evaluadorId !== 'ev-1')).toBe(true);
+    });
+
+    it('conserva las asignaciones que ya tienen dictamen: un dictamen no queda huérfano', async () => {
+      const { m, id } = await conRepartoHecho();
+      const mias = (await m.comites.asignacionesDeComite(id)).filter(
+        (a) => a.evaluadorId === 'ev-1',
+      );
+      await m.evaluacion.emitir('ev-1', mias[0].solicitudId, {
+        recomendacion: Recomendacion.FAVORABLE,
+        observacion: OBSERVACION,
+      });
+
+      // Ya no le queda nada pendiente, así que sale sin pedir confirmación...
+      await m.gestion.quitarEvaluador(id, 'ev-1', false);
+
+      // ...y su asignación dictaminada sigue ahí.
+      const quedan = await m.comites.asignacionesDeComite(id);
+      expect(quedan.some((a) => a.evaluadorId === 'ev-1')).toBe(true);
+      expect(await m.dictamenes.buscar(mias[0].solicitudId, 'ev-1')).not.toBeNull();
+    });
+
+    it('no quita al último integrante (6a)', async () => {
+      const m = montar();
+      const { id } = await crearComite(m, ['ev-1']);
+      await expect(m.gestion.quitarEvaluador(id, 'ev-1', true)).rejects.toThrow(
+        /último integrante/,
+      );
+    });
+
+    it('no quita a quien no es integrante', async () => {
+      const m = montar();
+      const { id } = await crearComite(m);
+      await expect(m.gestion.quitarEvaluador(id, 'ev-3', true)).rejects.toThrow(
+        'Esa persona no forma parte del comité.',
       );
     });
   });

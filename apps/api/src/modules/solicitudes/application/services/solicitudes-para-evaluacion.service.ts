@@ -56,6 +56,20 @@ export class SolicitudesParaEvaluacionService {
     return solicitudes.map(aResumen);
   }
 
+  /**
+   * CU-13, flujo 5a. Quitar a un evaluador puede dejar solicitudes EN_EVALUACION sin nadie que
+   * las evalúe, y hay que poder reasignarlas. No se las devuelve a ENVIADA: el ciclo de vida solo
+   * avanza (patrón State), así que es el comité quien las vuelve a repartir en el estado en el
+   * que están.
+   */
+  async enEvaluacionDe(convocatoriaId: string): Promise<ResumenSolicitudDto[]> {
+    const solicitudes = await this.repositorio.buscarPorConvocatoriaYEstado(
+      convocatoriaId,
+      NombreEstado.EN_EVALUACION,
+    );
+    return solicitudes.map(aResumen);
+  }
+
   async resumenes(ids: readonly string[]): Promise<ResumenSolicitudDto[]> {
     return (await this.repositorio.buscarPorIds(ids)).map(aResumen);
   }

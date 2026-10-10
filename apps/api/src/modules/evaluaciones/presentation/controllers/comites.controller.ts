@@ -1,12 +1,15 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
+  ParseBoolPipe,
   ParseUUIDPipe,
   Post,
+  Query,
 } from '@nestjs/common';
 
 import {
@@ -63,6 +66,21 @@ export class ComitesController {
     @Body() peticion: AgregarEvaluadoresRequestDto,
   ): Promise<ComiteDto> {
     return this.comites.agregarEvaluadores(id, peticion.evaluadorIds);
+  }
+
+  /**
+   * CU-13, flujo 5a. Sin `confirmar=true` la petición se rechaza cuando el evaluador tiene
+   * solicitudes pendientes, y el mensaje dice cuántas quedarían sin evaluador. Es la confirmación
+   * explícita que pide el flujo, exigida por la API y no solo por la pantalla.
+   */
+  @Delete(':id/evaluadores/:evaluadorId')
+  @HttpCode(HttpStatus.OK)
+  quitar(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('evaluadorId', ParseUUIDPipe) evaluadorId: string,
+    @Query('confirmar', new ParseBoolPipe({ optional: true })) confirmar?: boolean,
+  ): Promise<ComiteDto> {
+    return this.comites.quitarEvaluador(id, evaluadorId, confirmar === true);
   }
 
   @Get(':id/por-asignar')
