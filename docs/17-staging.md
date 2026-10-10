@@ -4,16 +4,29 @@
 |---|---|
 | **Proyecto** | Plataforma Nacional para la Gestión Integral de Becas |
 | **Responsable** | Ivan (arquitectura y DevOps) |
-| **Fecha** | 11 de septiembre de 2026 · **Versión** 1.0 |
+| **Fecha** | 11 de septiembre de 2026 · **Versión** 1.3 (10 Oct: entorno levantado) |
 
 > **Por qué este documento existe.** El punto 8 de nuestra Definition of Done exige que la
 > funcionalidad esté **desplegada en Staging y verificada**. Mientras eso no exista, ninguna
 > historia puede darse por terminada por más que funcione en las máquinas del equipo. Ha sido el
 > bloqueo declarado del Sprint 1.
 
-> ⚠️ **Estado al 12 de septiembre de 2026: la imagen está verificada, el entorno NO está
-> levantado.** Crear la cuenta y conectar el repositorio requiere credenciales y eso lo tiene que
-> hacer una persona. Los pasos de la §2 son exactamente lo que falta.
+> ✅ **Estado al 4 de octubre de 2026: el entorno está levantado y verificado.**
+>
+> | | |
+> |---|---|
+> | Aplicación | `https://becas-web-staging.onrender.com` |
+> | API | `https://becas-api-staging.onrender.com` |
+> | Blueprint | `becas-staging`, enganchado a `develop`: cada merge se despliega solo |
+> | Verificación | Workflow *Verificar Staging*, corrida 37219963097, los cinco pasos en verde |
+> | Administrador | `admin.staging`, creado a mano con `scripts/crear-admin-staging.mjs` |
+>
+> Levantarlo destapó **dos fallos que ningún entorno local mostraba**: Render rechaza la clave
+> `plan` en sitios estáticos (PR #21) y la carpeta de documentos no existía en la imagen, así que
+> subir un archivo devolvía 500 (PR #22). Los dos están corregidos y documentados abajo.
+>
+> Los pasos de la §2 se conservan porque son la receta para volver a levantarlo: la base gratuita
+> **caduca el 2 de noviembre de 2026** y habrá que recrearla.
 
 ### Qué sí está comprobado (12 de septiembre de 2026)
 
