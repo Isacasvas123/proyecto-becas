@@ -51,7 +51,15 @@ export class ComitePrismaRepositorio implements ComiteRepositorio {
     return filas.map(aComite);
   }
 
-  /** Comité e integrantes en una transacción. Los integrantes solo se agregan, nunca se quitan. */
+  /**
+   * Comité e integrantes en una transacción. La tabla de integrantes queda **igual a la entidad**:
+   * se agregan los nuevos y se borran los que ya no están.
+   *
+   * Antes solo se agregaban, porque quitar no existía (CU-13, 5a). Al implementarlo, la prueba de
+   * humo contra PostgreSQL destapó la consecuencia: la entidad quitaba a la persona, la respuesta
+   * la mostraba fuera, pero la fila seguía en la base. Al recargar el comité volvía a aparecer, y
+   * con ella la comprobación de "no dejar el comité vacío" dejaba de valer.
+   */
   async guardar(comite: Comite): Promise<void> {
     try {
       await this.prisma.$transaction(async (tx) => {
@@ -69,6 +77,9 @@ export class ComitePrismaRepositorio implements ComiteRepositorio {
         await tx.comiteEvaluador.createMany({
           data: comite.evaluadores.map((evaluadorId) => ({ comiteId: comite.id, evaluadorId })),
           skipDuplicates: true,
+        });
+        await tx.comiteEvaluador.deleteMany({
+          where: { comiteId: comite.id, evaluadorId: { notIn: [...comite.evaluadores] } },
         });
       });
     } catch (error) {
@@ -89,6 +100,17 @@ export class ComitePrismaRepositorio implements ComiteRepositorio {
         asignadaEn: a.asignadaEn,
       })),
       skipDuplicates: true,
+    });
+  }
+
+  async eliminarAsignaciones(
+    comiteId: string,
+    evaluadorId: string,
+    solicitudIds: readonly string[],
+  ): Promise<void> {
+    if (solicitudIds.length === 0) return;
+    await this.prisma.asignacionEvaluacion.deleteMany({
+      where: { comiteId, evaluadorId, solicitudId: { in: [...solicitudIds] } },
     });
   }
 

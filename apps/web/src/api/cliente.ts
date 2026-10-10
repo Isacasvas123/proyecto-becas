@@ -162,7 +162,7 @@ async function obtener<T>(ruta: string): Promise<T> {
 async function enviar<T>(
   ruta: string,
   cuerpo?: unknown,
-  metodo: 'POST' | 'PUT' = 'POST',
+  metodo: 'POST' | 'PUT' | 'DELETE' = 'POST',
 ): Promise<T> {
   // Con cabecera de sesión: hasta el Sprint 3 el único POST era el login, que no la
   // necesitaba. Crear y publicar convocatorias sí, y olvidarla aquí daría un 401 en cada
@@ -434,6 +434,20 @@ export function crearComite(datos: {
 
 export function agregarIntegrantes(id: string, evaluadorIds: string[]): Promise<Comite> {
   return enviar<Comite>(`${rutaComite(id)}/evaluadores`, { evaluadorIds });
+}
+
+/**
+ * US-017, CU-13 flujo 5a. Sin `confirmado`, el servidor rechaza la operación si esa persona
+ * tiene solicitudes pendientes y responde cuántas quedarían sin evaluador. La pantalla usa ese
+ * mensaje para pedir la confirmación, en vez de calcular la cuenta por su lado.
+ */
+export function quitarIntegrante(
+  id: string,
+  evaluadorId: string,
+  confirmado = false,
+): Promise<Comite> {
+  const ruta = `${rutaComite(id)}/evaluadores/${encodeURIComponent(evaluadorId)}`;
+  return enviar<Comite>(confirmado ? `${ruta}?confirmar=true` : ruta, undefined, 'DELETE');
 }
 
 export function solicitudesPorAsignar(id: string): Promise<SolicitudPorAsignar[]> {

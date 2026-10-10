@@ -29,6 +29,10 @@ export class ConsultaSolicitudesAdapter implements ConsultaSolicitudes {
     return this.solicitudes.enviadasDe(convocatoriaId);
   }
 
+  enEvaluacionDe(convocatoriaId: string): Promise<SolicitudResumida[]> {
+    return this.solicitudes.enEvaluacionDe(convocatoriaId);
+  }
+
   resumenes(ids: readonly string[]): Promise<SolicitudResumida[]> {
     return this.solicitudes.resumenes(ids);
   }

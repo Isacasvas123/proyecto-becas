@@ -16,6 +16,17 @@ export interface ComiteRepositorio {
 
   /** Guarda asignaciones nuevas. Las que ya existían (misma solicitud y evaluador) se ignoran. */
   guardarAsignaciones(asignaciones: readonly Asignacion[]): Promise<void>;
+
+  /**
+   * Borra asignaciones concretas de un evaluador en un comité (CU-13, flujo 5a). Recibe la lista
+   * de solicitudes en vez de borrar todas las suyas, porque las que ya tienen dictamen se
+   * conservan: un dictamen emitido es un registro de auditoría y quedaría huérfano.
+   */
+  eliminarAsignaciones(
+    comiteId: string,
+    evaluadorId: string,
+    solicitudIds: readonly string[],
+  ): Promise<void>;
   asignacionesDeComite(comiteId: string): Promise<Asignacion[]>;
   asignacionesDeEvaluador(evaluadorId: string): Promise<Asignacion[]>;
   estaAsignada(solicitudId: string, evaluadorId: string): Promise<boolean>;
