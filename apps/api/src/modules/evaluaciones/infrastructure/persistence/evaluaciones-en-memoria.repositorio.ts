@@ -46,6 +46,21 @@ export class ComiteEnMemoriaRepositorio implements ComiteRepositorio {
     return Promise.resolve();
   }
 
+  eliminarAsignaciones(
+    comiteId: string,
+    evaluadorId: string,
+    solicitudIds: readonly string[],
+  ): Promise<void> {
+    const objetivo = new Set(solicitudIds);
+    for (let i = this.asignaciones.length - 1; i >= 0; i -= 1) {
+      const a = this.asignaciones[i];
+      if (a.comiteId === comiteId && a.evaluadorId === evaluadorId && objetivo.has(a.solicitudId)) {
+        this.asignaciones.splice(i, 1);
+      }
+    }
+    return Promise.resolve();
+  }
+
   asignacionesDeComite(comiteId: string): Promise<Asignacion[]> {
     return Promise.resolve(this.asignaciones.filter((a) => a.comiteId === comiteId));
   }

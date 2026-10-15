@@ -620,7 +620,7 @@ constructor telescópico de ocho parámetros opcionales.
 | CU-08 | Gestionar solicitudes | US-014 | State | 🟢 Criterios cumplidos · verificado en Staging |
 | CU-10 | Administrar evaluaciones | US-019 | Strategy | 🟢 Criterios cumplidos, incluido el 403 de 1a · verificado en Staging |
 | CU-12 | Administrar convocatorias | US-006, 007, 009, 010 | Factory Method | 🟡 Crear y publicar hechos · faltan cerrar (US-009) y editar (US-010) |
-| CU-13 | Gestionar comités | US-017 | — | 🟡 Crear, agregar integrantes, 3a, 4a y 6a · falta quitar integrantes (5a) |
+| CU-13 | Gestionar comités | US-017 | — | 🟢 Completo: crear, agregar y quitar integrantes, con 3a, 4a, 5a y 6a · quitar integrantes está sin verificar en Staging |
 | CU-15 | Aprobar o rechazar | US-023 | Facade | 🟢 Criterios cumplidos · sin acta (US-026) · verificado en Staging |
 | CU-16 | Aprobar o rechazar | US-024 | — | 🟢 Implementado · verificado en Staging |
 | CU-17 | Generar reportes | US-028 a 031 | Builder | 🟢 Implementado · verificado en Staging |

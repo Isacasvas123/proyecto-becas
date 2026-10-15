@@ -61,6 +61,35 @@ describe('Comite (US-017, CU-13)', () => {
     expect(c.evaluadores).toHaveLength(3);
   });
 
+  describe('quitar integrantes (CU-13, flujos 5a y 6a)', () => {
+    it('quita al integrante y conserva el orden del resto', () => {
+      const c = comite();
+      c.quitarEvaluador('e2');
+      expect(c.evaluadores).toEqual(['e1', 'e3']);
+      expect(c.esIntegrante('e2')).toBe(false);
+    });
+
+    it('no quita a quien no está en el comité', () => {
+      const c = comite();
+      expect(() => c.quitarEvaluador('x')).toThrow('Esa persona no forma parte del comité.');
+      expect(c.evaluadores).toHaveLength(3);
+    });
+
+    it('no deja el comité vacío: el último no se puede quitar (6a)', () => {
+      const c = comite(['e1']);
+      expect(() => c.quitarEvaluador('e1')).toThrow(/último integrante/);
+      expect(c.evaluadores).toEqual(['e1']);
+    });
+
+    it('se puede quitar hasta dejar uno, y ese ya no', () => {
+      const c = comite();
+      c.quitarEvaluador('e1');
+      c.quitarEvaluador('e2');
+      expect(c.evaluadores).toEqual(['e3']);
+      expect(() => c.quitarEvaluador('e3')).toThrow(/último integrante/);
+    });
+  });
+
   describe('reparto equitativo (US-018, criterio 4)', () => {
     const cuenta = (plan: { evaluadorId: string }[]) =>
       plan.reduce<Record<string, number>>((m, p) => {
