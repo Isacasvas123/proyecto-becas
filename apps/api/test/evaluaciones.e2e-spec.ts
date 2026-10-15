@@ -119,6 +119,71 @@ describe('Evaluación y comités (e2e)', () => {
       const { eva } = await escenario();
       await servidor().get('/comites').set(eva.token).expect(403);
     });
+
+    it('quitar integrantes: avisa, exige confirmación y nunca deja el comité vacío (5a y 6a)', async () => {
+      const { eva, beto, comiteId, solAna, solLuis } = await escenario();
+      const ruta = (id: string) => `/comites/${comiteId}/evaluadores/${id}`;
+
+      // Con un solo integrante no hay a quién quitar: el comité no puede quedarse vacío (6a).
+      await servidor().delete(ruta(eva.id)).set(admin).expect(422);
+
+      await servidor()
+        .post(`/comites/${comiteId}/evaluadores`)
+        .set(admin)
+        .send({ evaluadorIds: [beto.id] })
+        .expect(200);
+
+      // Sin asignaciones todavía, sale sin preguntar nada.
+      const { body: sinBeto } = await servidor().delete(ruta(beto.id)).set(admin).expect(200);
+      expect(sinBeto.integrantes).toHaveLength(1);
+
+      // Ahora con solicitudes repartidas entre los dos.
+      await servidor()
+        .post(`/comites/${comiteId}/evaluadores`)
+        .set(admin)
+        .send({ evaluadorIds: [beto.id] })
+        .expect(200);
+      await servidor()
+        .post(`/comites/${comiteId}/asignaciones`)
+        .set(admin)
+        .send({
+          modo: 'MANUAL',
+          asignaciones: [
+            { solicitudId: solAna, evaluadorIds: [beto.id] },
+            { solicitudId: solLuis, evaluadorIds: [eva.id] },
+          ],
+        })
+        .expect(200);
+
+      const { body: aviso } = await servidor().delete(ruta(beto.id)).set(admin).expect(422);
+      expect(aviso.mensaje).toBe('1 solicitud quedaría sin evaluador. Confirme para continuar.');
+
+      // Y sigue dentro mientras no se confirme.
+      const { body: intacto } = await servidor().get(`/comites/${comiteId}`).set(admin).expect(200);
+      expect(intacto.integrantes).toHaveLength(2);
+
+      const { body: final } = await servidor()
+        .delete(`${ruta(beto.id)}?confirmar=true`)
+        .set(admin)
+        .expect(200);
+      expect(final.integrantes).toEqual([expect.objectContaining({ id: eva.id })]);
+
+      // Y al recargarlo de la base sigue fuera. Esta comprobación existe porque la primera
+      // versión guardaba integrantes solo agregando: la respuesta lo mostraba fuera, pero la fila
+      // seguía ahí y al recargar volvía a aparecer.
+      const { body: recargado } = await servidor()
+        .get(`/comites/${comiteId}`)
+        .set(admin)
+        .expect(200);
+      expect(recargado.integrantes).toHaveLength(1);
+
+      // La solicitud que tenía beto vuelve a estar disponible para repartir.
+      const { body: porAsignar } = await servidor()
+        .get(`/comites/${comiteId}/por-asignar`)
+        .set(admin)
+        .expect(200);
+      expect(porAsignar.map((s: { id: string }) => s.id)).toContain(solAna);
+    });
   });
 
   describe('flujo completo (US-018 a US-021)', () => {

@@ -76,7 +76,6 @@ export class Comite {
     return this._evaluadores.includes(evaluadorId);
   }
 
-  /** Suma integrantes. Quitar no existe todavía: ver el flujo 5a de CU-13 en el manual técnico. */
   agregarEvaluadores(ids: readonly string[]): void {
     const nuevos = ids.filter((id) => !this._evaluadores.includes(id));
     if (nuevos.length === 0) {
@@ -84,6 +83,26 @@ export class Comite {
     }
     Comite.validarIntegrantes(nuevos);
     this._evaluadores.push(...nuevos);
+  }
+
+  /**
+   * CU-13, flujo 6a — el comité nunca queda vacío.
+   *
+   * La entidad solo conoce a sus integrantes, así que aquí se comprueba lo único que puede
+   * comprobar: que la persona esté y que no sea la última. Lo que pasa con las solicitudes que
+   * tenía asignadas (flujo 5a) lo decide el caso de uso, que sí ve las asignaciones.
+   */
+  quitarEvaluador(evaluadorId: string): void {
+    const posicion = this._evaluadores.indexOf(evaluadorId);
+    if (posicion === -1) {
+      throw new ReglaDeNegocioError('Esa persona no forma parte del comité.');
+    }
+    if (this._evaluadores.length === 1) {
+      throw new ReglaDeNegocioError(
+        'No se puede quitar al último integrante: un comité sin evaluadores no puede dictaminar.',
+      );
+    }
+    this._evaluadores.splice(posicion, 1);
   }
 
   /**

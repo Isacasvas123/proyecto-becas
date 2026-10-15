@@ -172,7 +172,8 @@ Base local: `http://localhost:3000`
 | `GET` · `POST` | `/comites` | **ADMINISTRADOR** | Lista o crea comités (US-017) |
 | `GET` | `/comites/:id` | **ADMINISTRADOR** | Detalle, con carga de cada integrante |
 | `POST` | `/comites/:id/evaluadores` | **ADMINISTRADOR** | Agrega integrantes |
-| `GET` | `/comites/:id/por-asignar` | **ADMINISTRADOR** | Las solicitudes ENVIADAS de su convocatoria (US-018) |
+| `DELETE` | `/comites/:id/evaluadores/:evaluadorId` | **ADMINISTRADOR** | Quita a un integrante (CU-13, 5a). Con solicitudes pendientes responde 422 diciendo cuántas quedarían sin evaluador; se repite con `?confirmar=true`. Nunca deja el comité vacío (6a) |
+| `GET` | `/comites/:id/por-asignar` | **ADMINISTRADOR** | Las solicitudes ENVIADAS de su convocatoria y las que quedaron sin evaluador (US-018) |
 | `POST` | `/comites/:id/asignaciones` | **ADMINISTRADOR** | `{ "modo": "AUTOMATICO", "porSolicitud": 2 }` o `{ "modo": "MANUAL", "asignaciones": [...] }` (US-018) |
 | `GET` | `/comites/:id/consolidado` | **ADMINISTRADOR** | Puntaje promedio y ranking (US-021) |
 | `GET` | `/evaluaciones/asignadas` | **EVALUADOR** | Las propias (US-020) |
@@ -551,7 +552,6 @@ Se documenta para que quien mantenga el sistema no la descubra a golpes:
 | Los repositorios Prisma de `estudiantes`, `solicitudes` y `evaluaciones` sin prueba automática contra la base | El SQL real solo se verificó a mano (16 Sep) | Mismo plan que el Issue #6 |
 | Las fórmulas de puntaje son una propuesta del equipo | Pueden no coincidir con la política del Ministerio | **Confirmar con el Product Owner**; cambiar es editar una clase |
 | El perfil del estudiante se puede editar después de enviar la solicitud | El puntaje se calcula con el perfil del momento de evaluar | Mitigado: el dictamen guarda los datos usados en su desglose. Solución completa: congelar el perfil al enviar |
-| No se pueden quitar integrantes de un comité (CU-13, 5a) | Un evaluador que se retira sigue en el comité | Siguiente iteración de US-017 |
 | El límite de la consulta pública cuenta en la memoria del proceso | Con varias instancias, cada una cuenta por su lado; se reinicia al reiniciar | Suficiente con una instancia; con más, un almacén compartido |
 | El límite depende de la dirección real del cliente | Detrás del proxy de Render se usa `trust proxy` (un salto) en producción | Revisar si cambia la infraestructura |
 | Resolver no genera acta | La decisión queda en el historial, pero no en un documento | US-026, como un colaborador más de la fachada |

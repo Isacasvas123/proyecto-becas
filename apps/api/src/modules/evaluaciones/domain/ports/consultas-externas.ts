@@ -42,6 +42,8 @@ export interface ArchivoVisible {
 
 export interface ConsultaSolicitudes {
   enviadasDe(convocatoriaId: string): Promise<SolicitudResumida[]>;
+  /** Las que ya estan EN_EVALUACION: algunas pueden haber quedado sin evaluador (CU-13, 5a). */
+  enEvaluacionDe(convocatoriaId: string): Promise<SolicitudResumida[]>;
   resumenes(ids: readonly string[]): Promise<SolicitudResumida[]>;
   iniciarEvaluacion(ids: readonly string[], convocatoriaId: string, autorId: string): Promise<void>;
   expediente(id: string): Promise<ExpedienteVisible | null>;

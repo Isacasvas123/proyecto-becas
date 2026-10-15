@@ -23,6 +23,7 @@ import { Link, useParams } from 'react-router-dom';
 import {
   adjudicarBeca,
   agregarIntegrantes,
+  quitarIntegrante,
   asignarSolicitudes,
   listarEvaluadores,
   obtenerComite,
@@ -123,6 +124,28 @@ export function PaginaComite(): ReactElement {
       await agregarIntegrantes(id, [nuevoIntegrante]);
       setNuevoIntegrante('');
       return 'Integrante agregado.';
+    });
+
+  /**
+   * CU-13, flujo 5a. El primer intento va sin confirmar: si esa persona tiene solicitudes
+   * pendientes, el servidor responde cuántas quedarían sin evaluador y esa frase es la que se
+   * muestra en el cuadro de confirmación. La pantalla no cuenta nada por su lado.
+   */
+  const quitar = (integrante: { id: string; nombreCompleto: string }) =>
+    ejecutar(async () => {
+      try {
+        await quitarIntegrante(id, integrante.id);
+        return `${integrante.nombreCompleto} ya no está en el comité.`;
+      } catch (causa: unknown) {
+        const aviso = causa instanceof Error ? causa.message : '';
+        if (!/sin evaluador/.test(aviso)) throw causa;
+
+        if (!window.confirm(`${aviso}\n\n¿Quitar a ${integrante.nombreCompleto} del comité?`)) {
+          return `${integrante.nombreCompleto} sigue en el comité.`;
+        }
+        await quitarIntegrante(id, integrante.id, true);
+        return `${integrante.nombreCompleto} ya no está en el comité. Sus solicitudes pendientes quedaron libres para reasignar.`;
+      }
     });
 
   const resolver = (fila: FilaConsolidado, decision: 'APROBAR' | 'RECHAZAR', motivo: string) =>
@@ -288,6 +311,17 @@ export function PaginaComite(): ReactElement {
                           {i.dictaminadas} de {i.asignadas} dictaminadas
                         </span>
                       </div>
+                      {comite.integrantes.length > 1 && (
+                        <button
+                          type="button"
+                          className="boton pequeno fantasma"
+                          disabled={ocupado}
+                          onClick={() => void quitar(i)}
+                          aria-label={`Quitar a ${i.nombreCompleto} del comité`}
+                        >
+                          Quitar
+                        </button>
+                      )}
                     </li>
                   ))}
                 </ul>
