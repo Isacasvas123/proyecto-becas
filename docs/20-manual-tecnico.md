@@ -89,6 +89,7 @@ proyecto-becas/
 │   │   │   │   ├── evaluaciones/    Comités, asignación, dictámenes y consolidado (EPIC-04)
 │   │   │   │   ├── resoluciones/    Resolución, adjudicación y consulta pública (EPIC-05)
 │   │   │   │   ├── reportes/        Reportes, panel y exportación (EPIC-06; solo lee)
+│   │   │   │   ├── bitacora/        Auditoría transversal (exigencia del PO, 17 Oct)
 │   │   │   │   └── salud/           /health y /ready
 │   │   │   ├── shared/
 │   │   │   │   ├── exceptions/      Filtro global de errores de dominio
@@ -186,6 +187,8 @@ Base local: `http://localhost:3000`
 | `GET` | `/reportes/solicitudes` | **ADMINISTRADOR** | US-028. Parámetros opcionales: `convocatoriaId`, `estado` (lista separada por comas), `nivel`, `departamento`, `desde`, `hasta` (AAAA-MM-DD, hora de Guatemala, inclusivas), `agruparPor`, `ordenarPor`, `formato` (`JSON`, `CSV`, `PDF`). Combinaciones sin sentido: 422 |
 | `GET` | `/reportes/panel` | **ADMINISTRADOR** | US-029. `convocatoriaId` opcional |
 | `GET` | `/reportes/regiones` | **ADMINISTRADOR** | US-031. `convocatoriaId` y `formato` opcionales |
+| `GET` | `/bitacora` | **ADMINISTRADOR** | Auditoría. Filtros opcionales: `rol`, `entidad`, `desde`, `hasta` (AAAA-MM-DD), `soloRechazadas`, `pagina`, `porPagina` (tope 100). Consultarla también queda registrado |
+| `GET` | `/bitacora/entidades` | **ADMINISTRADOR** | Los recursos que aparecen en la bitácora, para el filtro de la pantalla |
 | `POST` | `/consulta-publica` | **Público** | `{ "numero", "cui" }` → solo `numero`, `estado`, `ultimoCambio` (US-025). 404 genérico; 429 tras 10 consultas por minuto |
 
 > **El id del estudiante nunca viaja en la URL ni en el cuerpo.** Sale del token con el decorador
