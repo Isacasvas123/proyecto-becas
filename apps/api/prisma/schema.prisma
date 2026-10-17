@@ -340,3 +340,42 @@ model Beca {
 
   @@map("becas")
 }
+
+// ─── Auditoría ─────────────────────────────────────────────────────────────────
+
+/// Bitácora del sistema. Exigida por el Product Owner el 17 de octubre de 2026.
+///
+/// SOLO SE INSERTA. No hay forma de modificar ni borrar un registro desde la aplicación: el
+/// repositorio no expone esos métodos, igual que con `historial_estado_solicitud` y `dictamenes`.
+/// Una bitácora que la propia aplicación puede reescribir no sirve como evidencia.
+///
+/// QUÉ NO SE GUARDA AQUÍ
+///   Contraseñas, CUI, correos ni el contenido de los documentos. Se guarda QUIÉN hizo QUÉ y
+///   SOBRE QUÉ, no los datos personales que viajaban en la petición. Una bitácora no debe
+///   convertirse en una segunda copia de la base, sin los controles de acceso de la primera.
+model RegistroBitacora {
+  id String @id @default(uuid())
+
+  /// Quién. Nulo cuando no había sesión: un intento de inicio fallido también se registra.
+  actorId      String?     @map("actor_id")
+  actorUsuario String?     @map("actor_usuario")
+  actorRol     RolUsuario? @map("actor_rol")
+
+  /// Qué: el método y la ruta tal como llegaron, ya sin identificadores en el texto.
+  accion    String
+  /// Sobre qué: la entidad afectada y su id, cuando la ruta lo dice.
+  entidad   String?
+  entidadId String? @map("entidad_id")
+
+  /// Cómo terminó: el código HTTP. Un 403 o un 422 también son evidencia.
+  resultado Int
+  /// Desde dónde. Útil para el límite de consultas públicas (US-025).
+  origen    String?
+
+  ocurridoEn DateTime @default(now()) @map("ocurrido_en")
+
+  @@index([ocurridoEn])
+  @@index([actorId, ocurridoEn])
+  @@index([entidad, entidadId])
+  @@map("bitacora")
+}
