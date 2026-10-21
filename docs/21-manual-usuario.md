@@ -13,7 +13,7 @@
 > ### Lea esto antes de seguir
 >
 > **La plataforma está en construcción.** Este manual describe **únicamente lo que ya funciona** al
-> 16 de septiembre de 2026. La sección 11 lista lo que todavía no existe, con la fecha prevista.
+> 16 de septiembre de 2026. La sección 12 lista lo que todavía no existe, con la fecha prevista.
 >
 > Se escribe así a propósito: un manual que describa pantallas que no existen hace perder el
 > tiempo a quien lo lee y no sirve para nada.
@@ -325,12 +325,26 @@ exporta exactamente lo que está viendo.
 > 🔒 Los reportes no incluyen nombres, CUI ni datos económicos de los aspirantes: se pueden compartir
 > para rendir cuentas.
 
-## 10. Cerrar sesión
+## 10. Bitácora (administración)
+
+En **Bitácora** queda registrada toda acción que cambia algo en el sistema: quién la hizo, sobre
+qué recurso, cómo terminó y cuándo. También los intentos rechazados, que suelen ser lo más
+interesante de revisar.
+
+Puede filtrar por rol, por recurso, por fechas, o quedarse solo con las peticiones rechazadas.
+
+> 🔒 La bitácora **no guarda datos personales**: identifica a la persona por su nombre de usuario
+> y al recurso por su número. Y solo se le agregan registros: nadie, ni siquiera un
+> administrador, puede modificar o borrar un asiento desde la plataforma.
+
+> Consultar la bitácora también queda registrado en la bitácora.
+
+## 11. Cerrar sesión
 
 Use la opción de cerrar sesión del encabezado. Hágalo siempre que use una computadora que no sea
 suya.
 
-## 11. Lo que todavía no está disponible
+## 12. Lo que todavía no está disponible
 
 Esta es la parte honesta del manual. Lo siguiente **aún no funciona**, con la fecha prevista:
 
@@ -344,13 +358,13 @@ Esta es la parte honesta del manual. Lo siguiente **aún no funciona**, con la f
 
 
 
-### 11.1 Un defecto que ya está corregido
+### 12.1 Un defecto que ya está corregido
 
 Hasta el 12 de septiembre de 2026 había que iniciar sesión para ver las convocatorias, y eso estaba
 mal: consultarlas debe poder hacerlo cualquier persona, por transparencia. **Ya no hace falta
 cuenta.**
 
-## 12. Preguntas frecuentes
+## 13. Preguntas frecuentes
 
 **¿Puedo postular a más de una convocatoria?**
 Sí, una solicitud por convocatoria. Si una le fue rechazada, puede volver a postular a esa misma.
@@ -372,7 +386,7 @@ Está usando una versión de prueba, no la oficial. Los datos que vea ahí no so
 **¿Por qué se cerró mi sesión sola?**
 Las sesiones duran 8 horas por seguridad. Vuelva a entrar.
 
-## 13. A quién acudir
+## 14. A quién acudir
 
 | Si...                                          | Acuda a                                             |
 | ---------------------------------------------- | --------------------------------------------------- |

@@ -241,7 +241,8 @@ permite responder "¿por qué hicieron esto así?" en la presentación final.
 | ADR-06 | 03/09/2026 | Campos privados de JavaScript (`#`) para datos sensibles del dominio | El `private` de TypeScript desaparece al compilar: el hash de contraseña quedaba visible en `Object.keys()` y `JSON.stringify()`. Detectado por una prueba que falló. Un `#` es privado en tiempo de ejecución | Aceptada |
 | ADR-07 | 03/09/2026 | La sesión del frontend vive solo en memoria, no en `localStorage` | Un token en `localStorage` es legible por cualquier script: un XSS bastaría para robarlo. Se acepta el costo de reautenticar al recargar. La solución definitiva es una cookie `httpOnly`, prevista en el Sprint 2 con US-003 | Aceptada, revisar en Sprint 2 |
 | ADR-08 | 03/09/2026 | La regla de capas se verifica con ESLint, no solo en code review | `no-restricted-imports` rechaza importar `@nestjs/*`, `@prisma/client` o HTTP dentro de `domain/`. Antes dependía de que el revisor se acordara; ahora lo bloquea el CI | Aceptada |
-| ADR-09 | | | | |
+| ADR-09 | 17/10/2026 | Bitacora de auditoria escrita por un MIDDLEWARE, no por cada caso de uso | Exigencia del PO. Auditar es transversal: repetir la escritura en cada servicio la mezclaria con las reglas de negocio y bastaria olvidarla en un endpoint nuevo para perder el registro, sin que nadie lo note. Se penso primero como interceptor, pero una prueba de integracion mostro que en NestJS los guards corren antes: los 403 del control de acceso nunca se registraban, y son los que mas interesa auditar. El middleware se engancha al evento finish de la respuesta, cuando el codigo ya es definitivo y el guard ya dejo el portador | Aceptada |
+| ADR-10 | | | | |
 
 ---
 
