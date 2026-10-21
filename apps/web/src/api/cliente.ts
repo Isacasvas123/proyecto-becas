@@ -677,3 +677,43 @@ export function emitirDictamen(
 ): Promise<Dictamen> {
   return enviar<Dictamen>(`${rutaEvaluacion(id)}/dictamen`, datos);
 }
+
+// ─── Bitácora (auditoría) ─────────────────────────────────────────────────────
+
+export interface RegistroBitacora {
+  actor: string | null;
+  rol: string | null;
+  accion: string;
+  entidad: string | null;
+  entidadId: string | null;
+  resultado: number;
+  rechazada: boolean;
+  origen: string | null;
+  ocurridoEn: string;
+}
+
+export interface PaginaBitacora {
+  registros: RegistroBitacora[];
+  total: number;
+  pagina: number;
+  porPagina: number;
+  paginas: number;
+}
+
+export interface FiltrosBitacora {
+  rol?: string;
+  entidad?: string;
+  desde?: string;
+  hasta?: string;
+  soloRechazadas?: string;
+  pagina?: string;
+}
+
+/** Solo administración. Consultar la bitácora queda, a su vez, registrado en la bitácora. */
+export function consultarBitacora(filtros: FiltrosBitacora): Promise<PaginaBitacora> {
+  return obtener<PaginaBitacora>(`/bitacora${consulta({ ...filtros })}`);
+}
+
+export function entidadesBitacora(): Promise<string[]> {
+  return obtener<string[]>('/bitacora/entidades');
+}

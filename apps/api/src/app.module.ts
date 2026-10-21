@@ -11,6 +11,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
+import { BitacoraModule } from './modules/bitacora/bitacora.module';
 import { ConvocatoriasModule } from './modules/convocatorias/convocatorias.module';
 import { EstudiantesModule } from './modules/estudiantes/estudiantes.module';
 import { EvaluacionesModule } from './modules/evaluaciones/evaluaciones.module';
@@ -38,6 +39,8 @@ import { PrismaModule } from './shared/persistence/prisma.module';
     EvaluacionesModule,
     ResolucionesModule,
     ReportesModule,
+    // Transversal: su interceptor se registra global y audita todas las rutas de arriba.
+    BitacoraModule,
   ],
 })
 export class AppModule {}

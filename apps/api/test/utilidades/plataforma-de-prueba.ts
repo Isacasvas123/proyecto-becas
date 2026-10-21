@@ -83,6 +83,11 @@ import {
   FuenteSolicitudesAdapter,
 } from '../../src/modules/reportes/infrastructure/integraciones/fuentes.adapter';
 import { ReportesController } from '../../src/modules/reportes/presentation/reportes.controller';
+import { BitacoraService } from '../../src/modules/bitacora/application/services/bitacora.service';
+import { BITACORA_REPOSITORIO } from '../../src/modules/bitacora/domain/ports/bitacora.repositorio';
+import { BitacoraEnMemoriaRepositorio } from '../../src/modules/bitacora/infrastructure/persistence/bitacora-en-memoria.repositorio';
+import { BitacoraController } from '../../src/modules/bitacora/presentation/controllers/bitacora.controller';
+import { BitacoraMiddleware } from '../../src/modules/bitacora/presentation/bitacora.middleware';
 import { ALMACENAMIENTO_DOCUMENTOS } from '../../src/modules/solicitudes/domain/ports/almacenamiento-documentos';
 import { SOLICITUD_REPOSITORIO } from '../../src/modules/solicitudes/domain/ports/solicitud.repositorio';
 import { AlmacenamientoMemoriaAdapter } from '../../src/modules/solicitudes/infrastructure/almacenamiento/almacenamiento-memoria.adapter';
@@ -182,6 +187,7 @@ export async function montarPlataforma(): Promise<INestApplication<App>> {
       ResolucionesController,
       ConsultaPublicaController,
       ReportesController,
+      BitacoraController,
     ],
     providers: [
       // evaluaciones
@@ -228,6 +234,10 @@ export async function montarPlataforma(): Promise<INestApplication<App>> {
       { provide: VERIFICADOR_TOKEN, useClass: VerificadorFalso },
       { provide: APP_GUARD, useClass: AutenticacionGuard },
       { provide: APP_GUARD, useClass: RolesGuard },
+      // bitacora: el interceptor se registra global, igual que en la aplicacion real
+      BitacoraService,
+      { provide: BITACORA_REPOSITORIO, useValue: new BitacoraEnMemoriaRepositorio() },
+      BitacoraMiddleware,
     ],
   })
     .overrideProvider(CONVOCATORIA_REPOSITORIO)
@@ -241,6 +251,15 @@ export async function montarPlataforma(): Promise<INestApplication<App>> {
     .compile();
 
   const app = modulo.createNestApplication<INestApplication<App>>();
+
+  // La bitácora se aplica a todas las rutas. En la aplicación real lo hace `BitacoraModule`
+  // con `configure()`; aquí, que se arman los módulos a mano, se engancha igual para que las
+  // pruebas midan el mismo comportamiento y no una versión sin auditoría.
+  const bitacora = app.get(BitacoraMiddleware);
+  app.use((peticion: never, respuesta: never, siguiente: never) =>
+    bitacora.use(peticion, respuesta, siguiente),
+  );
+
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }),
   );

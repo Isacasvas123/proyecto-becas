@@ -64,6 +64,7 @@
 | **US-029** Panel de estadísticas | 🟢 **Done** — verificada en Staging | Recibidas, tasa de aprobación (sobre las resueltas), cupos disponibles y días promedio de resolución, global y por convocatoria. Adelantada del Sprint 7 |
 | **US-030** Exportar reporte | 🟢 **Done** — verificada en Staging | CSV (UTF-8 con BOM, protegido contra fórmulas) y PDF propio sin dependencias nuevas. Adelantada del Sprint 7 |
 | **US-031** Becas por región | 🟢 **Done** — verificada en Staging | Los 22 departamentos, también los que no tienen becas. Adelantada del Sprint 7 |
+| **US-032** Bitácora de auditoría | 🟡 **Implementada** — falta verificar en Staging | **Exigida por el PO el 17 de octubre.** Toda acción que cambia algo queda registrada con autor, recurso, resultado y fecha, incluidas las rechazadas. La escribe un middleware, así que ningún caso de uso la menciona. Pantalla de consulta para administración, con filtros. Solo se inserta: no hay forma de modificar ni borrar un asiento desde la aplicación |
 | Resto | ⬜ Pendiente | Según el calendario de sprints |
 
 > **Nota para la Sprint Review.** Ninguna de estas historias puede marcarse como *Completada*
