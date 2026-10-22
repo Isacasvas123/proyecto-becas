@@ -124,6 +124,7 @@ function copiar(s: Solicitud): Solicitud {
     convocatoriaId: s.convocatoriaId,
     estado: s.nombreEstado,
     documentosExigidos: [...s.documentosExigidos],
+    montoBeca: s.montoBeca,
     documentos: s.listaDocumentos(),
     historial: s.listaHistorial(),
     enviadaEn: s.enviadaEn,

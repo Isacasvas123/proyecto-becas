@@ -69,6 +69,7 @@ export function Encabezado({ sesion = null, onCerrarSesion }: Props): ReactEleme
               <>
                 <NavLink to="/solicitudes">Mis solicitudes</NavLink>
                 <NavLink to="/perfil">Mi perfil</NavLink>
+                <NavLink to="/notificaciones">Mis avisos</NavLink>
               </>
             )}
           </nav>

@@ -34,6 +34,8 @@ import {
 import { AutenticacionGuard } from '../src/modules/usuarios/presentation/guards/autenticacion.guard';
 import { RolesGuard } from '../src/modules/usuarios/presentation/guards/roles.guard';
 import { DominioExceptionFilter } from '../src/shared/exceptions/dominio-exception.filter';
+import { NOTIFICACION_REPOSITORIO } from '../src/modules/solicitudes/domain/ports/notificacion.repositorio';
+import { NotificacionEnMemoriaRepositorio } from '../src/modules/solicitudes/infrastructure/persistence/notificacion-en-memoria.repositorio';
 
 class VerificadorFalso implements VerificadorToken {
   private readonly conocidos = new Map<string, PortadorToken>([
@@ -89,6 +91,10 @@ describe('Solicitudes (e2e)', () => {
       .useValue(new SolicitudEnMemoriaRepositorio([]))
       .overrideProvider(ALMACENAMIENTO_DOCUMENTOS)
       .useValue(almacenamiento)
+      // US-022: la bandeja de avisos, en memoria como el resto. Sin esto, el contenedor
+      // intentaría construir el adaptador de Prisma y aquí no hay PostgreSQL.
+      .overrideProvider(NOTIFICACION_REPOSITORIO)
+      .useValue(new NotificacionEnMemoriaRepositorio())
       .compile();
 
     app = modulo.createNestApplication();
@@ -114,6 +120,7 @@ describe('Solicitudes (e2e)', () => {
         titulo: 'Beca Universitaria 2026',
         descripcion: 'Licenciaturas en universidades del país.',
         cupos: 10,
+        montoBeca: 5000,
         fechaApertura: '2026-01-01T00:00:00.000Z',
         fechaCierre: '2099-12-31T00:00:00.000Z',
         documentosExigidos: ['DPI', 'CERTIFICADO_NOTAS'],
@@ -261,6 +268,7 @@ describe('Solicitudes (e2e)', () => {
           titulo: 'Maestrías 2026',
           descripcion: 'Posgrados.',
           cupos: 5,
+          montoBeca: 5000,
           fechaApertura: '2026-01-01T00:00:00.000Z',
           fechaCierre: '2099-12-31T00:00:00.000Z',
         })
@@ -435,6 +443,73 @@ describe('Solicitudes (e2e)', () => {
       expect(listado[0].historial[1]).not.toHaveProperty('autorId');
       // Ni la ubicación interna del archivo.
       expect(JSON.stringify(listado)).not.toContain('referencia');
+    });
+  });
+
+  describe('avisos del estudiante (US-022; PO, 17 Oct 2026)', () => {
+    it('enviar la solicitud deja su aviso, sin leer', async () => {
+      const convocatoriaId = await convocatoriaPublicada();
+      await perfilCompleto();
+      const { body: solicitud } = await servidor()
+        .post('/solicitudes')
+        .set(ana)
+        .send({ convocatoriaId })
+        .expect(201);
+      await servidor()
+        .put(`/solicitudes/${solicitud.id}/documentos/DPI`)
+        .set(ana)
+        .attach('archivo', PDF, 'dpi.pdf')
+        .expect(200);
+      await servidor()
+        .put(`/solicitudes/${solicitud.id}/documentos/CERTIFICADO_NOTAS`)
+        .set(ana)
+        .attach('archivo', PDF, 'notas.pdf')
+        .expect(200);
+      await servidor().post(`/solicitudes/${solicitud.id}/enviar`).set(ana).expect(200);
+
+      const { body } = await servidor().get('/notificaciones').set(ana).expect(200);
+
+      // Uno solo: crear la solicitud no es un CAMBIO de estado, es el estado inicial. El PO pidió
+      // avisar cuando cambie, y un borrador que el propio estudiante acaba de crear no le informa
+      // nada que no sepa.
+      expect(body.sinLeer).toBe(1);
+      expect(body.notificaciones.map((n: { estado: string }) => n.estado)).toEqual(['ENVIADA']);
+      expect(body.notificaciones[0].mensaje).toContain(solicitud.numero);
+    });
+
+    it('cada quien ve solo los suyos', async () => {
+      await solicitudDeAna();
+
+      const { body } = await servidor().get('/notificaciones').set(luis).expect(200);
+
+      expect(body.notificaciones).toHaveLength(0);
+    });
+
+    it('marcar leído funciona, y la de otro responde 404 en vez de confirmar que existe', async () => {
+      const id = await solicitudDeAna();
+      await servidor()
+        .put(`/solicitudes/${id}/documentos/DPI`)
+        .set(ana)
+        .attach('archivo', PDF, 'dpi.pdf')
+        .expect(200);
+      await servidor()
+        .put(`/solicitudes/${id}/documentos/CERTIFICADO_NOTAS`)
+        .set(ana)
+        .attach('archivo', PDF, 'notas.pdf')
+        .expect(200);
+      await servidor().post(`/solicitudes/${id}/enviar`).set(ana).expect(200);
+      const { body: bandeja } = await servidor().get('/notificaciones').set(ana).expect(200);
+      const aviso = bandeja.notificaciones[0].id;
+
+      await servidor().put(`/notificaciones/${aviso}/leida`).set(luis).expect(404);
+      await servidor().put(`/notificaciones/${aviso}/leida`).set(ana).expect(204);
+
+      const { body } = await servidor().get('/notificaciones').set(ana).expect(200);
+      expect(body.sinLeer).toBe(0);
+    });
+
+    it('un administrador no tiene bandeja: es del estudiante', async () => {
+      await servidor().get('/notificaciones').set(admin).expect(403);
     });
   });
 });

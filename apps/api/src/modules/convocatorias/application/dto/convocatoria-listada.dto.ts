@@ -30,6 +30,9 @@ export interface ConvocatoriaListadaDto {
   readonly tipo: string;
   readonly estado: string;
   readonly cupos: number;
+  /** PO, 17 Oct 2026. */
+  readonly montoBeca: number;
+  readonly exigeSegundaAprobacion: boolean;
   readonly fechaApertura: string;
   readonly fechaCierre: string;
   /** US-008: el visitante ve los requisitos antes de decidir si postula. */

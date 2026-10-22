@@ -32,6 +32,7 @@ import {
 import { SolicitudDto } from '../dto/solicitud.dto';
 import { aSolicitudDto } from '../mappers/solicitud.mapper';
 import { ExpedienteService } from './expediente.service';
+import { PublicadorEventosSolicitud } from './publicador-eventos.service';
 
 @Injectable()
 export class EnviarSolicitudService {
@@ -47,6 +48,7 @@ export class EnviarSolicitudService {
     @Inject(NOTIFICADOR_SOLICITUDES)
     private readonly notificador: NotificadorSolicitudes,
     private readonly expediente: ExpedienteService,
+    private readonly eventos: PublicadorEventosSolicitud,
   ) {}
 
   async ejecutar(
@@ -81,6 +83,7 @@ export class EnviarSolicitudService {
 
     solicitud.enviar(ahora, estudianteId);
     await this.repositorio.guardar(solicitud);
+    await this.eventos.publicarDe(solicitud);
     this.logger.log(`Solicitud enviada: ${solicitud.numero}`);
 
     // Criterio 4. Si el aviso falla, la solicitud YA está enviada y guardada: no se deshace ni se

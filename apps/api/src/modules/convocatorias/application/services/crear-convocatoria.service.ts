@@ -29,6 +29,7 @@ export interface ComandoCrearConvocatoria {
   readonly titulo: string;
   readonly descripcion: string;
   readonly cupos: number;
+  readonly montoBeca: number;
   readonly fechaApertura: Date;
   readonly fechaCierre: Date;
   readonly requisitos?: readonly Requisito[];
@@ -64,6 +65,7 @@ export class CrearConvocatoriaService {
       titulo: comando.titulo,
       descripcion: comando.descripcion,
       cupos: comando.cupos,
+      montoBeca: comando.montoBeca,
       apertura: comando.fechaApertura,
       cierre: comando.fechaCierre,
       requisitos: comando.requisitos,

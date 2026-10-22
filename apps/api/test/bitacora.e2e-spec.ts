@@ -96,6 +96,7 @@ describe('Bitácora (e2e)', () => {
         titulo: 'Beca para la prueba de bitácora',
         descripcion: 'Creada sin publicar, para auditar la publicación.',
         cupos: 3,
+        montoBeca: 5000,
         fechaApertura: '2026-01-01T00:00:00.000Z',
         fechaCierre: '2099-12-31T00:00:00.000Z',
         documentosExigidos: ['DPI'],

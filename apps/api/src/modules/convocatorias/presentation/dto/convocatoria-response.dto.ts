@@ -27,6 +27,11 @@ export class ConvocatoriaResponseDto {
   tipo!: string;
   estado!: string;
   cupos!: number;
+
+  /** PO, 17 Oct 2026: monto de la beca y si por eso necesita doble aprobacion. */
+  montoBeca!: number;
+
+  exigeSegundaAprobacion!: boolean;
   fechaApertura!: string;
   fechaCierre!: string;
   requisitos!: readonly ElementoCatalogoResponseDto[];

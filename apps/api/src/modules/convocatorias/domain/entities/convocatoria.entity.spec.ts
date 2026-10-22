@@ -29,6 +29,7 @@ function atributos(cambios: Partial<AtributosConvocatoria> = {}): AtributosConvo
     tipo: TipoBeca.UNIVERSITARIA,
     estado: EstadoConvocatoria.PUBLICADA,
     cupos: 500,
+    montoBeca: 5000,
     periodo: PeriodoPostulacion.crear(
       new Date('2026-09-01T00:00:00.000Z'),
       new Date('2026-10-31T23:59:59.000Z'),

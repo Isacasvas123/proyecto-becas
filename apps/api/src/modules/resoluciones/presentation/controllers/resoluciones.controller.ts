@@ -34,6 +34,13 @@ export class ResolverRequestDto {
   motivo!: string;
 }
 
+/** Segunda aprobacion (PO, 17 Oct 2026): solo el motivo; la decision ya se tomo. */
+export class ConfirmarAprobacionRequestDto {
+  @IsString()
+  @MaxLength(2000)
+  motivo!: string;
+}
+
 export class ConsultaPublicaRequestDto {
   @IsString()
   @Matches(/^\s*SOL-\d{4}-\d{6}\s*$/i, { message: 'El número tiene la forma SOL-2026-000123' })
@@ -61,6 +68,17 @@ export class ResolucionesController {
     @Body() peticion: ResolverRequestDto,
   ): Promise<ResultadoResolucionDto> {
     return this.fachada.resolver(id, peticion.decision, peticion.motivo, adminId);
+  }
+
+  /** PO, 17 Oct 2026. La da una persona distinta de la que aprobo primero (lo exige el dominio). */
+  @Post('solicitudes/:id/confirmar-aprobacion')
+  @HttpCode(HttpStatus.OK)
+  confirmarAprobacion(
+    @UsuarioActual() adminId: string,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() peticion: ConfirmarAprobacionRequestDto,
+  ): Promise<ResultadoResolucionDto> {
+    return this.fachada.confirmarAprobacion(id, peticion.motivo, adminId);
   }
 
   @Post('solicitudes/:id/adjudicar')

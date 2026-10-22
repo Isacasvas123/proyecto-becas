@@ -65,6 +65,8 @@
 | **US-030** Exportar reporte | 🟢 **Done** — verificada en Staging | CSV (UTF-8 con BOM, protegido contra fórmulas) y PDF propio sin dependencias nuevas. Adelantada del Sprint 7 |
 | **US-031** Becas por región | 🟢 **Done** — verificada en Staging | Los 22 departamentos, también los que no tienen becas. Adelantada del Sprint 7 |
 | **US-032** Bitácora de auditoría | 🟡 **Implementada** — falta verificar en Staging | **Exigida por el PO el 17 de octubre.** Toda acción que cambia algo queda registrada con autor, recurso, resultado y fecha, incluidas las rechazadas. La escribe un middleware, así que ningún caso de uso la menciona. Pantalla de consulta para administración, con filtros. Solo se inserta: no hay forma de modificar ni borrar un asiento desde la aplicación |
+| **US-033** Segunda aprobación sobre Q10,000 | 🟡 **Implementada** — falta verificar en Staging | **Exigida por el PO el 17 de octubre.** La convocatoria fija el monto de la beca. Si supera Q10,000 la primera aprobación deja la solicitud en `APROBACION_PENDIENTE` y no reserva cupo; la segunda la debe dar una persona distinta. Un estado más del patrón **State**, no un `if` |
+| **US-034** Avisos al estudiante | 🟡 **Implementada** — falta verificar en Staging | **Exigida por el PO el 17 de octubre.** Cada cambio de estado genera un aviso para el estudiante, con su motivo cuando lo hay, y una pantalla de buzón. Con el patrón **Observer**: se publica después de guardar, para no avisar de algo que no se persistió |
 | Resto | ⬜ Pendiente | Según el calendario de sprints |
 
 > **Nota para la Sprint Review.** Ninguna de estas historias puede marcarse como *Completada*
@@ -459,6 +461,76 @@ corrigen los criterios de la historia, no se culpa a nadie, y es material para l
 
 ---
 
+## Requerimientos incorporados después del backlog inicial
+
+> Estas tres historias **no estaban en el backlog de la versión 1.0**. Las pidió el Product Owner
+> en la clase del **17 de octubre de 2026**, cuando las 24 historias planificadas ya estaban
+> terminadas y verificadas en Staging. Se documentan aquí, con el mismo formato que las demás,
+> porque un requerimiento que entra tarde sigue siendo un requerimiento: lo que cambia es cuándo
+> se estimó, no cómo se trata.
+>
+> El análisis de qué costó incorporarlas está en
+> [`23-analisis-impacto-requerimientos-po.md`](23-analisis-impacto-requerimientos-po.md).
+
+### US-032 — Bitácora de auditoría
+**Como** administrador del sistema, **quiero** que toda acción que modifique datos quede
+registrada **para poder** auditar quién hizo qué, cuándo y con qué resultado.
+
+**Criterios de aceptación**
+- Se registra el autor, su rol, la operación, el recurso afectado, el resultado y la fecha.
+- Se registran también las acciones **rechazadas** (401, 403, 409, 422): son las que más interesan.
+- Las consultas de solo lectura no se registran.
+- Ningún asiento puede modificarse ni borrarse desde la aplicación.
+- La bitácora no guarda el cuerpo de las peticiones: por ahí viajan el CUI y las contraseñas.
+- Pantalla de consulta para administración, con filtros por fecha, actor, recurso y rechazadas.
+
+> 🔧 Se implementa con un **middleware global** y no con un interceptor. En NestJS los *guards*
+> corren antes que los interceptores, de modo que un interceptor nunca vería un 403 —justo el caso
+> que más importa auditar. Queda escrito como **ADR-09** en `05-arquitectura.md`.
+
+**Prioridad:** Alta · **Estimación:** 8
+
+### US-033 — Segunda aprobación para becas de monto alto
+**Como** Product Owner, **quiero** que las solicitudes cuya beca supere los Q10,000 necesiten una
+segunda aprobación **para poder** evitar que una sola persona comprometa montos elevados.
+
+**Criterios de aceptación**
+- La convocatoria define el monto de la beca; el monto queda fijado en la solicitud al crearla.
+- Si el monto supera **Q10,000**, la primera aprobación deja la solicitud en
+  `APROBACION_PENDIENTE` y **no** reserva cupo todavía.
+- La segunda aprobación debe darla **una persona distinta** de la que dio la primera.
+- Confirmar la segunda aprobación pasa la solicitud a `APROBADA` y ahí sí reserva el cupo.
+- Desde `APROBACION_PENDIENTE` todavía se puede rechazar, con su motivo.
+- Por debajo del umbral el flujo no cambia: una sola aprobación.
+
+> 🔧 **Reutiliza el patrón State**: `APROBACION_PENDIENTE` es una clase de estado más
+> (`EstadoAprobacionPendiente`), no un `if` dentro del caso de uso. Esta historia es la prueba de
+> que la decisión de diseño del Sprint 4 valió la pena: el estado nuevo no obligó a tocar los
+> estados existentes.
+
+**Prioridad:** Alta · **Estimación:** 8
+
+### US-034 — Avisos al estudiante por cambio de estado
+**Como** estudiante, **quiero** recibir un aviso cada vez que mi solicitud cambia de estado
+**para poder** enterarme sin tener que entrar a revisar todos los días.
+
+**Criterios de aceptación**
+- Cada cambio de estado genera un aviso dirigido al estudiante dueño de la solicitud.
+- El aviso dice a qué estado pasó y, cuando lo hay, el motivo de la resolución.
+- El estudiante ve sus avisos en una pantalla propia, con los no leídos marcados.
+- Puede marcar uno como leído o marcarlos todos.
+- Un estudiante **no** puede marcar ni ver los avisos de otro.
+- Crear la solicitud no genera aviso: el estado inicial no es un *cambio* de estado.
+- Si el aviso falla al guardarse, la operación del usuario **no** se cae: ya ocurrió y es válida.
+
+> 🔧 **Aquí se implementa el patrón Observer** (séptimo patrón del proyecto). La solicitud acumula
+> lo que le pasó y el caso de uso lo publica **después de persistir**, para que nunca se avise de
+> algo que no llegó a guardarse. Justificado en `06-patrones.md`, sección 7.
+
+**Prioridad:** Alta · **Estimación:** 5
+
+---
+
 ## Resumen de estimación inicial
 
 | Epic | Historias | Puntos |
@@ -470,6 +542,12 @@ corrigen los criterios de la historia, no se culpa a nadie, y es material para l
 | EPIC-05 · Resolución y consulta | 5 | 31 |
 | EPIC-06 · Reportes | 4 | 26 |
 | **Total** | **31** | **176** |
+
+> **Actualización del 17 de octubre de 2026.** A estas 31 historias se sumaron **US-032, US-033
+> y US-034**, pedidas por el Product Owner cuando el backlog inicial ya estaba terminado: **34
+> historias y 197 puntos**. Los 21 puntos nuevos equivalen a casi un sprint completo de la
+> velocidad estimada, y se absorbieron sin mover la fecha de entrega porque el trabajo planificado
+> se había adelantado. Esa holgura era el margen del proyecto, y se consumió aquí.
 
 Con 8 sprints disponibles, se requiere una velocidad promedio de **~22 puntos por sprint**. La
 velocidad real se medirá a partir del Sprint 2; si resulta menor, el Product Owner despriorizará

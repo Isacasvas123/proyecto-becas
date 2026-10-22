@@ -128,6 +128,41 @@ export class ResolucionFacade {
     return this.resultado(resuelta, convocatoria);
   }
 
+  /**
+   * Segunda aprobación (PO, 17 de octubre de 2026).
+   *
+   * Mismas comprobaciones que una resolución normal —motivo obligatorio y cupo disponible— más
+   * la que hace el dominio: que quien firma no sea quien dio la primera aprobación. El cupo se
+   * reserva aquí, en la segunda firma, no en la primera.
+   */
+  async confirmarAprobacion(
+    solicitudId: string,
+    motivo: string,
+    adminId: string,
+  ): Promise<ResultadoResolucionDto> {
+    const motivoLimpio = motivo.trim();
+    if (motivoLimpio.length < LARGO_MINIMO_MOTIVO) {
+      throw new ReglaDeNegocioError(
+        `Escriba el motivo de la segunda aprobación (al menos ${LARGO_MINIMO_MOTIVO} caracteres).`,
+      );
+    }
+
+    const solicitud = await this.cargarSolicitud(solicitudId);
+    const convocatoria = await this.cargarConvocatoria(solicitud.convocatoriaId);
+    (await this.ocupacion(convocatoria)).asegurarCupoParaAprobar();
+
+    const aprobada = await this.solicitudes.confirmarAprobacion(
+      solicitud.id,
+      motivoLimpio,
+      adminId,
+      convocatoria.cupos,
+    );
+    this.logger.log(`${aprobada.numero} → ${aprobada.estado} (segunda firma) por ${adminId}`);
+
+    await this.avisar(aprobada, motivoLimpio);
+    return this.resultado(aprobada, convocatoria);
+  }
+
   /** US-024. Solo una solicitud APROBADA (lo garantiza el patrón State). */
   async adjudicar(solicitudId: string, adminId: string): Promise<ResultadoResolucionDto> {
     const solicitud = await this.cargarSolicitud(solicitudId);

@@ -9,6 +9,12 @@ import { SolicitudesParaEvaluacionService } from './application/services/solicit
 import { SolicitudesParaReportesService } from './application/services/solicitudes-para-reportes.service';
 import { SolicitudesParaResolucionService } from './application/services/solicitudes-para-resolucion.service';
 import { ALMACENAMIENTO_DOCUMENTOS } from './domain/ports/almacenamiento-documentos';
+import { OBSERVADORES_SOLICITUD } from './domain/events/evento-solicitud';
+import { PublicadorEventosSolicitud } from './application/services/publicador-eventos.service';
+import { NotificacionesService } from './application/services/notificaciones.service';
+import { NOTIFICACION_REPOSITORIO } from './domain/ports/notificacion.repositorio';
+import { NotificacionPrismaRepositorio } from './infrastructure/persistence/notificacion-prisma.repositorio';
+import { NotificadorEstudianteObservador } from './infrastructure/notificaciones/notificador-estudiante.observador';
 import { CONSULTA_CONVOCATORIAS, CONSULTA_PERFILES } from './domain/ports/consultas-externas';
 import { NOTIFICADOR_SOLICITUDES } from './domain/ports/notificador-solicitudes';
 import { SOLICITUD_REPOSITORIO } from './domain/ports/solicitud.repositorio';
@@ -19,7 +25,10 @@ import {
 } from './infrastructure/integraciones/consultas-externas.adapter';
 import { NotificadorConsolaAdapter } from './infrastructure/notificaciones/notificador-consola.adapter';
 import { SolicitudPrismaRepositorio } from './infrastructure/persistence/solicitud-prisma.repositorio';
-import { SolicitudesController } from './presentation/controllers/solicitudes.controller';
+import {
+  SolicitudesController,
+  NotificacionesController,
+} from './presentation/controllers/solicitudes.controller';
 import { ConvocatoriasModule } from '../convocatorias/convocatorias.module';
 import { EstudiantesModule } from '../estudiantes/estudiantes.module';
 
@@ -31,7 +40,7 @@ import { EstudiantesModule } from '../estudiantes/estudiantes.module';
  */
 @Module({
   imports: [ConvocatoriasModule, EstudiantesModule],
-  controllers: [SolicitudesController],
+  controllers: [SolicitudesController, NotificacionesController],
   providers: [
     ExpedienteService,
     CrearSolicitudService,
@@ -41,6 +50,17 @@ import { EstudiantesModule } from '../estudiantes/estudiantes.module';
     SolicitudesParaResolucionService,
     SolicitudesParaReportesService,
     { provide: SOLICITUD_REPOSITORIO, useClass: SolicitudPrismaRepositorio },
+    // PATRÓN OBSERVER (PO, 17 Oct 2026). Sumar un interesado en los cambios de estado —un correo,
+    // una integración— es agregarlo a esta lista: ningún caso de uso cambia.
+    PublicadorEventosSolicitud,
+    NotificacionesService,
+    NotificadorEstudianteObservador,
+    { provide: NOTIFICACION_REPOSITORIO, useClass: NotificacionPrismaRepositorio },
+    {
+      provide: OBSERVADORES_SOLICITUD,
+      inject: [NotificadorEstudianteObservador],
+      useFactory: (notificador: NotificadorEstudianteObservador) => [notificador],
+    },
     { provide: CONSULTA_CONVOCATORIAS, useClass: ConsultaConvocatoriasAdapter },
     { provide: CONSULTA_PERFILES, useClass: ConsultaPerfilesAdapter },
     { provide: NOTIFICADOR_SOLICITUDES, useClass: NotificadorConsolaAdapter },

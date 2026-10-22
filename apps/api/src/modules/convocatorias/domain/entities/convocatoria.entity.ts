@@ -30,6 +30,7 @@ import {
   ReglaDeNegocioError,
   TransicionInvalidaError,
 } from '../../../../shared/exceptions/errores-dominio';
+import { MONTO_SEGUNDA_APROBACION } from '../../../../shared/reglas/montos';
 import { EstadoConvocatoria } from '../enums/estado-convocatoria.enum';
 import { Requisito } from '../enums/requisito.enum';
 import { TipoBeca } from '../enums/tipo-beca.enum';
@@ -45,6 +46,8 @@ export interface AtributosConvocatoria {
   readonly tipo: TipoBeca;
   readonly estado: EstadoConvocatoria;
   readonly cupos: number;
+  /** Monto de la beca en quetzales enteros (PO, 17 Oct 2026). */
+  readonly montoBeca: number;
   readonly periodo: PeriodoPostulacion;
   readonly requisitos: readonly Requisito[];
   readonly documentosExigidos: readonly TipoDocumento[];
@@ -59,6 +62,7 @@ export class Convocatoria {
     public readonly tipo: TipoBeca,
     private _estado: EstadoConvocatoria,
     public readonly cupos: number,
+    public readonly montoBeca: number,
     public readonly periodo: PeriodoPostulacion,
     public readonly requisitos: readonly Requisito[],
     public readonly documentosExigidos: readonly TipoDocumento[],
@@ -81,6 +85,7 @@ export class Convocatoria {
       atributos.tipo,
       atributos.estado,
       atributos.cupos,
+      atributos.montoBeca,
       atributos.periodo,
       // Copias congeladas: quien tenga la entidad no puede hacer `requisitos.push(...)` y
       // cambiarle las reglas a una convocatoria ya publicada por la puerta de atrás.
@@ -121,6 +126,14 @@ export class Convocatoria {
    */
   esVisiblePublicamente(ahora: Date): boolean {
     return this._estado === EstadoConvocatoria.PUBLICADA && !this.periodo.haVencido(ahora);
+  }
+
+  /**
+   * PO, 17 Oct 2026: por encima del umbral, cada solicitud de esta convocatoria necesitará dos
+   * aprobaciones. Se pregunta aquí para que la regla viva junto al monto y no repartida.
+   */
+  exigeSegundaAprobacion(): boolean {
+    return this.montoBeca > MONTO_SEGUNDA_APROBACION;
   }
 
   /** ¿Se pueden presentar solicitudes en este momento? Lo usará US-012 en el Sprint 4. */
@@ -180,6 +193,16 @@ export class Convocatoria {
     // US-006, criterio 3.
     if (!Number.isInteger(atributos.cupos) || atributos.cupos <= 0) {
       throw new ReglaDeNegocioError('El número de cupos debe ser un entero mayor que cero.');
+    }
+    // PO, 17 Oct 2026. En quetzales enteros, igual que el ingreso familiar del perfil: el
+    // dominio no maneja centavos y una beca no se expresa en fracciones de quetzal.
+    //
+    // SE ADMITE EL 0 AL RECONSTITUIR, Y NO ES UN DESCUIDO: las convocatorias creadas antes del
+    // 17 de octubre no tienen monto, y la migracion no puede inventarles uno. Un 0 significa
+    // "sin monto declarado" y, por tanto, no exige segunda aprobacion. Las NUEVAS si lo exigen:
+    // esa regla vive en la fabrica, que es quien las crea.
+    if (!Number.isInteger(atributos.montoBeca) || atributos.montoBeca < 0) {
+      throw new ReglaDeNegocioError('El monto de la beca debe ser un entero de quetzales.');
     }
     // US-006, criterio 2 lo garantiza `PeriodoPostulacion.crear`: cierre posterior a apertura.
   }
