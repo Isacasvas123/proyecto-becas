@@ -31,6 +31,7 @@ export function aDominio(fila: ConvocatoriaPrisma): Convocatoria {
     tipo: fila.tipo as TipoBeca,
     estado: fila.estado as EstadoConvocatoria,
     cupos: fila.cupos,
+    montoBeca: fila.montoBeca,
     periodo: PeriodoPostulacion.crear(fila.fechaApertura, fila.fechaCierre),
     requisitos: fila.requisitos.map((valor) => enCatalogo(Requisito, valor, 'requisito')),
     documentosExigidos: fila.documentosExigidos.map((valor) =>
@@ -49,6 +50,7 @@ export function aPersistencia(convocatoria: Convocatoria): Prisma.ConvocatoriaUn
     tipo: convocatoria.tipo,
     estado: convocatoria.estado,
     cupos: convocatoria.cupos,
+    montoBeca: convocatoria.montoBeca,
     fechaApertura: convocatoria.periodo.apertura,
     fechaCierre: convocatoria.periodo.cierre,
     requisitos: [...convocatoria.requisitos],

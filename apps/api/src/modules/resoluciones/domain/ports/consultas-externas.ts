@@ -36,6 +36,13 @@ export interface ConsultaSolicitudesResolucion {
     autorId: string,
     cupos: number,
   ): Promise<SolicitudResoluble>;
+  /** Segunda aprobacion (PO, 17 Oct 2026). Reserva el cupo, como una aprobacion normal. */
+  confirmarAprobacion(
+    id: string,
+    motivo: string,
+    autorId: string,
+    cupos: number,
+  ): Promise<SolicitudResoluble>;
   adjudicar(id: string, autorId: string): Promise<SolicitudResoluble>;
   ocupacion(convocatoriaId: string): Promise<{ aprobadas: number; adjudicadas: number }>;
 }

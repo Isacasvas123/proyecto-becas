@@ -11,6 +11,7 @@ import { NombreEstado } from '../../domain/enums/solicitud.enums';
 import { ArchivoDocumento } from '../../domain/value-objects/archivo-documento.vo';
 import { SolicitudEnMemoriaRepositorio } from '../../infrastructure/persistence/solicitud-en-memoria.repositorio';
 import { SolicitudesParaResolucionService } from './solicitudes-para-resolucion.service';
+import { PublicadorEventosSolicitud } from './publicador-eventos.service';
 
 const AHORA = new Date('2026-10-05T10:00:00Z');
 const PDF = ArchivoDocumento.crear({
@@ -26,6 +27,7 @@ function enEvaluacion(n: number): Solicitud {
     estudianteId: `e${n}`,
     convocatoriaId: 'conv',
     documentosExigidos: ['DPI'],
+    montoBeca: 5000,
     ahora: AHORA,
   });
   s.cargarDocumento('DPI', PDF, 'ref', AHORA);
@@ -34,13 +36,37 @@ function enEvaluacion(n: number): Solicitud {
   return s;
 }
 
+/**
+ * Doble del publicador de eventos (patrón Observer, PO 17 Oct 2026). Guarda lo que se publicó
+ * para que las pruebas comprueben QUÉ se anunció, sin observadores reales de por medio.
+ */
+class EventosFalsos extends PublicadorEventosSolicitud {
+  readonly publicados: { numero: string; hacia: string }[] = [];
+
+  constructor() {
+    super([]);
+  }
+
+  async publicarDe(solicitud: Solicitud): Promise<void> {
+    for (const e of solicitud.drenarEventos()) {
+      this.publicados.push({ numero: e.numero, hacia: e.hacia });
+    }
+    return Promise.resolve();
+  }
+}
+
 function montar() {
   const repositorio = new SolicitudEnMemoriaRepositorio([
     enEvaluacion(1),
     enEvaluacion(2),
     enEvaluacion(3),
   ]);
-  return { repositorio, servicio: new SolicitudesParaResolucionService(repositorio) };
+  const eventos = new EventosFalsos();
+  return {
+    repositorio,
+    eventos,
+    servicio: new SolicitudesParaResolucionService(repositorio, eventos),
+  };
 }
 
 const MOTIVO = 'Cumple todos los requisitos de la convocatoria.';
@@ -104,5 +130,41 @@ describe('SolicitudesParaResolucionService', () => {
     await expect(servicio.resolver('nada', 'APROBAR', MOTIVO, 'a', 1)).rejects.toThrow(
       RecursoNoEncontradoError,
     );
+  });
+});
+
+describe('eventos de cambio de estado (patrón Observer, PO 17 Oct 2026)', () => {
+  it('cada resolución anuncia el estado al que llegó', async () => {
+    const { servicio, eventos } = montar();
+
+    await servicio.resolver('s1', 'APROBAR', MOTIVO, 'admin', 10);
+
+    expect(eventos.publicados).toEqual([{ numero: expect.any(String), hacia: 'APROBADA' }]);
+  });
+
+  it('un rechazo también se anuncia', async () => {
+    const { servicio, eventos } = montar();
+
+    await servicio.resolver('s1', 'RECHAZAR', MOTIVO, 'admin', 10);
+
+    expect(eventos.publicados[0].hacia).toBe('RECHAZADA');
+  });
+
+  it('lo que no se guarda no se anuncia: sin cupo no hay evento', async () => {
+    const { servicio, eventos } = montar();
+
+    await expect(servicio.resolver('s1', 'APROBAR', MOTIVO, 'admin', 0)).rejects.toThrow();
+
+    expect(eventos.publicados).toHaveLength(0);
+  });
+
+  it('la adjudicación anuncia su propio cambio', async () => {
+    const { servicio, eventos } = montar();
+    await servicio.resolver('s1', 'APROBAR', MOTIVO, 'admin', 10);
+    eventos.publicados.length = 0;
+
+    await servicio.adjudicar('s1', 'admin');
+
+    expect(eventos.publicados[0].hacia).toBe('ADJUDICADA');
   });
 });

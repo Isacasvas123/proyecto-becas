@@ -50,6 +50,7 @@ function cuerpo(cambios: Record<string, unknown> = {}) {
     titulo: 'Beca Universitaria 2026',
     descripcion: 'Licenciaturas en universidades del país.',
     cupos: 150,
+    montoBeca: 5000,
     fechaApertura: '2026-01-01T00:00:00.000Z',
     // Cierre lejano para que, una vez publicada, sea visible en cualquier fecha de ejecución.
     fechaCierre: '2099-12-31T00:00:00.000Z',

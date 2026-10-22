@@ -31,6 +31,7 @@ import {
 } from '../../domain/ports/solicitud.repositorio';
 import { SolicitudDto } from '../dto/solicitud.dto';
 import { ExpedienteService } from './expediente.service';
+import { PublicadorEventosSolicitud } from './publicador-eventos.service';
 
 @Injectable()
 export class CrearSolicitudService {
@@ -44,6 +45,7 @@ export class CrearSolicitudService {
     @Inject(CONSULTA_PERFILES)
     private readonly perfiles: ConsultaPerfiles,
     private readonly expediente: ExpedienteService,
+    private readonly eventos: PublicadorEventosSolicitud,
   ) {}
 
   async ejecutar(
@@ -88,10 +90,12 @@ export class CrearSolicitudService {
       estudianteId,
       convocatoriaId,
       documentosExigidos: convocatoria.documentosExigidos.map((d) => d.codigo),
+      montoBeca: convocatoria.montoBeca,
       ahora,
     });
 
     await this.repositorio.guardar(solicitud);
+    await this.eventos.publicarDe(solicitud);
     this.logger.log(`Solicitud creada: ${solicitud.numero}`);
 
     return this.expediente.presentar(solicitud);

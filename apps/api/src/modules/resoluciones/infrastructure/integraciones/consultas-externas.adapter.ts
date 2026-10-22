@@ -34,6 +34,10 @@ export class ConsultaSolicitudesResolucionAdapter implements ConsultaSolicitudes
     return this.solicitudes.resolver(id, decision, motivo, autorId, cupos);
   }
 
+  confirmarAprobacion(id: string, motivo: string, autorId: string, cupos: number) {
+    return this.solicitudes.confirmarAprobacion(id, motivo, autorId, cupos);
+  }
+
   adjudicar(id: string, autorId: string) {
     return this.solicitudes.adjudicar(id, autorId);
   }

@@ -83,6 +83,10 @@ import {
   FuenteSolicitudesAdapter,
 } from '../../src/modules/reportes/infrastructure/integraciones/fuentes.adapter';
 import { ReportesController } from '../../src/modules/reportes/presentation/reportes.controller';
+import { NOTIFICACION_REPOSITORIO } from '../../src/modules/solicitudes/domain/ports/notificacion.repositorio';
+import { NotificacionEnMemoriaRepositorio } from '../../src/modules/solicitudes/infrastructure/persistence/notificacion-en-memoria.repositorio';
+import { PrismaModule } from '../../src/shared/persistence/prisma.module';
+import { PrismaService } from '../../src/shared/persistence/prisma.service';
 import { BitacoraService } from '../../src/modules/bitacora/application/services/bitacora.service';
 import { BITACORA_REPOSITORIO } from '../../src/modules/bitacora/domain/ports/bitacora.repositorio';
 import { BitacoraEnMemoriaRepositorio } from '../../src/modules/bitacora/infrastructure/persistence/bitacora-en-memoria.repositorio';
@@ -132,6 +136,8 @@ export const sesion = (id: string, rol: RolUsuario) => ({
   Authorization: `Bearer id:${id}:${rol}`,
 });
 export const admin = sesion('0b6f7c1e-0000-4000-8000-0000000000aa', RolUsuario.ADMINISTRADOR);
+/** Segundo administrador: la segunda aprobacion la tiene que dar otra persona (PO, 17 Oct 2026). */
+export const otroAdmin = sesion('0b6f7c1e-0000-4000-8000-0000000000bb', RolUsuario.ADMINISTRADOR);
 export const ana = sesion(ANA, RolUsuario.ESTUDIANTE);
 export const luis = sesion(LUIS, RolUsuario.ESTUDIANTE);
 
@@ -180,7 +186,16 @@ const PDF = Buffer.from('%PDF-1.7\n');
 
 export async function montarPlataforma(): Promise<INestApplication<App>> {
   const modulo = await Test.createTestingModule({
-    imports: [ConvocatoriasModule, EstudiantesModule, SolicitudesModule, CuentasDePruebaModule],
+    imports: [
+      // Se importa por ser @Global: así los módulos de negocio ven `PrismaService`. Abajo se
+      // sustituye por un doble vacío, porque estas pruebas no tocan PostgreSQL: todos los
+      // repositorios reales están reemplazados por los de memoria.
+      PrismaModule,
+      ConvocatoriasModule,
+      EstudiantesModule,
+      SolicitudesModule,
+      CuentasDePruebaModule,
+    ],
     controllers: [
       ComitesController,
       EvaluacionesController,
@@ -246,6 +261,10 @@ export async function montarPlataforma(): Promise<INestApplication<App>> {
     .useValue(new EstudianteEnMemoriaRepositorio([]))
     .overrideProvider(SOLICITUD_REPOSITORIO)
     .useValue(new SolicitudEnMemoriaRepositorio([]))
+    .overrideProvider(PrismaService)
+    .useValue({})
+    .overrideProvider(NOTIFICACION_REPOSITORIO)
+    .useValue(new NotificacionEnMemoriaRepositorio())
     .overrideProvider(ALMACENAMIENTO_DOCUMENTOS)
     .useValue(new AlmacenamientoMemoriaAdapter())
     .compile();
@@ -272,7 +291,8 @@ export async function montarPlataforma(): Promise<INestApplication<App>> {
 export function pasos(app: INestApplication<App>) {
   const servidor = () => request(app.getHttpServer());
 
-  async function convocatoria(cupos = 1): Promise<string> {
+  /** `montoBeca` por defecto queda por debajo del umbral: aprobar es de una sola firma. */
+  async function convocatoria(cupos = 1, montoBeca = 5000): Promise<string> {
     const { body } = await servidor()
       .post('/convocatorias')
       .set(admin)
@@ -281,6 +301,7 @@ export function pasos(app: INestApplication<App>) {
         titulo: 'Beca Universitaria 2026',
         descripcion: 'Licenciaturas.',
         cupos,
+        montoBeca,
         fechaApertura: '2026-01-01T00:00:00.000Z',
         fechaCierre: '2099-12-31T00:00:00.000Z',
         documentosExigidos: ['DPI'],
@@ -325,8 +346,8 @@ export function pasos(app: INestApplication<App>) {
     return { id: body.id as string, token: sesion(body.id, RolUsuario.EVALUADOR) };
   }
 
-  async function escenario(cupos = 1) {
-    const convocatoriaId = await convocatoria(cupos);
+  async function escenario(cupos = 1, montoBeca = 5000) {
+    const convocatoriaId = await convocatoria(cupos, montoBeca);
     const solAna = await enviar(ana, convocatoriaId);
     const solLuis = await enviar(luis, convocatoriaId, {
       ...PERFIL,

@@ -5,6 +5,8 @@
  * diagrama de estados de docs/diagramas/03-clases-dominio.md §2:
  *
  *     BORRADOR ──enviar──▶ ENVIADA ──iniciarEvaluacion──▶ EN_EVALUACION ──resolver──▶ APROBADA ──adjudicar──▶ ADJUDICADA
+ *                                                            │  (si el monto > Q10,000)
+ *                                                            └──▶ APROBACION_PENDIENTE ──confirmar──▶ APROBADA
  *                                                                          └────────▶ RECHAZADA
  *
  * CÓMO ESTÁ HECHO
@@ -33,6 +35,11 @@ import { Decision, NombreEstado } from '../enums/solicitud.enums';
 /** Lo que un estado necesita saber de la solicitud para decidir. Nada más. */
 export interface VistaSolicitud {
   documentosFaltantes(): readonly string[];
+  /**
+   * Si la beca supera el monto que obliga a una segunda aprobación (PO, 17 Oct 2026). Es una
+   * pregunta, no el monto: al estado no le importa cuánto vale la beca, solo si la regla aplica.
+   */
+  necesitaSegundaAprobacion(): boolean;
 }
 
 export abstract class EstadoSolicitud {
@@ -51,8 +58,13 @@ export abstract class EstadoSolicitud {
     return this.rechazar('pasar a evaluación');
   }
 
-  resolver(_decision: Decision): EstadoSolicitud {
+  resolver(_decision: Decision, _solicitud: VistaSolicitud): EstadoSolicitud {
     return this.rechazar('resolver');
+  }
+
+  /** Segunda aprobacion (PO, 17 Oct 2026). Solo la admite el estado que la espera. */
+  confirmarAprobacion(): EstadoSolicitud {
+    return this.rechazar('confirmar la aprobacion de');
   }
 
   adjudicar(): EstadoSolicitud {
@@ -100,9 +112,39 @@ export class EstadoEnviada extends EstadoSolicitud {
 export class EstadoEnEvaluacion extends EstadoSolicitud {
   readonly nombre = NombreEstado.EN_EVALUACION;
 
-  /** US-023, Sprint 6. */
-  resolver(decision: Decision): EstadoSolicitud {
-    return decision === Decision.APROBAR ? new EstadoAprobada() : new EstadoRechazada();
+  /**
+   * US-023. Rechazar siempre termina aqui. Aprobar depende del monto: por encima del umbral
+   * (PO, 17 Oct 2026) la aprobacion queda a medias y espera una segunda firma.
+   */
+  resolver(decision: Decision, solicitud: VistaSolicitud): EstadoSolicitud {
+    if (decision === Decision.RECHAZAR) return new EstadoRechazada();
+    return solicitud.necesitaSegundaAprobacion()
+      ? new EstadoAprobacionPendiente()
+      : new EstadoAprobada();
+  }
+}
+
+/**
+ * Primera aprobacion dada, falta la segunda (PO, 17 Oct 2026).
+ *
+ * No ocupa cupo: el cupo se reserva cuando la aprobacion se completa. Asi, dos solicitudes
+ * grandes pueden esperar la segunda firma sin bloquear cupos que todavia no son de nadie.
+ *
+ * Desde aqui solo se puede confirmar o rechazar. Adjudicar no: todavia no esta aprobada.
+ */
+export class EstadoAprobacionPendiente extends EstadoSolicitud {
+  readonly nombre = NombreEstado.APROBACION_PENDIENTE;
+
+  confirmarAprobacion(): EstadoSolicitud {
+    return new EstadoAprobada();
+  }
+
+  /** Quien da la segunda firma tambien puede rechazarla; aprobar de nuevo no es una via. */
+  resolver(decision: Decision, _solicitud: VistaSolicitud): EstadoSolicitud {
+    if (decision === Decision.RECHAZAR) return new EstadoRechazada();
+    throw new TransicionInvalidaError(
+      'Esta solicitud ya tiene la primera aprobacion: confirme la segunda en lugar de aprobarla otra vez.',
+    );
   }
 }
 
@@ -139,6 +181,7 @@ const CONSTRUCTORES = {
   [NombreEstado.BORRADOR]: () => new EstadoBorrador(),
   [NombreEstado.ENVIADA]: () => new EstadoEnviada(),
   [NombreEstado.EN_EVALUACION]: () => new EstadoEnEvaluacion(),
+  [NombreEstado.APROBACION_PENDIENTE]: () => new EstadoAprobacionPendiente(),
   [NombreEstado.APROBADA]: () => new EstadoAprobada(),
   [NombreEstado.RECHAZADA]: () => new EstadoRechazada(),
   [NombreEstado.ADJUDICADA]: () => new EstadoAdjudicada(),

@@ -42,6 +42,8 @@ export function FormularioConvocatoria({ onCreada, onCancelar }: Props): ReactEl
   const [titulo, setTitulo] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [cupos, setCupos] = useState('');
+  // PO, 17 Oct 2026: el monto decide si sus solicitudes necesitarán dos aprobaciones.
+  const [montoBeca, setMontoBeca] = useState('');
   const [apertura, setApertura] = useState('');
   const [cierre, setCierre] = useState('');
   const [requisitos, setRequisitos] = useState<string[]>([]);
@@ -93,6 +95,7 @@ export function FormularioConvocatoria({ onCreada, onCancelar }: Props): ReactEl
         titulo: titulo.trim(),
         descripcion: descripcion.trim(),
         cupos: Number(cupos),
+        montoBeca: Number(montoBeca),
         fechaApertura: aIso(apertura, false),
         fechaCierre: aIso(cierre, true),
         requisitos,
@@ -152,6 +155,24 @@ export function FormularioConvocatoria({ onCreada, onCancelar }: Props): ReactEl
             onChange={(e) => setCupos(e.target.value)}
           />
           {tipo === 'POSGRADO' && <span className="pista">Posgrado admite hasta 50 cupos.</span>}
+        </div>
+
+        <div className="campo">
+          <label htmlFor="montoBeca">Monto de la beca (Q)</label>
+          <input
+            id="montoBeca"
+            type="number"
+            min={1}
+            step={1}
+            required
+            value={montoBeca}
+            onChange={(e) => setMontoBeca(e.target.value)}
+          />
+          <span className="pista">
+            {Number(montoBeca) > 10000
+              ? 'Más de Q10,000: cada solicitud necesitará dos aprobaciones.'
+              : 'Por encima de Q10,000, cada solicitud necesitará dos aprobaciones.'}
+          </span>
         </div>
 
         <div className="campo ancho">

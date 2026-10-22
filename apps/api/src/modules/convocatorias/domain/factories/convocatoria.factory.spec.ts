@@ -30,6 +30,7 @@ function datos(cambios: Partial<DatosNuevaConvocatoria> = {}): DatosNuevaConvoca
     titulo: 'Convocatoria de prueba',
     descripcion: 'Descripción',
     cupos: 30,
+    montoBeca: 5000,
     apertura: new Date('2026-10-01T00:00:00.000Z'),
     cierre: new Date('2026-11-30T00:00:00.000Z'),
     ...cambios,

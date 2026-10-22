@@ -27,6 +27,7 @@ import {
 import { SolicitudDto } from '../dto/solicitud.dto';
 import { ArchivoDescargable, leerDocumento } from './cargar-documento.service';
 import { ExpedienteService } from './expediente.service';
+import { PublicadorEventosSolicitud } from './publicador-eventos.service';
 
 export interface ResumenSolicitudDto {
   readonly id: string;
@@ -45,6 +46,7 @@ export class SolicitudesParaEvaluacionService {
     @Inject(ALMACENAMIENTO_DOCUMENTOS)
     private readonly almacenamiento: AlmacenamientoDocumentos,
     private readonly expedientes: ExpedienteService,
+    private readonly eventos: PublicadorEventosSolicitud,
   ) {}
 
   /** US-018, criterio 1: solo las ENVIADAS se pueden asignar. */
@@ -104,6 +106,7 @@ export class SolicitudesParaEvaluacionService {
     for (const solicitud of solicitudes) {
       solicitud.iniciarEvaluacion(ahora, autorId);
       await this.repositorio.guardar(solicitud);
+      await this.eventos.publicarDe(solicitud);
     }
   }
 
