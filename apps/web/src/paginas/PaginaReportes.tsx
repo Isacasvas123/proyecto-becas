@@ -51,7 +51,10 @@ const ORDENES: [string, string][] = [
 ];
 const DEPARTAMENTOS = Object.entries(NOMBRE_DEPARTAMENTO).sort((a, b) => a[1].localeCompare(b[1]));
 
-const mensaje = (causa: unknown) => (causa instanceof Error ? causa.message : 'No se pudo.');
+const mensaje = (causa: unknown) =>
+  causa instanceof Error
+    ? causa.message
+    : 'No se pudo generar el reporte. Revise su conexión y vuelva a intentarlo.';
 
 export function PaginaReportes(): ReactElement {
   const [vista, setVista] = useState<Vista>('panel');

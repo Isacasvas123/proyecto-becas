@@ -54,6 +54,8 @@ interface Aviso {
   texto: string;
   /** Llevar la vista hasta el aviso. No se hace al cargar cada documento: sería un salto por archivo. */
   destacar?: boolean;
+  /** A dónde seguir. Un aviso que menciona una pantalla y no lleva a ella es un callejón. */
+  enlace?: { a: string; texto: string };
 }
 
 export function PaginaSolicitud(): ReactElement {
@@ -126,8 +128,9 @@ export function PaginaSolicitud(): ReactElement {
       setSolicitud(enviada);
       setAviso({
         tipo: 'exito',
-        texto: `Solicitud ${enviada.numero} enviada. Le avisaremos cuando cambie de estado.`,
+        texto: `Solicitud ${enviada.numero} enviada. Le avisaremos cada vez que cambie de estado.`,
         destacar: true,
+        enlace: { a: '/notificaciones', texto: 'Ver mis avisos' },
       });
     } catch (causa: unknown) {
       // El servidor dice exactamente qué falta (US-014, criterio 2).
@@ -190,7 +193,8 @@ export function PaginaSolicitud(): ReactElement {
               className={`aviso ${aviso.tipo}`}
               role={aviso.tipo === 'error' ? 'alert' : 'status'}
             >
-              {aviso.texto}
+              {aviso.texto}{' '}
+              {aviso.enlace !== undefined && <Link to={aviso.enlace.a}>{aviso.enlace.texto}</Link>}
             </p>
           )}
 

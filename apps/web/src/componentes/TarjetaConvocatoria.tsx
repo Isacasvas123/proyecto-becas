@@ -21,6 +21,7 @@ import type { ReactElement, ReactNode } from 'react';
 import { IconoCalendario, IconoCodigo, IconoCupos, IconoReloj } from './Iconos';
 import type { Convocatoria } from '../api/cliente';
 import {
+  cantidad,
   claseTipo,
   estadoPlazo,
   formatearFecha,
@@ -28,9 +29,6 @@ import {
   inicialTipo,
   nombreTipo,
 } from '../formato';
-
-const cantidad = (n: number, singular: string, plural: string): string =>
-  `${n} ${n === 1 ? singular : plural}`;
 
 /**
  * `accion` es lo que va al pie de la tarjeta: «Postular» para un estudiante, un enlace al login
@@ -43,7 +41,7 @@ export function TarjetaConvocatoria({
   convocatoria: Convocatoria;
   accion?: ReactNode;
 }): ReactElement {
-  const plazo = estadoPlazo(convocatoria.fechaCierre);
+  const plazo = estadoPlazo(convocatoria.fechaCierre, convocatoria.fechaApertura);
 
   return (
     <li className={`convocatoria ${claseTipo(convocatoria.tipo)}`}>
@@ -70,9 +68,7 @@ export function TarjetaConvocatoria({
               distintos quedarían despegados ("500    cupos"). */}
           <span className="item">
             <IconoCupos />
-            <span>
-              <b>{convocatoria.cupos.toLocaleString('es-GT')}</b> cupos
-            </span>
+            <span>{cantidad(convocatoria.cupos, 'cupo', 'cupos')}</span>
           </span>
 
           {convocatoria.montoBeca > 0 && (
@@ -84,11 +80,20 @@ export function TarjetaConvocatoria({
             </span>
           )}
 
+          {/* Mientras la convocatoria no abre, la fecha que le sirve al aspirante es la de
+              apertura: la de cierre no le dice cuándo puede hacer algo. Después de abrir se
+              invierte, y vuelve a importar solo el cierre. */}
           <span className="item">
             <IconoCalendario />
-            <span>
-              Cierra el <b>{formatearFecha(convocatoria.fechaCierre)}</b>
-            </span>
+            {plazo.clase === 'proximo' ? (
+              <span>
+                Abre el <b>{formatearFecha(convocatoria.fechaApertura)}</b>
+              </span>
+            ) : (
+              <span>
+                Cierra el <b>{formatearFecha(convocatoria.fechaCierre)}</b>
+              </span>
+            )}
           </span>
 
           <span className={`plazo ${plazo.clase}`}>

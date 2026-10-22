@@ -13,7 +13,7 @@
  * no existen, y no se muestran botones que no llevan a ningún lado.
  */
 import { useCallback, useEffect, useState, type ReactElement } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import {
   listarConvocatoriasGestion,
@@ -22,7 +22,10 @@ import {
 } from '../api/cliente';
 import { Encabezado } from '../componentes/Encabezado';
 import { FormularioConvocatoria } from '../componentes/FormularioConvocatoria';
-import { claseTipo, formatearFecha, nombreTipo } from '../formato';
+import { claseTipo, formatearFecha, formatearQuetzales, nombreTipo } from '../formato';
+
+/** El mismo umbral del backend. Solo decide qué se marca en la tabla, no ninguna regla. */
+const UMBRAL_SEGUNDA_APROBACION = 10_000;
 import { useSesion } from '../sesion/ContextoSesion';
 
 const NOMBRE_ESTADO: Record<string, string> = {
@@ -34,6 +37,14 @@ const NOMBRE_ESTADO: Record<string, string> = {
 interface Aviso {
   tipo: 'exito' | 'error';
   texto: string;
+  /**
+   * A dónde ir después, cuando la acción deja un siguiente paso obvio.
+   *
+   * Un «creada en borrador» a secas deja al administrador en la misma pantalla sin saber que
+   * la convocatoria todavía no la ve nadie. El aviso que lleva al paso siguiente convierte una
+   * confirmación en una instrucción.
+   */
+  enlace?: { a: string; texto: string };
 }
 
 export function PaginaGestion(): ReactElement {
@@ -71,7 +82,8 @@ export function PaginaGestion(): ReactElement {
       );
       setAviso({
         tipo: 'exito',
-        texto: `${publicada.codigo} publicada. Ya es visible en el listado público.`,
+        texto: `${publicada.codigo} publicada.`,
+        enlace: { a: '/convocatorias', texto: 'Verla en el listado público' },
       });
     } catch (causa: unknown) {
       // El mensaje viene del dominio: dice exactamente qué falta (p. ej. "sin al menos un
@@ -88,7 +100,10 @@ export function PaginaGestion(): ReactElement {
   function alCrear(creada: Convocatoria): void {
     setCreando(false);
     setConvocatorias((lista) => [creada, ...(lista ?? [])]);
-    setAviso({ tipo: 'exito', texto: `${creada.codigo} creada en borrador.` });
+    setAviso({
+      tipo: 'exito',
+      texto: `${creada.codigo} creada en borrador. Todavía no la ve ningún estudiante: publíquela cuando esté lista.`,
+    });
   }
 
   function cerrarSesion(): void {
@@ -123,7 +138,8 @@ export function PaginaGestion(): ReactElement {
 
           {aviso !== null && (
             <p className={`aviso ${aviso.tipo}`} role={aviso.tipo === 'error' ? 'alert' : 'status'}>
-              {aviso.texto}
+              {aviso.texto}{' '}
+              {aviso.enlace !== undefined && <Link to={aviso.enlace.a}>{aviso.enlace.texto}</Link>}
             </p>
           )}
 
@@ -158,6 +174,9 @@ export function PaginaGestion(): ReactElement {
                     <th scope="col" className="num">
                       Cupos
                     </th>
+                    <th scope="col" className="num">
+                      Monto
+                    </th>
                     <th scope="col">Cierra</th>
                     <th scope="col">
                       <span className="solo-lector">Acciones</span>
@@ -180,6 +199,23 @@ export function PaginaGestion(): ReactElement {
                         </span>
                       </td>
                       <td className="num">{c.cupos.toLocaleString('es-GT')}</td>
+                      {/* El monto decide si cada resolución necesitará una firma o dos. Sin esta
+                          columna, el administrador tiene que abrir la convocatoria para saberlo. */}
+                      <td className="num">
+                        {c.montoBeca > 0 ? (
+                          formatearQuetzales(c.montoBeca)
+                        ) : (
+                          <span className="pista">—</span>
+                        )}
+                        {c.montoBeca > UMBRAL_SEGUNDA_APROBACION && (
+                          <div
+                            className="marca-doble-firma"
+                            title="Supera Q10,000.00: cada resolución necesita una segunda aprobación de otra persona."
+                          >
+                            doble firma
+                          </div>
+                        )}
+                      </td>
                       <td>{formatearFecha(c.fechaCierre)}</td>
                       <td className="accion">
                         {c.estado === 'BORRADOR' && (

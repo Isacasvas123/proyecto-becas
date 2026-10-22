@@ -20,12 +20,28 @@ import {
   type CatalogoConvocatorias,
   type Convocatoria,
 } from '../api/cliente';
-import { TIPOS_BECA, nombreTipo } from '../formato';
+import { TIPOS_BECA, formatearMontoEscrito, formatearQuetzales, nombreTipo } from '../formato';
 
 interface Props {
   onCreada: (convocatoria: Convocatoria) => void;
   onCancelar: () => void;
 }
+
+/**
+ * El mismo umbral que `shared/reglas/montos.ts` en el backend, repetido aquí a propósito.
+ *
+ * No es una regla duplicada: la decisión la toma el servidor y este número solo decide qué
+ * aviso se muestra mientras se escribe. Si algún día cambia allá y no acá, lo peor que pasa
+ * es que el aviso se adelante o se atrase; ninguna convocatoria se guarda mal por eso.
+ */
+const UMBRAL_SEGUNDA_APROBACION = 10_000;
+
+/** Hoy en fecha LOCAL. `toISOString()` daria el dia de ayer para quien esta en Guatemala. */
+const HOY = (() => {
+  const d = new Date();
+  const dosDigitos = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${dosDigitos(d.getMonth() + 1)}-${dosDigitos(d.getDate())}`;
+})();
 
 /** Fecha local `AAAA-MM-DD` de un `<input type="date">` a instante ISO. */
 function aIso(fecha: string, finDelDia: boolean): string {
@@ -44,10 +60,21 @@ export function FormularioConvocatoria({ onCreada, onCancelar }: Props): ReactEl
   const [cupos, setCupos] = useState('');
   // PO, 17 Oct 2026: el monto decide si sus solicitudes necesitarán dos aprobaciones.
   const [montoBeca, setMontoBeca] = useState('');
-  const [apertura, setApertura] = useState('');
+  // El campo guarda el texto con separadores ("15,000"); el numero se deriva de el.
+  const montoNumerico = formatearMontoEscrito(montoBeca).valor;
+  const [apertura, setApertura] = useState(HOY);
   const [cierre, setCierre] = useState('');
   const [requisitos, setRequisitos] = useState<string[]>([]);
   const [documentos, setDocumentos] = useState<string[]>([]);
+
+  // Cuánto dura el periodo, para no tener que calcularlo de cabeza entre dos calendarios.
+  const diasDePlazo =
+    apertura === '' || cierre === ''
+      ? null
+      : Math.round(
+          (new Date(`${cierre}T00:00:00`).getTime() - new Date(`${apertura}T00:00:00`).getTime()) /
+            86_400_000,
+        );
 
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -95,7 +122,7 @@ export function FormularioConvocatoria({ onCreada, onCancelar }: Props): ReactEl
         titulo: titulo.trim(),
         descripcion: descripcion.trim(),
         cupos: Number(cupos),
-        montoBeca: Number(montoBeca),
+        montoBeca: montoNumerico,
         fechaApertura: aIso(apertura, false),
         fechaCierre: aIso(cierre, true),
         requisitos,
@@ -157,21 +184,34 @@ export function FormularioConvocatoria({ onCreada, onCancelar }: Props): ReactEl
           {tipo === 'POSGRADO' && <span className="pista">Posgrado admite hasta 50 cupos.</span>}
         </div>
 
+        {/* El monto NO es un `type="number"`: ese campo muestra «15000» y nadie distingue de un
+            vistazo quince mil de ciento cincuenta mil. Aquí se escriben solo dígitos y el valor
+            se reescribe con separadores de millar en cada tecla, así que un cero de más salta a
+            la vista mientras se escribe, no después de guardar. */}
         <div className="campo">
-          <label htmlFor="montoBeca">Monto de la beca (Q)</label>
-          <input
-            id="montoBeca"
-            type="number"
-            min={1}
-            step={1}
-            required
-            value={montoBeca}
-            onChange={(e) => setMontoBeca(e.target.value)}
-          />
-          <span className="pista">
-            {Number(montoBeca) > 10000
-              ? 'Más de Q10,000: cada solicitud necesitará dos aprobaciones.'
-              : 'Por encima de Q10,000, cada solicitud necesitará dos aprobaciones.'}
+          <label htmlFor="montoBeca">Monto de la beca</label>
+          <div className="campo-con-prefijo">
+            <span className="prefijo" aria-hidden="true">
+              Q
+            </span>
+            <input
+              id="montoBeca"
+              type="text"
+              inputMode="numeric"
+              autoComplete="off"
+              placeholder="15,000"
+              required
+              value={montoBeca}
+              onChange={(e) => setMontoBeca(formatearMontoEscrito(e.target.value).texto)}
+            />
+            <span className="sufijo" aria-hidden="true">
+              .00
+            </span>
+          </div>
+          <span className={`pista${montoNumerico > UMBRAL_SEGUNDA_APROBACION ? ' destacada' : ''}`}>
+            {montoNumerico > UMBRAL_SEGUNDA_APROBACION
+              ? `${formatearQuetzales(montoNumerico)} supera el umbral: cada solicitud necesitará dos aprobaciones, de dos personas distintas.`
+              : 'Por encima de Q10,000.00, cada solicitud necesitará dos aprobaciones.'}
           </span>
         </div>
 
@@ -198,15 +238,25 @@ export function FormularioConvocatoria({ onCreada, onCancelar }: Props): ReactEl
           />
         </div>
 
+        {/* La apertura viene con la fecha de hoy ya puesta. Es el caso normal —una convocatoria
+            que se crea hoy suele abrir hoy— y evita el error que costó una verificación fallida:
+            una convocatoria creada con apertura futura, que aparecía en el listado como si
+            estuviera abierta y rechazaba a quien intentaba postular. */}
         <div className="campo">
           <label htmlFor="apertura">Abre el</label>
           <input
             id="apertura"
             type="date"
             required
+            min={HOY}
             value={apertura}
             onChange={(e) => setApertura(e.target.value)}
           />
+          <span className="pista">
+            {apertura > HOY
+              ? 'Nadie podrá postular hasta esa fecha, aunque la convocatoria esté publicada.'
+              : 'Recibe postulaciones desde el mismo día en que se publique.'}
+          </span>
         </div>
 
         <div className="campo">
@@ -215,9 +265,17 @@ export function FormularioConvocatoria({ onCreada, onCancelar }: Props): ReactEl
             id="cierre"
             type="date"
             required
+            min={apertura === '' ? HOY : apertura}
             value={cierre}
             onChange={(e) => setCierre(e.target.value)}
           />
+          {diasDePlazo !== null && (
+            <span className="pista">
+              {diasDePlazo > 0
+                ? `${diasDePlazo} días de plazo para postular.`
+                : 'El cierre debe ser posterior a la apertura.'}
+            </span>
+          )}
         </div>
       </div>
 

@@ -32,6 +32,7 @@ import {
 import { SolicitudDto } from '../dto/solicitud.dto';
 import { aSolicitudDto } from '../mappers/solicitud.mapper';
 import { ExpedienteService } from './expediente.service';
+import { explicarPeriodo } from './periodo-convocatoria';
 import { PublicadorEventosSolicitud } from './publicador-eventos.service';
 
 @Injectable()
@@ -63,10 +64,7 @@ export class EnviarSolicitudService {
     // encarga de responder con la transición inválida (409), que es el mensaje correcto.
     if (solicitud.esEditable()) {
       if (convocatoria !== null && !convocatoria.admiteSolicitudes) {
-        throw new ReglaDeNegocioError(
-          'La convocatoria ya no está recibiendo postulaciones: el plazo cerró el ' +
-            `${convocatoria.fechaCierre.toISOString().slice(0, 10)}.`,
-        );
+        throw new ReglaDeNegocioError(explicarPeriodo(convocatoria, ahora));
       }
 
       const perfil = await this.perfiles.estado(estudianteId);
