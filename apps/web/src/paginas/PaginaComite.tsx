@@ -40,7 +40,18 @@ import {
   type SolicitudPorAsignar,
 } from '../api/cliente';
 import { MarcoPrivado } from '../componentes/MarcoPrivado';
-import { formatearFechaHora, nombreEstadoSolicitud, nombreTipo } from '../formato';
+import { cantidad, formatearFechaHora, nombreEstadoSolicitud, nombreTipo } from '../formato';
+
+/**
+ * «Queda 1 cupo libre», «Quedan 3 cupos libres», «Ya no quedan cupos».
+ *
+ * El último caso merece su propia frase: decir «quedan 0 cupos» es correcto y no se entiende
+ * igual de rápido que decir que se acabaron.
+ */
+const cuposLibres = (disponibles: number): string =>
+  disponibles === 0
+    ? 'Ya no quedan cupos en la convocatoria.'
+    : `${disponibles === 1 ? 'Queda' : 'Quedan'} ${cantidad(disponibles, 'cupo libre', 'cupos libres')}.`;
 
 interface Aviso {
   tipo: 'exito' | 'error';
@@ -95,7 +106,13 @@ export function PaginaComite(): ReactElement {
       await cargar();
       setAviso({ tipo: 'exito', texto });
     } catch (causa: unknown) {
-      setAviso({ tipo: 'error', texto: causa instanceof Error ? causa.message : 'No se pudo.' });
+      setAviso({
+        tipo: 'error',
+        texto:
+          causa instanceof Error
+            ? causa.message
+            : 'No se pudo completar la acción. Revise su conexión y vuelva a intentarlo.',
+      });
     } finally {
       setOcupado(false);
       setConfirmando(false);
@@ -105,7 +122,7 @@ export function PaginaComite(): ReactElement {
   const repartir = () =>
     ejecutar(async () => {
       const r = await asignarSolicitudes(id, { modo: 'AUTOMATICO', porSolicitud });
-      return `${r.solicitudes} solicitud(es) repartidas en ${r.asignaciones} asignación(es). Ya están en evaluación.`;
+      return `${cantidad(r.solicitudes, 'solicitud repartida', 'solicitudes repartidas')} en ${cantidad(r.asignaciones, 'asignación', 'asignaciones')}. Ya están en evaluación.`;
     });
 
   const asignarUna = (solicitud: SolicitudPorAsignar) =>
@@ -153,7 +170,15 @@ export function PaginaComite(): ReactElement {
     ejecutar(async () => {
       const r = await resolverSolicitud(fila.solicitudId, decision, motivo);
       setSeleccion(null);
-      return `${r.numero} ${decision === 'APROBAR' ? 'aprobada' : 'rechazada'}. Quedan ${r.cupos.disponibles} cupo(s).`;
+
+      // El mensaje lo decide el estado que DEVOLVIÓ el servidor, no la decisión que se envió.
+      // Una beca de más de Q10,000 no queda aprobada con esta firma: queda esperando la
+      // segunda, y no descuenta cupo. Decir «aprobada» ahí haría creer que el trámite terminó.
+      if (r.estado === 'APROBACION_PENDIENTE') {
+        return `${r.numero} tiene la primera aprobación. Por el monto de la beca falta una segunda firma, de otra persona; el cupo se reserva hasta entonces.`;
+      }
+
+      return `${r.numero} ${decision === 'APROBAR' ? 'aprobada' : 'rechazada'}. ${cuposLibres(r.cupos.disponibles)}`;
     });
 
   /** PO, 17 Oct 2026: segunda firma de una beca que pasa de Q10,000. */
@@ -161,7 +186,7 @@ export function PaginaComite(): ReactElement {
     ejecutar(async () => {
       const r = await confirmarAprobacion(fila.solicitudId, motivo);
       setSeleccion(null);
-      return `${r.numero} aprobada con la segunda firma. Quedan ${r.cupos.disponibles} cupo(s).`;
+      return `${r.numero} aprobada con la segunda firma. ${cuposLibres(r.cupos.disponibles)}`;
     });
 
   const adjudicar = (fila: FilaConsolidado) =>
@@ -198,7 +223,8 @@ export function PaginaComite(): ReactElement {
               <h1>{comite.nombre}</h1>
               <p className="conteo">
                 <strong>{comite.convocatoria.codigo}</strong> · {comite.convocatoria.titulo} ·{' '}
-                {nombreTipo(comite.convocatoria.tipo)} · {comite.convocatoria.cupos} cupos
+                {nombreTipo(comite.convocatoria.tipo)} ·{' '}
+                {cantidad(comite.convocatoria.cupos, 'cupo', 'cupos')}
               </p>
               {cupos !== null && (
                 <p className="conteo">
@@ -466,8 +492,9 @@ export function PaginaComite(): ReactElement {
                 />
               )}
               <p className="nota-panel">
-                Las filas resaltadas caben en los {consolidado.cupos} cupos de la convocatoria. Es
-                una referencia: la aprobación la decide el administrador en la resolución.
+                Las filas resaltadas caben en {cantidad(consolidado.cupos, 'el cupo', 'los cupos')}{' '}
+                de la convocatoria. Es una referencia: la aprobación la decide el administrador en
+                la resolución.
               </p>
             </section>
           )}
@@ -520,7 +547,7 @@ function PanelDecision({
       <p className="pista">
         Puntaje {fila.puntajePromedio?.toFixed(2) ?? '—'} · {fila.favorables} a favor y{' '}
         {fila.desfavorables} en contra · {fila.dictamenesEmitidos} de {fila.evaluadoresAsignados}{' '}
-        dictámenes · {disponibles} cupo(s) disponible(s)
+        dictámenes · {cantidad(disponibles, 'cupo disponible', 'cupos disponibles')}
       </p>
 
       {adjudicando ? (

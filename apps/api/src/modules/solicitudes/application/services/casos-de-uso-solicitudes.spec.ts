@@ -46,6 +46,7 @@ class ConvocatoriasFalsas implements ConsultaConvocatorias {
     codigo: 'UNIV-2026-001',
     titulo: 'Beca Universitaria 2026',
     admiteSolicitudes: true,
+    fechaApertura: new Date('2026-01-01T00:00:00Z'),
     fechaCierre: new Date('2026-12-31T00:00:00Z'),
     montoBeca: 5000,
     documentosExigidos: [
@@ -361,11 +362,41 @@ describe('Casos de uso de solicitudes', () => {
       );
     });
 
-    it('rechaza si el plazo de la convocatoria ya cerró', async () => {
+    it('rechaza si el plazo de la convocatoria ya cerró, diciendo cuándo cerró', async () => {
       const { enviar, convocatorias, id } = await conTodoCargado();
-      convocatorias.convocatoria = { ...convocatorias.convocatoria!, admiteSolicitudes: false };
+      convocatorias.convocatoria = {
+        ...convocatorias.convocatoria!,
+        admiteSolicitudes: false,
+        fechaCierre: new Date('2026-09-10T23:59:59Z'),
+      };
 
-      await expect(enviar.ejecutar('e1', id, AHORA)).rejects.toThrow(/plazo cerró el 2026-12-31/);
+      await expect(enviar.ejecutar('e1', id, AHORA)).rejects.toThrow(
+        /ya cerró: el plazo terminó el 10 de septiembre de 2026/,
+      );
+    });
+
+    /**
+     * El defecto que destapó esta prueba: el mensaje imprimía SIEMPRE la fecha de cierre, de
+     * modo que a quien postulaba antes de la apertura se le mostraba una fecha futura —la de
+     * cierre— como si fuera el motivo del rechazo. Mandaba a mirar el dato equivocado.
+     */
+    it('una convocatoria que todavía no abre nombra la fecha de APERTURA, no la de cierre', async () => {
+      const { enviar, convocatorias, id } = await conTodoCargado();
+      convocatorias.convocatoria = {
+        ...convocatorias.convocatoria!,
+        admiteSolicitudes: false,
+        fechaApertura: new Date('2026-10-30T06:00:00Z'),
+      };
+
+      const mensaje = await enviar.ejecutar('e1', id, AHORA).then(
+        () => 'no falló',
+        (error: Error) => error.message,
+      );
+
+      expect(mensaje).toMatch(/todavía no abre/);
+      expect(mensaje).toMatch(/30 de octubre de 2026/);
+      // Lo que se arregló: la fecha de cierre ya no aparece en un rechazo por apertura.
+      expect(mensaje).not.toMatch(/diciembre|2026-12-31/);
     });
 
     it('una solicitud ya enviada responde con transición inválida', async () => {

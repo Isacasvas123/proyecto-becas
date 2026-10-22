@@ -45,7 +45,7 @@ function enDias(dias: number): Date {
 async function main(): Promise<void> {
   await prisma.convocatoria.upsert({
     where: { codigo: 'CONV-2026-001' },
-    update: catalogoDe(TipoBeca.UNIVERSITARIA),
+    update: { ...catalogoDe(TipoBeca.UNIVERSITARIA), montoBeca: 7500 },
     create: {
       codigo: 'CONV-2026-001',
       titulo: 'Beca Universitaria Nacional 2026',
@@ -54,6 +54,8 @@ async function main(): Promise<void> {
       tipo: TipoBeca.UNIVERSITARIA,
       estado: EstadoConvocatoria.PUBLICADA,
       cupos: 500,
+      // Por DEBAJO de Q10,000: sus solicitudes se resuelven con una sola aprobación.
+      montoBeca: 7500,
       fechaApertura: enDias(-10),
       fechaCierre: enDias(45),
       ...catalogoDe(TipoBeca.UNIVERSITARIA),
@@ -62,7 +64,7 @@ async function main(): Promise<void> {
 
   await prisma.convocatoria.upsert({
     where: { codigo: 'CONV-2026-002' },
-    update: catalogoDe(TipoBeca.POSGRADO),
+    update: { ...catalogoDe(TipoBeca.POSGRADO), montoBeca: 25000 },
     create: {
       codigo: 'CONV-2026-002',
       titulo: 'Beca de Posgrado en Ciencia y Tecnología 2026',
@@ -70,6 +72,8 @@ async function main(): Promise<void> {
       tipo: TipoBeca.POSGRADO,
       estado: EstadoConvocatoria.PUBLICADA,
       cupos: 40,
+      // Por ENCIMA de Q10,000: con esta se demuestra la segunda aprobación (US-033).
+      montoBeca: 25000,
       fechaApertura: enDias(-3),
       fechaCierre: enDias(60),
       ...catalogoDe(TipoBeca.POSGRADO),
@@ -79,7 +83,7 @@ async function main(): Promise<void> {
   // En BORRADOR: sirve para comprobar que el listado público NO la devuelve.
   await prisma.convocatoria.upsert({
     where: { codigo: 'CONV-2026-003' },
-    update: catalogoDe(TipoBeca.NIVEL_MEDIO),
+    update: { ...catalogoDe(TipoBeca.NIVEL_MEDIO), montoBeca: 4000 },
     create: {
       codigo: 'CONV-2026-003',
       titulo: 'Beca de Nivel Medio 2026 (en preparación)',
@@ -87,6 +91,7 @@ async function main(): Promise<void> {
       tipo: TipoBeca.NIVEL_MEDIO,
       estado: EstadoConvocatoria.BORRADOR,
       cupos: 1200,
+      montoBeca: 4000,
       fechaApertura: enDias(20),
       fechaCierre: enDias(80),
       ...catalogoDe(TipoBeca.NIVEL_MEDIO),
@@ -94,6 +99,10 @@ async function main(): Promise<void> {
   });
 
   await sembrarAdministrador();
+  // Un SEGUNDO administrador. No es un lujo: la segunda aprobación de US-033 la tiene que dar
+  // una persona distinta de la primera, así que con una sola cuenta ese flujo no se puede
+  // recorrer entero ni para probarlo ni para enseñarlo.
+  await sembrarAdministrador('ADMIN_2');
   await sembrarEvaluador();
 
   console.log('Datos de prueba cargados.');
@@ -114,14 +123,14 @@ async function main(): Promise<void> {
  * ⚠️  ESTE SEED ES SOLO PARA DESARROLLO. No debe ejecutarse contra Staging ni producción:
  *     ahí el administrador se crea con credenciales propias definidas en el servidor.
  */
-async function sembrarAdministrador(): Promise<void> {
-  const nombreUsuario = (process.env.ADMIN_USUARIO ?? '').trim().toLowerCase();
-  const password = process.env.ADMIN_PASSWORD ?? '';
-  const correo = process.env.ADMIN_CORREO ?? '';
+async function sembrarAdministrador(prefijo = 'ADMIN'): Promise<void> {
+  const nombreUsuario = (process.env[`${prefijo}_USUARIO`] ?? '').trim().toLowerCase();
+  const password = process.env[`${prefijo}_PASSWORD`] ?? '';
+  const correo = process.env[`${prefijo}_CORREO`] ?? '';
 
   if (nombreUsuario === '' || password === '' || correo === '') {
     console.warn(
-      'Se omite el administrador: faltan ADMIN_USUARIO, ADMIN_PASSWORD o ADMIN_CORREO en el .env',
+      `Se omite el administrador ${prefijo}: faltan ${prefijo}_USUARIO, ${prefijo}_PASSWORD o ${prefijo}_CORREO en el .env`,
     );
     return;
   }

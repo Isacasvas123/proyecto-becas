@@ -19,6 +19,7 @@ import {
   ReglaDeNegocioError,
 } from '../../../../shared/exceptions/errores-dominio';
 import { Solicitud } from '../../domain/entities/solicitud.entity';
+import { explicarPeriodo } from './periodo-convocatoria';
 import {
   CONSULTA_CONVOCATORIAS,
   CONSULTA_PERFILES,
@@ -58,10 +59,10 @@ export class CrearSolicitudService {
       throw new RecursoNoEncontradoError('No existe esa convocatoria.');
     }
     if (!convocatoria.admiteSolicitudes) {
-      throw new ReglaDeNegocioError(
-        `La convocatoria ${convocatoria.codigo} no está recibiendo postulaciones ` +
-          `(cierra o cerró el ${convocatoria.fechaCierre.toISOString().slice(0, 10)}).`,
-      );
+      // El periodo tiene dos extremos y el mensaje debe nombrar el que falló. La primera versión
+      // imprimía siempre la fecha de cierre, de modo que a quien llegaba antes de tiempo se le
+      // mostraba una fecha futura como si fuera el motivo del rechazo.
+      throw new ReglaDeNegocioError(explicarPeriodo(convocatoria, ahora));
     }
 
     const perfil = await this.perfiles.estado(estudianteId);

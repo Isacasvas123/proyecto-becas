@@ -92,14 +92,23 @@ export function FormularioLogin({ onSesionIniciada }: Props): ReactElement {
         ¿Todavía no tiene cuenta? <Link to="/registro">Regístrese aquí</Link>
       </p>
 
-      {/* Ayuda para la revisión del equipo y la demostración al Product Owner.
-          Se elimina antes de desplegar a producción: en Staging el
-          administrador se crea con credenciales propias del servidor. */}
-      <p className="credenciales-demo">
-        <b>Entorno de desarrollo.</b> Usuario <b>admin</b> · contraseña <b>EC321</b>. Estas
-        credenciales solo existen en la base de datos local y se cargan con{' '}
-        <code>npm run db:seed</code>.
-      </p>
+      {/* Ayuda para el equipo mientras se trabaja en local.
+          ────────────────────────────────────────────────────────────────────
+          ESTO ESTUVO PUBLICADO EN STAGING. La versión anterior de este bloque no comprobaba
+          nada: decía «Entorno de desarrollo» y se compilaba igual en el despliegue, así que
+          cualquiera que abriera la página de acceso de Staging leía el usuario y la contraseña
+          del administrador. El comentario de entonces decía que se quitaría antes de
+          desplegar; eso es exactamente lo que nadie se acuerda de hacer.
+
+          `import.meta.env.DEV` lo resuelve de verdad: Vite lo sustituye por `false` al
+          compilar y el bloque entero desaparece del paquete. No depende de que alguien se
+          acuerde. */}
+      {import.meta.env.DEV && (
+        <p className="credenciales-demo">
+          <b>Entorno de desarrollo.</b> Las credenciales de prueba están en el <code>.env</code> del
+          proyecto y se cargan con <code>npm run db:seed</code>.
+        </p>
+      )}
     </form>
   );
 }

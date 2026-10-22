@@ -17,6 +17,7 @@ export interface ConvocatoriaDeSolicitud {
   readonly codigo: string;
   readonly titulo: string;
   readonly admiteSolicitudes: boolean;
+  readonly fechaApertura: Date;
   readonly fechaCierre: Date;
   /** Monto de la beca, en quetzales (PO, 17 Oct 2026). Decide si hara falta segunda aprobacion. */
   readonly montoBeca: number;
