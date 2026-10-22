@@ -106,6 +106,20 @@ export interface FilaConsolidadoDto {
   readonly puntajePromedio: number | null;
   readonly favorables: number;
   readonly desfavorables: number;
+  /**
+   * Lo que DIJO cada evaluador, no solo cuántos votaron a favor.
+   *
+   * Faltaba, y era un hueco de US-023: quien resuelve veía «1 a favor · 0 en contra» y un
+   * puntaje, pero nunca podía leer el razonamiento en el que iba a apoyar su decisión.
+   * Un número no se puede citar en el motivo de una resolución; una observación sí.
+   */
+  readonly dictamenes: readonly {
+    readonly evaluador: string;
+    readonly recomendacion: string;
+    readonly puntaje: number;
+    readonly observacion: string;
+    readonly emitidoEn: Date;
+  }[];
   /** Lugar en el ranking. `null` mientras no tenga ningún dictamen. */
   readonly posicion: number | null;
   readonly dentroDeCupos: boolean;

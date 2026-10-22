@@ -100,6 +100,42 @@ export class SolicitudPrismaRepositorio implements SolicitudRepositorio {
     });
   }
 
+  async tieneBecaAdjudicada(estudianteId: string, exceptoSolicitudId: string): Promise<boolean> {
+    const cuenta = await this.prisma.solicitud.count({
+      where: {
+        estudianteId,
+        estado: NombreEstado.ADJUDICADA,
+        id: { not: exceptoSolicitudId },
+      },
+    });
+    return cuenta > 0;
+  }
+
+  async contarOcupacionDe(convocatoriaIds: readonly string[]) {
+    const ocupacion = new Map<string, { aprobadas: number; adjudicadas: number }>();
+    if (convocatoriaIds.length === 0) return ocupacion;
+
+    const grupos = await this.prisma.solicitud.groupBy({
+      by: ['convocatoriaId', 'estado'],
+      where: {
+        convocatoriaId: { in: [...convocatoriaIds] },
+        estado: { in: [NombreEstado.APROBADA, NombreEstado.ADJUDICADA] },
+      },
+      _count: { _all: true },
+    });
+
+    // Toda convocatoria pedida aparece en el mapa, aunque no tenga ninguna solicitud: quien
+    // pregunta espera una respuesta por cada una, no tener que distinguir ausencia de cero.
+    for (const id of convocatoriaIds) ocupacion.set(id, { aprobadas: 0, adjudicadas: 0 });
+    for (const g of grupos) {
+      const fila = ocupacion.get(g.convocatoriaId)!;
+      if (g.estado === NombreEstado.APROBADA) fila.aprobadas = g._count._all;
+      else fila.adjudicadas = g._count._all;
+    }
+
+    return ocupacion;
+  }
+
   async contarOcupacion(convocatoriaId: string) {
     const grupos = await this.prisma.solicitud.groupBy({
       by: ['estado'],

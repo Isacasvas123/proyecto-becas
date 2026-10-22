@@ -2,6 +2,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 
 import { ConsultarConvocatoriaService } from '../../../convocatorias/application/services/consultar-convocatoria.service';
+import { ListarConvocatoriasPublicadasService } from '../../../convocatorias/application/services/listar-convocatorias-publicadas.service';
 import { DictamenesDeSolicitudService } from '../../../evaluaciones/application/services/dictamenes-de-solicitud.service';
 import { SolicitudesParaResolucionService } from '../../../solicitudes/application/services/solicitudes-para-resolucion.service';
 import { IdentidadService } from '../../../usuarios/application/services/identidad.service';
@@ -42,8 +43,16 @@ export class ConsultaSolicitudesResolucionAdapter implements ConsultaSolicitudes
     return this.solicitudes.adjudicar(id, autorId);
   }
 
+  tieneBecaAdjudicada(estudianteId: string, exceptoSolicitudId: string) {
+    return this.solicitudes.tieneBecaAdjudicada(estudianteId, exceptoSolicitudId);
+  }
+
   ocupacion(convocatoriaId: string) {
     return this.solicitudes.ocupacion(convocatoriaId);
+  }
+
+  ocupacionDe(convocatoriaIds: readonly string[]) {
+    return this.solicitudes.ocupacionDe(convocatoriaIds);
   }
 }
 
@@ -58,7 +67,14 @@ export class ConsultaDictamenesAdapter implements ConsultaDictamenes {
 
 @Injectable()
 export class ConsultaConvocatoriasResolucionAdapter implements ConsultaConvocatoriasResolucion {
-  constructor(private readonly convocatorias: ConsultarConvocatoriaService) {}
+  constructor(
+    private readonly convocatorias: ConsultarConvocatoriaService,
+    private readonly publicadas: ListarConvocatoriasPublicadasService,
+  ) {}
+
+  async publicadasVigentes(): Promise<readonly { id: string; cupos: number }[]> {
+    return (await this.publicadas.ejecutar()).map((c) => ({ id: c.id, cupos: c.cupos }));
+  }
 
   async buscar(id: string): Promise<ConvocatoriaResoluble | null> {
     const c = await this.convocatorias.paraPostulacion(id);

@@ -7,14 +7,23 @@
  *   a otra por props obligaría a subirla hasta la raíz y bajarla por cada nivel
  *   ("prop drilling"). El contexto la deja disponible donde se necesite.
  *
- * LA SESIÓN SIGUE VIVIENDO SOLO EN MEMORIA
- *   No se guarda en `localStorage`, a propósito: un token ahí es legible por cualquier
- *   script de la página, y un XSS bastaría para robarlo. El precio es que al recargar
- *   (F5) hay que volver a iniciar sesión.
+ * DÓNDE VIVE EL TOKEN, Y POR QUÉ AHÍ
+ *   Vivía solo en memoria, de modo que cada F5 echaba a quien estuviera usando el sistema.
+ *   En una pantalla de gestión donde se recarga a menudo eso no es una molestia menor:
+ *   obliga a volver a entrar en mitad de un trámite.
  *
- *   SPRINT 2 (US-002/US-003): la forma correcta es una cookie `httpOnly` emitida por el
- *   backend, que el JavaScript no puede leer. Se implementa junto con el guard que valida
- *   el token en cada petición.
+ *   Ahora va en `sessionStorage`. Es una CONCESIÓN CONSCIENTE y conviene decirla sin
+ *   adornos: frente a un XSS, `sessionStorage` no protege más que `localStorage`; cualquier
+ *   script de la página puede leerlo. Lo que sí cambia es el alcance en el tiempo —el token
+ *   muere al cerrar la pestaña y no queda en el disco— y la usabilidad, que era el problema
+ *   real que se estaba pagando.
+ *
+ *   LO CORRECTO SIGUE SIENDO UNA COOKIE `httpOnly`, que el JavaScript no puede leer. No se
+ *   hizo porque en el despliegue actual el frontend y la API están en dominios distintos
+ *   (`becas-web-staging` y `becas-api-staging`), así que la cookie tendría que ser
+ *   `SameSite=None` y eso obliga a añadir protección CSRF aparte. Es trabajo de backend,
+ *   CORS y guards, y no se asume a nueve días de la entrega. Queda anotado como deuda, no
+ *   como algo que se nos haya pasado.
  */
 import {
   createContext,
@@ -35,8 +44,53 @@ interface ValorContexto {
 
 const ContextoSesion = createContext<ValorContexto | null>(null);
 
+const CLAVE = 'becas.sesion';
+
+/**
+ * Lee la sesión guardada, si la hay y si todavía sirve.
+ *
+ * Todo va dentro de un `try`: en una ventana privada, o con el almacenamiento bloqueado por
+ * el navegador, el simple acceso lanza. Una sesión que no se puede leer no es un error que
+ * deba romper la aplicación; simplemente no hay sesión.
+ */
+function sesionGuardada(): Sesion | null {
+  try {
+    const crudo = window.sessionStorage.getItem(CLAVE);
+    if (crudo === null) return null;
+
+    const sesion = JSON.parse(crudo) as Sesion;
+
+    // El backend rechazaría un token vencido con un 401, pero entonces la pantalla mostraría
+    // al usuario dentro y todas sus peticiones fallarían. Se comprueba antes de creerle.
+    if (new Date(sesion.expiraEn).getTime() <= Date.now()) {
+      window.sessionStorage.removeItem(CLAVE);
+      return null;
+    }
+
+    return sesion;
+  } catch {
+    return null;
+  }
+}
+
+function guardar(sesion: Sesion | null): void {
+  try {
+    if (sesion === null) window.sessionStorage.removeItem(CLAVE);
+    else window.sessionStorage.setItem(CLAVE, JSON.stringify(sesion));
+  } catch {
+    // Sin almacenamiento la aplicación sigue funcionando: se vuelve al comportamiento
+    // anterior, que era perder la sesión al recargar. No vale la pena molestar al usuario.
+  }
+}
+
 export function ProveedorSesion({ children }: { children: ReactNode }): ReactElement {
-  const [sesion, setSesion] = useState<Sesion | null>(null);
+  // El valor inicial se calcula una sola vez, antes del primer render, para que nadie llegue
+  // a ver la pantalla de invitado un instante antes de que se restaure la sesión.
+  const [sesion, setSesion] = useState<Sesion | null>(() => {
+    const guardada = sesionGuardada();
+    if (guardada !== null) establecerToken(guardada.token);
+    return guardada;
+  });
 
   // `useMemo` evita crear un objeto nuevo en cada render, que forzaría a re-renderizar
   // a todos los componentes suscritos al contexto aunque la sesión no hubiera cambiado.
@@ -49,10 +103,12 @@ export function ProveedorSesion({ children }: { children: ReactNode }): ReactEle
       // todas sus peticiones reciben 401.
       iniciar: (nueva: Sesion) => {
         establecerToken(nueva.token);
+        guardar(nueva);
         setSesion(nueva);
       },
       cerrar: () => {
         establecerToken(null);
+        guardar(null);
         setSesion(null);
       },
     }),

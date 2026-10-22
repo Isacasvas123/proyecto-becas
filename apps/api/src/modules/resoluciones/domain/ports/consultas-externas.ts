@@ -44,7 +44,12 @@ export interface ConsultaSolicitudesResolucion {
     cupos: number,
   ): Promise<SolicitudResoluble>;
   adjudicar(id: string, autorId: string): Promise<SolicitudResoluble>;
+  /** PO, 22 Oct 2026: nadie debe recibir dos becas a la vez. Ver la fachada. */
+  tieneBecaAdjudicada(estudianteId: string, exceptoSolicitudId: string): Promise<boolean>;
   ocupacion(convocatoriaId: string): Promise<{ aprobadas: number; adjudicadas: number }>;
+  ocupacionDe(
+    convocatoriaIds: readonly string[],
+  ): Promise<Map<string, { aprobadas: number; adjudicadas: number }>>;
 }
 
 export interface ConsultaDictamenes {
@@ -64,6 +69,8 @@ export interface ConvocatoriaResoluble {
 }
 
 export interface ConsultaConvocatoriasResolucion {
+  /** Las que el público ve listadas, para poder decir cuántos cupos les quedan. */
+  publicadasVigentes(): Promise<readonly { id: string; cupos: number }[]>;
   buscar(id: string): Promise<ConvocatoriaResoluble | null>;
 }
 

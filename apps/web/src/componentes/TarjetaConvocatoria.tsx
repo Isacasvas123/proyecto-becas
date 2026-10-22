@@ -37,9 +37,12 @@ import {
 export function TarjetaConvocatoria({
   convocatoria,
   accion,
+  disponibles,
 }: {
   convocatoria: Convocatoria;
   accion?: ReactNode;
+  /** Cupos que quedan. `undefined` si el dato no llegó: entonces se muestra solo el total. */
+  disponibles?: number;
 }): ReactElement {
   const plazo = estadoPlazo(convocatoria.fechaCierre, convocatoria.fechaApertura);
 
@@ -68,7 +71,22 @@ export function TarjetaConvocatoria({
               distintos quedarían despegados ("500    cupos"). */}
           <span className="item">
             <IconoCupos />
-            <span>{cantidad(convocatoria.cupos, 'cupo', 'cupos')}</span>
+            {/* Lo que le importa a quien va a postular no es cuántas becas se ofrecieron, sino
+                cuántas quedan: una convocatoria sin cupos libres sigue aceptando solicitudes, y
+                sin este dato alguien reúne sus papeles para nada. El total se queda al lado
+                para que el número no pierda contexto. */}
+            {disponibles === undefined ? (
+              <span>{cantidad(convocatoria.cupos, 'cupo', 'cupos')}</span>
+            ) : disponibles === 0 ? (
+              <span>
+                <b>Sin cupos libres</b> de {cantidad(convocatoria.cupos, 'cupo', 'cupos')}
+              </span>
+            ) : (
+              <span>
+                <b>{disponibles.toLocaleString('es-GT')}</b> de{' '}
+                {cantidad(convocatoria.cupos, 'cupo', 'cupos')}
+              </span>
+            )}
           </span>
 
           {convocatoria.montoBeca > 0 && (

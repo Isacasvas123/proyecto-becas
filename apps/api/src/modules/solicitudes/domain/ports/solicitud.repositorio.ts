@@ -29,6 +29,23 @@ export interface SolicitudRepositorio {
 
   /** Guarda la solicitud con sus documentos y su historial, todo o nada. */
   guardar(solicitud: Solicitud): Promise<void>;
+  /**
+   * ¿Esta persona ya tiene una beca adjudicada en otra solicitud?
+   *
+   * `exceptoSolicitudId` deja fuera la que se está resolviendo, porque si no una solicitud
+   * ya adjudicada se bloquearía a sí misma.
+   */
+  tieneBecaAdjudicada(estudianteId: string, exceptoSolicitudId: string): Promise<boolean>;
+  /**
+   * Cuántas solicitudes ocupan cupo en cada convocatoria de la lista.
+   *
+   * En lote y no una por una: el listado público pregunta por todas las convocatorias
+   * vigentes a la vez, y hacerlo de una en una serían diez viajes a la base por cada
+   * visitante de la página de inicio.
+   */
+  contarOcupacionDe(
+    convocatoriaIds: readonly string[],
+  ): Promise<Map<string, { aprobadas: number; adjudicadas: number }>>;
 
   /**
    * US-023, criterio 4: guarda una solicitud recién APROBADA solo si su convocatoria todavía tiene

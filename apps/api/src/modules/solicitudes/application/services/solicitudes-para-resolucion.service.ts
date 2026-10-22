@@ -111,6 +111,15 @@ export class SolicitudesParaResolucionService {
     return this.repositorio.contarOcupacion(convocatoriaId);
   }
 
+  tieneBecaAdjudicada(estudianteId: string, exceptoSolicitudId: string) {
+    return this.repositorio.tieneBecaAdjudicada(estudianteId, exceptoSolicitudId);
+  }
+
+  /** La misma cuenta para varias convocatorias, en un solo viaje a la base. */
+  ocupacionDe(convocatoriaIds: readonly string[]) {
+    return this.repositorio.contarOcupacionDe(convocatoriaIds);
+  }
+
   private async cargar(id: string): Promise<Solicitud> {
     const solicitud = await this.repositorio.buscarPorId(id);
     if (solicitud === null) {

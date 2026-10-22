@@ -168,6 +168,26 @@ export class ResolucionFacade {
     const solicitud = await this.cargarSolicitud(solicitudId);
     const convocatoria = await this.cargarConvocatoria(solicitud.convocatoriaId);
 
+    /*
+     * UNA PERSONA, UNA BECA (pendiente de confirmar con el Product Owner, 22 Oct 2026).
+     *
+     * El control va aquí y no al postular, que fue la primera idea del equipo. Postular a
+     * varias convocatorias a la vez es razonable y no le cuesta nada al Estado: quien manda
+     * tres solicitudes en marzo todavía no sabe cuál le van a dar. Bloquearlo ahí castigaría
+     * una conducta sensata, y además llegaría tarde: las otras solicitudes ya estarían
+     * enviadas cuando se resuelva la primera.
+     *
+     * Donde sí hay algo que proteger es aquí, porque adjudicar es el acto que compromete el
+     * dinero público. Es además donde el sistema ya pone sus otros controles: el cupo se
+     * reserva al aprobar y la beca se registra al adjudicar.
+     */
+    if (await this.solicitudes.tieneBecaAdjudicada(solicitud.estudianteId, solicitud.id)) {
+      throw new ReglaDeNegocioError(
+        'Esta persona ya tiene una beca adjudicada. No se puede otorgar una segunda: ' +
+          'primero habría que revocar la anterior.',
+      );
+    }
+
     const adjudicada = await this.solicitudes.adjudicar(solicitud.id, adminId);
     this.logger.log(`${adjudicada.numero} adjudicada: ${adjudicada.beca?.codigo} por ${adminId}`);
 
@@ -180,6 +200,24 @@ export class ResolucionFacade {
       await this.ocupacion(await this.cargarConvocatoria(convocatoriaId)),
       convocatoriaId,
     );
+  }
+
+  /**
+   * Cupos de TODAS las convocatorias vigentes, para el listado público.
+   *
+   * Vive aquí y no en `convocatorias` porque el dato está repartido: los cupos ofrecidos los
+   * sabe una convocatoria, y cuántos están tomados lo sabe `solicitudes`. `convocatorias` no
+   * puede preguntárselo sin crear un ciclo entre módulos —`solicitudes` ya depende de él—, y
+   * este módulo depende de los dos y nadie depende de él. Es exactamente para esto que existe.
+   */
+  async cuposPublicos(): Promise<CuposDto[]> {
+    const vigentes = await this.convocatorias.publicadasVigentes();
+    const ocupacion = await this.solicitudes.ocupacionDe(vigentes.map((c) => c.id));
+
+    return vigentes.map((c) => {
+      const { aprobadas, adjudicadas } = ocupacion.get(c.id) ?? { aprobadas: 0, adjudicadas: 0 };
+      return aCuposDto(new OcupacionCupos(c.cupos, aprobadas, adjudicadas), c.id);
+    });
   }
 
   private async ocupacion(convocatoria: ConvocatoriaResoluble): Promise<OcupacionCupos> {
