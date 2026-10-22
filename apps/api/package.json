@@ -12,7 +12,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --config ./test/jest-cobertura.json --coverage --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "db:seed": "ts-node -P tsconfig.json prisma/seed.ts"
+    "db:seed": "ts-node -P tsconfig.json prisma/seed.ts",
+    "admin:crear": "ts-node -P tsconfig.json prisma/crear-administrador.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",
