@@ -63,6 +63,7 @@ import {
 } from '../../src/modules/resoluciones/infrastructure/integraciones/consultas-externas.adapter';
 import {
   ConsultaPublicaController,
+  CuposPublicosController,
   ResolucionesController,
 } from '../../src/modules/resoluciones/presentation/controllers/resoluciones.controller';
 import { LimiteConsultasGuard } from '../../src/modules/resoluciones/presentation/guards/limite-consultas.guard';
@@ -200,6 +201,7 @@ export async function montarPlataforma(): Promise<INestApplication<App>> {
       ComitesController,
       EvaluacionesController,
       ResolucionesController,
+      CuposPublicosController,
       ConsultaPublicaController,
       ReportesController,
       BitacoraController,

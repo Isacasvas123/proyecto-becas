@@ -83,6 +83,17 @@ class SolicitudesFalsas implements ConsultaSolicitudesResolucion {
     this.datos.set(id, nueva);
     return Promise.resolve(nueva);
   }
+  /** Ninguna otra beca adjudicada, salvo que una prueba diga lo contrario. */
+  becaPrevia = false;
+  tieneBecaAdjudicada() {
+    return Promise.resolve(this.becaPrevia);
+  }
+
+  async ocupacionDe(ids: readonly string[]) {
+    const conteo = await this.ocupacion();
+    return new Map(ids.map((id) => [id, conteo]));
+  }
+
   ocupacion() {
     const todas = [...this.datos.values()];
     return Promise.resolve({
@@ -106,6 +117,10 @@ class ConvocatoriasFalsas implements ConsultaConvocatoriasResolucion {
     return Promise.resolve(
       id === 'conv' ? { id, codigo: 'UNIV-2026-001', titulo: 'Beca', cupos: this.cupos } : null,
     );
+  }
+
+  publicadasVigentes() {
+    return Promise.resolve([{ id: 'conv', cupos: this.cupos }]);
   }
 }
 

@@ -756,6 +756,82 @@ code {
   color: var(--ambar);
 }
 
+/* ---- Lo que dijo el comité, dentro del panel de decisión ----
+   Va abierto por defecto: es el dato en el que se apoya la resolución, no un anexo.
+   Plegable de todos modos, porque con cuatro evaluadores empuja los botones fuera de vista. */
+.dictamenes {
+  padding: var(--sp-3);
+  margin: var(--sp-3) 0;
+  background: var(--fondo);
+  border: 1px solid var(--linea-2);
+  border-radius: var(--radio);
+}
+
+.dictamenes > summary {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: baseline;
+  font-size: var(--txt-sm);
+  font-weight: 700;
+  color: var(--tinta);
+  cursor: pointer;
+}
+
+.dictamenes > summary .cuenta {
+  font-weight: 400;
+  color: var(--tinta-3);
+}
+
+.dictamenes ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  margin: var(--sp-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dictamenes li + li {
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--linea-2);
+}
+
+.cabecera-dictamen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-3);
+  align-items: center;
+  margin-bottom: var(--sp-1);
+  font-size: var(--txt-sm);
+}
+
+/* La observación es prosa de una persona: se respeta como la escribió. */
+.dictamenes li p {
+  margin: 0;
+  font-size: var(--txt-sm);
+  color: var(--tinta-2);
+  white-space: pre-wrap;
+}
+
+.etiqueta-recomendacion {
+  padding: 1px var(--sp-2);
+  font-size: var(--txt-2xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-radius: 999px;
+}
+
+.etiqueta-recomendacion.favorable {
+  color: var(--verde);
+  background: var(--verde-bg);
+}
+
+.etiqueta-recomendacion.desfavorable {
+  color: var(--rojo);
+  background: var(--rojo-bg);
+}
+
 /* Marca de la columna «Monto»: esta convocatoria exige una segunda aprobación.
    En una línea y bajo el importe, para que la columna no se ensanche ni parta la frase. */
 .marca-doble-firma {

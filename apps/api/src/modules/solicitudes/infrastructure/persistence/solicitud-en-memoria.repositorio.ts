@@ -72,6 +72,29 @@ export class SolicitudEnMemoriaRepositorio implements SolicitudRepositorio {
     await this.guardar(solicitud);
   }
 
+  tieneBecaAdjudicada(estudianteId: string, exceptoSolicitudId: string): Promise<boolean> {
+    return Promise.resolve(
+      this.varias(
+        (s) =>
+          s.estudianteId === estudianteId &&
+          s.id !== exceptoSolicitudId &&
+          s.nombreEstado === NombreEstado.ADJUDICADA,
+      ).length > 0,
+    );
+  }
+
+  contarOcupacionDe(convocatoriaIds: readonly string[]) {
+    const ocupacion = new Map<string, { aprobadas: number; adjudicadas: number }>();
+    for (const id of convocatoriaIds) {
+      const de = this.varias((s) => s.convocatoriaId === id);
+      ocupacion.set(id, {
+        aprobadas: de.filter((s) => s.nombreEstado === NombreEstado.APROBADA).length,
+        adjudicadas: de.filter((s) => s.nombreEstado === NombreEstado.ADJUDICADA).length,
+      });
+    }
+    return Promise.resolve(ocupacion);
+  }
+
   contarOcupacion(convocatoriaId: string): Promise<{ aprobadas: number; adjudicadas: number }> {
     const de = this.varias((s) => s.convocatoriaId === convocatoriaId);
     return Promise.resolve({
