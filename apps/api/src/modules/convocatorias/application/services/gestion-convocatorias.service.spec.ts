@@ -24,6 +24,7 @@ function comando(cambios: Partial<ComandoCrearConvocatoria> = {}): ComandoCrearC
     titulo: 'Beca Universitaria 2027',
     descripcion: 'Licenciaturas en universidades del país.',
     cupos: 200,
+    montoBeca: 5000,
     fechaApertura: new Date('2027-01-15T00:00:00.000Z'),
     fechaCierre: new Date('2027-03-15T00:00:00.000Z'),
     ...cambios,

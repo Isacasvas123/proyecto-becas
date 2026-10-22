@@ -204,6 +204,7 @@ function aDominio(fila: FilaSolicitud): Solicitud {
     convocatoriaId: fila.convocatoriaId,
     estado: fila.estado as NombreEstado,
     documentosExigidos: fila.documentosExigidos,
+    montoBeca: fila.montoBeca,
     documentos: fila.documentos.map((d) => ({
       tipo: d.tipo,
       nombreArchivo: d.nombreArchivo,

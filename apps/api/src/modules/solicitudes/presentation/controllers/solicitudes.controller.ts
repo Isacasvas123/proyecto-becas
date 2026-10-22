@@ -23,6 +23,7 @@ import { CargarDocumentoService } from '../../application/services/cargar-docume
 import { CrearSolicitudService } from '../../application/services/crear-solicitud.service';
 import { EnviarSolicitudService } from '../../application/services/enviar-solicitud.service';
 import { ExpedienteService } from '../../application/services/expediente.service';
+import { NotificacionesService } from '../../application/services/notificaciones.service';
 import { TAMANO_MAXIMO_BYTES } from '../../domain/value-objects/archivo-documento.vo';
 import { CrearSolicitudRequestDto } from '../dto/crear-solicitud-request.dto';
 import { ArchivoDemasiadoGrandeFilter } from '../filtros/archivo-demasiado-grande.filter';
@@ -43,6 +44,36 @@ const FORMATO_TIPO = /^[A-Z_]{2,40}$/;
  * EPIC-03 · solicitudes del PROPIO estudiante. El id del estudiante sale del token en cada ruta
  * (`@UsuarioActual`), así que no hay forma de pedir por las solicitudes de otra persona.
  */
+/**
+ * Bandeja de notificaciones del estudiante (US-022; PO, 17 Oct 2026). Cada quien ve solo las
+ * suyas: el identificador sale del token, nunca de la URL.
+ */
+@Roles(RolUsuario.ESTUDIANTE)
+@Controller('notificaciones')
+export class NotificacionesController {
+  constructor(private readonly notificaciones: NotificacionesService) {}
+
+  @Get()
+  mias(@UsuarioActual() estudianteId: string) {
+    return this.notificaciones.mias(estudianteId);
+  }
+
+  @Put(':id/leida')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  marcarLeida(
+    @UsuarioActual() estudianteId: string,
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<void> {
+    return this.notificaciones.marcarLeida(id, estudianteId);
+  }
+
+  @Put('leidas')
+  @HttpCode(HttpStatus.OK)
+  marcarTodas(@UsuarioActual() estudianteId: string) {
+    return this.notificaciones.marcarTodasLeidas(estudianteId);
+  }
+}
+
 @Roles(RolUsuario.ESTUDIANTE)
 @Controller('solicitudes')
 export class SolicitudesController {

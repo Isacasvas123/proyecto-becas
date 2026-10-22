@@ -17,6 +17,7 @@ import {
   ana,
   luis,
   montarPlataforma,
+  otroAdmin,
   pasos,
   sesion,
 } from './utilidades/plataforma-de-prueba';
@@ -195,6 +196,106 @@ describe('Resolución, adjudicación y consulta pública (e2e)', () => {
         decision: 'APROBAR',
         motivo: MOTIVO,
       }).expect(404);
+    });
+  });
+
+  describe('segunda aprobación por monto (PO, 17 Oct 2026)', () => {
+    /** Escenario igual al de siempre, pero con una beca de Q25,000: pasa del umbral. */
+    async function becaGrande() {
+      const e = await p.escenario(1, 25_000);
+      await p
+        .servidor()
+        .post(`/comites/${e.comiteId}/asignaciones`)
+        .set(admin)
+        .send({ modo: 'AUTOMATICO', porSolicitud: 1 })
+        .expect(200);
+      await p
+        .servidor()
+        .post(`/evaluaciones/solicitudes/${e.solAna}/dictamen`)
+        .set(e.eva.token)
+        .send({ recomendacion: 'FAVORABLE', observacion: OBSERVACION })
+        .expect(201);
+      return e;
+    }
+
+    const confirmar = (id: string, sesion: Record<string, string>) =>
+      p
+        .servidor()
+        .post(`/resoluciones/solicitudes/${id}/confirmar-aprobacion`)
+        .set(sesion)
+        .send({ motivo: MOTIVO });
+
+    it('aprobar una beca grande NO la deja aprobada: queda esperando la segunda firma', async () => {
+      const { solAna } = await becaGrande();
+
+      const { body } = await resolver(solAna, { decision: 'APROBAR', motivo: MOTIVO }).expect(200);
+
+      expect(body.estado).toBe('APROBACION_PENDIENTE');
+      // Y todavia no ocupa cupo: el cupo se reserva con la segunda firma.
+      expect(body.cupos).toMatchObject({ aprobadas: 0, adjudicadas: 0, disponibles: 1 });
+    });
+
+    it('el mismo administrador no puede dar la segunda firma', async () => {
+      const { solAna } = await becaGrande();
+      await resolver(solAna, { decision: 'APROBAR', motivo: MOTIVO }).expect(200);
+
+      const { body } = await confirmar(solAna, admin).expect(422);
+
+      expect(body.mensaje).toMatch(/persona distinta/i);
+    });
+
+    it('otro administrador sí: la aprueba y ahí se reserva el cupo', async () => {
+      const { solAna } = await becaGrande();
+      await resolver(solAna, { decision: 'APROBAR', motivo: MOTIVO }).expect(200);
+
+      const { body } = await confirmar(solAna, otroAdmin).expect(200);
+
+      expect(body.estado).toBe('APROBADA');
+      expect(body.cupos).toMatchObject({ aprobadas: 1, disponibles: 0 });
+    });
+
+    it('las dos firmas quedan en el historial, con su autor', async () => {
+      const { solAna } = await becaGrande();
+      await resolver(solAna, { decision: 'APROBAR', motivo: MOTIVO }).expect(200);
+      await confirmar(solAna, otroAdmin).expect(200);
+
+      const { body } = await p.servidor().get(`/solicitudes/${solAna}`).set(ana).expect(200);
+      const hacia = body.historial.map((h: { hacia: string }) => h.hacia);
+
+      expect(hacia).toEqual(expect.arrayContaining(['APROBACION_PENDIENTE', 'APROBADA']));
+    });
+
+    it('una beca por debajo del umbral sigue aprobandose con una sola firma', async () => {
+      const { solAna } = await evaluadas();
+
+      const { body } = await resolver(solAna, { decision: 'APROBAR', motivo: MOTIVO }).expect(200);
+
+      expect(body.estado).toBe('APROBADA');
+    });
+
+    it('no se adjudica mientras espera la segunda firma', async () => {
+      const { solAna } = await becaGrande();
+      await resolver(solAna, { decision: 'APROBAR', motivo: MOTIVO }).expect(200);
+
+      await p
+        .servidor()
+        .post(`/resoluciones/solicitudes/${solAna}/adjudicar`)
+        .set(admin)
+        .expect(409);
+    });
+
+    it('quien da la segunda firma también puede rechazarla', async () => {
+      const { solAna } = await becaGrande();
+      await resolver(solAna, { decision: 'APROBAR', motivo: MOTIVO }).expect(200);
+
+      const { body } = await p
+        .servidor()
+        .post(`/resoluciones/solicitudes/${solAna}`)
+        .set(otroAdmin)
+        .send({ decision: 'RECHAZAR', motivo: MOTIVO })
+        .expect(200);
+
+      expect(body.estado).toBe('RECHAZADA');
     });
   });
 

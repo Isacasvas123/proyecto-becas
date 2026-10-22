@@ -12,6 +12,8 @@ export function aConvocatoriaListadaDto(convocatoria: Convocatoria): Convocatori
     tipo: convocatoria.tipo,
     estado: convocatoria.estado,
     cupos: convocatoria.cupos,
+    montoBeca: convocatoria.montoBeca,
+    exigeSegundaAprobacion: convocatoria.exigeSegundaAprobacion(),
     // ISO-8601 en el contrato: sin ambigüedad de zona horaria para el frontend.
     fechaApertura: convocatoria.periodo.apertura.toISOString(),
     fechaCierre: convocatoria.periodo.cierre.toISOString(),

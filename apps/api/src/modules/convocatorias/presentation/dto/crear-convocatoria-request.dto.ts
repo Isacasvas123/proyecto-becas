@@ -48,6 +48,14 @@ export class CrearConvocatoriaRequestDto {
   @Min(1, { message: 'Los cupos deben ser al menos 1' })
   cupos!: number;
 
+  /**
+   * Monto de la beca en quetzales enteros (PO, 17 Oct 2026). Por encima de Q10,000, cada
+   * solicitud de esta convocatoria necesitara dos aprobaciones.
+   */
+  @IsInt({ message: 'El monto debe ser un número entero de quetzales' })
+  @Min(1, { message: 'El monto debe ser al menos Q1' })
+  montoBeca!: number;
+
   @Type(() => Date)
   @IsDate({ message: 'La fecha de apertura no es una fecha válida' })
   fechaApertura!: Date;

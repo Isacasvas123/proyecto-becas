@@ -13,13 +13,14 @@ const PDF = ArchivoDocumento.crear({
   contenido: Buffer.from('%PDF-1.7 contenido'),
 });
 
-function nueva(documentosExigidos = ['DPI', 'CERTIFICADO_NOTAS']): Solicitud {
+function nueva(documentosExigidos = ['DPI', 'CERTIFICADO_NOTAS'], montoBeca = 5000): Solicitud {
   return Solicitud.nueva({
     id: 's1',
     numero: 'SOL-2026-000001',
     estudianteId: 'e1',
     convocatoriaId: 'c1',
     documentosExigidos,
+    montoBeca,
     ahora: AHORA,
   });
 }
@@ -189,6 +190,7 @@ describe('Solicitud', () => {
       convocatoriaId: original.convocatoriaId,
       estado: original.nombreEstado,
       documentosExigidos: original.documentosExigidos,
+      montoBeca: 5000,
       documentos: original.listaDocumentos(),
       historial: original.listaHistorial(),
       enviadaEn: original.enviadaEn,

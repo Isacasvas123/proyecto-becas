@@ -20,7 +20,14 @@ import type { ReactElement, ReactNode } from 'react';
 
 import { IconoCalendario, IconoCodigo, IconoCupos, IconoReloj } from './Iconos';
 import type { Convocatoria } from '../api/cliente';
-import { claseTipo, estadoPlazo, formatearFecha, inicialTipo, nombreTipo } from '../formato';
+import {
+  claseTipo,
+  estadoPlazo,
+  formatearFecha,
+  formatearQuetzales,
+  inicialTipo,
+  nombreTipo,
+} from '../formato';
 
 const cantidad = (n: number, singular: string, plural: string): string =>
   `${n} ${n === 1 ? singular : plural}`;
@@ -67,6 +74,15 @@ export function TarjetaConvocatoria({
               <b>{convocatoria.cupos.toLocaleString('es-GT')}</b> cupos
             </span>
           </span>
+
+          {convocatoria.montoBeca > 0 && (
+            <span className="item">
+              <IconoCupos />
+              <span>
+                <b>{formatearQuetzales(convocatoria.montoBeca)}</b> por beca
+              </span>
+            </span>
+          )}
 
           <span className="item">
             <IconoCalendario />

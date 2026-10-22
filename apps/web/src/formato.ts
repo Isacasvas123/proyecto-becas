@@ -92,6 +92,8 @@ const NOMBRE_ESTADO_SOLICITUD: Record<string, string> = {
   BORRADOR: 'Borrador',
   ENVIADA: 'Enviada',
   EN_EVALUACION: 'En evaluación',
+  // PO, 17 Oct 2026: beca de más de Q10,000 con una firma, esperando la segunda.
+  APROBACION_PENDIENTE: 'Espera segunda aprobación',
   APROBADA: 'Aprobada',
   RECHAZADA: 'Rechazada',
   ADJUDICADA: 'Adjudicada',
@@ -148,4 +150,9 @@ export const NOMBRE_DEPARTAMENTO: Record<string, string> = {
 
 export function nombreDepartamento(codigo: string | null): string | null {
   return codigo === null ? null : (NOMBRE_DEPARTAMENTO[codigo] ?? codigo);
+}
+
+/** Q25,000. Sin centavos: el dominio guarda quetzales enteros. */
+export function formatearQuetzales(monto: number): string {
+  return `Q${monto.toLocaleString('es-GT')}`;
 }

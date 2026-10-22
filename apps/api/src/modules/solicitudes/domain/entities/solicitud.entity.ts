@@ -20,6 +20,8 @@
 import { randomUUID } from 'node:crypto';
 
 import { ReglaDeNegocioError } from '../../../../shared/exceptions/errores-dominio';
+import { MONTO_SEGUNDA_APROBACION } from '../../../../shared/reglas/montos';
+import { EventoCambioEstado } from '../events/evento-solicitud';
 import { Decision, NombreEstado } from '../enums/solicitud.enums';
 import { EstadoBorrador, EstadoSolicitud, estadoDesde } from '../estados/estados-solicitud';
 import { ArchivoDocumento } from '../value-objects/archivo-documento.vo';
@@ -61,6 +63,12 @@ export interface AtributosSolicitud {
   readonly convocatoriaId: string;
   readonly estado: NombreEstado;
   readonly documentosExigidos: readonly string[];
+  /**
+   * Monto de la beca, heredado de la convocatoria al crear la solicitud (PO, 17 Oct 2026). Se
+   * copia en vez de consultarse: si el Ministerio cambia el monto de la convocatoria despues,
+   * las solicitudes ya en tramite no deben cambiar de regla a mitad del proceso.
+   */
+  readonly montoBeca: number;
   readonly documentos: readonly DocumentoCargado[];
   readonly historial: readonly EntradaHistorial[];
   readonly enviadaEn: Date | null;
@@ -74,6 +82,8 @@ export class Solicitud {
   private readonly historial: EntradaHistorial[];
   private _enviadaEn: Date | null;
   private _beca: BecaOtorgada | null;
+  /** Cambios de estado ocurridos y todavía sin publicar (patrón Observer). */
+  private readonly eventos: EventoCambioEstado[] = [];
 
   private constructor(private readonly atributos: AtributosSolicitud) {
     this.estado = estadoDesde(atributos.estado);
@@ -90,6 +100,7 @@ export class Solicitud {
     estudianteId: string;
     convocatoriaId: string;
     documentosExigidos: readonly string[];
+    montoBeca: number;
     ahora: Date;
   }): Solicitud {
     return new Solicitud({
@@ -178,6 +189,20 @@ export class Solicitud {
     return this.atributos.documentosExigidos.filter((tipo) => !this.documentos.has(tipo));
   }
 
+  get montoBeca(): number {
+    return this.atributos.montoBeca;
+  }
+
+  /** PO, 17 Oct 2026: por encima del umbral hacen falta dos aprobaciones. */
+  necesitaSegundaAprobacion(): boolean {
+    return this.atributos.montoBeca > MONTO_SEGUNDA_APROBACION;
+  }
+
+  /** Para la pantalla: si esta esperando la segunda firma. */
+  esperaSegundaAprobacion(): boolean {
+    return this.estado.nombre === NombreEstado.APROBACION_PENDIENTE;
+  }
+
   /**
    * US-013. Agrega el documento o reemplaza el que había para ese tipo (criterio 3).
    *
@@ -219,7 +244,36 @@ export class Solicitud {
     if (motivo.trim() === '') {
       throw new ReglaDeNegocioError('Toda resolución debe llevar su motivo.');
     }
-    this.transicionar(this.estado.resolver(decision), ahora, autorId, motivo.trim());
+    this.transicionar(this.estado.resolver(decision, this), ahora, autorId, motivo.trim());
+  }
+
+  /**
+   * Segunda aprobación (PO, 17 de octubre de 2026).
+   *
+   * **La tiene que dar otra persona.** Una segunda firma del mismo administrador no es un
+   * control: es el mismo criterio dos veces. Quién dio la primera está en el historial, así que
+   * la regla se comprueba aquí, en el dominio, y no depende de que la pantalla la respete.
+   */
+  confirmarAprobacion(ahora: Date, autorId: string, motivo: string): void {
+    if (motivo.trim() === '') {
+      throw new ReglaDeNegocioError('Toda resolución debe llevar su motivo.');
+    }
+    if (autorId === this.quienAprobóPrimero()) {
+      throw new ReglaDeNegocioError(
+        'La segunda aprobación debe darla una persona distinta de la que dio la primera.',
+      );
+    }
+    this.transicionar(this.estado.confirmarAprobacion(), ahora, autorId, motivo.trim());
+  }
+
+  /** Quién dejó la solicitud en APROBACION_PENDIENTE, según el historial. */
+  private quienAprobóPrimero(): string | null {
+    for (let i = this.historial.length - 1; i >= 0; i -= 1) {
+      if (this.historial[i].hacia === NombreEstado.APROBACION_PENDIENTE) {
+        return this.historial[i].autorId;
+      }
+    }
+    return null;
   }
 
   /** US-024. El código de la beca lo asigna el caso de uso (correlativo). */
@@ -234,14 +288,35 @@ export class Solicitud {
     autorId: string,
     motivo: string | null,
   ): void {
+    const desde = this.estado.nombre;
     this.historial.push({
       id: randomUUID(),
-      desde: this.estado.nombre,
+      desde,
       hacia: siguiente.nombre,
       autorId,
       motivo,
       ocurridoEn: ahora,
     });
     this.estado = siguiente;
+
+    // PO, 17 Oct 2026. El evento queda anotado aquí y lo publica el caso de uso DESPUÉS de
+    // guardar: avisar antes sería contarle al estudiante algo que todavía podría no persistirse.
+    this.eventos.push({
+      solicitudId: this.id,
+      numero: this.numero,
+      estudianteId: this.estudianteId,
+      desde,
+      hacia: siguiente.nombre,
+      motivo,
+      ocurridoEn: ahora,
+    });
+  }
+
+  /**
+   * Entrega los cambios ocurridos desde la última vez y los olvida. Se llama una sola vez, tras
+   * guardar: así un reintento no vuelve a notificar lo mismo.
+   */
+  drenarEventos(): EventoCambioEstado[] {
+    return this.eventos.splice(0, this.eventos.length);
   }
 }

@@ -58,6 +58,18 @@ class SolicitudesFalsas implements ConsultaSolicitudesResolucion {
     this.datos.set(id, nueva);
     return Promise.resolve(nueva);
   }
+  confirmarAprobacion(id: string, motivo: string, _autor: string, cupos: number) {
+    const s = this.datos.get(id)!;
+    if (s.estado !== 'APROBACION_PENDIENTE') {
+      return Promise.reject(
+        new TransicionInvalidaError(`No se puede confirmar la aprobación en ${s.estado}.`),
+      );
+    }
+    this.resoluciones.push({ id, decision: 'APROBAR' as Decision, motivo, cupos });
+    const nueva = { ...s, estado: 'APROBADA' };
+    this.datos.set(id, nueva);
+    return Promise.resolve(nueva);
+  }
   adjudicar(id: string) {
     const s = this.datos.get(id)!;
     if (s.estado !== 'APROBADA') {

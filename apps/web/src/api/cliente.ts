@@ -34,6 +34,9 @@ export interface Convocatoria {
   tipo: string;
   estado: string;
   cupos: number;
+  /** PO, 17 Oct 2026: monto de la beca y si por eso exige doble aprobación. */
+  montoBeca: number;
+  exigeSegundaAprobacion: boolean;
   fechaApertura: string;
   fechaCierre: string;
   requisitos: ElementoCatalogo[];
@@ -57,6 +60,7 @@ export interface NuevaConvocatoria {
   titulo: string;
   descripcion: string;
   cupos: number;
+  montoBeca: number;
   fechaApertura: string;
   fechaCierre: string;
   requisitos: string[];
@@ -182,6 +186,17 @@ async function enviar<T>(
   }
 
   return (await respuesta.json()) as T;
+}
+
+/** Para rutas que responden 204: no hay cuerpo que leer, y `respuesta.json()` fallaría. */
+async function enviarSinRespuesta(ruta: string, metodo: 'PUT' | 'DELETE'): Promise<void> {
+  const respuesta = await fetch(`${URL_BASE}${ruta}`, {
+    method: metodo,
+    headers: cabecerasAutenticadas(),
+  });
+  if (!respuesta.ok) {
+    throw new Error(await mensajeDelError(respuesta, ruta));
+  }
 }
 
 export function consultarSalud(): Promise<EstadoSalud> {
@@ -565,6 +580,14 @@ export function resolverSolicitud(
   return enviar<ResultadoResolucion>(rutaResolucion(id), { decision, motivo });
 }
 
+/**
+ * Segunda aprobación (PO, 17 Oct 2026). La da una persona distinta de la que aprobó primero;
+ * si es la misma, el servidor responde 422 y la pantalla muestra ese mensaje.
+ */
+export function confirmarAprobacion(id: string, motivo: string): Promise<ResultadoResolucion> {
+  return enviar<ResultadoResolucion>(`${rutaResolucion(id)}/confirmar-aprobacion`, { motivo });
+}
+
 /** US-024. */
 export function adjudicarBeca(id: string): Promise<ResultadoResolucion> {
   return enviar<ResultadoResolucion>(`${rutaResolucion(id)}/adjudicar`);
@@ -716,4 +739,35 @@ export function consultarBitacora(filtros: FiltrosBitacora): Promise<PaginaBitac
 
 export function entidadesBitacora(): Promise<string[]> {
   return obtener<string[]>('/bitacora/entidades');
+}
+
+// ─── Notificaciones del estudiante (US-022) ───────────────────────────────────
+
+export interface Notificacion {
+  id: string;
+  solicitudId: string;
+  numero: string;
+  estado: string;
+  mensaje: string;
+  motivo: string | null;
+  leida: boolean;
+  creadaEn: string;
+}
+
+export interface BandejaNotificaciones {
+  sinLeer: number;
+  notificaciones: Notificacion[];
+}
+
+/** Cada estudiante ve solo las suyas: el servidor las filtra por el token, no por la URL. */
+export function obtenerNotificaciones(): Promise<BandejaNotificaciones> {
+  return obtener<BandejaNotificaciones>('/notificaciones');
+}
+
+export function marcarNotificacionLeida(id: string): Promise<void> {
+  return enviarSinRespuesta(`/notificaciones/${encodeURIComponent(id)}/leida`, 'PUT');
+}
+
+export function marcarTodasLeidas(): Promise<{ marcadas: number }> {
+  return enviar<{ marcadas: number }>('/notificaciones/leidas', undefined, 'PUT');
 }

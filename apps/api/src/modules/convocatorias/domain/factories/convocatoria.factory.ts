@@ -36,6 +36,8 @@ export interface DatosNuevaConvocatoria {
   readonly titulo: string;
   readonly descripcion: string;
   readonly cupos: number;
+  /** Monto de la beca en quetzales (PO, 17 Oct 2026). */
+  readonly montoBeca: number;
   readonly apertura: Date;
   readonly cierre: Date;
   /** Si no se indican, se usan los del tipo de beca (US-006, criterio 1). */
@@ -54,6 +56,11 @@ export abstract class ConvocatoriaFactory {
    */
   crear(datos: DatosNuevaConvocatoria): Convocatoria {
     this.validarCupos(datos.cupos);
+    // PO, 17 Oct 2026: una convocatoria nueva siempre declara cuanto vale su beca. El 0 solo
+    // existe en las anteriores al cambio, que la entidad admite al reconstituirlas.
+    if (!Number.isInteger(datos.montoBeca) || datos.montoBeca <= 0) {
+      throw new ReglaDeNegocioError('El monto de la beca debe ser un entero mayor que cero.');
+    }
 
     return Convocatoria.nuevaEnBorrador({
       id: datos.id,
@@ -62,6 +69,7 @@ export abstract class ConvocatoriaFactory {
       descripcion: datos.descripcion,
       tipo: this.tipo(),
       cupos: datos.cupos,
+      montoBeca: datos.montoBeca,
       periodo: PeriodoPostulacion.crear(datos.apertura, datos.cierre),
       requisitos: datos.requisitos ?? this.requisitosPorDefecto(),
       documentosExigidos: datos.documentosExigidos ?? this.documentosPorDefecto(),
