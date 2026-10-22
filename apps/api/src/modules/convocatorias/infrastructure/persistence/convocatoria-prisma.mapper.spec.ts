@@ -74,6 +74,7 @@ describe('convocatoria-prisma.mapper: ida y vuelta', () => {
       tipo: TipoBeca.POSGRADO,
       estado: EstadoConvocatoria.BORRADOR,
       cupos: 20,
+      montoBeca: 5000,
       periodo: PeriodoPostulacion.crear(
         new Date('2026-10-01T00:00:00.000Z'),
         new Date('2026-11-30T00:00:00.000Z'),
@@ -104,6 +105,7 @@ describe('convocatoria-prisma.mapper: ida y vuelta', () => {
       tipo: TipoBeca.UNIVERSITARIA,
       estado: EstadoConvocatoria.BORRADOR,
       cupos: 1,
+      montoBeca: 5000,
       fechaApertura: new Date('2026-10-01T00:00:00.000Z'),
       fechaCierre: new Date('2026-11-01T00:00:00.000Z'),
       requisitos: ['REQUISITO_INVENTADO'],

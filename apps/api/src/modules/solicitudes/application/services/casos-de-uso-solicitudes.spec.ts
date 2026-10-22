@@ -29,6 +29,8 @@ import { CargarDocumentoService } from './cargar-documento.service';
 import { CrearSolicitudService } from './crear-solicitud.service';
 import { EnviarSolicitudService } from './enviar-solicitud.service';
 import { ExpedienteService } from './expediente.service';
+import { PublicadorEventosSolicitud } from './publicador-eventos.service';
+import { Solicitud } from '../../domain/entities/solicitud.entity';
 
 const AHORA = new Date('2026-09-16T15:00:00Z');
 const CONVOCATORIA_ID = 'c1';
@@ -45,6 +47,7 @@ class ConvocatoriasFalsas implements ConsultaConvocatorias {
     titulo: 'Beca Universitaria 2026',
     admiteSolicitudes: true,
     fechaCierre: new Date('2026-12-31T00:00:00Z'),
+    montoBeca: 5000,
     documentosExigidos: [
       { codigo: 'DPI', descripcion: 'Documento Personal de Identificación' },
       { codigo: 'CERTIFICADO_NOTAS', descripcion: 'Certificado de notas' },
@@ -72,6 +75,25 @@ class NotificadorEspia implements NotificadorSolicitudes {
   }
 }
 
+/**
+ * Doble del publicador de eventos (patrón Observer, PO 17 Oct 2026). Guarda lo que se publicó
+ * para que las pruebas comprueben QUÉ se anunció, sin observadores reales de por medio.
+ */
+class EventosFalsos extends PublicadorEventosSolicitud {
+  readonly publicados: { numero: string; hacia: string }[] = [];
+
+  constructor() {
+    super([]);
+  }
+
+  async publicarDe(solicitud: Solicitud): Promise<void> {
+    for (const e of solicitud.drenarEventos()) {
+      this.publicados.push({ numero: e.numero, hacia: e.hacia });
+    }
+    return Promise.resolve();
+  }
+}
+
 function montar() {
   const repositorio = new SolicitudEnMemoriaRepositorio();
   const convocatorias = new ConvocatoriasFalsas();
@@ -80,13 +102,15 @@ function montar() {
   const almacenamiento = new AlmacenamientoMemoriaAdapter();
   const expediente = new ExpedienteService(repositorio, convocatorias);
 
+  const eventos = new EventosFalsos();
   return {
     repositorio,
     convocatorias,
     perfiles,
     notificador,
     almacenamiento,
-    crear: new CrearSolicitudService(repositorio, convocatorias, perfiles, expediente),
+    eventos,
+    crear: new CrearSolicitudService(repositorio, convocatorias, perfiles, expediente, eventos),
     cargar: new CargarDocumentoService(repositorio, almacenamiento, expediente),
     enviar: new EnviarSolicitudService(
       repositorio,
@@ -94,6 +118,7 @@ function montar() {
       perfiles,
       notificador,
       expediente,
+      eventos,
     ),
     expediente,
   };

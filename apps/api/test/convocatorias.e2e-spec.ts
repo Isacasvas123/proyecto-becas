@@ -43,6 +43,7 @@ function convocatoria(codigo: string, estado: EstadoConvocatoria): Convocatoria 
     tipo: TipoBeca.POSGRADO,
     estado,
     cupos: 40,
+    montoBeca: 5000,
     periodo: PeriodoPostulacion.crear(enDias(-5), enDias(30)),
     requisitos: [Requisito.TITULO_UNIVERSITARIO],
     documentosExigidos: [TipoDocumento.DPI],

@@ -11,21 +11,39 @@ import {
 import { Decision, NombreEstado } from '../enums/solicitud.enums';
 import { EstadoSolicitud, VistaSolicitud, estadoDesde } from './estados-solicitud';
 
-const completa: VistaSolicitud = { documentosFaltantes: () => [] };
-const incompleta: VistaSolicitud = { documentosFaltantes: () => ['DPI'] };
+/** Beca pequeña: aprobar la deja APROBADA de una vez. */
+const completa: VistaSolicitud = {
+  documentosFaltantes: () => [],
+  necesitaSegundaAprobacion: () => false,
+};
+const incompleta: VistaSolicitud = {
+  documentosFaltantes: () => ['DPI'],
+  necesitaSegundaAprobacion: () => false,
+};
+/** Beca de más de Q10,000: aprobar la deja esperando la segunda firma (PO, 17 Oct 2026). */
+const grande: VistaSolicitud = {
+  documentosFaltantes: () => [],
+  necesitaSegundaAprobacion: () => true,
+};
 
-type Accion = 'enviar' | 'iniciarEvaluacion' | 'aprobar' | 'rechazar' | 'adjudicar';
+type Accion = 'enviar' | 'iniciarEvaluacion' | 'aprobar' | 'rechazar' | 'confirmar' | 'adjudicar';
 
-function ejecutar(estado: EstadoSolicitud, accion: Accion): EstadoSolicitud {
+function ejecutar(
+  estado: EstadoSolicitud,
+  accion: Accion,
+  vista: VistaSolicitud = completa,
+): EstadoSolicitud {
   switch (accion) {
     case 'enviar':
-      return estado.enviar(completa);
+      return estado.enviar(vista);
     case 'iniciarEvaluacion':
       return estado.iniciarEvaluacion();
     case 'aprobar':
-      return estado.resolver(Decision.APROBAR);
+      return estado.resolver(Decision.APROBAR, vista);
     case 'rechazar':
-      return estado.resolver(Decision.RECHAZAR);
+      return estado.resolver(Decision.RECHAZAR, vista);
+    case 'confirmar':
+      return estado.confirmarAprobacion();
     case 'adjudicar':
       return estado.adjudicar();
   }
@@ -39,12 +57,24 @@ const PERMITIDAS: Record<NombreEstado, Partial<Record<Accion, NombreEstado>>> = 
     aprobar: NombreEstado.APROBADA,
     rechazar: NombreEstado.RECHAZADA,
   },
+  // PO, 17 Oct 2026: desde aquí solo se confirma o se rechaza. Aprobar otra vez no es una vía.
+  [NombreEstado.APROBACION_PENDIENTE]: {
+    confirmar: NombreEstado.APROBADA,
+    rechazar: NombreEstado.RECHAZADA,
+  },
   [NombreEstado.APROBADA]: { adjudicar: NombreEstado.ADJUDICADA },
   [NombreEstado.RECHAZADA]: {},
   [NombreEstado.ADJUDICADA]: {},
 };
 
-const ACCIONES: Accion[] = ['enviar', 'iniciarEvaluacion', 'aprobar', 'rechazar', 'adjudicar'];
+const ACCIONES: Accion[] = [
+  'enviar',
+  'iniciarEvaluacion',
+  'aprobar',
+  'rechazar',
+  'confirmar',
+  'adjudicar',
+];
 
 describe('Estados de la solicitud (patrón State)', () => {
   const casos = Object.values(NombreEstado).flatMap((estado) =>
@@ -87,6 +117,53 @@ describe('Estados de la solicitud (patrón State)', () => {
   it('solo la rechazada deja de estar activa (US-012, criterio 2)', () => {
     const inactivos = Object.values(NombreEstado).filter((n) => !estadoDesde(n).estaActiva());
     expect(inactivos).toEqual([NombreEstado.RECHAZADA]);
+  });
+
+  describe('segunda aprobación por monto (PO, 17 Oct 2026)', () => {
+    it('una beca de más de Q10,000 no se aprueba de una vez: queda esperando la segunda firma', () => {
+      const siguiente = estadoDesde(NombreEstado.EN_EVALUACION).resolver(Decision.APROBAR, grande);
+
+      expect(siguiente.nombre).toBe(NombreEstado.APROBACION_PENDIENTE);
+    });
+
+    it('una beca por debajo del umbral se aprueba con una sola firma', () => {
+      const siguiente = estadoDesde(NombreEstado.EN_EVALUACION).resolver(
+        Decision.APROBAR,
+        completa,
+      );
+
+      expect(siguiente.nombre).toBe(NombreEstado.APROBADA);
+    });
+
+    it('rechazar no depende del monto: termina igual en RECHAZADA', () => {
+      for (const vista of [completa, grande]) {
+        expect(
+          estadoDesde(NombreEstado.EN_EVALUACION).resolver(Decision.RECHAZAR, vista).nombre,
+        ).toBe(NombreEstado.RECHAZADA);
+      }
+    });
+
+    it('aprobar otra vez una que ya espera la segunda firma dice qué hacer en su lugar', () => {
+      expect(() =>
+        estadoDesde(NombreEstado.APROBACION_PENDIENTE).resolver(Decision.APROBAR, grande),
+      ).toThrow(/confirme la segunda/i);
+    });
+
+    it('todavía no se puede adjudicar: no está aprobada', () => {
+      expect(() => estadoDesde(NombreEstado.APROBACION_PENDIENTE).adjudicar()).toThrow(
+        TransicionInvalidaError,
+      );
+    });
+
+    it('tampoco admite documentos nuevos', () => {
+      expect(() =>
+        estadoDesde(NombreEstado.APROBACION_PENDIENTE).verificarCargaDeDocumentos(),
+      ).toThrow(TransicionInvalidaError);
+    });
+
+    it('sigue activa mientras espera: el estudiante no puede postular de nuevo', () => {
+      expect(estadoDesde(NombreEstado.APROBACION_PENDIENTE).estaActiva()).toBe(true);
+    });
   });
 
   it('el mensaje de una transición inválida nombra la acción y el estado', () => {

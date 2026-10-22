@@ -26,6 +26,8 @@ export interface ConvocatoriaParaPostulacionDto {
   readonly tipo: string;
   /** Tope de adjudicaciones; el consolidado lo usa como referencia (US-021). */
   readonly cupos: number;
+  /** Monto de la beca (PO, 17 Oct 2026): decide si hara falta segunda aprobacion. */
+  readonly montoBeca: number;
   /** La regla es de ESTE módulo: publicada y dentro del plazo (`Convocatoria.admiteSolicitudes`). */
   readonly admiteSolicitudes: boolean;
   readonly fechaCierre: Date;
@@ -76,6 +78,7 @@ export class ConsultarConvocatoriaService {
       titulo: convocatoria.titulo,
       tipo: convocatoria.tipo,
       cupos: convocatoria.cupos,
+      montoBeca: convocatoria.montoBeca,
       admiteSolicitudes: convocatoria.admiteSolicitudes(ahora),
       fechaCierre: convocatoria.periodo.cierre,
       documentosExigidos: convocatoria.documentosExigidos.map(aDocumentoDto),

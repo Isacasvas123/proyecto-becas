@@ -55,6 +55,7 @@ model Usuario {
   actualizadoEn    DateTime   @updatedAt @map("actualizado_en")
 
   perfilEstudiante Estudiante?
+  notificaciones   Notificacion[]
   solicitudes      Solicitud[]
 
   comitesCreados     Comite[]               @relation("ComiteCreadoPor")
@@ -110,6 +111,9 @@ model Convocatoria {
   tipo               TipoBeca
   estado             EstadoConvocatoria @default(BORRADOR)
   cupos              Int
+  /// Monto de la beca en quetzales enteros (PO, 17 Oct 2026). Por encima de Q10,000 la
+  /// solicitud necesita una segunda aprobacion. Las creadas antes del cambio quedan en 0.
+  montoBeca          Int                @default(0) @map("monto_beca")
   fechaApertura      DateTime           @map("fecha_apertura")
   fechaCierre        DateTime           @map("fecha_cierre")
   // US-006. Cada tipo de beca trae los suyos por defecto (Factory Method). Listas de enums
@@ -189,6 +193,8 @@ enum EstadoSolicitud {
   BORRADOR
   ENVIADA
   EN_EVALUACION
+  /// Primera aprobacion dada, falta la segunda (PO, 17 Oct 2026). No ocupa cupo.
+  APROBACION_PENDIENTE
   APROBADA
   RECHAZADA
   ADJUDICADA
@@ -205,15 +211,19 @@ model Solicitud {
   estado             EstadoSolicitud @default(BORRADOR)
   // Foto de lo que exigía la convocatoria al crear la solicitud (ver la entidad).
   documentosExigidos String[]        @default([]) @map("documentos_exigidos")
+  /// Misma foto para el monto: la regla de la segunda aprobacion no cambia a mitad de tramite
+  /// aunque la convocatoria se edite despues (PO, 17 Oct 2026).
+  montoBeca          Int             @default(0) @map("monto_beca")
   enviadaEn          DateTime?       @map("enviada_en")
   creadaEn           DateTime        @default(now()) @map("creada_en")
   actualizadaEn      DateTime        @updatedAt @map("actualizada_en")
 
-  documentos   DocumentoSolicitud[]
-  historial    HistorialEstadoSolicitud[]
-  asignaciones AsignacionEvaluacion[]
-  dictamenes   Dictamen[]
-  beca         Beca?
+  documentos     DocumentoSolicitud[]
+  historial      HistorialEstadoSolicitud[]
+  asignaciones   AsignacionEvaluacion[]
+  dictamenes     Dictamen[]
+  beca           Beca?
+  notificaciones Notificacion[]
 
   // US-015 lista por estudiante; US-012 busca la activa por estudiante y convocatoria.
   @@index([estudianteId, convocatoriaId])
@@ -378,4 +388,26 @@ model RegistroBitacora {
   @@index([actorId, ocurridoEn])
   @@index([entidad, entidadId])
   @@map("bitacora")
+}
+
+/// Notificaciones al estudiante (US-022; exigida por el PO el 17 de octubre de 2026).
+///
+/// Se crea una por cada cambio de estado de sus solicitudes. El envío por correo sera otro
+/// observador: esta tabla es la bandeja dentro de la plataforma, que no depende de un SMTP.
+model Notificacion {
+  id           String           @id @default(uuid())
+  estudianteId String           @map("estudiante_id")
+  estudiante   Usuario          @relation(fields: [estudianteId], references: [id], onDelete: Cascade)
+  solicitudId  String           @map("solicitud_id")
+  solicitud    Solicitud        @relation(fields: [solicitudId], references: [id], onDelete: Cascade)
+  numero       String
+  desde        EstadoSolicitud?
+  hacia        EstadoSolicitud
+  mensaje      String
+  motivo       String?
+  leida        Boolean          @default(false)
+  creadaEn     DateTime         @default(now()) @map("creada_en")
+
+  @@index([estudianteId, leida, creadaEn])
+  @@map("notificaciones")
 }

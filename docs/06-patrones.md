@@ -11,7 +11,9 @@
 > el dominio de becas, y cada uno responde las cuatro preguntas exigidas: qué problema resuelve,
 > qué alternativas existían, por qué se eligió y qué ventajas aporta.
 
-**Cumplimiento del mínimo requerido:** 2 creacionales · 2 estructurales · 2 de comportamiento.
+**Cumplimiento del mínimo requerido:** 2 creacionales · 2 estructurales · **3** de comportamiento.
+El mínimo pedía 2 de comportamiento; el tercero lo trajo un requerimiento nuevo del Product Owner
+el 17 de octubre, no el deseo de sumar patrones.
 
 | Tipo | Patrón | Dónde vive | Sprint | Estado |
 |---|---|---|---|---|
@@ -21,7 +23,7 @@
 | Estructural | **Facade** | `modules/resoluciones/application/facades/` | **6** | ✅ **Implementado** (adelantado al 16 Sep) |
 | Comportamiento | **State** | `modules/solicitudes/domain/estados/` | **4** | ✅ **Implementado** (adelantado al 16 Sep) |
 | Comportamiento | **Strategy** | `modules/evaluaciones/domain/strategies/` | **5** | ✅ **Implementado** (adelantado al 16 Sep) |
-| *Extra* | Observer | `shared/patterns/observer/` | 5 (opcional) | Pendiente |
+| Comportamiento | **Observer** | `modules/solicitudes/domain/events/` | — | ✅ **Implementado** (17 Oct, exigencia del PO) |
 | *Extra* | Chain of Responsibility | `modules/solicitudes/domain/validaciones/` | 6 (opcional) | Pendiente |
 
 > **Actualización del 3 de septiembre de 2026.** El patrón **Adapter se adelantó al Sprint 1**:
@@ -639,18 +641,123 @@ criterioPara(convocatoria.tipo).calcular(perfil);
 
 ---
 
-# PATRONES EXTRA (opcionales, si el cronograma lo permite)
+## 7. Observer — `ObservadorSolicitud`
 
-## 7. Observer — Notificaciones de cambio de estado
+**✅ IMPLEMENTADO EL 17 DE OCTUBRE DE 2026.** No estaba en el plan como patrón obligatorio: entró
+porque el Product Owner pidió que *"cuando una solicitud cambie de estado, el sistema deberá
+registrar el evento y generar una notificación para el estudiante"*. El requerimiento describía el
+problema que este patrón resuelve, así que el patrón dejó de ser opcional.
 
-Cuando una solicitud cambia de estado deben ocurrir efectos secundarios: notificar al estudiante,
-registrar auditoría y actualizar estadísticas. Acoplarlos al método de transición violaría
-responsabilidad única y obligaría a modificarlo cada vez que se agregue un efecto nuevo. Observer
-permite que la solicitud publique el evento y que los interesados se suscriban, sin conocerse
-entre sí.
+**Ubicación:** `modules/solicitudes/domain/events/evento-solicitud.ts` (el contrato),
+`application/services/publicador-eventos.service.ts` (el sujeto),
+`infrastructure/notificaciones/notificador-estudiante.observador.ts` (el primer observador).
+**Pruebas:** dobles de prueba en `casos-de-uso-solicitudes.spec.ts` y
+`solicitudes-para-resolucion.service.spec.ts`, más cuatro pruebas e2e del buzón en
+`solicitudes.e2e-spec.ts`.
 
-*Alternativa considerada:* llamadas directas dentro del método de transición — descartada por
-acoplamiento y porque impide agregar efectos sin modificar el dominio.
+### ¿Qué problema resuelve?
+
+Un cambio de estado le interesa a cosas que no tienen ninguna relación entre sí: al estudiante, que
+debe recibir su aviso; al servidor, que lo registra; y mañana al correo (US-022) o a una
+integración con otra institución. El cambio de estado ocurre en **seis lugares distintos** del
+sistema: crear la solicitud, enviarla, pasarla a evaluación, aprobar, confirmar la segunda
+aprobación y adjudicar.
+
+Si cada uno de esos seis casos de uso llamara directamente a cada interesado, la lista de
+interesados quedaría copiada seis veces. Agregar un séptimo interesado obligaría a encontrar y
+modificar los seis, y basta olvidar uno para que un estudiante no reciba el aviso de que le
+aprobaron la beca.
+
+### ¿Qué otras alternativas existían?
+
+1. **Llamar al notificador dentro de cada caso de uso.** Descartada: es exactamente la duplicación
+   descrita arriba. Además acopla cada caso de uso a *todos* los efectos secundarios presentes y
+   futuros.
+2. **Notificar desde el propio método `transicionar` de la entidad.** Descartada por dos razones.
+   La primera es de diseño: el dominio quedaría dependiendo de infraestructura (base de datos,
+   correo), justo lo que la arquitectura prohíbe (ADR-08). La segunda es peor y es de corrección:
+   `transicionar` ocurre **antes** de guardar, así que un cambio que después falle al persistirse
+   habría generado igual la notificación. El estudiante vería "su solicitud fue aprobada" de algo
+   que no quedó aprobado.
+3. **Un disparador (trigger) en PostgreSQL sobre la tabla de solicitudes.** Descartada: mueve una
+   regla de negocio a un lugar que no se puede probar con Jest, que no aparece en el código
+   revisado en los Pull Requests y que no funciona con los repositorios en memoria de las pruebas.
+4. **El `EventEmitter2` de NestJS.** Descartada, aunque es tentadora: los eventos se publican por
+   un nombre en texto (`'solicitud.cambiada'`), de modo que un error de tipeo en el nombre
+   desconecta un observador **sin que nada falle**. Con un puerto propio y un `Symbol`, el que no
+   implemente la interfaz no compila.
+
+### ¿Por qué se seleccionó Observer?
+
+Porque el problema es el del patrón: un objeto cuyo cambio de estado debe avisar a un número
+indeterminado de interesados que no se conocen entre sí. La solicitud **anuncia** lo que le pasó y
+no sabe quién escucha; sumar un observador es registrar una clase más en el módulo, sin tocar
+ningún caso de uso.
+
+### ¿Qué ventajas aporta al proyecto?
+
+- **Los seis casos de uso quedaron iguales:** una sola línea, `await this.eventos.publicarDe(solicitud)`.
+- **Agregar un efecto nuevo no modifica código existente** (Open/Closed). El correo de US-022 será
+  una clase que implemente `ObservadorSolicitud` y una línea en la fábrica del módulo.
+- **El dominio no se enteró de que existen las notificaciones:** la entidad solo acumula eventos.
+- **Un observador que falla no tumba la operación del usuario**, que ya ocurrió y es válida.
+- **Se prueba sin base de datos:** los specs usan un observador falso que cuenta lo que recibió.
+
+### Esquema — tal como quedó implementado
+
+```ts
+// domain/events — el contrato. El dominio define QUÉ se anuncia, no quién escucha.
+export interface EventoCambioEstado {
+  readonly solicitudId: string;
+  readonly numero: string;
+  readonly estudianteId: string;
+  readonly desde: NombreEstado | null;   // nulo solo en la creación
+  readonly hacia: NombreEstado;
+  readonly motivo: string | null;
+  readonly ocurridoEn: Date;
+}
+
+export interface ObservadorSolicitud {
+  readonly nombre: string;
+  notificar(evento: EventoCambioEstado): Promise<void>;  // no debe lanzar
+}
+
+// domain/entities — la entidad ACUMULA, no publica.
+private readonly eventos: EventoCambioEstado[] = [];
+
+private transicionar(siguiente: EstadoSolicitud, ahora: Date, autorId: string, motivo: string | null): void {
+  this.eventos.push({ /* desde el estado anterior hacia el nuevo */ });
+  // ... aplica el estado y anota el historial (US-016)
+}
+
+drenarEventos(): EventoCambioEstado[] { /* devuelve y vacía */ }
+
+// application — el SUJETO. Lo llaman los casos de uso DESPUÉS de guardar.
+async publicarDe(solicitud: Solicitud): Promise<void> {
+  for (const evento of solicitud.drenarEventos()) {
+    const resultados = await Promise.allSettled(this.observadores.map((o) => o.notificar(evento)));
+    // un observador que falla solo deja un registro en el log; los demás siguen
+  }
+}
+```
+
+**Las dos decisiones que no son del patrón de libro, y por qué.**
+
+*El evento se acumula en la entidad y se publica después de persistir.* En la versión clásica el
+sujeto avisa en el momento del cambio. Aquí no se puede: el cambio todavía no es cierto hasta que
+el repositorio lo guarda. La prueba `lo que no se guarda no se anuncia` fija esa regla: cuando el
+guardado falla por falta de cupo, el contador del observador falso se queda en cero.
+
+*La creación de una solicitud no emite evento.* `Solicitud.nueva` no pasa por `transicionar`
+—escribe el `BORRADOR` inicial directamente— porque crear no es *cambiar* de estado. Es
+intencional y está probado: enviar una solicitud recién creada genera **una** notificación (la de
+`ENVIADA`), no dos.
+
+---
+
+---
+
+# PATRÓN EXTRA (opcional, si el cronograma lo permite)
 
 ## 8. Chain of Responsibility — Validación previa al envío
 

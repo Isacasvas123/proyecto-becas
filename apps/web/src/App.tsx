@@ -21,6 +21,7 @@
  *   /evaluaciones  → PaginaEvaluaciones  (sesión + rol EVALUADOR — US-020)
  *   /reportes      → PaginaReportes      (sesión + rol ADMINISTRADOR — US-028 a US-031)
  *   /bitacora      → PaginaBitacora      (sesión + rol ADMINISTRADOR — auditoría)
+ *   /notificaciones → PaginaNotificaciones (sesión + rol ESTUDIANTE — US-022)
  *   /evaluaciones/:id → PaginaEvaluar    (sesión + rol EVALUADOR — US-019)
  *   cualquier otra → redirige a /convocatorias
  *
@@ -43,6 +44,7 @@ import { PaginaGestion } from './paginas/PaginaGestion';
 import { PaginaLogin } from './paginas/PaginaLogin';
 import { PaginaMisSolicitudes } from './paginas/PaginaMisSolicitudes';
 import { PaginaPerfil } from './paginas/PaginaPerfil';
+import { PaginaNotificaciones } from './paginas/PaginaNotificaciones';
 import { PaginaRegistro } from './paginas/PaginaRegistro';
 import { PaginaBitacora } from './paginas/PaginaBitacora';
 import { PaginaReportes } from './paginas/PaginaReportes';
@@ -106,6 +108,10 @@ export function App(): ReactElement {
           <Route path="/evaluadores" element={conRol(ROL_ADMINISTRADOR, <PaginaEvaluadores />)} />
           <Route path="/comites" element={conRol(ROL_ADMINISTRADOR, <PaginaComites />)} />
           <Route path="/comites/:id" element={conRol(ROL_ADMINISTRADOR, <PaginaComite />)} />
+          <Route
+            path="/notificaciones"
+            element={conRol(ROL_ESTUDIANTE, <PaginaNotificaciones />)}
+          />
           <Route path="/bitacora" element={conRol(ROL_ADMINISTRADOR, <PaginaBitacora />)} />
           <Route path="/reportes" element={conRol(ROL_ADMINISTRADOR, <PaginaReportes />)} />
           <Route path="/evaluaciones" element={conRol(ROL_EVALUADOR, <PaginaEvaluaciones />)} />

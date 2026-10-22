@@ -22,6 +22,7 @@ import { Link, useParams } from 'react-router-dom';
 
 import {
   adjudicarBeca,
+  confirmarAprobacion,
   agregarIntegrantes,
   quitarIntegrante,
   asignarSolicitudes,
@@ -153,6 +154,14 @@ export function PaginaComite(): ReactElement {
       const r = await resolverSolicitud(fila.solicitudId, decision, motivo);
       setSeleccion(null);
       return `${r.numero} ${decision === 'APROBAR' ? 'aprobada' : 'rechazada'}. Quedan ${r.cupos.disponibles} cupo(s).`;
+    });
+
+  /** PO, 17 Oct 2026: segunda firma de una beca que pasa de Q10,000. */
+  const confirmarSegunda = (fila: FilaConsolidado, motivo: string) =>
+    ejecutar(async () => {
+      const r = await confirmarAprobacion(fila.solicitudId, motivo);
+      setSeleccion(null);
+      return `${r.numero} aprobada con la segunda firma. Quedan ${r.cupos.disponibles} cupo(s).`;
     });
 
   const adjudicar = (fila: FilaConsolidado) =>
@@ -417,6 +426,16 @@ export function PaginaComite(): ReactElement {
                                 Resolver
                               </button>
                             )}
+                            {f.estado === 'APROBACION_PENDIENTE' && (
+                              <button
+                                type="button"
+                                className="boton pequeno"
+                                disabled={ocupado}
+                                onClick={() => setSeleccion(f)}
+                              >
+                                Segunda aprobación
+                              </button>
+                            )}
                             {f.estado === 'APROBADA' && (
                               <button
                                 type="button"
@@ -442,6 +461,7 @@ export function PaginaComite(): ReactElement {
                   ocupado={ocupado}
                   onResolver={(decision, motivo) => void resolver(seleccion, decision, motivo)}
                   onAdjudicar={() => void adjudicar(seleccion)}
+                  onConfirmarSegunda={(motivo) => void confirmarSegunda(seleccion, motivo)}
                   onCancelar={() => setSeleccion(null)}
                 />
               )}
@@ -465,6 +485,8 @@ interface PropsDecision {
   ocupado: boolean;
   onResolver: (decision: 'APROBAR' | 'RECHAZAR', motivo: string) => void;
   onAdjudicar: () => void;
+  /** PO, 17 Oct 2026. */
+  onConfirmarSegunda: (motivo: string) => void;
   onCancelar: () => void;
 }
 
@@ -478,6 +500,7 @@ function PanelDecision({
   ocupado,
   onResolver,
   onAdjudicar,
+  onConfirmarSegunda,
   onCancelar,
 }: PropsDecision): ReactElement {
   const [decision, setDecision] = useState<'APROBAR' | 'RECHAZAR' | ''>('');
@@ -485,11 +508,14 @@ function PanelDecision({
   const [confirmando, setConfirmando] = useState(false);
   const largo = motivo.trim().length;
   const adjudicando = fila.estado === 'APROBADA';
+  // PO, 17 Oct 2026: la beca pasó del umbral y espera una segunda firma, que debe dar otra persona.
+  const confirmandoSegunda = fila.estado === 'APROBACION_PENDIENTE';
 
   return (
     <div className="decision" role="region" aria-label={`Decisión sobre ${fila.numero}`}>
       <h3>
-        {adjudicando ? 'Adjudicar beca' : 'Resolver'} · {fila.numero} · {fila.estudiante}
+        {adjudicando ? 'Adjudicar beca' : confirmandoSegunda ? 'Segunda aprobación' : 'Resolver'} ·{' '}
+        {fila.numero} · {fila.estudiante}
       </h3>
       <p className="pista">
         Puntaje {fila.puntajePromedio?.toFixed(2) ?? '—'} · {fila.favorables} a favor y{' '}
@@ -501,6 +527,18 @@ function PanelDecision({
         <p>
           Se registrará la beca con su código y la solicitud quedará <strong>adjudicada</strong>.
         </p>
+      ) : confirmandoSegunda ? (
+        <>
+          <p>
+            Esta beca supera los <strong>Q10,000</strong>, así que necesita una segunda aprobación.
+            Ya tiene la primera: al confirmar quedará <strong>aprobada</strong> y se reservará el
+            cupo.
+          </p>
+          <p className="pista">
+            La segunda firma debe darla una persona distinta de la que aprobó primero. Si es la
+            misma, el sistema lo rechaza.
+          </p>
+        </>
       ) : (
         <>
           {fila.dictamenesEmitidos < fila.evaluadoresAsignados && (
@@ -555,7 +593,11 @@ function PanelDecision({
           <button
             type="button"
             className="boton"
-            disabled={ocupado || (!adjudicando && (decision === '' || largo < MINIMO_MOTIVO))}
+            disabled={
+              ocupado ||
+              (confirmandoSegunda && largo < MINIMO_MOTIVO) ||
+              (!adjudicando && !confirmandoSegunda && (decision === '' || largo < MINIMO_MOTIVO))
+            }
             onClick={() => setConfirmando(true)}
           >
             Continuar
@@ -565,15 +607,19 @@ function PanelDecision({
             type="button"
             className="boton"
             disabled={ocupado}
-            onClick={() =>
-              adjudicando ? onAdjudicar() : decision !== '' && onResolver(decision, motivo)
-            }
+            onClick={() => {
+              if (adjudicando) return onAdjudicar();
+              if (confirmandoSegunda) return onConfirmarSegunda(motivo);
+              if (decision !== '') onResolver(decision, motivo);
+            }}
           >
             {ocupado
               ? 'Guardando…'
               : adjudicando
                 ? 'Sí, adjudicar'
-                : `Sí, ${decision === 'APROBAR' ? 'aprobar' : 'rechazar'}`}
+                : confirmandoSegunda
+                  ? 'Sí, aprobar en segunda firma'
+                  : `Sí, ${decision === 'APROBAR' ? 'aprobar' : 'rechazar'}`}
           </button>
         )}
       </div>

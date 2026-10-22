@@ -14,6 +14,7 @@ import {
   SOLICITUD_REPOSITORIO,
   SolicitudRepositorio,
 } from '../../domain/ports/solicitud.repositorio';
+import { PublicadorEventosSolicitud } from './publicador-eventos.service';
 
 export interface SolicitudParaResolverDto {
   readonly id: string;
@@ -30,6 +31,7 @@ export class SolicitudesParaResolucionService {
   constructor(
     @Inject(SOLICITUD_REPOSITORIO)
     private readonly repositorio: SolicitudRepositorio,
+    private readonly eventos: PublicadorEventosSolicitud,
   ) {}
 
   async resumen(id: string): Promise<SolicitudParaResolverDto | null> {
@@ -60,8 +62,33 @@ export class SolicitudesParaResolucionService {
     if (solicitud.nombreEstado === NombreEstado.APROBADA) {
       await this.repositorio.guardarSiHayCupo(solicitud, cupos);
     } else {
+      // Incluye APROBACION_PENDIENTE: la primera firma NO reserva cupo (PO, 17 Oct 2026). Si lo
+      // hiciera, una solicitud grande podría retener un cupo durante días esperando la segunda
+      // firma, y si al final se rechaza nadie habría podido usarlo.
       await this.repositorio.guardar(solicitud);
     }
+    await this.eventos.publicarDe(solicitud);
+    return aDto(solicitud);
+  }
+
+  /**
+   * Segunda aprobación (PO, 17 de octubre de 2026).
+   *
+   * El cupo se reserva **aquí**, con la misma comprobación atómica que una aprobación normal:
+   * entre la primera firma y la segunda pueden haberse agotado los cupos, y en ese caso esta
+   * solicitud no entra. Quien firma segundo se entera en ese momento, no después.
+   */
+  async confirmarAprobacion(
+    id: string,
+    motivo: string,
+    autorId: string,
+    cupos: number,
+    ahora: Date = new Date(),
+  ): Promise<SolicitudParaResolverDto> {
+    const solicitud = await this.cargar(id);
+    solicitud.confirmarAprobacion(ahora, autorId, motivo);
+    await this.repositorio.guardarSiHayCupo(solicitud, cupos);
+    await this.eventos.publicarDe(solicitud);
     return aDto(solicitud);
   }
 
@@ -76,6 +103,7 @@ export class SolicitudesParaResolucionService {
     const correlativo = (await this.repositorio.contarBecasConPrefijo(prefijo)) + 1;
     solicitud.adjudicar(ahora, autorId, `${prefijo}${String(correlativo).padStart(6, '0')}`);
     await this.repositorio.guardar(solicitud);
+    await this.eventos.publicarDe(solicitud);
     return aDto(solicitud);
   }
 
