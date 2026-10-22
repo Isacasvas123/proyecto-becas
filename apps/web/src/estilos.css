@@ -558,6 +558,12 @@ a {
   background: var(--rojo-bg);
 }
 
+/* Todavía no abre. Azul y no ámbar: no es una advertencia, es una fecha que esperar. */
+.plazo.proximo {
+  color: var(--gob-700);
+  background: var(--gob-100);
+}
+
 /* ============================================================================
    ESTADOS: cargando, vacío, error
    ========================================================================== */
@@ -741,6 +747,71 @@ code {
 .campo .pista {
   font-size: var(--txt-xs);
   color: var(--tinta-3);
+}
+
+/* Una pista que dejó de ser un comentario al margen y pasó a ser una consecuencia:
+   «este monto va a exigir dos aprobaciones». Merece leerse, no sólo estar. */
+.campo .pista.destacada {
+  font-weight: 600;
+  color: var(--ambar);
+}
+
+/* Marca de la columna «Monto»: esta convocatoria exige una segunda aprobación.
+   En una línea y bajo el importe, para que la columna no se ensanche ni parta la frase. */
+.marca-doble-firma {
+  margin-top: 2px;
+  font-size: var(--txt-2xs);
+  font-weight: 700;
+  color: var(--ambar);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* ---- Campo de moneda: la Q y los centavos van DENTRO del recuadro ----
+   Se dibuja el borde en el contenedor y se le quita al input, para que el prefijo,
+   el número y el sufijo se lean como un solo campo y no como tres cosas pegadas. */
+.campo-con-prefijo {
+  display: flex;
+  align-items: center;
+  background: var(--papel);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.campo-con-prefijo:focus-within {
+  border-color: var(--gob-500);
+  box-shadow: 0 0 0 3px var(--gob-100);
+}
+
+.campo-con-prefijo .prefijo,
+.campo-con-prefijo .sufijo {
+  padding: 0 var(--sp-3);
+  font-size: var(--txt-base);
+  font-weight: 700;
+  color: var(--tinta-3);
+  user-select: none;
+}
+
+.campo-con-prefijo .prefijo {
+  padding-right: 0;
+}
+
+.campo-con-prefijo input {
+  flex: 1;
+  min-width: 0;
+  /* Cifras de ancho fijo: el monto no se mueve de sitio al teclear. */
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  background: transparent;
+  border: none;
+}
+
+.campo-con-prefijo input:focus {
+  box-shadow: none;
 }
 
 :focus-visible {

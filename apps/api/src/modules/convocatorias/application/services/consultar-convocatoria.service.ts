@@ -30,6 +30,8 @@ export interface ConvocatoriaParaPostulacionDto {
   readonly montoBeca: number;
   /** La regla es de ESTE módulo: publicada y dentro del plazo (`Convocatoria.admiteSolicitudes`). */
   readonly admiteSolicitudes: boolean;
+  /** Las DOS fechas, no solo el cierre: quien rechaza una postulación tiene que poder decir cuál falló. */
+  readonly fechaApertura: Date;
   readonly fechaCierre: Date;
   readonly documentosExigidos: readonly ElementoCatalogoDto[];
 }
@@ -80,6 +82,7 @@ export class ConsultarConvocatoriaService {
       cupos: convocatoria.cupos,
       montoBeca: convocatoria.montoBeca,
       admiteSolicitudes: convocatoria.admiteSolicitudes(ahora),
+      fechaApertura: convocatoria.periodo.apertura,
       fechaCierre: convocatoria.periodo.cierre,
       documentosExigidos: convocatoria.documentosExigidos.map(aDocumentoDto),
     };

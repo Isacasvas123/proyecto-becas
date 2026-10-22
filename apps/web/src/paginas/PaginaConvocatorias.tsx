@@ -31,7 +31,7 @@ import { BandaEstadisticas } from '../componentes/BandaEstadisticas';
 import { Encabezado } from '../componentes/Encabezado';
 import { PanelFiltros } from '../componentes/PanelFiltros';
 import { TarjetaConvocatoria } from '../componentes/TarjetaConvocatoria';
-import { nombreTipo } from '../formato';
+import { estadoPlazo, formatearFecha, nombreTipo } from '../formato';
 import { useSesion } from '../sesion/ContextoSesion';
 
 interface Consulta<T> {
@@ -118,6 +118,20 @@ export function PaginaConvocatorias(): ReactElement {
       );
     }
     if (!esEstudiante) return undefined;
+
+    // El servidor rechaza postular fuera del periodo. Si el botón se ofrece igual, la persona
+    // descubre la regla por un mensaje de error; mostrarla aquí la convierte en información.
+    const plazo = estadoPlazo(convocatoria.fechaCierre, convocatoria.fechaApertura);
+    if (!plazo.abierta) {
+      return (
+        <span className="pista">
+          {plazo.clase === 'proximo'
+            ? `Podrá postular a partir del ${formatearFecha(convocatoria.fechaApertura)}.`
+            : 'El plazo de esta convocatoria ya cerró.'}
+        </span>
+      );
+    }
+
     return (
       <button
         type="button"
@@ -182,10 +196,23 @@ export function PaginaConvocatorias(): ReactElement {
               </ul>
             )}
 
+            {/* Las pistas de desarrollo —levantar PostgreSQL, sembrar datos— solo se muestran
+                mientras se trabaja en local. Un aspirante que entra desde su casa no tiene por
+                qué leer un comando de npm en la pantalla: para él es ruido, y para el ministerio
+                es una filtración de cómo está hecho el sistema por dentro. */}
             {consulta.error !== null && (
               <p className="aviso error" role="alert">
-                {consulta.error} Si la API responde pero esta consulta falla, casi siempre es que
-                PostgreSQL no está levantado: <code>docker compose up -d</code>.
+                No pudimos cargar las convocatorias en este momento. Vuelva a intentarlo en unos
+                minutos.
+                {import.meta.env.DEV && (
+                  <>
+                    {' '}
+                    <span className="pista">
+                      ({consulta.error} — ¿está levantada la base de datos?{' '}
+                      <code>docker compose up -d</code>)
+                    </span>
+                  </>
+                )}
               </p>
             )}
 
@@ -193,14 +220,21 @@ export function PaginaConvocatorias(): ReactElement {
               <p className="aviso">
                 {todas.length === 0 ? (
                   <>
-                    No hay convocatorias publicadas en este momento. Ejecute{' '}
-                    <code>npm run db:seed</code> con la base de datos levantada para cargar datos de
-                    prueba.
+                    No hay convocatorias abiertas en este momento. Las nuevas se publican a lo largo
+                    del año: vuelva a consultar más adelante.
+                    {import.meta.env.DEV && (
+                      <>
+                        {' '}
+                        <span className="pista">
+                          (sin datos locales: <code>npm run db:seed</code>)
+                        </span>
+                      </>
+                    )}
                   </>
                 ) : (
                   <>
                     No hay convocatorias de {nombreTipo(tipoActivo ?? '').toLowerCase()} abiertas
-                    ahora mismo.
+                    ahora mismo. Pruebe con otro tipo de beca.
                   </>
                 )}
               </p>
