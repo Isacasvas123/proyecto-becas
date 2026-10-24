@@ -54,9 +54,10 @@ model Usuario {
   creadoEn         DateTime   @default(now()) @map("creado_en")
   actualizadoEn    DateTime   @updatedAt @map("actualizado_en")
 
-  perfilEstudiante Estudiante?
-  notificaciones   Notificacion[]
-  solicitudes      Solicitud[]
+  perfilEstudiante   Estudiante?
+  notificaciones     Notificacion[]
+  solicitudes        Solicitud[]
+  tokensRecuperacion TokenRecuperacion[]
 
   comitesCreados     Comite[]               @relation("ComiteCreadoPor")
   comites            ComiteEvaluador[]
@@ -184,6 +185,27 @@ model Estudiante {
   actualizadoEn          DateTime        @updatedAt @map("actualizado_en")
 
   @@map("estudiantes")
+}
+
+/// Permiso de un solo uso para restablecer una contraseña olvidada (US-035).
+///
+/// NO GUARDA EL TOKEN, GUARDA SU HASH
+///   El token viaja en el enlace del correo y es, durante una hora, equivalente a la
+///   contraseña: quien lo tenga puede cambiarla. Guardarlo en claro repetiría el error que
+///   bcrypt evita en la tabla de usuarios — quien lea la base podría tomar cualquier cuenta.
+///   Se guarda su hash y se compara igual que una contraseña.
+model TokenRecuperacion {
+  id        String    @id @default(uuid())
+  usuarioId String    @map("usuario_id")
+  usuario   Usuario   @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  hashToken String    @unique @map("hash_token")
+  expiraEn  DateTime  @map("expira_en")
+  /// Nulo mientras no se ha usado. Un token usado no vuelve a servir.
+  usadoEn   DateTime? @map("usado_en")
+  creadoEn  DateTime  @default(now()) @map("creado_en")
+
+  @@index([usuarioId])
+  @@map("tokens_recuperacion")
 }
 
 // ─── EPIC-03 · Solicitudes ─────────────────────────────────────────────────────

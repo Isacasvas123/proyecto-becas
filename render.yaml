@@ -60,6 +60,10 @@ services:
         value: local
       - key: ALMACENAMIENTO_RUTA_LOCAL
         value: /app/uploads
+      # US-035: el correo de recuperación se escribe en el log. Para enviarlo de verdad,
+      # poner "smtp" y añadir SMTP_HOST, SMTP_USUARIO, SMTP_PASSWORD y SMTP_REMITENTE.
+      - key: CORREO_TIPO
+        value: consola
       # Los avisos se escriben en el log mientras US-022 (correo) no exista.
       - key: NOTIFICACIONES_TIPO
         value: consola

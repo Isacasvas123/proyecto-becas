@@ -33,6 +33,23 @@ export class UsuarioPrismaRepositorio implements UsuarioRepositorio {
     return fila === null ? null : aDominio(fila);
   }
 
+  async buscarPorCorreo(correo: string): Promise<Usuario | null> {
+    const fila = await this.prisma.usuario.findUnique({ where: { correo } });
+    return fila === null ? null : aDominio(fila);
+  }
+
+  /** Solo la contraseña y el desbloqueo. Ver el comentario del puerto. */
+  async actualizarPassword(usuario: Usuario): Promise<void> {
+    await this.prisma.usuario.update({
+      where: { id: usuario.id },
+      data: {
+        hashPassword: usuario.hashAlmacenado(),
+        intentosFallidos: usuario.intentosFallidos,
+        bloqueadoHasta: usuario.bloqueadoHasta,
+      },
+    });
+  }
+
   async actualizarEstadoDeAcceso(usuario: Usuario): Promise<void> {
     // Solo los dos campos del bloqueo. Ver el comentario del puerto.
     //

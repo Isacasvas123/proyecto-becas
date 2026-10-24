@@ -46,6 +46,7 @@ import { PaginaMisSolicitudes } from './paginas/PaginaMisSolicitudes';
 import { PaginaPerfil } from './paginas/PaginaPerfil';
 import { PaginaNotificaciones } from './paginas/PaginaNotificaciones';
 import { PaginaRegistro } from './paginas/PaginaRegistro';
+import { PaginaRecuperar } from './paginas/PaginaRecuperar';
 import { PaginaBitacora } from './paginas/PaginaBitacora';
 import { PaginaReportes } from './paginas/PaginaReportes';
 import { PaginaSolicitud } from './paginas/PaginaSolicitud';
@@ -72,6 +73,9 @@ export function App(): ReactElement {
           <Route path="/convocatorias" element={<PaginaConvocatorias />} />
           <Route path="/login" element={<PaginaLogin />} />
           <Route path="/registro" element={<PaginaRegistro />} />
+          {/* US-035. Dos rutas, una pantalla: con token se elige la contraseña, sin él se pide el enlace. */}
+          <Route path="/recuperar" element={<PaginaRecuperar />} />
+          <Route path="/recuperar/:token" element={<PaginaRecuperar />} />
           <Route path="/consulta" element={<PaginaConsulta />} />
           <Route
             path="/gestion"

@@ -35,6 +35,18 @@ export interface UsuarioRepositorio {
    */
   actualizarEstadoDeAcceso(usuario: Usuario): Promise<void>;
 
+  /** US-035: por aquí empieza la recuperación, que solo conoce el correo. */
+  buscarPorCorreo(correo: string): Promise<Usuario | null>;
+
+  /**
+   * Guarda la contraseña nueva y el desbloqueo. NADA MÁS.
+   *
+   * Deliberadamente estrecho, por el mismo motivo que `actualizarEstadoDeAcceso`: un
+   * `guardar()` general permitiría que un fallo en este caso de uso sobrescribiera el rol
+   * o el correo de alguien. Lo que este flujo puede tocar, lo dice su firma.
+   */
+  actualizarPassword(usuario: Usuario): Promise<void>;
+
   /**
    * US-001: ¿qué datos de un registro nuevo ya están tomados? Se consulta todo junto para poder
    * decirle a la persona exactamente cuál es el problema en una sola respuesta.

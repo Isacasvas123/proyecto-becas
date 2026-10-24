@@ -16,6 +16,10 @@ import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import type { App } from 'supertest/types';
 
+import { RecuperacionPasswordService } from '../src/modules/usuarios/application/services/recuperacion-password.service';
+import { ENVIADOR_CORREO } from '../src/modules/usuarios/domain/ports/enviador-correo';
+import { TOKEN_RECUPERACION_REPOSITORIO } from '../src/modules/usuarios/domain/ports/token-recuperacion.repositorio';
+import { TokenRecuperacionEnMemoriaRepositorio } from '../src/modules/usuarios/infrastructure/persistence/token-recuperacion-en-memoria.repositorio';
 import { AutenticarUsuarioService } from '../src/modules/usuarios/application/services/autenticar-usuario.service';
 import { RegistrarEstudianteService } from '../src/modules/usuarios/application/services/registrar-estudiante.service';
 import { Usuario } from '../src/modules/usuarios/domain/entities/usuario.entity';
@@ -71,6 +75,16 @@ describe('POST /auth/registro (e2e)', () => {
     const modulo = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [
+        // `AuthController` expone además la recuperación (US-035). Nest resuelve el
+        // controlador entero, así que su servicio tiene que estar aunque estas pruebas no
+        // lo usen.
+        RecuperacionPasswordService,
+        {
+          provide: TOKEN_RECUPERACION_REPOSITORIO,
+          useValue: new TokenRecuperacionEnMemoriaRepositorio(),
+        },
+        { provide: ENVIADOR_CORREO, useValue: { enviar: () => Promise.resolve() } },
+        { provide: ConfigService, useValue: { get: () => undefined } },
         RegistrarEstudianteService,
         AutenticarUsuarioService,
         { provide: USUARIO_REPOSITORIO, useValue: new UsuarioEnMemoriaRepositorio([]) },
