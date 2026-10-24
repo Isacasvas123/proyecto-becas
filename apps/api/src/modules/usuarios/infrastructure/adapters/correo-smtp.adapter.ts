@@ -72,14 +72,37 @@ export class CorreoSmtpAdapter implements EnviadorCorreo {
         'QUIT',
       ];
       let siguiente = 0;
+      let acumulado = '';
 
       const fallar = (motivo: string) => {
         socket.destroy();
         rechazar(new Error(motivo));
       };
 
+      /**
+       * ¿Terminó de llegar la respuesta?
+       *
+       * SMTP contesta en una o VARIAS líneas, y solo la última lleva un espacio tras el
+       * código; las intermedias llevan un guion. Gmail responde al EHLO con cinco líneas:
+       *
+       *     250-smtp.gmail.com at your service
+       *     250-SIZE 35882577
+       *     250 SMTPUTF8          ← esta, con espacio, es la que cierra
+       *
+       * Además TCP puede partir eso en varios trozos. La versión anterior avanzaba al
+       * comando siguiente en CADA trozo recibido, así que con una respuesta partida mandaba
+       * la contraseña fuera de sitio y la sesión fallaba. Por eso se acumula y solo se
+       * avanza cuando la respuesta está entera.
+       */
+      const respuestaCompleta = (texto: string): boolean => /^\d{3} [^\r\n]*\r\n$/m.test(texto);
+
       socket.on('data', (trozo: Buffer) => {
-        const respuesta = trozo.toString('utf8');
+        acumulado += trozo.toString('utf8');
+        if (!respuestaCompleta(acumulado)) return;
+
+        const respuesta = acumulado;
+        acumulado = '';
+
         // 4xx y 5xx son errores de SMTP; 2xx y 3xx dejan continuar.
         if (/^[45]/.test(respuesta)) return fallar(respuesta.split('\r\n')[0]);
 
