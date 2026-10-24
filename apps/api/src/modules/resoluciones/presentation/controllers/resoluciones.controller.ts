@@ -97,6 +97,30 @@ export class ResolucionesController {
 }
 
 /**
+ * Cupos restantes de las convocatorias vigentes, SIN sesión.
+ *
+ * Es información que le sirve a quien está decidiendo si postula: una convocatoria sin cupos
+ * libres sigue aceptando solicitudes, y sin este dato el aspirante reúne sus documentos para
+ * algo que ya no puede ganar. No revela nada de nadie: solo números por convocatoria.
+ *
+ * CONTROLADOR APARTE, Y NO UN MÉTODO `@Publico()` EN EL DE ARRIBA
+ *   `ResolucionesController` lleva `@Roles(ADMINISTRADOR)` en la clase, y `getAllAndOverride`
+ *   hace que ese rol gane sobre un método sin `@Roles`. Mezclar las dos marcas en el mismo
+ *   controlador es justo lo que `RolesGuard` registra como error de programación. Separar el
+ *   controlador deja la intención escrita en su declaración, donde se lee.
+ */
+@Publico()
+@Controller('resoluciones')
+export class CuposPublicosController {
+  constructor(private readonly fachada: ResolucionFacade) {}
+
+  @Get('cupos')
+  cupos(): Promise<CuposDto[]> {
+    return this.fachada.cuposPublicos();
+  }
+}
+
+/**
  * US-025. Pública a propósito, como el listado de convocatorias: es el requisito de
  * transparencia del enunciado.
  *

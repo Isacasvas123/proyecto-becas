@@ -18,6 +18,7 @@ import {
 } from './infrastructure/integraciones/consultas-externas.adapter';
 import {
   ConsultaPublicaController,
+  CuposPublicosController,
   ResolucionesController,
 } from './presentation/controllers/resoluciones.controller';
 import { LimiteConsultasGuard } from './presentation/guards/limite-consultas.guard';
@@ -34,7 +35,7 @@ import { UsuariosModule } from '../usuarios/usuarios.module';
  */
 @Module({
   imports: [ConvocatoriasModule, EvaluacionesModule, SolicitudesModule, UsuariosModule],
-  controllers: [ResolucionesController, ConsultaPublicaController],
+  controllers: [ResolucionesController, CuposPublicosController, ConsultaPublicaController],
   providers: [
     ResolucionFacade,
     ConsultaPublicaService,

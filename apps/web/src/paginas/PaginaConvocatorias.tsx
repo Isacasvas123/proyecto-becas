@@ -26,7 +26,12 @@
 import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { crearSolicitud, listarConvocatorias, type Convocatoria } from '../api/cliente';
+import {
+  crearSolicitud,
+  listarConvocatorias,
+  listarCuposPublicos,
+  type Convocatoria,
+} from '../api/cliente';
 import { BandaEstadisticas } from '../componentes/BandaEstadisticas';
 import { Encabezado } from '../componentes/Encabezado';
 import { PanelFiltros } from '../componentes/PanelFiltros';
@@ -52,6 +57,9 @@ export function PaginaConvocatorias(): ReactElement {
   const [tipoActivo, setTipoActivo] = useState<string | null>(null);
   const [postulando, setPostulando] = useState<string | null>(null);
   const [errorPostulacion, setErrorPostulacion] = useState<string | null>(null);
+  // Cupos que quedan por convocatoria. Vacío mientras no lleguen, o si la petición falla:
+  // la tarjeta sabe prescindir del dato.
+  const [disponibles, setDisponibles] = useState<Map<string, number>>(new Map());
   const esEstudiante = sesion?.usuario.rol === 'ESTUDIANTE';
   const avisoPostulacion = useRef<HTMLParagraphElement>(null);
 
@@ -66,9 +74,11 @@ export function PaginaConvocatorias(): ReactElement {
   useEffect(() => {
     let cancelado = false;
 
-    listarConvocatorias()
-      .then((datos) => {
-        if (!cancelado) setConsulta({ datos, error: null, cargando: false });
+    Promise.all([listarConvocatorias(), listarCuposPublicos().catch(() => [])])
+      .then(([datos, cupos]) => {
+        if (cancelado) return;
+        setDisponibles(new Map(cupos.map((c) => [c.convocatoriaId, c.disponibles])));
+        setConsulta({ datos, error: null, cargando: false });
       })
       .catch((causa: unknown) => {
         if (!cancelado) {
@@ -246,6 +256,7 @@ export function PaginaConvocatorias(): ReactElement {
                   <TarjetaConvocatoria
                     key={convocatoria.id}
                     convocatoria={convocatoria}
+                    disponibles={disponibles.get(convocatoria.id)}
                     accion={accionPara(convocatoria)}
                   />
                 ))}

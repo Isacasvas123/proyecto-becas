@@ -172,6 +172,91 @@ describe('Resolución, adjudicación y consulta pública (e2e)', () => {
       });
     });
 
+    /**
+     * UNA PERSONA, UNA BECA (pendiente de confirmar con el PO, 22 Oct 2026).
+     *
+     * El control está al ADJUDICAR y no al postular: postular a varias convocatorias es
+     * razonable y no compromete nada. Adjudicar sí. Esta prueba fija dónde está la línea.
+     */
+    it('no se adjudica una segunda beca a quien ya tiene una', async () => {
+      // Dos convocatorias distintas, con cupo de sobra, y Ana postula a las dos.
+      const primera = await p.escenario(5);
+      await p
+        .servidor()
+        .post(`/comites/${primera.comiteId}/asignaciones`)
+        .set(admin)
+        .send({ modo: 'AUTOMATICO', porSolicitud: 1 })
+        .expect(200);
+      await p
+        .servidor()
+        .post(`/evaluaciones/solicitudes/${primera.solAna}/dictamen`)
+        .set(primera.eva.token)
+        .send({ recomendacion: 'FAVORABLE', observacion: OBSERVACION })
+        .expect(201);
+
+      await resolver(primera.solAna, { decision: 'APROBAR', motivo: MOTIVO }).expect(200);
+      await p
+        .servidor()
+        .post(`/resoluciones/solicitudes/${primera.solAna}/adjudicar`)
+        .set(admin)
+        .expect(200);
+
+      // Segunda convocatoria: misma persona, todo en regla, y aun así no se le puede dar.
+      // Se arma a mano y con el MISMO evaluador, porque `escenario()` crea cuentas con
+      // nombre fijo y llamarlo dos veces daría un 409 de usuario duplicado.
+      const convocatoria2 = await p.convocatoria(5);
+      const segunda = {
+        solAna: await p.enviar(ana, convocatoria2),
+        solLuis: await p.enviar(luis, convocatoria2),
+        eva: primera.eva,
+      };
+      const { body: comite2 } = await p
+        .servidor()
+        .post('/comites')
+        .set(admin)
+        .send({
+          nombre: 'Comité de la segunda convocatoria',
+          convocatoriaId: convocatoria2,
+          evaluadorIds: [primera.eva.id],
+        })
+        .expect(201);
+      await p
+        .servidor()
+        .post(`/comites/${comite2.id}/asignaciones`)
+        .set(admin)
+        .send({ modo: 'AUTOMATICO', porSolicitud: 1 })
+        .expect(200);
+      await p
+        .servidor()
+        .post(`/evaluaciones/solicitudes/${segunda.solAna}/dictamen`)
+        .set(segunda.eva.token)
+        .send({ recomendacion: 'FAVORABLE', observacion: OBSERVACION })
+        .expect(201);
+      await resolver(segunda.solAna, { decision: 'APROBAR', motivo: MOTIVO }).expect(200);
+
+      const { body } = await p
+        .servidor()
+        .post(`/resoluciones/solicitudes/${segunda.solAna}/adjudicar`)
+        .set(admin)
+        .expect(422);
+      expect(body.mensaje).toMatch(/ya tiene una beca adjudicada/);
+
+      // Y a otra persona de esa misma convocatoria sí: la regla es por persona, no por
+      // convocatoria.
+      await p
+        .servidor()
+        .post(`/evaluaciones/solicitudes/${segunda.solLuis}/dictamen`)
+        .set(segunda.eva.token)
+        .send({ recomendacion: 'FAVORABLE', observacion: OBSERVACION })
+        .expect(201);
+      await resolver(segunda.solLuis, { decision: 'APROBAR', motivo: MOTIVO }).expect(200);
+      await p
+        .servidor()
+        .post(`/resoluciones/solicitudes/${segunda.solLuis}/adjudicar`)
+        .set(admin)
+        .expect(200);
+    });
+
     it('422 sin dictámenes (criterio 1)', async () => {
       const { solAna } = await evaluadas({ dictaminar: false });
       const { body } = await resolver(solAna, { decision: 'RECHAZAR', motivo: MOTIVO }).expect(422);
@@ -296,6 +381,33 @@ describe('Resolución, adjudicación y consulta pública (e2e)', () => {
         .expect(200);
 
       expect(body.estado).toBe('RECHAZADA');
+    });
+  });
+
+  describe('cupos restantes, sin sesión', () => {
+    it('cualquiera puede verlos, y bajan al aprobar', async () => {
+      const { solAna, convocatoriaId } = await evaluadas();
+
+      const antes = await p.servidor().get('/resoluciones/cupos').expect(200);
+      expect(antes.body).toContainEqual(
+        expect.objectContaining({ convocatoriaId, cupos: 1, disponibles: 1 }),
+      );
+
+      await resolver(solAna, { decision: 'APROBAR', motivo: MOTIVO }).expect(200);
+
+      const despues = await p.servidor().get('/resoluciones/cupos').expect(200);
+      expect(despues.body).toContainEqual(
+        expect.objectContaining({ convocatoriaId, cupos: 1, disponibles: 0 }),
+      );
+    });
+
+    it('solo devuelve números: ningún dato de ninguna persona', async () => {
+      await evaluadas();
+      const { body } = await p.servidor().get('/resoluciones/cupos').expect(200);
+
+      expect(Object.keys(body[0]).sort()).toEqual(
+        ['adjudicadas', 'aprobadas', 'convocatoriaId', 'cupos', 'disponibles'].sort(),
+      );
     });
   });
 

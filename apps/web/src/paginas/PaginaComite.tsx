@@ -550,6 +550,34 @@ function PanelDecision({
         dictámenes · {cantidad(disponibles, 'cupo disponible', 'cupos disponibles')}
       </p>
 
+      {/* LO QUE DIJO EL COMITÉ, no solo cuántos votaron.
+          Quien resuelve tiene que poder leer el razonamiento en el que va a apoyarse: el
+          motivo de una resolución se cita de aquí. Un conteo no se puede citar. */}
+      {fila.dictamenes.length > 0 && (
+        <details className="dictamenes" open>
+          <summary>
+            Qué dijo el comité
+            <span className="cuenta">
+              {cantidad(fila.dictamenes.length, 'dictamen', 'dictámenes')}
+            </span>
+          </summary>
+          <ul>
+            {fila.dictamenes.map((d, i) => (
+              <li key={i}>
+                <div className="cabecera-dictamen">
+                  <b>{d.evaluador}</b>
+                  <span className={`etiqueta-recomendacion ${d.recomendacion.toLowerCase()}`}>
+                    {d.recomendacion === 'FAVORABLE' ? 'A favor' : 'En contra'}
+                  </span>
+                  <span className="pista">{d.puntaje.toFixed(2)} puntos</span>
+                </div>
+                <p>{d.observacion}</p>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
+
       {adjudicando ? (
         <p>
           Se registrará la beca con su código y la solicitud quedará <strong>adjudicada</strong>.

@@ -56,11 +56,17 @@ export class ConsolidadoService {
       this.solicitudes.resumenes(ids),
       this.dictamenes.deSolicitudes(ids),
     ]);
-    const estudiantes = new Map(
-      (await this.cuentas.personas(resumenes.map((r) => r.estudianteId))).map((p) => [
-        p.id,
-        p.nombreCompleto,
-      ]),
+    // Un solo mapa para estudiantes Y evaluadores: las filas necesitan el nombre de los dos,
+    // y pedirlos por separado serían dos viajes para la misma pregunta.
+    const nombres = new Map(
+      (
+        await this.cuentas.personas([
+          ...new Set([
+            ...resumenes.map((r) => r.estudianteId),
+            ...dictamenes.map((d) => d.evaluadorId),
+          ]),
+        ])
+      ).map((p) => [p.id, p.nombreCompleto]),
     );
     const cupos = convocatoria?.cupos ?? 0;
 
@@ -70,12 +76,23 @@ export class ConsolidadoService {
         solicitudId: r.id,
         numero: r.numero,
         estado: r.estado,
-        estudiante: estudiantes.get(r.estudianteId) ?? 'No disponible',
+        estudiante: nombres.get(r.estudianteId) ?? 'No disponible',
         evaluadoresAsignados: asignaciones.filter((a) => a.solicitudId === r.id).length,
         dictamenesEmitidos: propios.length,
         puntajePromedio: Puntaje.promedio(propios.map((d) => d.puntaje))?.valor ?? null,
         favorables: propios.filter((d) => d.recomendacion === Recomendacion.FAVORABLE).length,
         desfavorables: propios.filter((d) => d.recomendacion === Recomendacion.DESFAVORABLE).length,
+        // El razonamiento de cada evaluador, en el orden en que lo emitieron. Quien resuelve
+        // necesita poder leerlo: el motivo de una resolución se apoya en esto, no en un conteo.
+        dictamenes: [...propios]
+          .sort((a, b) => a.emitidoEn.getTime() - b.emitidoEn.getTime())
+          .map((d) => ({
+            evaluador: nombres.get(d.evaluadorId) ?? 'No disponible',
+            recomendacion: d.recomendacion,
+            puntaje: d.puntaje.valor,
+            observacion: d.observacion,
+            emitidoEn: d.emitidoEn,
+          })),
       };
     });
 

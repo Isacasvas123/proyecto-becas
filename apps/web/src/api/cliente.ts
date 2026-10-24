@@ -207,6 +207,16 @@ export function listarConvocatorias(): Promise<Convocatoria[]> {
   return obtener<Convocatoria[]>('/convocatorias');
 }
 
+/**
+ * Cupos restantes de las convocatorias vigentes. Público: no necesita sesión.
+ *
+ * Va aparte del listado porque el dato lo compone otro módulo del backend. Para la
+ * pantalla son dos peticiones en paralelo y una sola espera.
+ */
+export function listarCuposPublicos(): Promise<Cupos[]> {
+  return obtener<Cupos[]>('/resoluciones/cupos');
+}
+
 /** Todas las convocatorias, incluidos borradores. Solo administración. */
 export function listarConvocatoriasGestion(): Promise<Convocatoria[]> {
   return obtener<Convocatoria[]>('/convocatorias/gestion');
@@ -414,6 +424,14 @@ export interface FilaConsolidado {
   desfavorables: number;
   posicion: number | null;
   dentroDeCupos: boolean;
+  /** Lo que dijo cada evaluador. Quien resuelve se apoya en esto, no en el conteo. */
+  dictamenes: {
+    evaluador: string;
+    recomendacion: string;
+    puntaje: number;
+    observacion: string;
+    emitidoEn: string;
+  }[];
 }
 
 export interface Consolidado {
