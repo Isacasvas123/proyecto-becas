@@ -67,6 +67,7 @@
 | **US-032** Bitácora de auditoría | 🟡 **Implementada** — falta verificar en Staging | **Exigida por el PO el 17 de octubre.** Toda acción que cambia algo queda registrada con autor, recurso, resultado y fecha, incluidas las rechazadas. La escribe un middleware, así que ningún caso de uso la menciona. Pantalla de consulta para administración, con filtros. Solo se inserta: no hay forma de modificar ni borrar un asiento desde la aplicación |
 | **US-033** Segunda aprobación sobre Q10,000 | 🟡 **Implementada** — falta verificar en Staging | **Exigida por el PO el 17 de octubre.** La convocatoria fija el monto de la beca. Si supera Q10,000 la primera aprobación deja la solicitud en `APROBACION_PENDIENTE` y no reserva cupo; la segunda la debe dar una persona distinta. Un estado más del patrón **State**, no un `if` |
 | **US-034** Avisos al estudiante | 🟡 **Implementada** — falta verificar en Staging | **Exigida por el PO el 17 de octubre.** Cada cambio de estado genera un aviso para el estudiante, con su motivo cuando lo hay, y una pantalla de buzón. Con el patrón **Observer**: se publica después de guardar, para no avisar de algo que no se persistió |
+| **US-035** Recuperar la contraseña | 🟡 **Implementada** — pendiente de merge (PR #32) | **Propuesta por el equipo el 24 de octubre**, no por el PO. Surgió al contrastar el sistema con las buenas prácticas de almacenamiento de contraseñas vistas en clase: de las cinco, faltaban la recuperación y el doble factor. Se implementó la primera. El correo sale por un puerto con dos adaptadores (consola y SMTP), así que el flujo funciona sin servidor de correo |
 | Resto | ⬜ Pendiente | Según el calendario de sprints |
 
 > **Nota para la Sprint Review.** Ninguna de estas historias puede marcarse como *Completada*
@@ -463,11 +464,15 @@ corrigen los criterios de la historia, no se culpa a nadie, y es material para l
 
 ## Requerimientos incorporados después del backlog inicial
 
-> Estas tres historias **no estaban en el backlog de la versión 1.0**. Las pidió el Product Owner
-> en la clase del **17 de octubre de 2026**, cuando las 24 historias planificadas ya estaban
-> terminadas y verificadas en Staging. Se documentan aquí, con el mismo formato que las demás,
-> porque un requerimiento que entra tarde sigue siendo un requerimiento: lo que cambia es cuándo
-> se estimó, no cómo se trata.
+> Estas cuatro historias **no estaban en el backlog de la versión 1.0**. Se documentan aquí, con
+> el mismo formato que las demás, porque un requerimiento que entra tarde sigue siendo un
+> requerimiento: lo que cambia es cuándo se estimó, no cómo se trata.
+>
+> **No todas vinieron del mismo sitio, y la diferencia importa.** US-032, US-033 y US-034 las pidió
+> el Product Owner en la clase del **17 de octubre de 2026**, cuando las 24 historias planificadas
+> ya estaban terminadas y verificadas en Staging. **US-035 la propuso el equipo** el 24 de octubre,
+> al contrastar el sistema con las buenas prácticas de seguridad vistas en clase. Una la impone el
+> cliente; la otra sale de mirarse el producto con criterio propio.
 >
 > El análisis de qué costó incorporarlas está en
 > [`23-analisis-impacto-requerimientos-po.md`](23-analisis-impacto-requerimientos-po.md).
@@ -531,6 +536,56 @@ segunda aprobación **para poder** evitar que una sola persona comprometa montos
 
 ---
 
+### US-035 — Recuperar la contraseña olvidada
+
+**Como** usuario de la plataforma, **quiero** recuperar mi contraseña por correo cuando la olvide
+**para poder** volver a entrar sin depender de que un administrador me la cambie a mano.
+
+> **De dónde salió esta historia.** No la pidió el Product Owner. El 24 de octubre, al contrastar
+> el sistema con las buenas prácticas de almacenamiento de contraseñas vistas en clase, se vio que
+> de las cinco el proyecto cumplía tres —biblioteca confiable, nada de MD5 ni SHA-1, y ninguna
+> contraseña en los logs— y le faltaban dos: la recuperación y el doble factor.
+>
+> **Se decidió hacer la recuperación y no el doble factor.** El segundo es bastante más trabajo del
+> que cabía en los días restantes, y la propia diapositiva lo plantea como "cuando sea posible".
+> Queda anotado como ítem no implementado, para que conste que se identificó y se descartó con un
+> motivo, no que se pasó por alto.
+
+**Criterios de aceptación**
+
+- Desde la pantalla de acceso se puede pedir un enlace de recuperación escribiendo el correo.
+- El sistema responde **exactamente igual exista o no una cuenta con ese correo**, y solo envía el
+  mensaje si existe.
+- El enlace llega por correo y permite elegir una contraseña nueva, que debe cumplir la misma
+  política que el registro.
+- El enlace **vence en una hora** y **sirve una sola vez**.
+- Al usar uno, **los demás enlaces vigentes de esa persona dejan de servir**.
+- Un enlace inexistente, uno vencido y uno ya usado producen **el mismo mensaje de error**.
+- Al restablecer la contraseña, la cuenta queda **desbloqueada**.
+- Restablecerla **no inicia sesión**: la persona vuelve al acceso y escribe la contraseña nueva.
+- Se limita a cinco intentos cada quince minutos por dirección.
+
+> 🔒 **Por qué la respuesta es idéntica exista o no la cuenta.** Es el criterio con más peso de toda
+> la historia. Si el sistema contestara "no existe esa dirección", cualquiera podría ir probando
+> correos y quedarse con la lista de quién está registrado. En un sistema de becas eso revela
+> **quién pidió ayuda económica al Estado**, que es justo el tipo de dato que la plataforma existe
+> para proteger. Hay una prueba que compara las dos respuestas carácter por carácter.
+
+> 🔧 **Aquí se vuelve a usar el patrón Adapter.** Enviar correo de verdad necesita credenciales de
+> un servidor SMTP que un entorno de pruebas no tiene. Con un puerto `EnviadorCorreo` y dos
+> adaptadores —consola y SMTP— el flujo completo se puede recorrer y demostrar sin ellas: el
+> adaptador por defecto escribe el mensaje en el log. Se cambia con la variable `CORREO_TIPO` y
+> ninguna regla de negocio se entera.
+
+> ⚠️ **Limitación conocida.** El adaptador SMTP **no está verificado contra un servidor de correo
+> real**. Funciona contra un servidor de prueba que imita a Gmail, pero eso no es lo mismo.
+> Mientras no se compruebe, el adaptador en uso es el de consola y el enlace aparece en el log del
+> servidor, no en el buzón de la persona.
+
+**Prioridad:** Media · **Estimación:** 8
+
+---
+
 ## Resumen de estimación inicial
 
 | Epic | Historias | Puntos |
@@ -543,11 +598,19 @@ segunda aprobación **para poder** evitar que una sola persona comprometa montos
 | EPIC-06 · Reportes | 4 | 26 |
 | **Total** | **31** | **176** |
 
-> **Actualización del 17 de octubre de 2026.** A estas 31 historias se sumaron **US-032, US-033
-> y US-034**, pedidas por el Product Owner cuando el backlog inicial ya estaba terminado: **34
+> **Actualización del 17 de octubre de 2026.** A estas 31 historias se sumaron **US-032, US-033 y
+> US-034**, pedidas por el Product Owner cuando el backlog inicial ya estaba terminado: **34
 > historias y 197 puntos**. Los 21 puntos nuevos equivalen a casi un sprint completo de la
 > velocidad estimada, y se absorbieron sin mover la fecha de entrega porque el trabajo planificado
 > se había adelantado. Esa holgura era el margen del proyecto, y se consumió aquí.
+>
+> **Actualización del 24 de octubre de 2026.** Se sumó **US-035**, propuesta por el equipo y no por
+> el Product Owner: **35 historias y 205 puntos**. Es la única historia del proyecto que no nació
+> ni del backlog inicial ni de una petición del cliente, sino de revisar el producto contra un
+> criterio externo. Se hizo cuando el margen ya estaba consumido, así que compite directamente con
+> el cierre de la entrega; por eso se le puso prioridad **Media** y no Alta, y por eso el doble
+> factor que surgió en el mismo análisis **se descartó de forma explícita** en lugar de dejarlo
+> abierto.
 
 Con 8 sprints disponibles, se requiere una velocidad promedio de **~22 puntos por sprint**. La
 velocidad real se medirá a partir del Sprint 2; si resulta menor, el Product Owner despriorizará
