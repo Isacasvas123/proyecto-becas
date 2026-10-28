@@ -53,12 +53,13 @@ flowchart TB
     style WEB fill:#e6f1fa,stroke:#1d4ed8
 ```
 
-**La única flecha que hay que entender** es la punteada de `infrastructure` hacia `domain`.
+La flecha que concentra la decisión de diseño es la punteada, de `infrastructure` hacia `domain`.
 
-En una arquitectura tradicional el negocio dependería de la base de datos: la flecha iría al
-revés. Aquí está **invertida**. El dominio declara qué necesita y la infraestructura obedece.
+En una arquitectura tradicional la lógica de negocio dependería de la base de datos y la flecha
+iría en sentido contrario. Aquí está **invertida**: el dominio declara lo que necesita mediante
+interfaces y la infraestructura las implementa.
 
-Por eso `domain` aparece resaltado: **todas las flechas apuntan hacia él y él no apunta a nadie.**
+`domain` aparece resaltado porque todas las dependencias apuntan hacia él y ninguna sale de él.
 
 ---
 
@@ -139,7 +140,7 @@ en `domain/`; cada adaptador la implementa en `infrastructure/`.
 | `AlmacenamientoDocumentosPort` | `AlmacenamientoLocalAdapter`<br/>`AlmacenamientoNubeAdapter` | solicitudes | 🔴 Sprint 4 |
 | `NotificacionPort` | `NotificacionConsolaAdapter`<br/>`NotificacionCorreoAdapter` | solicitudes | 🔴 Sprint 5 |
 
-> **Que cada puerto tenga dos adaptadores no es casualidad.** Uno real y uno de prueba. Es lo que
+> **Cada puerto cuenta con dos adaptadores**, uno real y uno de prueba. Es lo que
 > permite que las 106 pruebas unitarias corran en segundos sin levantar PostgreSQL, y es la demostración
 > práctica del principio de sustitución de Liskov.
 

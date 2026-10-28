@@ -10,7 +10,7 @@
 | **Responsable**        | Ivan Castellan (arquitectura) · Isaac Castillo     |
 | **Dirigido a**         | Quien tenga que mantener, extender o desplegar este sistema |
 
-> **Qué es y qué no es este documento.** Es el manual para **desarrolladores**: cómo está
+> **Alcance de este documento.** Es el manual para **desarrolladores**: cómo está
 > construido el sistema, por qué, y cómo trabajar en él. El manual para quien lo usa es
 > `21-manual-usuario.md`.
 >

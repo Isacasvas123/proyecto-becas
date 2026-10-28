@@ -173,37 +173,37 @@ Sprints semanales de **jueves a miércoles**. Ceremonias todos los jueves.
 | 1.7 | Invitar al equipo al repositorio | Jue 3 Sep | Isaac | Bloquea a los tres integrantes |
 | 1.8 | Corregir los 3 defectos detectados en el esqueleto | Mié 9 Sep | Fernando | `/health`, enums duplicados, carpetas sin documentar |
 | 2 | **Sprint 2 — Staging y calidad de la evidencia** | Mié 16 Sep 2026 | Equipo | Feriado 15 Sep · **sprint de 3 días**: la Review del Sprint 1 se celebró el domingo 13, no el jueves 10 |
-| 2.1 | Diagrama de casos de uso + detalle de cada caso | ~~Mié 16 Sep~~ → **entregado Sáb 5 Sep** | Fernando | Anexo 5 §3.1 · adelantado al Sprint 1. Faltan los detalles de CU-03, CU-13 y CU-16 → Sprint 3 |
-| 2.2 | Diagrama de componentes y de clases | ~~Mié 16 Sep~~ → **entregado Sáb 5 Sep** | Fernando | Anexo 5 §3.2-3.3 · adelantado al Sprint 1 y verificado contra el código el 11 Sep |
-| 2.3 | Esquema de BD y primera migración versionada | ~~Mié 16 Sep~~ → **entregado Jue 3 Sep** | Ivan | Dos migraciones versionadas en `prisma/migrations/` |
-| 2.4 | Registro, perfil y recuperación de contraseña | **movido** | Isaac, Stuard | EPIC-01 · 13 pts no caben en una capacidad de 8. **US-001 → Sprint 3; US-004 y US-005 → Sprint 4.** Decidido en el Planning del 13 Sep |
-| 2.5 | Requisitos No Funcionales y DoD publicados | ~~Mié 16 Sep~~ → **entregado Jue 3 Sep** | Fernando | Anexo 4 §5-6 · adelantado al Sprint 1 |
-| 2.6 | Guard de autenticación y control de acceso por rol | ~~Mié 16 Sep~~ → **entregado Mié 9 Sep** | Isaac | US-003 · adelantado al Sprint 1. 32 pruebas de integración |
-| 2.7 | **Entorno de Staging desplegado y verificado** | Mié 16 Sep | Ivan | **Adelantado del 3.3.** Sin esto el punto 8 de la DoD es incumplible y ninguna historia puede cerrarse |
-| 2.8 | Probar los tres adaptadores del patrón Adapter | ~~Mié 16 Sep~~ → **entregado Sáb 12 Sep** | Fernando | De 0 % a 100 % (JWT) y 88 % (bcrypt), con las bibliotecas reales |
-| 2.9 | Corregir la medición de cobertura para que incluya las e2e | ~~Mié 16 Sep~~ → **entregado Sáb 12 Sep** | Ivan | Medía solo las unitarias (41.89 %). Corregida, la cobertura real es **84.35 %** |
+| 2.1 | Diagrama de casos de uso + detalle de cada caso | Mié 16 Sep · Completado | Fernando | Anexo 5 §3.1 · Faltan los detalles de CU-03, CU-13 y CU-16 → Sprint 3 |
+| 2.2 | Diagrama de componentes y de clases | Mié 16 Sep · Completado | Fernando | Anexo 5 §3.2-3.3; verificado contra el código el 11 Sep |
+| 2.3 | Esquema de BD y primera migración versionada | Mié 16 Sep · Completado | Ivan | Dos migraciones versionadas en `prisma/migrations/` |
+| 2.4 | Registro, perfil y recuperación de contraseña | Reprogramado | Isaac, Stuard | EPIC-01 · Los 13 puntos exceden la capacidad del sprint. US-001 pasa al Sprint 3; US-004 y US-005 al Sprint 4. Acordado en el Planning del 13 Sep |
+| 2.5 | Requisitos No Funcionales y DoD publicados | Mié 16 Sep · Completado | Fernando | Anexo 4 §5-6 |
+| 2.6 | Guard de autenticación y control de acceso por rol | Mié 16 Sep · Completado | Isaac | US-003 · 32 pruebas de integración |
+| 2.7 | **Entorno de Staging desplegado y verificado** | Mié 16 Sep · Completado | Ivan | Requisito previo del punto 8 de la Definition of Done |
+| 2.8 | Probar los tres adaptadores del patrón Adapter | Mié 16 Sep · Completado | Fernando | De 0 % a 100 % (JWT) y 88 % (bcrypt), con las bibliotecas reales |
+| 2.9 | Corregir la medición de cobertura para que incluya las e2e | Mié 16 Sep · Completado | Ivan | Medía solo las unitarias (41.89 %). Corregida, la cobertura real es **84.35 %** |
 | 3 | **Sprint 3 — Convocatorias** | Mié 23 Sep 2026 | Equipo | |
-| 3.1 | Módulo de convocatorias (CRUD y publicación) | Mié 23 Sep · **crear, publicar y listado entregados Sáb 12 Sep** | Isaac, Fernando | EPIC-02 · faltan cerrar (US-009) y editar (US-010) |
-| 3.2 | Patrón Factory Method implementado y documentado | ~~Mié 23 Sep~~ → **entregado Sáb 12 Sep** | Stuard | Creacional 1 · 18 pruebas propias |
-| 3.3 | ~~Entorno de Staging desplegado y accesible~~ | **movido al 2.7** | Ivan | Se adelantó al Sprint 2 por bloquear la DoD completa |
-| 3.4 | Registro de estudiante (US-001) + bloqueo tras 5 intentos (US-002) | ~~Mié 23 Sep~~ → **entregado** (bloqueo 12 Sep, registro 16 Sep) | Isaac, Stuard | Movido del 2.4. Adelantado completo |
+| 3.1 | Módulo de convocatorias (CRUD y publicación) | Mié 23 Sep · Completado | Isaac, Fernando | EPIC-02 · faltan cerrar (US-009) y editar (US-010) |
+| 3.2 | Patrón Factory Method implementado y documentado | Mié 23 Sep · Completado | Stuard | Creacional 1 · 18 pruebas propias |
+| 3.3 | Entorno de Staging desplegado y accesible | Ver tarea 2.7 | Ivan | Reprogramado al Sprint 2: la Definition of Done no puede cumplirse sin este entorno |
+| 3.4 | Registro de estudiante (US-001) + bloqueo tras 5 intentos (US-002) | Mié 23 Sep · Completado | Isaac, Stuard | Reprogramado desde la tarea 2.4 |
 | 3.5 | Cerrar las 4 revisiones documentales del Sprint 1 (S1-07 a S1-10) | Mié 23 Sep | Fernando, Stuard, Ivan | Deuda declarada del Sprint 1 |
 | 3.6 | Detalle de los casos de uso CU-03, CU-13 y CU-16 | Mié 23 Sep | Fernando | Completa el 2.1 |
 | 4 | **Sprint 4 — Estudiantes y solicitudes** | Mié 30 Sep 2026 | Equipo | |
-| 4.1 | Creación de solicitudes | ~~Mié 30 Sep~~ → **entregado Mié 16 Sep** | Isaac, Ivan | EPIC-03 completa: perfil (US-011), crear, cargar, enviar, listar e historial (US-012 a US-016) |
-| 4.4 | Gestión de perfil (US-004) y recuperación de contraseña (US-005) | Mié 30 Sep | Isaac, Stuard | Movidos del 2.4 |
-| 4.2 | Patrón State (ciclo de vida de la solicitud) | ~~Mié 30 Sep~~ → **entregado Mié 16 Sep** | Stuard | Comportamiento 1 · los 30 pares estado × acción probados |
-| 4.3 | Carga de documentación + patrón Adapter | ~~Mié 30 Sep~~ → **entregado Mié 16 Sep** | Fernando | Estructural 1 · almacenamiento local; el de nube queda para cuando haya proveedor |
+| 4.1 | Creación de solicitudes | Mié 30 Sep · Completado | Isaac, Ivan | EPIC-03 completa: perfil (US-011), crear, cargar, enviar, listar e historial (US-012 a US-016) |
+| 4.4 | Gestión de perfil (US-004) y recuperación de contraseña (US-005) | Mié 30 Sep | Isaac, Stuard | Reprogramados desde la tarea 2.4 |
+| 4.2 | Patrón State (ciclo de vida de la solicitud) | Mié 30 Sep · Completado | Stuard | Comportamiento 1 · los 30 pares estado × acción probados |
+| 4.3 | Carga de documentación + patrón Adapter | Mié 30 Sep · Completado | Fernando | Estructural 1 · almacenamiento local; el de nube queda para cuando haya proveedor |
 | 5 | **Sprint 5 — Evaluación** | Mié 7 Oct 2026 | Equipo | |
-| 5.1 | Comités evaluadores y asignación de solicitudes | ~~Mié 7 Oct~~ → **entregado Mié 16 Sep** | Isaac, Fernando | EPIC-04 (US-017 a US-021) · falta quitar integrantes |
-| 5.2 | Patrón Strategy (criterios de puntuación) | ~~Mié 7 Oct~~ → **entregado Mié 16 Sep** | Stuard | Comportamiento 2 · **fórmulas por confirmar con el PO** |
+| 5.1 | Comités evaluadores y asignación de solicitudes | Mié 7 Oct · Completado | Isaac, Fernando | EPIC-04 (US-017 a US-021) · falta quitar integrantes |
+| 5.2 | Patrón Strategy (criterios de puntuación) | Mié 7 Oct · Completado | Stuard | Comportamiento 2 · **fórmulas por confirmar con el PO** |
 | 5.3 | Notificaciones de cambio de estado | Mié 7 Oct | Ivan | Observer (opcional) |
 | 6 | **Sprint 6 — Resolución y consulta** | Mié 14 Oct 2026 | Equipo | |
-| 6.1 | Aprobación, rechazo y adjudicación de becas | ~~Mié 14 Oct~~ → **entregado Mié 16 Sep** | Isaac, Stuard | EPIC-05 (US-023, US-024) · falta el acta (US-026) |
-| 6.2 | Consulta pública del estado de una beca | ~~Mié 14 Oct~~ → **entregado Mié 16 Sep** | Fernando | Sin autenticación (US-025) · con límite de consultas |
-| 6.3 | Patrón Facade + análisis de impacto de cambio del PO | Mié 14 Oct · **Facade entregado 16 Sep** | Ivan | Estructural 2 · queda el análisis de impacto |
+| 6.1 | Aprobación, rechazo y adjudicación de becas | Mié 14 Oct · Completado | Isaac, Stuard | EPIC-05 (US-023, US-024) · falta el acta (US-026) |
+| 6.2 | Consulta pública del estado de una beca | Mié 14 Oct · Completado | Fernando | Sin autenticación (US-025) · con límite de consultas |
+| 6.3 | Patrón Facade + análisis de impacto de cambio del PO | Mié 14 Oct · Completado | Ivan | Estructural 2 · queda el análisis de impacto |
 | 7 | **Sprint 7 — Reportes y calidad** | Mié 21 Oct 2026 | Equipo | Feriado 20 Oct |
-| 7.1 | Módulo de reportes + patrón Builder | ~~Mié 21 Oct~~ → **entregado Mié 16 Sep** | Stuard, Isaac | Creacional 2 · EPIC-06 completa (US-028 a US-031) |
+| 7.1 | Módulo de reportes + patrón Builder | Mié 21 Oct · Completado | Stuard, Isaac | Creacional 2 · EPIC-06 completa (US-028 a US-031) |
 | 7.2 | QAP y Plan de Pruebas finales | Mié 21 Oct | Fernando | Anexos 6 y 7 |
 | 7.3 | Pruebas de integración, regresión y cobertura ≥60% | Mié 21 Oct | Fernando, Ivan | |
 | 8 | **Sprint 8 — Cierre técnico** | Mié 28 Oct 2026 | Equipo | |

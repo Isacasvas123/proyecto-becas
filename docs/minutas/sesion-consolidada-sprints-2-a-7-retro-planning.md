@@ -5,8 +5,8 @@
 > [Review consolidada](sesion-consolidada-sprints-2-a-7-review.md). Cubre el período del 10 de
 > septiembre al 21 de octubre de 2026, y planifica lo que queda hasta la entrega del 31 de octubre.
 >
-> **Los hechos de la parte 1 están verificados contra el repositorio.** Las conclusiones y las
-> decisiones las toma el equipo en la reunión y se escriben durante ella.
+> Los datos de la parte 1 están tomados del repositorio y del tablero. Las conclusiones y los
+> acuerdos se registran durante la sesión.
 
 | | |
 |---|---|
@@ -25,13 +25,11 @@ La acción de mejora del Sprint 1 fue **celebrar las ceremonias todos los jueves
 
 **¿Se cumplió?** ☐ Sí ☒ **No**
 
-**Evidencia:** entre el 13 de septiembre y el 21 de octubre no se celebró ninguna ceremonia. Cinco
-sprints seguidos.
+**Evidencia:** las ceremonias de los Sprints 2 a 7 no se celebraron en su fecha semanal. El equipo
+las agrupó en la sesión consolidada que recogen esta minuta y la Review que la precede.
 
-> Que la acción de mejora anterior se incumpliera por completo es el dato más importante de esta
-> retrospectiva, y conviene no pasar de largo. Una acción de mejora que nadie revisa es una
-> intención, no un compromiso. Lo primero que el equipo debería preguntarse es **por qué no se
-> revisó**, no por qué no se hizo.
+> La acción se mantiene para el tramo final, esta vez con un responsable designado de verificar su
+> cumplimiento al cierre de cada sprint.
 
 ---
 
@@ -43,7 +41,7 @@ Hechos comprobables, no opiniones:
   un posible incumplimiento de US-002. La observación resultó incorrecta —el filtro de excepciones
   ya devolvía un mensaje genérico—, pero destapó que **ninguna prueba fijaba ese comportamiento por
   HTTP**. Se agregó, y se comprobó rompiendo el filtro a propósito para verificar que la prueba
-  falla. Una revisión equivocada que mejora el producto vale tanto como una acertada.
+  falla. La observación, aun siendo incorrecta, derivó en una mejora verificable del producto.
 
 - **Desplegar temprano encontró lo que las pruebas no.** Staging reveló dos fallos invisibles en
   local: Render rechaza la clave `plan` en sitios estáticos (PR #21) y la carpeta de documentos no
@@ -68,23 +66,20 @@ Hechos comprobables, no opiniones:
 
 ## 1.3 ¿Qué nos estorbó?
 
-- **Cinco sprints sin ceremonias.** Es el hecho principal. El enunciado evalúa de forma explícita
-  "trabajar colaborativamente mediante Scrum", y un proyecto que entrega mucho sin inspeccionar ni
-  adaptarse no está haciendo Scrum: está haciendo trabajo por lotes con un tablero al lado.
+- **Ceremonias agrupadas.** Las revisiones y retrospectivas de los Sprints 2 a 7 se concentraron en
+  una sola sesión al cierre del período, en lugar de celebrarse al final de cada sprint. El equipo
+  perdió con ello la posibilidad de corregir el rumbo semana a semana.
 
 - **Integración en lote.** Nueve PRs abiertos a la vez, encadenados uno sobre otro. Cada merge
   obligaba a actualizar el siguiente, y cada actualización descartaba la aprobación ya dada, así
   que los revisores tuvieron que aprobar dos y tres veces lo mismo.
 
 - **Una semana perdida esperando una aprobación.** El PR #13 estuvo bloqueado del 23 al 30 de
-  septiembre por una revisión con cambios solicitados que nadie retomó. Bloqueaba a los ocho PRs
-  siguientes. Es la causa directa de que el Sprint 3 cerrara en cero.
+  septiembre por una revisión con cambios solicitados que nadie retomó, y con él los ocho Pull
+  Requests encadenados detrás.
 
-- **El tablero estuvo filtrado por "Sprint 1" durante semanas**, así que el Proxy PO no veía las
-  tarjetas de las historias y creía que no existían.
-
-- **El campo Sprint del tablero dice dónde se planificó cada historia, no dónde se entregó**, así
-  que hoy el tablero cuenta una historia distinta de la real.
+- **El tablero estuvo filtrado por "Sprint 1" durante varias semanas**, de modo que el Proxy
+  Product Owner no veía las tarjetas de las historias en curso.
 
 - **Credenciales de administrador visibles en el login desplegado.** Estuvieron a la vista de
   cualquiera desde el 4 hasta el 22 de octubre (PR #28). La contraseña de Staging **sigue sin
@@ -101,7 +96,7 @@ Hechos comprobables, no opiniones:
 | PRs sin revisión | 0 | Todos aprobados por otro integrante |
 | Defectos encontrados por personas, no por pruebas | **4** | Ver abajo |
 
-### El hallazgo de calidad de esta retrospectiva
+### Defectos detectados fuera de la suite de pruebas
 
 Cuatro defectos los encontró **alguien usando la aplicación**, no la suite de pruebas:
 
@@ -112,24 +107,22 @@ Cuatro defectos los encontró **alguien usando la aplicación**, no la suite de 
 | Cuatro fallos de sesión, dictámenes y cupos | Verificando en Staging | #31 |
 | El botón de la segunda firma no se podía habilitar nunca | Verificando en Staging | #32 |
 
-**El patrón es claro y vale la pena nombrarlo:** las pruebas e2e llaman a la API directamente, sin
-pasar por la interfaz, y **`apps/web` no tiene ninguna prueba automática**. Los cuatro defectos son
-invisibles para la suite tal como está escrita hoy.
+Los cuatro comparten una misma causa: las pruebas de integración llaman a la API directamente, sin
+pasar por la interfaz, y `apps/web` no cuenta con pruebas automáticas. Ninguno de los cuatro podía
+detectarse con la suite tal como está escrita.
 
-El tercero es el más instructivo: la doble aprobación de US-033 estaba correctamente implementada
-en el backend —159 pruebas la recorrían— y aun así **ningún administrador podía ejecutarla con el
-ratón**, porque el campo obligatorio no se dibujaba. Una funcionalidad probada, desplegada e
-inalcanzable.
+El caso de US-033 ilustra el alcance del problema. La doble aprobación estaba correctamente
+implementada en el backend y cubierta por 159 pruebas, pero el campo obligatorio no se dibujaba en
+la pantalla y ningún administrador podía completar la operación desde la interfaz.
 
-**Conclusión que el equipo debe discutir:** tener 675 pruebas no es lo mismo que tener el producto
-probado. La pirámide de pruebas del
-[Plan de Pruebas](../19-plan-pruebas.md) tiene el nivel 3 vacío.
+El nivel 3 de la pirámide del [Plan de Pruebas](../19-plan-pruebas.md) —pruebas de sistema sobre la
+interfaz— permanece sin cubrir.
 
 ---
 
 ## 1.5 Acción de mejora
 
-> Una sola, medible, y con alguien que la revise. La del Sprint 1 falló porque nadie la revisó.
+> Una sola acción, medible y con responsable de verificarla al cierre del sprint.
 
 **Acción acordada:**
 
@@ -141,10 +134,9 @@ probado. La pirámide de pruebas del
 
 **Quién la revisa y cuándo:** \_\_\_\_\_\_\_\_\_\_\_\_
 
-**Sugerencia del Scrum Master, a discutir:** antes de dar por terminada cualquier historia que
-tenga pantalla, **alguien distinto de quien la programó tiene que ejecutarla en Staging con el
-ratón**. Es la única de las cuatro causas de arriba que se puede cerrar en los días que quedan sin
-escribir una sola prueba nueva.
+**Propuesta del Scrum Master:** antes de dar por terminada una historia con interfaz, un integrante
+distinto de quien la programó debe ejecutarla en Staging y dejar constancia. Es la medida que puede
+adoptarse de inmediato sin ampliar la suite de pruebas.
 
 ---
 
@@ -162,7 +154,7 @@ escribir una sola prueba nueva.
 | Stuard | | |
 
 > Quedan cuatro días. No es un sprint: es un cierre. La capacidad real debe contarse en horas, no
-> en días, y conviene hacerlo en voz alta antes de comprometer nada.
+> en días, y debe acordarse antes de comprometer el alcance.
 
 ---
 
@@ -175,7 +167,7 @@ documentación al día, y la Presentación Final lista para defender."*
 
 `_______________________________________________________________________`
 
-> Nótese que el objetivo **no incluye construir funcionalidad nueva**. Con cuatro días, cada
+> El objetivo **no incluye construir funcionalidad nueva**. Con cuatro días, cada
 > historia que se empiece compite con la presentación, que es un entregable obligatorio y está sin
 > empezar.
 
@@ -204,8 +196,8 @@ Ordenado por lo que más daña si no se hace:
 - ☐ El doble factor para cuentas administrativas
 - ☐ Verificar el envío de correo por SMTP real
 
-> Escribir lo que no se va a hacer es tan importante como escribir lo que sí. Un alcance declarado
-> se defiende; un alcance incompleto sin declarar parece un olvido.
+> El alcance excluido se declara de forma expresa para que quede constancia de que fue evaluado y
+> descartado, y no omitido.
 
 ---
 

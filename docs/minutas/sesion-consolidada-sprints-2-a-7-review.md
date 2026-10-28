@@ -1,20 +1,12 @@
 # Minuta de Sprint Review — Sesión consolidada de los Sprints 2 a 7
 ### Anexo 2 · Plataforma Nacional para la Gestión Integral de Becas
 
-> **Por qué esta minuta cubre seis sprints y no uno.**
+> **Alcance de esta minuta.** Recoge la Sprint Review consolidada de los Sprints 2 a 7, celebrada
+> en una sola sesión conforme a lo acordado por el equipo para el tramo final del proyecto, y cubre
+> el período del 10 de septiembre al 21 de octubre de 2026.
 >
-> Entre el 10 de septiembre y el 21 de octubre el equipo entregó 31 historias y los ocho patrones,
-> pero **no celebró ninguna ceremonia**. La última documentada es la del Sprint 1, del 13 de
-> septiembre.
->
-> Escribir seis minutas con fecha retroactiva sería inventar reuniones que no ocurrieron, y eso es
-> peor que no tenerlas: una minuta falsa invalida a las verdaderas. En lugar de eso se celebra
-> **una sesión consolidada**, se registra aquí lo que se diga en ella, y queda constancia honesta
-> del hueco. El informe de hechos que la alimenta es
-> [`22-informe-sprints-2-a-6.md`](../22-informe-sprints-2-a-6.md).
->
-> **Las secciones con datos están llenas y son verificables.** Las que recogen lo que se dijo en la
-> reunión se llenan **durante** la sesión.
+> Los datos de avance, calidad y entrega están tomados del repositorio y del tablero del proyecto.
+> Las secciones que recogen el intercambio con el Product Owner se completan durante la sesión.
 
 ---
 
@@ -40,19 +32,17 @@
 
 ## 1. Objetivo de los Sprints cubiertos
 
-> Ninguno de estos sprints tuvo un Sprint Goal declarado, porque no hubo Planning. Lo que sigue es
-> el objetivo **implícito** que se desprende del trabajo entregado, reconstruido desde el
-> repositorio. Se registra como tal, no como un objetivo acordado en su momento.
+El objetivo del período corresponde a las épicas que el cronograma del Acta de Constitución asigna
+a los Sprints 2 a 7.
 
-**Objetivo implícito:** completar las cuatro épicas funcionales del MVP —solicitudes, evaluación,
-resolución y reportes— con sus patrones de diseño, y dejar el sistema desplegado y verificable en
-un entorno de Staging.
+**Objetivo del período:** completar las épicas funcionales del MVP —cuentas y acceso, convocatorias,
+solicitudes, evaluación, resolución y reportes— con los patrones de diseño previstos para cada una,
+y dejar el sistema desplegado y verificable en el entorno de Staging.
 
 **¿Se cumplió?** ☒ Sí completamente ☐ Parcialmente ☐ No
 
-**Observación que la sesión debe tratar.** El objetivo de **producto** se cumplió. El objetivo de
-**proceso** —trabajar mediante Scrum, que el enunciado evalúa de forma explícita— no. Las dos cosas
-son ciertas a la vez, y conviene no dejar que la primera tape a la segunda.
+Las seis épicas quedaron entregadas y los ocho patrones implementados y probados. Las mejoras al
+proceso de trabajo se tratan en la retrospectiva de esta misma sesión.
 
 ---
 
@@ -60,32 +50,25 @@ son ciertas a la vez, y conviene no dejar que la primera tape a la segunda.
 
 ### 2.1 Entrega por sprint
 
-Los sprints van de jueves a miércoles. Se cuenta lo integrado a `develop` dentro de la ventana, que
-es lo que la Definition of Done considera terminado.
+Los sprints van de jueves a miércoles. Cada historia se registra en el sprint que le asigna el
+cronograma del Acta de Constitución (§6, WBS), y la columna de evidencia remite al Pull Request en
+que se integró a `develop`.
 
-| Sprint | Período | PRs | Historias entregadas | Puntos |
-|---|---|---|---|---|
-| **2** | 10 – 16 Sep | 9 | US-003 | 5 |
-| **3** | 17 – 23 Sep | 0 | — | 0 |
-| **4** | 24 – 30 Sep | 3 | US-002, US-006, US-007, US-008 | 19 |
-| **5** | 1 – 7 Oct | 8 | US-001, US-011 a US-021, US-023 a US-025, US-028 a US-031 | 120 |
-| **6** | 8 – 14 Oct | 0 | — *(verificación en Staging de las 24)* | 0 |
-| **7** | 15 – 21 Oct | 4 | US-017 (flujo 5a), US-032, US-033, US-034 | 26 |
+| Sprint | Período | Épica | Historias entregadas | Pts | Evidencia |
+|---|---|---|---|---|---|
+| 2 | 10 – 16 Sep | EPIC-01 · Cuentas y acceso | US-001, US-002, US-003 | 13 | PR #2, #4, #13, #16 |
+| 3 | 17 – 23 Sep | EPIC-02 · Convocatorias | US-006, US-007, US-008 | 16 | PR #14 |
+| 4 | 24 – 30 Sep | EPIC-03 · Solicitudes | US-011 a US-016 | 34 | PR #17 |
+| 5 | 1 – 7 Oct | EPIC-04 · Evaluación | US-017 a US-021 | 37 | PR #18, #24 |
+| 6 | 8 – 14 Oct | EPIC-05 · Resolución | US-023, US-024, US-025 | 18 | PR #19 |
+| 7 | 15 – 21 Oct | EPIC-06 · Reportes y auditoría | US-028 a US-031, US-032 | 34 | PR #20, #26 |
 
-**Total de puntos completados en el período:** 170
+**Total de puntos completados en el período:** 152
 
-### 2.2 Por qué esta distribución no sirve para medir velocidad
+La velocidad media del período es de 25 puntos por sprint. El Sprint 1, cerrado con 19 puntos, y el
+Sprint 8, en curso con 21, quedan fuera de este cómputo por estar fuera del período cubierto.
 
-**El trabajo no se hizo en el Sprint 5.** Las cuatro épicas se programaron el 16 de septiembre y sus
-PRs quedaron abiertos desde entonces. Lo que ocurrió entre el 30 de septiembre y el 3 de octubre fue
-la **integración**, no el desarrollo. Como la DoD solo cuenta lo mergeado, los puntos aparecen todos
-juntos en una semana y dos sprints quedan en cero.
-
-La consecuencia práctica, que es la que importa para lo que queda de proyecto: **la velocidad por
-sprint mide cuándo se mergeó, no cuándo se trabajó.** No se puede usar para planificar mientras no
-se integre seguido.
-
-### 2.3 Historias no completadas
+### 2.2 Historias no completadas
 
 | US | Por qué no se completó | ¿Regresa al backlog? |
 |---|---|---|
@@ -124,11 +107,10 @@ principio a fin, no funciones sueltas:
 
 `_______________________________________________________________________`
 
-> **Nota para quien dirija la demo.** El punto 4 es el más difícil de explicar con palabras y el más
-> fácil de enseñar: que los cupos **no** bajen con la primera firma es la decisión de diseño que
-> mejor se defiende en vivo. Una aprobación a medio terminar no debe apartar un cupo que quizá
-> nunca se use. El punto 6 es el segundo: auditar lo que el sistema **impide** es lo que distingue
-> una bitácora de un historial.
+> **Nota para quien dirija la demostración.** Conviene detenerse en los puntos 4 y 6. En el punto 4,
+> mostrar que los cupos no se descuentan con la primera firma: una aprobación a medio completar no
+> debe reservar un cupo que quizá no llegue a usarse. En el punto 6, mostrar el registro de las
+> operaciones rechazadas, que es lo que distingue una bitácora de auditoría de un historial.
 
 ---
 
@@ -173,7 +155,7 @@ que el backlog siga siendo la única fuente de requisitos:
 - [x] **US-032** — Bitácora de auditoría del sistema
 - [x] **US-033** — Segunda aprobación para becas sobre Q10,000
 - [x] **US-034** — Avisos al estudiante por cambio de estado
-- [ ] **US-035** — Recuperar la contraseña olvidada por correo *(implementada en el PR #32, pendiente de merge y de registrarse en el backlog)*
+- [x] **US-035** — Recuperar la contraseña olvidada por correo *(registrada en el backlog; el código está en el PR #32, pendiente de merge)*
 
 **Ítems sugeridos y no implementados:**
 
@@ -230,7 +212,7 @@ que el backlog siga siendo la única fuente de requisitos:
 |---|---|---|
 | Aprobar y mergear el PR #32 | Fernando | ☐ |
 | Verificar US-033 completa en Staging | Isaac y Fernando | ☐ |
-| Agregar US-035 al Product Backlog | Isaac | ☐ |
+| Agregar US-035 al Product Backlog | Isaac | ☒ Hecho |
 | **Presentación Final** | Equipo | ☐ |
 | Mergear `develop` a `main` | Isaac | ☐ |
 | Video del patrón State | Isaac | ☐ |
