@@ -6,7 +6,7 @@
 | **Responsable** | Fernando (diagramas) · revisado por el equipo |
 | **Fecha** | 5 de septiembre de 2026 · **Versión** 1.1 (12 sep: detalle de los 13 casos completo) |
 
-> Los diagramas están escritos en **Mermaid dentro de Markdown**, no como imágenes. Así quedan
+> Los diagramas están escritos en Mermaid dentro de Markdown, no como imágenes. Así quedan
 > versionados como texto: cada cambio se ve línea por línea en el Pull Request, en lugar de un
 > archivo binario que nadie puede revisar.
 
@@ -125,7 +125,7 @@ flowchart LR
 
 ## 3. Detalle de los casos de uso
 
-> El enunciado exige el detalle de **cada** caso de uso, y aquí están **los trece**, en orden. Cada
+> El enunciado exige el detalle de cada caso de uso, y aquí están los trece, en orden. Cada
 > uno documenta actor, precondiciones, postcondición, flujo principal, flujos alternos, flujos de
 > excepción y los requisitos no funcionales que le aplican. Los criterios de aceptación de sus
 > historias están en `docs/04-product-backlog.md`.
@@ -189,7 +189,7 @@ Debe responder en menos de 1 segundo. Debe ser usable desde 360 px de ancho.
 
 1. El visitante introduce el número de solicitud y el CUI.
 2. El sistema verifica que ambos correspondan a la misma solicitud.
-3. El sistema muestra **únicamente** el estado actual y la fecha del último cambio.
+3. El sistema muestra únicamente el estado actual y la fecha del último cambio.
 
 **Flujos alternos**
 
@@ -217,17 +217,17 @@ puede convertirse en una filtración de datos del solicitante.
 1. El aspirante abre el formulario de registro.
 2. El sistema solicita nombre completo, CUI, correo electrónico y contraseña.
 3. El aspirante completa los datos y envía el formulario.
-4. El sistema valida que el CUI tenga **13 dígitos** y que no exista otro igual.
+4. El sistema valida que el CUI tenga 13 dígitos y que no exista otro igual.
 5. El sistema valida que la contraseña tenga **mínimo 8 caracteres, al menos una mayúscula y un
    número**.
 6. El sistema valida que el correo no esté registrado.
-7. El sistema calcula el **hash bcrypt** de la contraseña y crea la cuenta con rol `ESTUDIANTE`.
+7. El sistema calcula el hash bcrypt de la contraseña y crea la cuenta con rol `ESTUDIANTE`.
 8. El sistema inicia la sesión automáticamente y redirige al aspirante a su panel.
 
 **Flujos alternos**
 
 - **4a. El CUI ya está registrado.** El sistema informa que ese CUI ya tiene una cuenta y ofrece
-  iniciar sesión o recuperar la contraseña. **No se crea una segunda cuenta**: un CUI es una
+  iniciar sesión o recuperar la contraseña. No se crea una segunda cuenta: un CUI es una
   persona.
 - **6a. El correo ya está registrado.** Mismo tratamiento que el anterior.
 
@@ -235,19 +235,19 @@ puede convertirse en una filtración de datos del solicitante.
 
 - **4b. El CUI no tiene 13 dígitos o contiene letras.** El sistema señala el campo y explica el
   formato esperado, sin borrar el resto de lo que el aspirante ya escribió.
-- **5a. La contraseña no cumple la política.** El sistema indica **cuál de las tres condiciones**
+- **5a. La contraseña no cumple la política.** El sistema indica cuál de las tres condiciones
   falta, no un mensaje genérico.
 - **7a. La base de datos no responde.** El sistema informa del fallo sin detalles técnicos, no crea
   la cuenta a medias y registra el error en el log.
 
 **Requisitos no funcionales aplicables**
 
-La contraseña se almacena **siempre** con hash bcrypt, nunca en texto plano ni cifrada de forma
+La contraseña se almacena siempre con hash bcrypt, nunca en texto plano ni cifrada de forma
 reversible. El formulario debe ser usable desde 360 px de ancho.
 
 > **Por qué aquí los mensajes de error sí son específicos y al iniciar sesión no.** Al registrarse,
 > decir "ese CUI ya existe" es necesario para que la persona sepa qué hacer, y no revela nada
-> aprovechable: el CUI ya lo conoce quien lo escribió. Al **iniciar sesión**, en cambio, el mensaje
+> aprovechable: el CUI ya lo conoce quien lo escribió. Al iniciar sesión, en cambio, el mensaje
 > es genérico a propósito, porque distinguir "usuario inexistente" de "contraseña incorrecta"
 > permitiría averiguar qué usuarios existen. La regla es informar a quien tiene derecho a saber, y
 > solo eso.
@@ -277,7 +277,7 @@ reversible. El formulario debe ser usable desde 360 px de ancho.
 - **3a. El usuario no existe.** El sistema verifica igualmente contra un hash señuelo antes de
   fallar, para que el tiempo de respuesta no delate qué cuentas existen. Devuelve 401 con
   mensaje genérico.
-- **4a. La contraseña es incorrecta.** Devuelve 401 con **el mismo mensaje** que 3a.
+- **4a. La contraseña es incorrecta.** Devuelve 401 con el mismo mensaje que 3a.
 - **5a. La cuenta está desactivada.** Devuelve 401 con el mismo mensaje.
 
 **Reglas de negocio**
@@ -374,7 +374,7 @@ implementa un adaptador de disco local y en producción uno de nube.
 
 **Flujos de excepción**
 
-- **2a. Falta documentación.** El sistema **indica exactamente qué falta** y no permite el envío.
+- **2a. Falta documentación.** El sistema indica exactamente qué falta y no permite el envío.
 
 **Relación**
 `include CU-07`: sin documentación cargada este caso de uso no puede completarse.
@@ -460,7 +460,7 @@ intercambiables. Una política de becas nueva es una clase nueva, no una modific
 3. El administrador crea un comité, le da nombre y elige la convocatoria que evaluará.
 4. El sistema lista los usuarios con rol `EVALUADOR` disponibles.
 5. El administrador selecciona los integrantes.
-6. El sistema valida que el comité tenga **al menos un evaluador** y que ninguno esté repetido.
+6. El sistema valida que el comité tenga al menos un evaluador y que ninguno esté repetido.
 7. El sistema guarda el comité y registra quién lo creó y cuándo.
 
 **Flujos alternos**
@@ -474,7 +474,7 @@ intercambiables. Una política de becas nueva es una clase nueva, no una modific
 **Flujos de excepción**
 
 - **3a. La convocatoria elegida ya tiene un comité.** El sistema lo informa y ofrece editar el
-  existente. **Una convocatoria tiene un solo comité**, según el diagrama de clases.
+  existente. Una convocatoria tiene un solo comité, según el diagrama de clases.
 - **6a. El comité queda sin evaluadores.** El sistema rechaza la operación: un comité sin
   integrantes no puede dictaminar nada.
 - **7a. La base de datos no responde.** No se guarda nada parcialmente y se informa del fallo.
@@ -485,7 +485,7 @@ Toda creación o modificación de un comité queda en el registro de auditoría,
 modificar ni eliminar desde la aplicación**.
 
 > **Este caso de uso es más delicado de lo que parece.** No mueve dinero ni cambia estados de
-> solicitudes, pero **define quién puede ver qué**: un evaluador asignado a un comité accede a las
+> solicitudes, pero define quién puede ver qué: un evaluador asignado a un comité accede a las
 > solicitudes de esa convocatoria. Un error aquí es una fuga de datos personales de aspirantes, no
 > una molestia administrativa. Por eso exige rol `ADMINISTRADOR` y queda auditado.
 
@@ -534,11 +534,11 @@ controlador, manteniendo la transaccionalidad en un único lugar.
 **Flujo principal**
 
 1. El administrador abre la lista de solicitudes `APROBADAS` de una convocatoria.
-2. El sistema muestra, junto a la lista, **cuántos cupos quedan disponibles**.
+2. El sistema muestra, junto a la lista, cuántos cupos quedan disponibles.
 3. El administrador selecciona una solicitud y confirma la adjudicación.
-4. El sistema verifica que la convocatoria **tenga cupo disponible**.
+4. El sistema verifica que la convocatoria tenga cupo disponible.
 5. El sistema crea la `Beca`, registra la fecha de adjudicación y el acta de resolución.
-6. El sistema **descuenta un cupo** de la convocatoria.
+6. El sistema descuenta un cupo de la convocatoria.
 7. El sistema cambia el estado de la solicitud a `ADJUDICADA` y lo registra en su historial.
 8. El sistema notifica al estudiante el cambio de estado.
 
@@ -551,20 +551,20 @@ controlador, manteniendo la transaccionalidad en un único lugar.
 
 **Flujos de excepción**
 
-- **4a. No queda cupo.** El sistema **rechaza la adjudicación** e informa que la convocatoria agotó
+- **4a. No queda cupo.** El sistema rechaza la adjudicación e informa que la convocatoria agotó
   sus cupos. No se adjudica de más bajo ninguna circunstancia.
 - **4b. Dos administradores adjudican a la vez la última beca.** El descuento de cupo y la creación
-  de la beca ocurren en **una sola transacción**, de modo que solo una prospera y la otra recibe el
+  de la beca ocurren en una sola transacción, de modo que solo una prospera y la otra recibe el
   error de cupo agotado.
 - **3b. La solicitud no está `APROBADA`.** El estado rechaza la transición: adjudicar una solicitud
-  en `BORRADOR` o `RECHAZADA` lanza una excepción de dominio. Lo impide el patrón **State**, no una
+  en `BORRADOR` o `RECHAZADA` lanza una excepción de dominio. Lo impide el patrón State, no una
   comprobación dispersa.
-- **8a. Falla la notificación.** La adjudicación **no se revierte**: la beca ya está otorgada. El
+- **8a. Falla la notificación.** La adjudicación no se revierte: la beca ya está otorgada. El
   fallo se registra y la notificación se reintenta.
 
 **Requisitos no funcionales aplicables**
 
-El descuento de cupo y la creación de la beca son **atómicos**. El registro de auditoría de la
+El descuento de cupo y la creación de la beca son atómicos. El registro de auditoría de la
 adjudicación es inmutable desde la aplicación: es el respaldo de un otorgamiento público de fondos
 del Estado.
 

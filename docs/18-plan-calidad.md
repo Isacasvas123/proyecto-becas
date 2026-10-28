@@ -13,7 +13,7 @@
 > se inspecciona al cierre. Si al final del proyecto hay que "arreglar la calidad", este documento
 > habrá fracasado.
 
-> **Relación con el Plan de Pruebas.** Este QAP define el **proceso**: qué se revisa, quién, cuándo
+> **Relación con el Plan de Pruebas.** Este QAP define el proceso: qué se revisa, quién, cuándo
 > y con qué estándar. El Plan de Pruebas (`19-plan-pruebas.md`, Anexo 7) define la **estrategia de
 > verificación**: niveles, tipos, cobertura y registro de defectos. Se leen juntos y no se repiten.
 
@@ -78,7 +78,7 @@ código, de modo que ningún documento se entrega con la revisión de una sola p
 
 ### 4.2 Pruebas
 
-Definidas en detalle en el **Anexo 7** (`19-plan-pruebas.md`). El resumen del proceso:
+Definidas en detalle en el Anexo 7 (`19-plan-pruebas.md`). El resumen del proceso:
 
 | Nivel                | Responsable              | Requisito del DoD |
 | -------------------- | ------------------------ | ----------------- |
@@ -88,7 +88,7 @@ Definidas en detalle en el **Anexo 7** (`19-plan-pruebas.md`). El resumen del pr
 
 ### 4.3 Integración continua
 
-Cada Pull Request dispara GitHub Actions con PostgreSQL real: **lint, pruebas y build**. Un PR con
+Cada Pull Request dispara GitHub Actions con PostgreSQL real: lint, pruebas y build. Un PR con
 el CI en rojo no se mergea.
 
 > El equipo adopta como criterio que toda regla de calidad que pueda automatizarse se implemente en
@@ -146,7 +146,7 @@ flowchart LR
 | `docs/*`     | Documentación                   | Su autor                            |
 
 > ⚠️ **Hueco conocido en este control.** La prohibición de escribir directo en `main` y `develop`
-> es **un acuerdo, no una restricción técnica**: sin GitHub Pro no se pueden activar las reglas de
+> es un acuerdo, no una restricción técnica: sin GitHub Pro no se pueden activar las reglas de
 > protección de rama. Mientras eso siga así, el control depende de que los cuatro se acuerden.
 >
 > Es un riesgo real y ya se materializó: en el Sprint 1 tres de cinco PRs se mergearon sin

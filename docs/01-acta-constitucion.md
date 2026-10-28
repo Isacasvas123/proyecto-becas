@@ -36,7 +36,7 @@
 
 **El Product Owner es el catedrático, Ing. Mario Fuentes**, conforme al enunciado del proyecto,
 y es externo al equipo de desarrollo. Le corresponde priorizar el Product Backlog, emitir los
-cambios de requerimientos y **dar la aceptación formal** de las historias en la Sprint Review.
+cambios de requerimientos y dar la aceptación formal de las historias en la Sprint Review.
 
 El Product Owner no participa en el día a día del equipo, y una historia no puede esperar hasta
 la siguiente clase para saber si está aceptada. Por eso el equipo designa un **Proxy Product
@@ -102,7 +102,7 @@ esfuerzo estimado y decisión de diseño adoptada.
 
 ## 4. Asignación de Roles — Esquema RACI
 
-**R** = Responsable (ejecuta) · **A** = Aprobador (valida) · **C** = Consultado · **I** = Informado
+**R** = Responsable (ejecuta) · A = Aprobador (valida) · C = Consultado · I = Informado
 
 | Actividad | R | A | C | I |
 |---|---|---|---|---|
@@ -147,7 +147,7 @@ esfuerzo estimado y decisión de diseño adoptada.
    *qué hice · qué haré · qué me bloquea*. No hay reunión diaria en vivo.
 4. **Tiempo de respuesta.** Máximo 12 horas en día hábil. Un mensaje en `#bloqueos` se atiende
    el mismo día.
-5. **Ausencias.** Quien prevea no poder cumplir con su turno lo avisa **con anticipación**, no
+5. **Ausencias.** Quien prevea no poder cumplir con su turno lo avisa con anticipación, no
    después. El Anexo 3 lo establece como responsabilidad individual explícita.
 6. **Code review.** Los comentarios técnicos van en el Pull Request, no en el chat, para que
    queden en el historial del repositorio.
@@ -157,7 +157,7 @@ esfuerzo estimado y decisión de diseño adoptada.
 
 ## 6. Cronograma del Proyecto (WBS)
 
-Sprints semanales de **jueves a miércoles**. Ceremonias todos los jueves.
+Sprints semanales de jueves a miércoles. Ceremonias todos los jueves.
 
 | # | Tarea / Subtarea | Fecha de entrega / Hito | Responsable | Comentarios |
 |---|---|---|---|---|

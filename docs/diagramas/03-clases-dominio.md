@@ -6,12 +6,12 @@
 | **Responsable** | Fernando (diagramas) · revisado por el equipo |
 | **Fecha** | 5 de septiembre de 2026 · **Versión** 1.1 (11 sep: verificado contra el código) |
 
-> Este es el **modelo de dominio**, no el esquema de la base de datos. Se parecen hoy y no tienen
+> Este es el modelo de dominio, no el esquema de la base de datos. Se parecen hoy y no tienen
 > por qué seguir pareciéndose: la traducción entre ambos es responsabilidad de los *mappers* de
 > `infrastructure/`. Ese costo de traducción está aceptado como trade-off en
 > `docs/05-arquitectura.md §2.2`.
 >
-> No se diagraman todas las clases del sistema, solo las **entidades de negocio principales**
+> No se diagraman todas las clases del sistema, solo las entidades de negocio principales
 > derivadas de los epics y las historias.
 
 ---
@@ -230,7 +230,7 @@ stateDiagram-v2
     ADJUDICADA --> [*]
 ```
 
-Cualquier transición que no aparezca en este diagrama **no existe en el código**: la jerarquía de
+Cualquier transición que no aparezca en este diagrama no existe en el código: la jerarquía de
 estados rechaza por defecto toda operación que no haya sido habilitada de forma explícita.
 
 ---
@@ -273,7 +273,7 @@ classDiagram
     CriterioMixto o-- CriterioEvaluacionStrategy : compone
 ```
 
-En la última flecha, `CriterioMixto` **compone** las otras dos estrategias en lugar de
+En la última flecha, `CriterioMixto` compone las otras dos estrategias en lugar de
 duplicar sus fórmulas. Composición sobre herencia.
 
 Una política de becas nueva es una clase nueva que implementa la interfaz. Cero modificaciones al
@@ -326,7 +326,7 @@ válido. Además el compilador impide confundirlo con cualquier otro texto.
 
 ## 6. Estado de implementación
 
-> **Cómo leer esta tabla.** El diagrama de arriba es el **modelo de dominio objetivo**, no una
+> **Cómo leer esta tabla.** El diagrama de arriba es el modelo de dominio objetivo, no una
 > fotografía del código de hoy. Esta sección dice qué parte ya existe, para que nadie tenga que
 > adivinarlo comparando a mano. Verificado contra el código por Fernando en la revisión del
 > Sprint 1.
@@ -346,7 +346,7 @@ válido. Además el compilador impide confundirlo con cualquier otro texto.
 ### ² Nota sobre `Convocatoria`
 
 Sus atributos y sus dos consultas de negocio existen y están probados. Lo que el diagrama dibuja
-y **el código todavía no tiene** son los tres métodos que mutan el estado:
+y el código todavía no tiene son los tres métodos que mutan el estado:
 
 | Miembro del diagrama | En el código | Cuándo |
 |---|---|---|
@@ -360,7 +360,7 @@ y **el código todavía no tiene** son los tres métodos que mutan el estado:
 | `cerrar()` | ❌ No existe | Sprint 3 · US-009 |
 | `descontarCupo()` | ❌ No existe | Sprint 6 · US-024 |
 
-> La versión 1.0 de este diagrama declaraba un método `estaVigente(Date)` que **nunca existió**.
+> La versión 1.0 de este diagrama declaraba un método `estaVigente(Date)` que nunca existió.
 > En el código esa idea quedó separada en dos consultas distintas a propósito —una convocatoria
 > puede ser visible al público y ya no admitir solicitudes— y el diagrama no lo reflejaba. La
 > confusión de un solo método que responde dos preguntas es justo el tipo de cosa que un diagrama
@@ -375,7 +375,7 @@ La versión 1.0 ponía el **CUI en `Estudiante`**. Al implementar el registro (U
   *para crear la cuenta*. Sin cuenta todavía no existe perfil académico.
 - **El CUI identifica a la persona, no a su perfil académico.** Un evaluador también es una
   persona con CUI.
-- `Estudiante` queda para los **datos académicos y socioeconómicos** de US-011 —centro
+- `Estudiante` queda para los datos académicos y socioeconómicos de US-011 —centro
   educativo, nivel, promedio, ingreso familiar—, que se completan después del registro.
 
 En `Usuario` son opcionales porque las cuentas creadas por el Ministerio no pasan por el registro

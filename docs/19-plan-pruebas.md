@@ -10,7 +10,7 @@
 | **Fecha**            | 12 de septiembre de 2026                                       |
 | **Estado de la suite**               | 106 pruebas unitarias + 32 de integración, todas en verde · cobertura 84.35 % |
 
-> Este plan es una **guía de alto nivel**. El plan de prueba detallado de cada historia son sus
+> Este plan es una guía de alto nivel. El plan de prueba detallado de cada historia son sus
 > **criterios de aceptación**, escritos en `04-product-backlog.md`. Aquí se define la estrategia;
 > allí se define qué significa que cada cosa funcione.
 
@@ -22,7 +22,7 @@ Describir cómo el equipo verifica y valida el producto. La verificación respon
 construido?"* y la validación *"¿es lo que se pidió?"*. Son dos preguntas distintas y este
 documento cubre las dos, porque un sistema puede estar impecablemente construido y no servir.
 
-El plan existe además por una razón concreta del curso: el enunciado evalúa **pruebas** como
+El plan existe además por una razón concreta del curso: el enunciado evalúa pruebas como
 criterio propio, separado de que el sistema funcione.
 
 ## 2. Objetivos
@@ -37,7 +37,7 @@ criterio propio, separado de que el sistema funcione.
 
 > ### Lección del Sprint 1 que este plan incorpora
 >
-> Tres de los diez defectos del Sprint 1 fueron **pruebas que pasaban sin probar lo que decían**.
+> Tres de los diez defectos del Sprint 1 fueron pruebas que pasaban sin probar lo que decían.
 > La más clara: una prueba llamada "ordena las convocatorias por fecha de cierre" pasaba en verde
 > aunque el servicio no ordenara nada, porque el doble de prueba ya venía ordenado. Verificaba el
 > doble, no el código.
@@ -81,7 +81,7 @@ Se declara explícitamente para que nadie lo dé por hecho:
 **Navegadores soportados:** últimas versiones de Chrome, Firefox y Edge.
 
 > ⚠️ **Staging todavía no existe** al escribir este documento. Mientras siga así, el nivel 3
-> (§5.1) **no se puede ejecutar**, y por lo tanto ninguna historia puede cumplir la Definition of
+> (§5.1) no se puede ejecutar, y por lo tanto ninguna historia puede cumplir la Definition of
 > Done. Es el impedimento principal del proyecto, no un detalle pendiente.
 
 ## 5. Estrategia de Pruebas
@@ -158,29 +158,29 @@ Nacen de defectos reales encontrados en el Sprint 1, no de teoría:
 
 ## 6. Cobertura de código
 
-**Meta:** ≥ 60 % de sentencias para el **21 de octubre de 2026** (WBS 7.3).
+**Meta:** ≥ 60 % de sentencias para el 21 de octubre de 2026 (WBS 7.3).
 
-**Medición corregida al 12 de septiembre de 2026:** **84.35 %** de sentencias · 84.21 % de ramas.
+**Medición corregida al 12 de septiembre de 2026:** 84.35 % de sentencias · 84.21 % de ramas.
 La meta ya está superada; a partir de aquí se vigila que no baje.
 
 > ### Historia de este número — el primero que se reportó estaba mal medido
 >
-> La primera medición dio **41.89 %**, y era falsa por defecto. `npm run test:cov` ejecutaba **solo
+> La primera medición dio 41.89 %, y era falsa por defecto. `npm run test:cov` ejecutaba **solo
 > las pruebas unitarias**. La configuración de Jest para
 > unitarias tiene `rootDir: "src"` y solo reconoce `*.spec.ts`; la de integración
-> (`test/jest-e2e.json`) usa otro `rootDir`, otro patrón, y **no declara cobertura en absoluto**.
+> (`test/jest-e2e.json`) usa otro `rootDir`, otro patrón, y no declara cobertura en absoluto.
 >
 > Consecuencia: las 32 pruebas de integración —que son justamente las que ejercitan controladores,
-> guards y validación— **no cuentan en el porcentaje**. Controladores que sí están probados de
+> guards y validación— no cuentan en el porcentaje. Controladores que sí están probados de
 > punta a punta aparecen a 0 %.
 >
 > **Corrección (DEF-03, 12 de septiembre):** `test:cov` usa ahora `test/jest-cobertura.json`, que
-> recoge unitarias e integración en una sola pasada. Solo con eso el número pasó a **71.22 %**; con
+> recoge unitarias e integración en una sola pasada. Solo con eso el número pasó a 71.22 %; con
 > las pruebas de DEF-02 llegó a 84.35 %. La lección: perseguir un 60 % contra un número mal leído
 > habría llevado a escribir pruebas donde no hacían falta.
 >
-> Hubo un segundo problema escondido: `@nestjs/jwt` v12 se publica **solo como ESM** y Jest corre
-> en CommonJS, así que **ninguna prueba podía importar los adaptadores de JWT**. Por eso nadie los
+> Hubo un segundo problema escondido: `@nestjs/jwt` v12 se publica solo como ESM y Jest corre
+> en CommonJS, así que ninguna prueba podía importar los adaptadores de JWT. Por eso nadie los
 > había probado. Se resolvió con `tsconfig.jest.json` (`allowJs`) y una excepción en
 > `transformIgnorePatterns` para ese paquete.
 
@@ -197,7 +197,7 @@ pruebas que no pueden fallar no vale nada.
 
 ## 7. Registro de defectos
 
-Los defectos se registran como **issues del repositorio** con la etiqueta `bug`, y entran al
+Los defectos se registran como issues del repositorio con la etiqueta `bug`, y entran al
 Product Backlog priorizados por el Product Owner como cualquier otra historia.
 
 **Cada reporte debe incluir:**
@@ -229,7 +229,7 @@ Product Backlog priorizados por el Product Owner como cualquier otra historia.
 | US-008   | El listado público quedó detrás del login: criterio incumplido           | **Alto**  | Diferido al Sprint 3 con decisión escrita |
 | US-002   | Falta el bloqueo tras 5 intentos fallidos: criterio incumplido           | Medio     | ✅ Corregido 12 Sep        |
 
-> Los dos últimos son **criterios de aceptación incumplidos**, no errores de programación. Se
+> Los dos últimos son criterios de aceptación incumplidos, no errores de programación. Se
 > registran igual: para el Product Owner la diferencia es irrelevante, porque en ambos casos el
 > sistema no hace lo que se acordó.
 

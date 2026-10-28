@@ -142,7 +142,7 @@ Si no se puede nombrar el problema concreto y la historia que lo origina, el pat
 | De comportamiento | 2 | 2 | **2** (State, Strategy) ✅ |
 
 > **Cómo presentar esto sin adornarlo:** los seis están definidos con su problema, su alternativa
-> descartada y su ubicación prevista; **los seis están implementados y probados**, cada uno en la
+> descartada y su ubicación prevista; los seis están implementados y probados, cada uno en la
 > historia donde apareció el problema que resuelve. Implementarlos antes sería
 > escribir código sin problema que resolver, que es justo lo que el enunciado descarta.
 
@@ -179,16 +179,16 @@ Ser explícito con los huecos es parte de tener el diseño bajo control.
 | Manual de Usuario | — | Stuard | 8 |
 
 > Los tres diagramas son el hueco más visible del Anexo 5 y por eso encabezan el Sprint 2.
-> Se elaborarán en **Mermaid dentro de archivos Markdown**, para que queden versionados como
+> Se elaborarán en Mermaid dentro de archivos Markdown, para que queden versionados como
 > texto y sus cambios se vean en los Pull Requests, no como imágenes opacas.
 
 ---
 
 ## 5. Cómo se mantiene esta matriz
 
-- Se revisa **en cada Sprint Planning**, al decidir qué historias entran.
+- Se revisa en cada Sprint Planning, al decidir qué historias entran.
 - Ningún patrón nuevo se implementa sin su fila completa: problema, origen, alternativa
   descartada, ubicación y prueba.
 - El estado se actualiza al cerrar cada sprint, junto con la minuta.
-- Si el Product Owner introduce un requisito nuevo, se agrega a la sección 1 **antes** de
+- Si el Product Owner introduce un requisito nuevo, se agrega a la sección 1 antes de
   escribir código, y su análisis de impacto va al registro de `docs/05-arquitectura.md §5`.

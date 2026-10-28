@@ -11,7 +11,7 @@
 > el dominio de becas, y cada uno responde las cuatro preguntas exigidas: qué problema resuelve,
 > qué alternativas existían, por qué se eligió y qué ventajas aporta.
 
-**Cumplimiento del mínimo requerido:** 2 creacionales · 2 estructurales · **3** de comportamiento.
+**Cumplimiento del mínimo requerido:** 2 creacionales · 2 estructurales · 3 de comportamiento.
 El mínimo pedía 2 de comportamiento; el tercero lo trajo un requerimiento nuevo del Product Owner
 el 17 de octubre, no el deseo de sumar patrones.
 
@@ -25,14 +25,14 @@ el 17 de octubre, no el deseo de sumar patrones.
 | Comportamiento | **Strategy** | `modules/evaluaciones/domain/strategies/` | **5** | ✅ **Implementado** (adelantado al 16 Sep) |
 | Comportamiento | **Observer** | `modules/solicitudes/domain/events/` | — | ✅ **Implementado** (17 Oct, exigencia del PO) |
 
-> **Actualización del 3 de septiembre de 2026.** El patrón **Adapter se adelantó al Sprint 1**:
+> **Actualización del 3 de septiembre de 2026.** El patrón Adapter se adelantó al Sprint 1:
 > el inicio de sesión (US-002) necesitaba calcular y verificar hashes de contraseña y emitir
 > tokens de sesión, y ninguna de las dos cosas puede vivir en el dominio sin acoplarlo a
 > `bcryptjs` y a `@nestjs/jwt`. Se resolvió con dos puertos y sus adaptadores, exactamente el
 > mismo mecanismo previsto para el almacenamiento de documentos en el Sprint 4.
 >
 > Fue una decisión de diseño y no de calendario: el patrón apareció porque el problema apareció.
-> La sección **Adapter** más abajo documenta las implementaciones actuales.
+> La sección Adapter más abajo documenta las implementaciones actuales.
 
 ---
 
@@ -59,7 +59,7 @@ nuevo.
 2. **Un constructor con todos los parámetros opcionales.** Descartada: traslada al llamador la
    responsabilidad de conocer las reglas de cada tipo de beca, y nada impide construir una
    convocatoria inválida.
-3. **Abstract Factory.** Descartada por sobreingeniería: solo se produce **una** familia de
+3. **Abstract Factory.** Descartada por sobreingeniería: solo se produce una familia de
    objetos (convocatorias). Abstract Factory se justificaría si además hubiera que crear
    formularios y validadores emparejados por tipo, que no es el caso.
 
@@ -153,7 +153,7 @@ independientes**: rango de fechas, convocatoria, estado de la solicitud, nivel a
 departamento, agrupación, ordenamiento y formato de salida. Un administrador puede pedir
 "solicitudes aprobadas de posgrado en Quetzaltenango durante septiembre, agrupadas por centro
 educativo, en CSV" o simplemente "todas las solicitudes de la convocatoria 12". Construir eso
-con un único constructor produce el anti-patrón del **constructor telescópico**.
+con un único constructor produce el anti-patrón del constructor telescópico.
 
 ### ¿Qué otras alternativas existían?
 
@@ -168,7 +168,7 @@ con un único constructor produce el anti-patrón del **constructor telescópico
 
 ### ¿Por qué se seleccionó Builder?
 
-Porque separa la **construcción** de un objeto complejo de su **representación**, permite
+Porque separa la construcción de un objeto complejo de su representación, permite
 construirlo paso a paso con una interfaz fluida y legible, y permite **validar en
 el método `build()`** que la combinación de filtros elegida es coherente antes de producir el
 reporte.
@@ -178,7 +178,7 @@ reporte.
 - **Legibilidad** en el punto de uso: el código se lee como la petición del administrador.
 - **Validación centralizada** de combinaciones inválidas en un único lugar.
 - **Extensible**: un filtro nuevo es un método nuevo, sin romper las llamadas existentes.
-- Habilita **reutilización**: el mismo builder alimenta la vista web, la exportación a CSV y la
+- Habilita reutilización: el mismo builder alimenta la vista web, la exportación a CSV y la
   exportación a PDF.
 
 ### Esquema — tal como quedó implementado
@@ -207,9 +207,9 @@ llama al paso que corresponde a los que llegaron: no hay un `if` por combinació
 nueve argumentos. Y el reporte de becas por región (US-031) se pide con el mismo builder —solo
 adjudicadas, agrupadas por departamento— en lugar de tener su propia consulta.
 
-**Dos diferencias con la versión 1.0.** El builder produce una **especificación**, no el reporte: los
+**Dos diferencias con la versión 1.0.** El builder produce una especificación, no el reporte: los
 datos los junta un servicio aparte y el formato lo aplica un exportador (CSV o PDF), de modo que un
-formato nuevo sirve para todos los reportes. Y el departamento es un **código** del catálogo, no el
+formato nuevo sirve para todos los reportes. Y el departamento es un código del catálogo, no el
 nombre escrito, por la misma razón que en el perfil (US-011).
 
 ---
@@ -234,16 +234,16 @@ Implementado en el Sprint 1 (adelantado desde el Sprint 4, ver nota inicial).
 | `solicitudes/domain/ports/consultas-externas.ts` | `ConsultaConvocatoriasAdapter` · `ConsultaPerfilesAdapter` | Otros módulos: `solicitudes` no importa su dominio, solo lo que exportan |
 
 > **16 de septiembre.** Se agregó el almacenamiento de documentos que aquí estaba *previsto para el
-> Sprint 4*. El adaptador local guarda las rutas **relativas** y comprueba, antes de leer o borrar,
+> Sprint 4*. El adaptador local guarda las rutas relativas y comprueba, antes de leer o borrar,
 > que no salgan de su carpeta: una referencia manipulada como `../../.env` no llega al disco. El
-> de la nube no existe todavía; si se configura, la API **no arranca**, para que el error se vea al
+> de la nube no existe todavía; si se configura, la API no arranca, para que el error se vea al
 > desplegar y no con el primer documento.
 
 ### ¿Qué problema resuelve?
 
 Los estudiantes cargan documentos de respaldo (DPI, certificados, constancias). En desarrollo
 conviene guardarlos en el disco local; en producción deben ir a almacenamiento en la nube. Además,
-el enunciado del proyecto anticipa explícitamente **integraciones con otras instituciones**, con
+el enunciado del proyecto anticipa explícitamente integraciones con otras instituciones, con
 APIs que no controlamos y cuyas interfaces no coinciden con lo que nuestro dominio necesita.
 
 Sin este patrón, la lógica de negocio quedaría acoplada a un proveedor concreto, y cambiar de
@@ -257,14 +257,14 @@ dominio.
 2. **Una clase con un `switch` sobre el entorno.** Descartada: cada proveedor nuevo modifica una
    clase existente, y mezcla en un mismo archivo detalles de dos infraestructuras distintas.
 3. **Facade sobre el proveedor.** Descartada para este caso: Facade *simplifica* un subsistema,
-   pero no resuelve el problema real aquí, que es **hacer compatibles interfaces incompatibles**
+   pero no resuelve el problema real aquí, que es hacer compatibles interfaces incompatibles
    detrás de un contrato que define nuestro dominio.
 
 ### ¿Por qué se seleccionó Adapter?
 
 Porque el problema es precisamente el de convertir la interfaz de un servicio externo en la
-interfaz que nuestro dominio espera. El dominio declara el puerto —lo que **necesita**— y cada
-adaptador traduce hacia lo que el proveedor concreto **ofrece**. La dirección de la dependencia
+interfaz que nuestro dominio espera. El dominio declara el puerto —lo que necesita— y cada
+adaptador traduce hacia lo que el proveedor concreto ofrece. La dirección de la dependencia
 se invierte: manda el dominio, no el proveedor.
 
 ### ¿Qué ventajas aporta al proyecto?
@@ -297,7 +297,7 @@ El enlace entre ambos ocurre en un solo punto, `usuarios.module.ts`:
 { provide: VERIFICADOR_TOKEN, useClass: JwtVerificadorTokenAdapter },
 ```
 
-Migrar a argon2, o cambiar JWT por sesiones en servidor, es cambiar **una línea** de ese archivo.
+Migrar a argon2, o cambiar JWT por sesiones en servidor, es cambiar una línea de ese archivo.
 Ni la entidad `Usuario`, ni el caso de uso `AutenticarUsuarioService`, ni el controlador se
 enteran. La ventaja es comprobable: la prueba unitaria del caso de uso inyecta un
 hasher falso y corre en milisegundos, sin bcrypt real.
@@ -363,9 +363,9 @@ levantar HTTP.
 
 ### ¿Por qué se seleccionó Facade?
 
-Porque proporciona **una interfaz unificada y simple a un subsistema complejo**. El controlador
+Porque proporciona una interfaz unificada y simple a un subsistema complejo. El controlador
 llama a `resolver(solicitudId, decision, motivo)` y no necesita saber nada del orden ni de los
-colaboradores. La fachada no implementa la lógica: **coordina**, delegando en cada servicio
+colaboradores. La fachada no implementa la lógica: coordina, delegando en cada servicio
 especializado. Así se preserva la responsabilidad única de cada uno.
 
 ### ¿Qué ventajas aporta al proyecto?
@@ -452,7 +452,7 @@ todavía se puede rechazar.
 Cada estado permite operaciones distintas: en `BORRADOR` se pueden cargar y reemplazar
 documentos, pero no evaluar; en `EN_EVALUACION` se puede dictaminar, pero no editar; en
 `ADJUDICADA` no se puede hacer nada. Las transiciones ilegales —evaluar un borrador, adjudicar
-una solicitud rechazada— deben ser **imposibles**, no solo estar desaconsejadas.
+una solicitud rechazada— deben ser imposibles, no solo estar desaconsejadas.
 
 Implementado con un campo de texto y condicionales, esto se convierte en `if (estado === ...)`
 repartidos por decenas de métodos: cada regla nueva obliga a encontrar y actualizar todos, y
@@ -467,14 +467,14 @@ basta olvidar uno para corromper un expediente.
    fuera del código, no se puede probar unitariamente y no permite que cada estado tenga
    comportamiento propio, solo permisos.
 3. **Strategy.** Descartada: Strategy intercambia *algoritmos* elegidos desde fuera. Aquí el
-   objeto **cambia su propio comportamiento al cambiar su estado interno**, y las transiciones
+   objeto cambia su propio comportamiento al cambiar su estado interno, y las transiciones
    las decide el propio estado. Esa es la definición de State.
 
 ### ¿Por qué se seleccionó State?
 
 Porque el problema es literalmente el que el patrón describe: un objeto cuyo comportamiento
 depende de su estado interno y que parece cambiar de clase al cambiar de estado. Cada estado se
-convierte en una clase que **conoce sus propias transiciones legales**. Una transición inválida
+convierte en una clase que conoce sus propias transiciones legales. Una transición inválida
 lanza una excepción de dominio desde el propio estado, sin que ningún otro código deba
 recordarlo.
 
@@ -525,7 +525,7 @@ enviar(ahora: Date, autorId: string): void {
 
 **Una diferencia con la versión 1.0 de este esquema, y por qué.** En la variante clásica el estado
 llama a `solicitud.cambiarEstado(...)`, lo que obliga a exponer ese método a cualquiera. Aquí cada
-transición **devuelve** el estado siguiente y es la `Solicitud` quien lo aplica y lo anota en el
+transición devuelve el estado siguiente y es la `Solicitud` quien lo aplica y lo anota en el
 historial (US-016). Resultado: la solicitud es la única que se modifica a sí misma, ningún código
 externo puede saltarse el historial, y cada estado se prueba sin construir una solicitud completa.
 `VistaSolicitud` es la interfaz mínima que un estado necesita ver: solo los documentos faltantes.
@@ -548,7 +548,7 @@ los otros dos criterios en vez de repetir sus fórmulas.
 No todas las becas se evalúan igual. Una beca de excelencia académica pondera el promedio y los
 reconocimientos; una beca de apoyo social pondera el ingreso familiar per cápita y el número de
 dependientes; una beca mixta combina ambos con pesos definidos por la política vigente. Y el
-enunciado advierte que habrá **cambios normativos y nuevas políticas institucionales** durante el
+enunciado advierte que habrá cambios normativos y nuevas políticas institucionales durante el
 semestre: aparecerán criterios nuevos.
 
 ### ¿Qué otras alternativas existían?
@@ -566,7 +566,7 @@ semestre: aparecerán criterios nuevos.
 
 ### ¿Por qué se seleccionó Strategy?
 
-Porque existe **una familia de algoritmos intercambiables** que resuelven la misma tarea —dada una
+Porque existe una familia de algoritmos intercambiables que resuelven la misma tarea —dada una
 solicitud, producir un puntaje— y el algoritmo a usar se decide en tiempo de ejecución según el
 tipo de beca. Strategy encapsula cada algoritmo en su propia clase y los hace intercambiables sin
 que el código cliente cambie.
@@ -579,7 +579,7 @@ que el código cliente cambie.
 - **Los criterios quedan explícitos y auditables**, que es exactamente lo que hoy no puede hacer
   el Ministerio.
 - **Elimina los condicionales** del servicio de evaluación.
-- Permite **comparar** el resultado de una misma solicitud bajo distintos criterios.
+- Permite comparar el resultado de una misma solicitud bajo distintos criterios.
 
 ### Esquema — tal como quedó implementado
 
@@ -635,7 +635,7 @@ criterioPara(convocatoria.tipo).calcular(perfil);
 > ⚠️ **Las fórmulas y los umbrales son una propuesta del equipo** (16 Sep) y están **pendientes de
 > confirmar con el Product Owner**. Cambiarlos es editar una clase y sus pruebas; nada más.
 
-> `CriterioMixto` **compone** otras dos estrategias en lugar de duplicar sus fórmulas:
+> `CriterioMixto` compone otras dos estrategias en lugar de duplicar sus fórmulas:
 > composición sobre herencia.
 
 ---
@@ -657,7 +657,7 @@ evento y generar una notificación para el estudiante"*, que describe el problem
 
 Un cambio de estado le interesa a cosas que no tienen ninguna relación entre sí: al estudiante, que
 debe recibir su aviso; al servidor, que lo registra; y mañana al correo (US-022) o a una
-integración con otra institución. El cambio de estado ocurre en **seis lugares distintos** del
+integración con otra institución. El cambio de estado ocurre en seis lugares distintos del
 sistema: crear la solicitud, enviarla, pasarla a evaluación, aprobar, confirmar la segunda
 aprobación y adjudicar.
 
@@ -674,7 +674,7 @@ aprobaron la beca.
 2. **Notificar desde el propio método `transicionar` de la entidad.** Descartada por dos razones.
    La primera es de diseño: el dominio quedaría dependiendo de infraestructura (base de datos,
    correo), justo lo que la arquitectura prohíbe (ADR-08). La segunda es peor y es de corrección:
-   `transicionar` ocurre **antes** de guardar, así que un cambio que después falle al persistirse
+   `transicionar` ocurre antes de guardar, así que un cambio que después falle al persistirse
    habría generado igual la notificación. El estudiante vería "su solicitud fue aprobada" de algo
    que no quedó aprobado.
 3. **Un disparador (trigger) en PostgreSQL sobre la tabla de solicitudes.** Descartada: mueve una
@@ -682,13 +682,13 @@ aprobaron la beca.
    revisado en los Pull Requests y que no funciona con los repositorios en memoria de las pruebas.
 4. **El `EventEmitter2` de NestJS.** Descartada, aunque es tentadora: los eventos se publican por
    un nombre en texto (`'solicitud.cambiada'`), de modo que un error de tipeo en el nombre
-   desconecta un observador **sin que nada falle**. Con un puerto propio y un `Symbol`, el que no
+   desconecta un observador sin que nada falle. Con un puerto propio y un `Symbol`, el que no
    implemente la interfaz no compila.
 
 ### ¿Por qué se seleccionó Observer?
 
 Porque el problema es el del patrón: un objeto cuyo cambio de estado debe avisar a un número
-indeterminado de interesados que no se conocen entre sí. La solicitud **anuncia** lo que le pasó y
+indeterminado de interesados que no se conocen entre sí. La solicitud anuncia lo que le pasó y
 no sabe quién escucha; sumar un observador es registrar una clase más en el módulo, sin tocar
 ningún caso de uso.
 
@@ -747,7 +747,7 @@ el repositorio lo guarda. La prueba `lo que no se guarda no se anuncia` fija esa
 guardado falla por falta de cupo, el contador del observador falso se queda en cero.
 
 *La creación de una solicitud no emite evento.* `Solicitud.nueva` no pasa por `transicionar`
-—escribe el `BORRADOR` inicial directamente— porque crear no es *cambiar* de estado. Está probado: enviar una solicitud recién creada genera **una** notificación (la de `ENVIADA`),
+—escribe el `BORRADOR` inicial directamente— porque crear no es *cambiar* de estado. Está probado: enviar una solicitud recién creada genera una notificación (la de `ENVIADA`),
 no dos.
 
 ---

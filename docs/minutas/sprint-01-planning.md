@@ -1,7 +1,7 @@
 # Minuta — Reunión de Arranque y Sprint Planning 1
 ### Plataforma Nacional para la Gestión Integral de Becas
 
-> Llenar **durante** la reunión, no después. Subir al repositorio el mismo jueves con una rama
+> Llenar durante la reunión, no después. Subir al repositorio el mismo jueves con una rama
 > `docs/minuta-sprint-01`.
 
 | | |
@@ -27,7 +27,7 @@
 | **Proxy Product Owner** | Stuard Estrada |
 | Registro de la aceptación | Mover la tarjeta a *Done* en GitHub Projects — solo lo hace el Proxy PO |
 
-> El **Product Owner sigue siendo el Ing. Fuentes**. El Proxy solo verifica el cumplimiento de los
+> El Product Owner sigue siendo el Ing. Fuentes. El Proxy solo verifica el cumplimiento de los
 > criterios de aceptación ya escritos; no cambia alcance ni prioridades.
 
 **Cambios a los turnos:**
@@ -44,7 +44,7 @@ Se intercambiaron los turnos de lunes y martes respecto a la propuesta inicial:
 > ⚠️ **Consecuencia a revisar en la Retrospectiva.** Con estos turnos las parejas quedan fijas:
 > Isaac trabaja siempre con Ivan, y Fernando siempre con Stuard. Los code reviews serán siempre
 > entre los mismos, y las dos mitades del equipo no llegarán a conocer el trabajo de la otra.
-> Eso choca con el compromiso de que **cualquiera de los cuatro pueda defender cualquier parte**
+> Eso choca con el compromiso de que cualquiera de los cuatro pueda defender cualquier parte
 > del proyecto ante el catedrático.
 >
 > Mitigación posible sin cambiar los días de nadie: que en cada sprint el revisor del Pull
@@ -64,7 +64,7 @@ Se intercambiaron los turnos de lunes y martes respecto a la propuesta inicial:
 
 ## 3. Sanciones acordadas (Anexo 3, §6)
 
-El equipo debe **elegir** las consecuencias por incumplimiento grave persistente. Marcar:
+El equipo debe elegir las consecuencias por incumplimiento grave persistente. Marcar:
 
 - [x] Reducción proporcional del porcentaje de contribución declarado, calculado sobre los
       Puntos de Historia efectivamente completados

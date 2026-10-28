@@ -37,7 +37,7 @@ presentation  ──▶  application  ──▶  domain
                    infrastructure  ─────┘
 ```
 
-El **dominio no importa nada** de las demás capas. Las dependencias externas —base de datos,
+El dominio no importa nada de las demás capas. Las dependencias externas —base de datos,
 almacenamiento de archivos, envío de correo, servicios de terceros— se declaran como
 **interfaces (puertos) dentro del dominio** y se implementan como **adaptadores en
 infrastructure**.
@@ -49,7 +49,7 @@ levantar Postgres.
 
 #### Por qué un monolito modular y no microservicios
 
-Además de que **el catedrático descartó explícitamente los microservicios**, la decisión se
+Además de que el catedrático descartó explícitamente los microservicios, la decisión se
 sostiene técnicamente:
 
 | Criterio | Monolito modular | Microservicios |
@@ -60,7 +60,7 @@ sostiene técnicamente:
 | Adecuado a 4 personas / 8 semanas | Sí | No |
 | Latencia entre módulos | Llamada en memoria | Red |
 
-El dominio de becas es **fuertemente transaccional y altamente acoplado por naturaleza**: una
+El dominio de becas es fuertemente transaccional y altamente acoplado por naturaleza: una
 solicitud no existe sin su convocatoria, sus documentos, sus evaluaciones y su resolución.
 Fragmentarlo en servicios independientes introduciría consistencia eventual en un proceso donde
 la integridad del expediente es un requisito legal, no una preferencia técnica.
@@ -130,7 +130,7 @@ Ninguna arquitectura es gratis. Asumimos conscientemente:
 
 ### 2.3 Estructura del código
 
-Estado real al **3 de septiembre de 2026** (✅ construido · ⬜ pendiente):
+Estado real al 3 de septiembre de 2026 (✅ construido · ⬜ pendiente):
 
 ```
 apps/api/src/
@@ -204,7 +204,7 @@ apps/api/src/
 
 ## 3. Diagramas Esenciales
 
-Los tres diagramas están **elaborados** y viven en `docs/diagramas/`, escritos en **Mermaid
+Los tres diagramas están elaborados y viven en `docs/diagramas/`, escritos en **Mermaid
 dentro de Markdown**. No son imágenes: son texto versionado, así que cada cambio se revisa línea
 por línea en el Pull Request en lugar de un archivo binario opaco.
 
@@ -216,12 +216,12 @@ por línea en el Pull Request en lugar de un archivo binario opaco.
 
 **Lo que hay que mirar en cada uno:**
 
-- En **componentes**, la flecha punteada de `infrastructure` hacia `domain`. En una arquitectura
+- En componentes, la flecha punteada de `infrastructure` hacia `domain`. En una arquitectura
   tradicional iría al revés; aquí está invertida, y eso es toda la decisión de diseño.
-- En **clases**, que la jerarquía de `EstadoSolicitud` rechaza todo por defecto y cada estado
+- En clases, que la jerarquía de `EstadoSolicitud` rechaza todo por defecto y cada estado
   concreto solo sobrescribe lo que sí permite. Una transición ilegal es imposible, no
   desaconsejada.
-- En **casos de uso**, que el Visitante es un actor de pleno derecho. El enunciado exige
+- En casos de uso, que el Visitante es un actor de pleno derecho. El enunciado exige
   transparencia, y sin ese actor la consulta pública sin cuenta desaparecería del diseño.
 
 ---

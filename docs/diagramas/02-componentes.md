@@ -7,7 +7,7 @@
 | **Fecha** | 5 de septiembre de 2026 · **Versión** 1.1 (11 sep: verificado contra el código) |
 
 > Este diagrama debe reflejar la arquitectura elegida —monolito modular en capas con puertos y
-> adaptadores— y mostrar **las interfaces**, no solo las cajas. Las flechas indican dependencia:
+> adaptadores— y mostrar las interfaces, no solo las cajas. Las flechas indican dependencia:
 > quien apunta, depende.
 
 ---
@@ -56,7 +56,7 @@ flowchart TB
 La flecha que concentra la decisión de diseño es la punteada, de `infrastructure` hacia `domain`.
 
 En una arquitectura tradicional la lógica de negocio dependería de la base de datos y la flecha
-iría en sentido contrario. Aquí está **invertida**: el dominio declara lo que necesita mediante
+iría en sentido contrario. Aquí está invertida: el dominio declara lo que necesita mediante
 interfaces y la infraestructura las implementa.
 
 `domain` aparece resaltado porque todas las dependencias apuntan hacia él y ninguna sale de él.
@@ -103,7 +103,7 @@ flowchart LR
 
 ✅ construido · ⬜ pendiente
 
-**Regla de comunicación entre módulos.** Un módulo solo llama a **la capa de aplicación** de
+**Regla de comunicación entre módulos.** Un módulo solo llama a la capa de aplicación de
 otro. Nunca importa sus entidades de dominio ni su repositorio.
 
 Es la mitigación del riesgo que documentamos como *"monolito distribuido interno"*: si los
@@ -148,7 +148,7 @@ en `domain/`; cada adaptador la implementa en `infrastructure/`.
 
 ## 4. Cómo se enlazan puerto y adaptador
 
-El enlace ocurre en **un solo archivo por módulo**, la raíz de composición:
+El enlace ocurre en un solo archivo por módulo, la raíz de composición:
 
 ```ts
 // modules/usuarios/usuarios.module.ts
@@ -160,7 +160,7 @@ providers: [
 ]
 ```
 
-Migrar de bcrypt a argon2, o de JWT a sesiones en servidor, es **cambiar una línea**. Ni la
+Migrar de bcrypt a argon2, o de JWT a sesiones en servidor, es cambiar una línea. Ni la
 entidad, ni el caso de uso, ni el controlador se enteran.
 
 ---
@@ -212,4 +212,4 @@ flowchart LR
 
 > ⚠️ **Staging no está desplegado todavía.** Es el bloqueo más grande del proyecto: la Definition
 > of Done exige que cada historia esté desplegada y verificada por el Product Owner, así que
-> mientras no exista, **ninguna historia puede darse por terminada**. Responsable: Ivan.
+> mientras no exista, ninguna historia puede darse por terminada. Responsable: Ivan.

@@ -73,7 +73,7 @@ documentos— y estar abiertos a recibir retroalimentación.
 "Equitativo" no siempre significa "igual". La carga puede variar según las fortalezas de cada
 uno, pero el esfuerzo y el compromiso deben ser equitativos.
 
-**Días de trabajo comprometidos.** Cada integrante dispone de **dos días fijos por semana**,
+**Días de trabajo comprometidos.** Cada integrante dispone de dos días fijos por semana,
 más las ceremonias del jueves y el cierre del miércoles:
 
 | Día | Quiénes |
@@ -89,7 +89,7 @@ más las ceremonias del jueves y el cierre del miércoles:
 El emparejamiento cambia cada día a propósito: garantiza que siempre haya un compañero en
 contexto para revisar los Pull Requests del mismo día.
 
-**Asignación de tareas.** Las tareas se asignan durante el Sprint Planning **por consenso**,
+**Asignación de tareas.** Las tareas se asignan durante el Sprint Planning por consenso,
 buscando balance entre las habilidades existentes, las oportunidades de aprendizaje y la
 capacidad real de cada uno. El Scrum Master facilita esa conversación; no asigna por su cuenta.
 
@@ -99,10 +99,10 @@ ni solo documentación durante todo el proyecto.
 **Transparencia.** El progreso de todas las tareas es visible para todos en el tablero de
 GitHub Projects. Una tarea que no está en el tablero, no existe.
 
-**Reuniones.** La asistencia a las ceremonias del jueves es **obligatoria**. Se espera
+**Reuniones.** La asistencia a las ceremonias del jueves es obligatoria. Se espera
 participación activa: aportar ideas y escuchar a los demás.
 
-**Medición del esfuerzo.** Usaremos **Puntos de Historia** (escala 1, 2, 3, 5, 8) estimados en
+**Medición del esfuerzo.** Usaremos Puntos de Historia (escala 1, 2, 3, 5, 8) estimados en
 conjunto mediante Planning Poker. El Scrum Master registra la velocidad de cada sprint para
 detectar desbalances y para planificar con datos reales en lugar de optimismo.
 
@@ -126,7 +126,7 @@ escucha a todas las partes y, por consenso, se propone una solución final. **Es
 ser respetada por todos.** Se documenta en una minuta.
 
 **Paso 4 — Intervención docente.** Último recurso. Solo si se agotaron los tres pasos anteriores.
-El equipo deberá presentar **evidencia documentada** (minutas, correos, capturas del chat) de
+El equipo deberá presentar evidencia documentada (minutas, correos, capturas del chat) de
 haber seguido los pasos previos. La decisión del docente será final e inapelable.
 
 > **Nota operativa:** por esta razón todo acuerdo importante se escribe. Si se llega al Paso 4
@@ -151,7 +151,7 @@ ceremonia del jueves.*
 subir código directamente a `main` saltándose el flujo de PRs, comportamiento irrespetuoso.*
 
 - **1ª falta grave:** reunión formal del equipo (Paso 3 de resolución de conflictos) para
-  discutir el problema y definir un **plan de mejora con plazos claros**, documentado en minuta.
+  discutir el problema y definir un plan de mejora con plazos claros, documentado en minuta.
 - **Si persiste, el equipo aplicará** *(marcar lo acordado en la reunión del 3 de septiembre)*:
 
   - [x] Reducción proporcional del porcentaje de contribución declarado en la entrega evaluada,

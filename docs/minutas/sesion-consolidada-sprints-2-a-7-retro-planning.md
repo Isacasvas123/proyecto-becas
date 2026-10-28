@@ -20,10 +20,10 @@
 
 ## 1.1 Seguimiento de la acción de mejora anterior
 
-La acción de mejora del Sprint 1 fue **celebrar las ceremonias todos los jueves**, según fija
+La acción de mejora del Sprint 1 fue celebrar las ceremonias todos los jueves, según fija
 [`02-politica-equipo.md`](../02-politica-equipo.md).
 
-**¿Se cumplió?** ☐ Sí ☒ **No**
+**¿Se cumplió?** ☐ Sí ☒ No
 
 **Evidencia:** las ceremonias de los Sprints 2 a 7 no se celebraron en su fecha semanal. El equipo
 las agrupó en la sesión consolidada que recogen esta minuta y la Review que la precede.
@@ -52,7 +52,7 @@ Hechos comprobables, no opiniones:
   la fila seguía en la base. Ninguna prueba unitaria lo veía, porque el repositorio en memoria
   guarda la misma instancia. Lo encontró una prueba de humo contra la base real.
 
-- **Se superó el mínimo de patrones.** El enunciado exige 6 y se implementaron **8**, cada uno con
+- **Se superó el mínimo de patrones.** El enunciado exige 6 y se implementaron 8, cada uno con
   su justificación técnica y sus pruebas.
 
 - **La cobertura se mantuvo alta sin que nadie la persiguiera:** 91.83 % de sentencias.
@@ -98,7 +98,7 @@ Hechos comprobables, no opiniones:
 
 ### Defectos detectados fuera de la suite de pruebas
 
-Cuatro defectos los encontró **alguien usando la aplicación**, no la suite de pruebas:
+Cuatro defectos los encontró alguien usando la aplicación, no la suite de pruebas:
 
 | Defecto | Cómo se encontró | PR |
 |---|---|---|
@@ -144,7 +144,7 @@ adoptarse de inmediato sin ampliar la suite de pruebas.
 
 ## 2.1 Capacidad del equipo
 
-**Período:** del \_\_/10/2026 al **31 de octubre de 2026** *(entrega)*
+**Período:** del \_\_/10/2026 al 31 de octubre de 2026 *(entrega)*
 
 | Integrante | Días disponibles | Observaciones |
 |---|---|---|
@@ -167,7 +167,7 @@ documentación al día, y la Presentación Final lista para defender."*
 
 `_______________________________________________________________________`
 
-> El objetivo **no incluye construir funcionalidad nueva**. Con cuatro días, cada
+> El objetivo no incluye construir funcionalidad nueva. Con cuatro días, cada
 > historia que se empiece compite con la presentación, que es un entregable obligatorio y está sin
 > empezar.
 
