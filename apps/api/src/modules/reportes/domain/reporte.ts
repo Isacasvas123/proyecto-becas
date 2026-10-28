@@ -1,6 +1,4 @@
 /**
- * CAPA: domain/
- * ────────────────────────────────────────────────────────────────────────────────
  * Un reporte ya generado, independiente del formato. Los exportadores (CSV, PDF) solo saben leer
  * esta forma: un reporte nuevo no necesita un exportador nuevo, y un formato nuevo sirve para todos
  * los reportes.

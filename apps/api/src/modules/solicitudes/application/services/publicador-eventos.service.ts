@@ -1,15 +1,11 @@
 /**
- * CAPA: application/services/  ·  el SUJETO del patrón Observer
- * ────────────────────────────────────────────────────────────────────────────────
- * Entrega cada cambio de estado a todos los observadores registrados.
+ * Sujeto del patrón Observer: entrega cada cambio de estado a los observadores registrados.
  *
- * QUIÉN LLAMA A ESTO
- *   Los casos de uso, **después** de guardar. Nunca el dominio: la entidad solo anota lo que le
- *   pasó (`drenarEventos`), y así un cambio que no llegó a persistirse tampoco se anuncia.
+ * Lo llaman los casos de uso después de guardar, nunca el dominio: la entidad solo anota lo que
+ * le pasó (`drenarEventos`), así que un cambio que no llegó a persistirse tampoco se anuncia.
  *
- * LOS OBSERVADORES NO SE CONOCEN ENTRE SÍ NI PUEDEN ESTORBARSE
- *   Si uno falla, los demás siguen. Por eso se esperan todos con `allSettled` y un fallo solo
- *   deja un registro en el log: avisar es importante, pero no más que la operación que ya ocurrió.
+ * Los observadores no se estorban: se esperan con `allSettled` y un fallo solo deja un registro
+ * en el log. Avisar importa, pero no más que la operación que ya ocurrió.
  */
 import { Inject, Injectable, Logger } from '@nestjs/common';
 

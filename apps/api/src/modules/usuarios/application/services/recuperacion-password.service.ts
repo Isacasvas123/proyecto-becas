@@ -1,34 +1,22 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * US-035 — Recuperar una contraseña olvidada por correo.
+ * US-035: recuperar una contraseña olvidada por correo.
  *
- * SON DOS PASOS Y DOS PELIGROS DISTINTOS
- *   1. `solicitar(correo)`: crea un permiso de un solo uso y lo manda por correo.
- *   2. `restablecer(token, password)`: lo canjea por una contraseña nueva.
+ * Son dos pasos con dos riesgos distintos. `solicitar(correo)` crea un permiso de un solo uso y
+ * lo manda por correo; puede servir para averiguar quién tiene cuenta. `restablecer(token,
+ * password)` lo canjea por una contraseña nueva; puede servir para tomar una cuenta ajena si el
+ * permiso es adivinable. Cada decisión de abajo protege contra uno de los dos.
  *
- *   El primero puede usarse para AVERIGUAR QUIÉN TIENE CUENTA en el sistema. El segundo,
- *   para tomar una cuenta ajena si el permiso es adivinable. Cada decisión de abajo está
- *   puesta contra uno de los dos.
+ * `solicitar` responde siempre lo mismo. Si dijera "no existe esa dirección", cualquiera podría
+ * armar la lista de quién está registrado, y en un sistema de becas eso revela quién pidió ayuda
+ * económica al Estado. Por lo mismo el `enviar` del puerto no puede lanzar: un error del servidor
+ * de correo delataría la diferencia.
  *
- * POR QUÉ `solicitar` RESPONDE SIEMPRE LO MISMO
- *   Si contestara "no existe esa dirección" cuando no existe, cualquiera podría ir probando
- *   correos y quedarse con la lista de quién está registrado. En un sistema de becas eso es
- *   información sensible: dice quién pidió ayuda económica al Estado. Así que la respuesta
- *   es idéntica exista o no la cuenta, y el trabajo se hace en silencio solo si existe.
+ * El token se guarda hasheado: durante una hora equivale a la contraseña, y en claro repetiría en
+ * otra tabla el error que bcrypt evita en la de usuarios. El valor en claro solo existe el
+ * instante en que se mete en el correo.
  *
- *   Ese es, además, el motivo de que `enviar` del puerto no pueda lanzar: un error del
- *   servidor de correo delataría la diferencia que esto se esfuerza en ocultar.
- *
- * POR QUÉ EL TOKEN SE GUARDA HASHEADO
- *   Durante una hora el token equivale a la contraseña. Guardarlo en claro repetiría en
- *   otra tabla el error que bcrypt evita en la de usuarios. Se guarda su hash y se busca
- *   por hash; el valor en claro solo existe el instante en que se mete en el correo.
- *
- * QUÉ NO HACE, A PROPÓSITO
- *   No inicia sesión al terminar. Quien restablece su contraseña vuelve a la pantalla de
- *   acceso y la escribe: así se confirma que la recuerda, y un enlace interceptado no deja
- *   a nadie dentro sin saber la contraseña nueva.
+ * No inicia sesión al terminar: la persona vuelve al acceso y escribe la contraseña nueva, con lo
+ * que confirma que la recuerda y un enlace interceptado no deja a nadie dentro.
  */
 import { createHmac, randomBytes, randomUUID } from 'node:crypto';
 
@@ -47,12 +35,10 @@ import { validarPoliticaContrasena } from '../../domain/value-objects/politica-c
 import { ReglaDeNegocioError } from '../../../../shared/exceptions/errores-dominio';
 
 /**
- * Un token que no existe, uno caducado y uno ya usado dan EXACTAMENTE el mismo error.
- *
- * Distinguirlos le diría a quien esté probando enlaces cuáles existieron alguna vez. Es un
- * `ReglaDeNegocioError` y no una clase propia porque el filtro de excepciones solo traduce
- * los errores de dominio conocidos: cualquier otro cae a 500, y un enlace inválido no es un
- * fallo del servidor.
+ * Un token inexistente, uno caducado y uno ya usado dan el mismo error: distinguirlos diría a
+ * quien prueba enlaces cuáles existieron. Es un `ReglaDeNegocioError` y no una clase propia
+ * porque el filtro solo traduce errores de dominio conocidos y cualquier otro cae a 500, y un
+ * enlace inválido no es un fallo del servidor.
  */
 const enlaceInvalido = (): ReglaDeNegocioError =>
   new ReglaDeNegocioError(
@@ -115,7 +101,7 @@ export class RecuperacionPasswordService {
     passwordNueva: string,
     ahora: Date = new Date(),
   ): Promise<void> {
-    // La contraseña nueva se valida ANTES de gastar el token: si no cumple la política, el
+    // La contraseña nueva se valida antes de gastar el token: si no cumple la política, el
     // enlace tiene que seguir sirviendo para volver a intentarlo.
     validarPoliticaContrasena(passwordNueva);
 
@@ -139,12 +125,9 @@ export class RecuperacionPasswordService {
   }
 
   /**
-   * El hash con el que se busca en la base.
-   *
-   * bcrypt usa una sal distinta cada vez, así que el hash de un mismo texto nunca se repite
-   * y no sirve para buscar. Esa es la propiedad que lo hace bueno para contraseñas y
-   * inservible como clave de búsqueda. Aquí se usa un hash determinista con el secreto del
-   * servidor como clave: dos personas no pueden calcularlo sin ese secreto, y el mismo
+   * El hash con el que se busca en la base. bcrypt usa una sal distinta cada vez, así que el hash
+   * de un mismo texto nunca se repite y no sirve para buscar. Aquí se usa un hash determinista
+   * con el secreto del servidor como clave: nadie puede calcularlo sin ese secreto y el mismo
    * token siempre da el mismo resultado.
    */
   private hashDeBusqueda(enClaro: string): string {

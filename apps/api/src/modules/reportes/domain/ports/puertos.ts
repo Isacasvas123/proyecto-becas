@@ -1,5 +1,5 @@
 /**
- * PUERTOS de `reportes`. Los tres primeros son los otros módulos (se leen por sus servicios
+ * Puertos de `reportes`. Los tres primeros son los otros módulos (se leen por sus servicios
  * exportados, nunca por sus tablas); el último, los formatos de salida.
  */
 import { Reporte } from '../reporte';

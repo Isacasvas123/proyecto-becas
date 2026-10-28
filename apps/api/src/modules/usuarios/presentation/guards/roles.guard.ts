@@ -1,19 +1,13 @@
 /**
- * CAPA: presentation/guards/
- * ────────────────────────────────────────────────────────────────────────────────
- * US-003 — Autorización por rol.
- *
- * Corre **después** de `AutenticacionGuard`: para cuando llega aquí, la petición ya trae un
- * portador verificado. Son dos preguntas distintas y por eso son dos guards:
+ * US-003: autorización por rol. Corre después de `AutenticacionGuard`, cuando la petición ya trae
+ * un portador verificado. Son dos preguntas y por eso dos guards:
  *
  *     autenticación → ¿quién eres?      → 401 si no lo sabemos
- *     autorización  → ¿puedes hacerlo?  → 403 si sabemos quién eres pero no te corresponde
+ *     autorización  → ¿puedes hacerlo?  → 403 si lo sabemos pero no te corresponde
  *
- * POR QUÉ 403 Y NO 404
- *   Un criterio de aceptación de US-003 dice: *"un acceso no autorizado devuelve HTTP 403,
- *   no 404 ni el recurso"*. Devolver 404 escondería la existencia del recurso, lo que suena
- *   más seguro pero confunde al usuario legítimo que se equivocó de cuenta, y no aporta gran
- *   cosa: las rutas son públicas y predecibles de todos modos.
+ * Es 403 y no 404 porque un criterio de US-003 dice que un acceso no autorizado devuelve 403, no
+ * 404 ni el recurso. El 404 escondería la existencia del recurso, pero confunde al usuario
+ * legítimo y aporta poco: las rutas son públicas y predecibles.
  */
 import {
   CanActivate,

@@ -1,16 +1,8 @@
 /**
- * CAPA: infrastructure/persistence/
- * ────────────────────────────────────────────────────────────────────────────────
- * Segundo ADAPTADOR del mismo puerto, esta vez en memoria.
- *
- * PARA QUÉ SIRVE
- *   Es la demostración práctica de por qué existe la inversión de dependencias: la
- *   prueba del caso de uso le inyecta esta clase en lugar del repositorio Prisma y corre
- *   en milisegundos, sin Docker, sin PostgreSQL y sin datos compartidos entre pruebas.
- *
- *   Que el servicio acepte ambas implementaciones sin cambiar una línea es la
- *   verificación de que el principio de sustitución de Liskov se cumple
- *   (docs/05-arquitectura.md §2.4).
+ * Segundo adaptador del mismo puerto, en memoria. Demuestra la inversión de dependencias: la
+ * prueba del caso de uso le inyecta esta clase en lugar del repositorio de Prisma y corre en
+ * milisegundos, sin Docker ni PostgreSQL. Que el servicio acepte ambas sin cambios verifica el
+ * principio de sustitución de Liskov (docs/05-arquitectura.md §2.4).
  */
 import { RecursoDuplicadoError } from '../../../../shared/exceptions/errores-dominio';
 import { normalizarCorreo, Usuario } from '../../domain/entities/usuario.entity';

@@ -1,7 +1,5 @@
 /**
- * CAPA: infrastructure/persistence/
- * ────────────────────────────────────────────────────────────────────────────────
- * ADAPTADOR del puerto `UsuarioRepositorio`. Es la única clase del módulo que sabe que
+ * Adaptador del puerto `UsuarioRepositorio`. Es la única clase del módulo que sabe que
  * detrás hay PostgreSQL.
  */
 import { Injectable } from '@nestjs/common';
@@ -53,8 +51,8 @@ export class UsuarioPrismaRepositorio implements UsuarioRepositorio {
   async actualizarEstadoDeAcceso(usuario: Usuario): Promise<void> {
     // Solo los dos campos del bloqueo. Ver el comentario del puerto.
     //
-    // LIMITACIÓN CONOCIDA: es lectura-modificación-escritura. Si llegaran varias peticiones
-    // fallidas EXACTAMENTE a la vez, podrían contarse como menos intentos de los reales. Para
+    // Limitación conocida: es lectura-modificación-escritura. Si llegaran varias peticiones
+    // fallidas exactamente a la vez, podrían contarse como menos intentos de los reales. Para
     // el volumen de este sistema el riesgo es bajo y está documentado; la solución completa
     // sería un `increment` atómico en la base, que obligaría a mover la regla del bloqueo
     // fuera del dominio. Se prefirió conservar la regla en la entidad.

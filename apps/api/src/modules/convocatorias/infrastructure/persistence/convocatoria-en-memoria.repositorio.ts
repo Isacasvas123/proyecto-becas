@@ -1,21 +1,13 @@
 /**
- * CAPA: infrastructure/persistence/  ·  DOBLE DE PRUEBA
- * ────────────────────────────────────────────────────────────────────────────────
- * Segunda implementación del MISMO puerto, esta vez sobre un arreglo en memoria.
+ * Segunda implementación del mismo puerto, sobre un arreglo en memoria.
  *
- * POR QUÉ EXISTE
- *   Es la demostración práctica de que la inversión de dependencias funciona: el servicio
- *   de aplicación no distingue esta implementación de la de Prisma, así que las pruebas
- *   unitarias corren sin Docker, sin PostgreSQL y sin red. Ese es el argumento de
- *   testeabilidad de docs/05-arquitectura.md §2.2, aquí demostrado y no solo afirmado.
+ * Demuestra que la inversión de dependencias funciona: el servicio no distingue esta de la de
+ * Prisma, así que las pruebas corren sin Docker, sin PostgreSQL y sin red (argumento de
+ * testeabilidad de docs/05-arquitectura.md §2.2). Las dos respetan el mismo contrato, como pide
+ * el principio de sustitución de Liskov (SOLID · L).
  *
- *   Es también una comprobación del principio de sustitución de Liskov (SOLID · L): las
- *   dos implementaciones respetan el mismo contrato y son intercambiables.
- *
- * POR QUÉ ESTÁ EN src/ Y NO EN test/
- *   Porque es un adaptador legítimo, igual que `AlmacenamientoMemoriaAdapter` en
- *   docs/06-patrones.md §3. Además de las pruebas unitarias, lo usan las pruebas e2e para
- *   ejercitar la ruta HTTP completa sin base de datos.
+ * Está en `src/` y no en `test/` porque es un adaptador legítimo, como
+ * `AlmacenamientoMemoriaAdapter` (docs/06-patrones.md §3), y también lo usan las pruebas e2e.
  */
 import { Convocatoria } from '../../domain/entities/convocatoria.entity';
 import { ConvocatoriaRepositorio } from '../../domain/ports/convocatoria.repositorio';

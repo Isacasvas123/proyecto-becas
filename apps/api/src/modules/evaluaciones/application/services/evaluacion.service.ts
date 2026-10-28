@@ -1,16 +1,11 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * Lo que hace el EVALUADOR: US-019 (evaluar una solicitud, CU-10) y US-020 (ver sus asignadas).
+ * Lo que hace el evaluador: US-019 (evaluar una solicitud, CU-10) y US-020 (ver sus asignadas).
  *
- * QUIÉN PUEDE VER QUÉ
- *   Todo empieza por `asegurarAsignada`: si la solicitud no le fue asignada a este evaluador, la
- *   respuesta es 403 y no se consulta nada más (CU-10, 1a). No se distingue "no existe" de "no es
- *   tuya": para un evaluador, las dos son "no puedes verla".
+ * Todo empieza por `asegurarAsignada`: si la solicitud no le fue asignada responde 403 y no
+ * consulta nada más (CU-10, 1a). No distingue "no existe" de "no es tuya".
  *
- * EL PATRÓN STRATEGY EN ACCIÓN
- *   `criterioPara(convocatoria.tipo).calcular(perfil)`. Este servicio no sabe cómo se puntúa
- *   ninguna beca, y no tiene un solo `if` sobre el tipo.
+ * Patrón Strategy: `criterioPara(convocatoria.tipo).calcular(perfil)`. El servicio no sabe cómo
+ * se puntúa ninguna beca y no tiene un `if` sobre el tipo.
  */
 import { randomUUID } from 'node:crypto';
 

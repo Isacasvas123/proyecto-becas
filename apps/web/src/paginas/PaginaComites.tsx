@@ -1,5 +1,5 @@
 /**
- * PÁGINA `/comites` — comités evaluadores (US-017, CU-13). Solo administración.
+ * Página `/comites` — comités evaluadores (US-017, CU-13). Solo administración.
  *
  * Una convocatoria tiene un solo comité (3a): el formulario solo ofrece las convocatorias que
  * todavía no tienen uno. Si no hay evaluadores, lo dice y lleva a crearlos (4a).

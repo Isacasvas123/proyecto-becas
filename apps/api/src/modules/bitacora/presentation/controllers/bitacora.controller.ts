@@ -1,11 +1,6 @@
 /**
- * CAPA: presentation/controllers/
- * ────────────────────────────────────────────────────────────────────────────────
- * Consulta de la bitácora. **Solo ADMINISTRADOR**: saber quién hizo qué sobre qué expediente es,
- * en sí mismo, información sensible.
- *
- * Y la consulta también se audita (`RUTAS_SENSIBLES` del interceptor): quién revisa la bitácora
- * queda registrado en la bitácora.
+ * Consulta de la bitácora, solo para ADMINISTRADOR: saber quién hizo qué sobre qué expediente ya
+ * es información sensible. La consulta también se audita.
  */
 import { Controller, Get, Query } from '@nestjs/common';
 

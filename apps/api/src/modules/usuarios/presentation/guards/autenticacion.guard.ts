@@ -1,28 +1,15 @@
 /**
- * CAPA: presentation/guards/
- * ────────────────────────────────────────────────────────────────────────────────
- * US-003 — Control de acceso. **Esta es la seguridad de verdad.**
+ * US-003: control de acceso. La guardia del frontend (`RutaProtegida.tsx`) solo evita que un
+ * usuario legítimo vea una pantalla vacía y se salta desde el navegador; el control real es este
+ * guard, porque corre en el servidor.
  *
- * La guardia del frontend (`RutaProtegida.tsx`) solo evita que un usuario legítimo vea una
- * pantalla vacía: cualquiera puede saltársela desde las herramientas del navegador. Quien
- * impide de verdad el acceso es este guard, porque corre en el servidor.
+ * Va en presentation/ porque un guard es HTTP: lee cabeceras, decide códigos y depende de
+ * `ExecutionContext`. Del dominio solo consume el puerto `VerificadorToken`, sin saber que detrás
+ * hay un JWT.
  *
- * Es una pregunta previsible en la defensa: *"si escondo el botón en el frontend, ¿ya está
- * protegido?"*. La respuesta es no, y este archivo es la razón.
- *
- * ────────────────────────────────────────────────────────────────────────────────
- * POR QUÉ ESTÁ EN presentation/ Y NO EN domain/
- *   Porque un guard es un concepto de HTTP: lee cabeceras, decide códigos de estado y
- *   depende de `ExecutionContext` de NestJS. El dominio no sabe qué es una petición HTTP y
- *   debe seguir sin saberlo. Lo único que aporta el dominio aquí es el puerto
- *   `VerificadorToken`, que este guard consume sin saber que detrás hay un JWT.
- *
- * QUÉ HACE Y QUÉ NO HACE
- *   Verifica que el token sea auténtico y vigente, y que el rol baste para la ruta. **No**
- *   consulta la base de datos en cada petición: el token es autocontenido y esa es su
- *   ventaja. El precio, aceptado conscientemente, es que desactivar un usuario no invalida
- *   su token hasta que caduque, como máximo 8 horas después. Si el Ministerio exigiera
- *   revocación inmediata habría que añadir una lista de revocación, y eso cambia el diseño.
+ * No consulta la base en cada petición: el token es autocontenido. El precio, aceptado, es que
+ * desactivar un usuario no invalida su token hasta que caduque, 8 horas como máximo. Una
+ * revocación inmediata exigiría una lista de revocación y cambiaría el diseño.
  */
 import {
   CanActivate,
@@ -92,25 +79,17 @@ export class AutenticacionGuard implements CanActivate {
   }
 
   /**
-   * Extrae el token de la cabecera `Authorization: Bearer <token>`.
+   * Extrae el token de `Authorization: Bearer <token>`. Se exige el esquema `Bearer`: aceptar la
+   * cabecera pelada dejaría entrar cualquier cadena al verificador.
    *
-   * Se exige el esquema `Bearer` explícitamente. Aceptar la cabecera pelada sería más
-   * cómodo y menos seguro: cualquier cadena arbitraria entraría al verificador.
+   * Dos casos que señaló Fernando en la revisión del PR #4:
    *
-   * ────────────────────────────────────────────────────────────────────────────────
-   * DOS ARISTAS SEÑALADAS POR FERNANDO EN LA REVISIÓN DEL PR #4
-   *
-   * 1. CABECERA DUPLICADA. Si un cliente manda dos cabeceras `Authorization`, Node las
-   *    une con coma: `"Bearer aaa, Bearer bbb"`. Partir por espacios daba `valor = "aaa,"`,
-   *    que el verificador rechazaba por firma inválida — no era una fuga, pero el rechazo
-   *    ocurría por accidente y no por decisión. Ahora se rechaza aquí, explícitamente:
-   *    una petición con dos credenciales es ambigua y no se adivina cuál vale.
-   *
-   * 2. ESQUEMA EN MINÚSCULA. El RFC 7235 §2.1 define el nombre del esquema como
-   *    *case-insensitive*, así que `bearer token` es una petición VÁLIDA que estábamos
-   *    rechazando con un 401. Era un fallo de interoperabilidad, no una medida de
-   *    seguridad: comparar sin distinguir mayúsculas no debilita nada, porque lo que
-   *    autentica es el token, no cómo se escriba la palabra.
+   * 1. Cabecera duplicada. Node une dos `Authorization` con coma y el token quedaba como `"aaa,"`,
+   *    que el verificador rechazaba por firma: no había fuga, pero el rechazo era accidental. Ahora
+   *    se rechaza aquí, porque una petición con dos credenciales es ambigua.
+   * 2. Esquema en minúscula. El RFC 7235 §2.1 define el esquema como insensible a mayúsculas, así
+   *    que `bearer token` es válido y se rechazaba con 401. Era un fallo de interoperabilidad y
+   *    no debilita nada, porque lo que autentica es el token.
    */
   private extraerToken(peticion: Request): string | null {
     const cabecera = peticion.headers.authorization;

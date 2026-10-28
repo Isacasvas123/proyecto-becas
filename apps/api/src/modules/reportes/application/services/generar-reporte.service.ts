@@ -1,22 +1,13 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * US-028 — Reporte de solicitudes. Recibe la especificación que armó `ReporteBuilder` y produce un
+ * US-028: reporte de solicitudes. Recibe la especificación de `ReporteBuilder` y produce un
  * `Reporte` independiente del formato.
  *
- * QUÉ ENTRA EN UN REPORTE
- *   Solo solicitudes RECIBIDAS: las que siguen en borrador no son trámites todavía. El rango de
- *   fechas se aplica a la fecha de envío.
+ * Solo entran solicitudes recibidas (los borradores aún no son trámites) y el rango de fechas se
+ * aplica al envío. No salen nombres, CUI, datos socioeconómicos ni puntajes: el reporte se comparte
+ * fuera del sistema (US-030) y basta el número de solicitud.
  *
- * QUÉ NO SALE
- *   Ni nombres, ni CUI, ni datos socioeconómicos, ni puntajes. Un reporte de gestión se comparte
- *   fuera del sistema (US-030), y para rendir cuentas basta el número de solicitud. Es el principio
- *   de minimización de datos: lo que no se necesita, no se imprime.
- *
- * ESCALA
- *   Los tres módulos se consultan por separado y se combinan aquí. Para el volumen de un programa
- *   de becas (miles de solicitudes) sobra; con cientos de miles, se cambia la fuente por una vista
- *   en la base sin tocar este servicio.
+ * Los tres módulos se consultan por separado y se combinan aquí. Sobra para miles de solicitudes;
+ * con cientos de miles se cambiaría la fuente por una vista en la base.
  */
 import { Inject, Injectable } from '@nestjs/common';
 

@@ -1,5 +1,5 @@
 /**
- * PRUEBA UNITARIA — la puerta de `solicitudes` para EPIC-05, con el repositorio en memoria: el
+ * Prueba unitaria — la puerta de `solicitudes` para EPIC-05, con el repositorio en memoria: el
  * cupo, la beca con código correlativo y la búsqueda por número.
  */
 import {

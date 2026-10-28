@@ -1,5 +1,5 @@
 /**
- * PRUEBA UNITARIA — patrón Builder (docs/06-patrones.md §2).
+ * Prueba unitaria — patrón Builder (docs/06-patrones.md §2).
  * Lo que se verifica es lo que justifica el patrón: que `build()` rechace combinaciones
  * incoherentes y que lo construido no cambie aunque el builder se siga usando.
  */

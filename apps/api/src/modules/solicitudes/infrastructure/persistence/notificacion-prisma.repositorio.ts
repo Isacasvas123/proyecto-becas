@@ -1,6 +1,4 @@
 /**
- * CAPA: infrastructure/persistence/
- * ────────────────────────────────────────────────────────────────────────────────
  * La bandeja de avisos en PostgreSQL (US-022).
  */
 import { Injectable } from '@nestjs/common';

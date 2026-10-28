@@ -1,5 +1,5 @@
 /**
- * PRUEBA DE INTEGRACIÓN — EPIC-05 sobre el flujo real completo:
+ * Prueba de integración de EPIC-05 sobre el flujo real completo:
  *
  *   convocatoria con 1 cupo → dos estudiantes envían → comité asigna → dictámenes →
  *   el administrador aprueba a uno (US-023), el segundo ya no cabe, rechaza al segundo →
@@ -173,9 +173,9 @@ describe('Resolución, adjudicación y consulta pública (e2e)', () => {
     });
 
     /**
-     * UNA PERSONA, UNA BECA (pendiente de confirmar con el PO, 22 Oct 2026).
+     * Una persona, una beca (pendiente de confirmar con el PO, 22 Oct 2026).
      *
-     * El control está al ADJUDICAR y no al postular: postular a varias convocatorias es
+     * El control está al adjudicar y no al postular: postular a varias convocatorias es
      * razonable y no compromete nada. Adjudicar sí. Esta prueba fija dónde está la línea.
      */
     it('no se adjudica una segunda beca a quien ya tiene una', async () => {
@@ -202,7 +202,7 @@ describe('Resolución, adjudicación y consulta pública (e2e)', () => {
         .expect(200);
 
       // Segunda convocatoria: misma persona, todo en regla, y aun así no se le puede dar.
-      // Se arma a mano y con el MISMO evaluador, porque `escenario()` crea cuentas con
+      // Se arma a mano y con el mismo evaluador, porque `escenario()` crea cuentas con
       // nombre fijo y llamarlo dos veces daría un 409 de usuario duplicado.
       const convocatoria2 = await p.convocatoria(5);
       const segunda = {

@@ -1,5 +1,5 @@
 /**
- * PRUEBA UNITARIA — US-028, US-029 y US-031 con dobles de las fuentes.
+ * Prueba unitaria — US-028, US-029 y US-031 con dobles de las fuentes.
  */
 import { ReglaDeNegocioError } from '../../../../shared/exceptions/errores-dominio';
 import {

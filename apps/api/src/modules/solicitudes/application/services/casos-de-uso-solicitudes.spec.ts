@@ -1,7 +1,7 @@
 /**
- * PRUEBA UNITARIA — casos de uso de EPIC-03 (US-012 a US-015).
+ * Prueba unitaria — casos de uso de EPIC-03 (US-012 a US-015).
  *
- * Los otros módulos se sustituyen por dobles de sus PUERTOS (`ConsultaConvocatorias`,
+ * Los otros módulos se sustituyen por dobles de sus puertos (`ConsultaConvocatorias`,
  * `ConsultaPerfiles`): así se prueba que `solicitudes` solo depende de lo que declaró necesitar.
  */
 import {
@@ -376,7 +376,7 @@ describe('Casos de uso de solicitudes', () => {
     });
 
     /**
-     * El defecto que destapó esta prueba: el mensaje imprimía SIEMPRE la fecha de cierre, de
+     * El defecto que destapó esta prueba: el mensaje imprimía siempre la fecha de cierre, de
      * modo que a quien postulaba antes de la apertura se le mostraba una fecha futura —la de
      * cierre— como si fuera el motivo del rechazo. Mandaba a mirar el dato equivocado.
      */

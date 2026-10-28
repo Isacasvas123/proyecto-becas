@@ -1,10 +1,8 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * Lo que tienen en común crear la cuenta de un estudiante (US-001) y la de un evaluador (US-017):
- * validar CUI, nombre de usuario y contraseña, comprobar duplicados diciendo cuál, y calcular el
- * hash. Existe para que las dos puertas apliquen EXACTAMENTE las mismas reglas: si una política
- * cambia, cambia para las dos.
+ * Lo común a crear la cuenta de un estudiante (US-001) y la de un evaluador (US-017): validar
+ * CUI, nombre de usuario y contraseña, comprobar duplicados diciendo cuál y calcular el hash.
+ * Existe para que las dos puertas apliquen las mismas reglas: si una política cambia, cambia para
+ * las dos.
  */
 import { RecursoDuplicadoError } from '../../../../shared/exceptions/errores-dominio';
 import { DatosNuevoEstudiante, normalizarCorreo } from '../../domain/entities/usuario.entity';
@@ -46,7 +44,7 @@ export async function prepararCuentaNueva(
     throw new RecursoDuplicadoError(`Ya existe una cuenta con ${enumerar(problemas)}.`);
   }
 
-  // El hash se calcula DESPUÉS de comprobar duplicados: bcrypt es lento a propósito y no tiene
+  // El hash se calcula después de comprobar duplicados: bcrypt es lento a propósito y no tiene
   // sentido gastarlo en una cuenta que se va a rechazar.
   return {
     id,

@@ -1,17 +1,10 @@
 /**
- * CAPA: infrastructure/persistence/  ·  PLANTILLA DE REFERENCIA DEL PROYECTO
- * ────────────────────────────────────────────────────────────────────────────────
- * QUÉ VA AQUÍ
- *   El ADAPTADOR: la implementación concreta del puerto `ConvocatoriaRepositorio` que
- *   declara el dominio. Aquí —y solo aquí— se habla de tablas, índices y consultas.
+ * Adaptador: implementa el puerto `ConvocatoriaRepositorio` del dominio. Aquí, y solo aquí, se
+ * habla de tablas, índices y consultas.
  *
- * QUÉ NO VA AQUÍ
- *   Reglas de negocio. Este archivo no decide qué significa "convocatoria visible": eso
- *   lo define la entidad. Aquí solo se traduce esa definición a una consulta eficiente.
- *
- * FÍJENSE EN LA DIRECCIÓN DE LA FLECHA
- *   Esta clase importa del dominio (`implements ConvocatoriaRepositorio`); el dominio no
- *   importa nada de aquí. Esa asimetría es toda la arquitectura hexagonal en una línea.
+ * No decide qué es una convocatoria visible, eso lo define la entidad; solo traduce esa
+ * definición a una consulta eficiente. La clase importa del dominio y el dominio no importa nada
+ * de ella: esa asimetría es la arquitectura hexagonal.
  */
 import { Injectable } from '@nestjs/common';
 

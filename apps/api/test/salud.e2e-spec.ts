@@ -1,11 +1,9 @@
 /**
- * PRUEBAS DE INTEGRACIÓN — diagnóstico: `GET /health` y `GET /ready`.
+ * Pruebas de integración del diagnóstico: `GET /health` y `GET /ready`.
  *
  * Levantan la aplicación de Nest en memoria y hacen peticiones HTTP reales con Supertest.
- *
- * `PrismaService` se sustituye por un doble, así que estas pruebas corren sin Docker ni
- * PostgreSQL. Eso permite además lo importante: **simular que la base de datos está caída**
- * sin apagar nada, que es justo el escenario que el defecto anterior no cubría.
+ * `PrismaService` se sustituye por un doble, así que corren sin Docker ni PostgreSQL y permiten
+ * simular que la base está caída sin apagar nada, el escenario que el defecto anterior no cubría.
  */
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -59,7 +57,7 @@ describe('Endpoints de diagnóstico (e2e)', () => {
     });
 
     it('sigue respondiendo 200 aunque la base de datos esté caída', async () => {
-      // No es un descuido: liveness responde si el PROCESO vive. Si consultara la base de
+      // No es un descuido: liveness responde si el proceso vive. Si consultara la base de
       // datos, un fallo de PostgreSQL provocaría reinicios en bucle que no arreglarían nada,
       // porque el problema está fuera del proceso.
       prisma.responde = false;
@@ -77,7 +75,7 @@ describe('Endpoints de diagnóstico (e2e)', () => {
     });
 
     it('responde 503 cuando la base de datos no responde', async () => {
-      // ESTA ES LA PRUEBA QUE DOCUMENTA EL DEFECTO CORREGIDO. Antes el diagnóstico devolvía
+      // Esta es la prueba que documenta el defecto corregido. Antes el diagnóstico devolvía
       // 200 con el sistema inservible, y el orquestador daba el servicio por sano.
       prisma.responde = false;
 

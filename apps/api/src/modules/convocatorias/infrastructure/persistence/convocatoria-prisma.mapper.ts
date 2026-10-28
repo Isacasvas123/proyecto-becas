@@ -1,14 +1,8 @@
 /**
- * CAPA: infrastructure/persistence/
- *
- * Traduce la FILA de PostgreSQL a la ENTIDAD de dominio.
- *
- * Este archivo es el único del módulo que conoce a la vez las dos formas del mismo
- * concepto. Es la frontera exacta donde se detiene el ORM: a partir de aquí hacia arriba
- * el sistema solo maneja `Convocatoria`, no `Prisma.Convocatoria`.
- *
- * Es también el archivo que protege al proyecto si algún día se cambia de ORM o si el
- * esquema de la base de datos evoluciona sin que el negocio cambie.
+ * Traduce la fila de PostgreSQL a la entidad de dominio. Es el único archivo del módulo que
+ * conoce las dos formas del mismo concepto: aquí se detiene el ORM, y hacia arriba el sistema
+ * solo maneja `Convocatoria`. Protege si cambia el ORM o evoluciona el esquema sin que cambie el
+ * negocio.
  */
 import { Convocatoria as ConvocatoriaPrisma, Prisma } from '@prisma/client';
 

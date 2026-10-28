@@ -1,14 +1,9 @@
 /**
- * CAPA: presentation/dto/
- * ────────────────────────────────────────────────────────────────────────────────
- * Contrato de entrada de `POST /auth/registro` (US-001).
+ * Contrato de entrada de `POST /auth/registro` (US-001). Valida la forma; el formato del CUI y la
+ * política de contraseña son reglas del dominio y se comprueban allí.
  *
- * Aquí se valida la FORMA. El formato del CUI y la política de contraseña son reglas del
- * dominio y se comprueban allí, con un mensaje que dice exactamente qué falta.
- *
- * FÍJENSE EN LO QUE NO HAY: ni `rol` ni `activo`. Con `forbidNonWhitelisted` en `main.ts`, una
- * petición que intente mandar `"rol": "ADMINISTRADOR"` se rechaza con 400 antes de llegar al
- * caso de uso, y aun si llegara, `Usuario.nuevoEstudiante` no acepta rol.
+ * No tiene `rol` ni `activo`: con `forbidNonWhitelisted` en `main.ts`, una petición que mande
+ * `"rol": "ADMINISTRADOR"` se rechaza con 400, y `Usuario.nuevoEstudiante` tampoco acepta rol.
  */
 import { IsEmail, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 

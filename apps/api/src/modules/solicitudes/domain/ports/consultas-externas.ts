@@ -1,13 +1,10 @@
 /**
- * PUERTOS hacia OTROS módulos.
+ * Puertos hacia otros módulos.
  *
- * `solicitudes` necesita saber dos cosas que no le pertenecen: si una convocatoria admite
- * postulaciones y si el perfil del estudiante está completo. En vez de importar las entidades de
- * `convocatorias` y `estudiantes` —que ataría este dominio a los suyos—, declara aquí lo que
- * necesita, con sus propias palabras. Los adaptadores de `infrastructure/integraciones/` lo
- * resuelven llamando a los servicios que esos módulos exportan.
- *
- * Es la inversión de dependencias aplicada ENTRE módulos, no solo hacia la base de datos.
+ * `solicitudes` necesita saber si una convocatoria admite postulaciones y si el perfil está
+ * completo. En vez de importar las entidades de `convocatorias` y `estudiantes`, declara aquí lo
+ * que necesita con sus palabras, y los adaptadores de `infrastructure/integraciones/` lo resuelven
+ * con los servicios que esos módulos exportan. Es inversión de dependencias entre módulos.
  */
 export const CONSULTA_CONVOCATORIAS = Symbol('ConsultaConvocatorias');
 export const CONSULTA_PERFILES = Symbol('ConsultaPerfiles');

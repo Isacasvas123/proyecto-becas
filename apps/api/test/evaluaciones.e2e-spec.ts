@@ -1,11 +1,10 @@
 /**
- * PRUEBA DE INTEGRACIÓN — EPIC-04 de punta a punta, sobre el flujo real de EPIC-03:
+ * Prueba de integración de EPIC-04 de punta a punta, sobre el flujo real de EPIC-03:
  *
  *   administrador publica → estudiante postula y envía → administrador crea un evaluador y un
  *   comité → asigna → el evaluador ve lo suyo y dictamina → el administrador consolida.
  *
- * El montaje de la plataforma está en `utilidades/plataforma-de-prueba.ts` (y ahí se explica por
- * qué no se importan los módulos de evaluaciones y resoluciones directamente).
+ * El montaje de la plataforma está en `utilidades/plataforma-de-prueba.ts`.
  */
 import { INestApplication } from '@nestjs/common';
 import type { App } from 'supertest/types';

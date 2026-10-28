@@ -1,5 +1,5 @@
 /**
- * PRUEBAS DE LAS REGLAS DE REGISTRO (US-001), sin HTTP ni base de datos.
+ * Pruebas de las reglas de registro (US-001), sin HTTP ni base de datos.
  *
  * Cada `describe` corresponde a un criterio de aceptación, escrito tal como está en el backlog.
  */

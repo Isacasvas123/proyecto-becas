@@ -1,13 +1,9 @@
 /**
  * Formulario de inicio de sesión (US-002).
  *
- * ACCESIBILIDAD: es un `<form>` de verdad, no un `<div>` con un botón. Así
- * funciona el Enter para enviar, los gestores de contraseñas reconocen los
- * campos, y los lectores de pantalla anuncian el error al aparecer.
- *
- * ALCANCE (Sprint 1): solo autentica y entrega la sesión al componente padre.
- * El registro (US-001), la recuperación de contraseña (US-005) y las rutas
- * protegidas por rol (US-003) son del Sprint 2.
+ * Es un `<form>` de verdad y no un `<div>` con un botón: así funciona Enter para enviar, los
+ * gestores de contraseñas reconocen los campos y los lectores de pantalla anuncian el error.
+ * Autentica y entrega la sesión al componente padre.
  */
 import { useState, type FormEvent, type ReactElement } from 'react';
 

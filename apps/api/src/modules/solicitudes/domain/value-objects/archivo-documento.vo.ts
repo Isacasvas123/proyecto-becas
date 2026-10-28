@@ -1,21 +1,15 @@
 /**
- * CAPA: domain/value-objects/
- * ────────────────────────────────────────────────────────────────────────────────
- * Un archivo que un estudiante sube como documento de respaldo (US-013).
+ * Archivo que un estudiante sube como documento de respaldo (US-013).
  *
- * Criterios 1 y 2, textuales: *"Formatos permitidos: PDF, JPG, PNG. Tamaño máximo 5 MB por
- * archivo."* y *"Un archivo con formato o tamaño inválido se rechaza con un mensaje específico."*
+ * Criterios 1 y 2: PDF, JPG o PNG hasta 5 MB, y un archivo inválido se rechaza con un mensaje
+ * específico.
  *
- * EL FORMATO SE COMPRUEBA POR EL CONTENIDO, NO POR EL NOMBRE
- *   El tipo que declara el navegador y la extensión del nombre los controla quien sube el
- *   archivo: un ejecutable renombrado a `constancia.pdf` pasaría cualquier comprobación basada en
- *   ellos. Por eso se leen los primeros bytes —la "firma" de cada formato— y se exige que
- *   coincidan con el tipo declarado. Un evaluador va a abrir estos archivos: no pueden ser otra
- *   cosa que lo que dicen ser.
+ * El formato se comprueba por el contenido y no por el nombre: el tipo que declara el navegador y
+ * la extensión los controla quien sube el archivo, y un ejecutable renombrado a `constancia.pdf`
+ * pasaría. Se leen los primeros bytes, la firma de cada formato, y se exige que coincidan.
  *
- * POR QUÉ 5 MB ES UNA CONSTANTE Y NO LA VARIABLE `ALMACENAMIENTO_TAMANO_MAX_MB`
- *   Porque es un criterio de aceptación. Cambiarlo es cambiar la historia, y eso pasa por el
- *   Product Owner, no por un `.env`.
+ * Los 5 MB son una constante y no una variable de entorno porque son un criterio de aceptación:
+ * cambiarlos es cambiar la historia, y eso pasa por el Product Owner.
  */
 import { ReglaDeNegocioError } from '../../../../shared/exceptions/errores-dominio';
 

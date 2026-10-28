@@ -1,5 +1,5 @@
 /**
- * CAPA: infrastructure/persistence/  ·  el mismo puerto, en memoria.
+ * El mismo puerto, en memoria.
  *
  * Lo usan las pruebas de integración, que montan la plataforma entera sin PostgreSQL.
  */

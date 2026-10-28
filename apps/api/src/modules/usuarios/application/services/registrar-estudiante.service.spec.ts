@@ -1,5 +1,5 @@
 /**
- * PRUEBAS DEL CASO DE USO de registro (US-001), con dobles: sin base de datos ni bcrypt real.
+ * Pruebas del caso de uso de registro (US-001), con dobles: sin base de datos ni bcrypt real.
  * Lo que se prueba aquí es la orquestación —orden de las comprobaciones, mensajes de
  * duplicado, sesión al final—; las reglas ya tienen sus pruebas en el dominio.
  */
