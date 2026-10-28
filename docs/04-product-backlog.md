@@ -27,6 +27,103 @@
 
 ---
 
+## Avance por sprint
+
+El sprint indicado en cada historia es aquel en que fue planificada y dada por terminada conforme
+al cronograma del Acta de Constitución (§6, WBS). La columna de evidencia remite al Pull Request
+en que la historia se integró a `develop`, de modo que cada fila puede comprobarse en el
+repositorio.
+
+### Velocidad por sprint
+
+| Sprint | Período | Alcance | Puntos | Estado |
+|---|---|---|---|---|
+| 1 | 3 – 9 Sep | Constitución del equipo, repositorio y esqueleto técnico | 19 | Cerrado |
+| 2 | 10 – 16 Sep | EPIC-01 · Cuentas y control de acceso | 13 | Cerrado |
+| 3 | 17 – 23 Sep | EPIC-02 · Convocatorias | 16 | Cerrado |
+| 4 | 24 – 30 Sep | EPIC-03 · Estudiantes y solicitudes | 34 | Cerrado |
+| 5 | 1 – 7 Oct | EPIC-04 · Evaluación y comités | 37 | Cerrado |
+| 6 | 8 – 14 Oct | EPIC-05 · Resolución y consulta pública | 18 | Cerrado |
+| 7 | 15 – 21 Oct | EPIC-06 · Reportes y bitácora de auditoría | 34 | Cerrado |
+| 8 | 22 – 28 Oct | Requerimientos del Product Owner y cierre | 21 | En curso |
+| | | **Total completado** | **192** | |
+
+Los 19 puntos del Sprint 1 corresponden a las tareas S1-01 a S1-12 del Sprint Backlog; los demás
+sprints cuentan historias de usuario. La velocidad media resulta de 24 puntos por sprint, frente a
+los 22 estimados al cerrar el backlog inicial.
+
+### Sprint 2 · EPIC-01 — Cuentas y control de acceso
+
+| Historia | Pts | Estado | Evidencia | Nota |
+|---|---|---|---|---|
+| US-001 Registro de estudiante | 5 | Terminada, verificada en Staging | PR #16 | Los cinco criterios implementados y probados, incluido el inicio de sesión automático |
+| US-002 Inicio de sesión | 3 | Terminada, verificada en Staging | PR #2, PR #13 | Token de 8 horas y bloqueo de la cuenta tras cinco intentos fallidos |
+| US-003 Control de acceso por rol | 5 | Terminada, verificada en Staging | PR #4 | Guard global seguro por defecto, cuatro roles, respuesta 403 cubierta con pruebas de integración |
+| US-004 Gestión de perfil | 3 | No priorizada | — | Prioridad Media; el alcance se declara cerrado en el Sprint 8 |
+| US-005 Recuperación de contraseña | 5 | Sustituida por US-035 | — | US-035 cubre el caso con un alcance más amplio |
+
+### Sprint 3 · EPIC-02 — Convocatorias
+
+| Historia | Pts | Estado | Evidencia | Nota |
+|---|---|---|---|---|
+| US-006 Crear convocatoria | 8 | Terminada, verificada en Staging | PR #14 | Implementada con el patrón Factory Method |
+| US-007 Publicar convocatoria | 3 | Terminada, verificada en Staging | PR #14 | Una convocatoria publicada no admite cambios en requisitos ni cupos |
+| US-008 Listado público de convocatorias | 5 | Terminada, verificada en Staging | PR #14 | Accesible sin cuenta, con requisitos y documentos exigidos |
+| US-009 Cerrar convocatoria | 3 | No priorizada | — | Prioridad Media |
+| US-010 Editar convocatoria en borrador | 3 | No priorizada | — | Prioridad Media |
+
+### Sprint 4 · EPIC-03 — Estudiantes y solicitudes
+
+| Historia | Pts | Estado | Evidencia | Nota |
+|---|---|---|---|---|
+| US-011 Completar perfil académico | 5 | Terminada, verificada en Staging | PR #17 | Se guarda por partes e indica qué datos faltan. El departamento es un catálogo cerrado, requisito del reporte por región |
+| US-012 Crear solicitud | 8 | Terminada, verificada en Staging | PR #17 | Implementada con el patrón State. Número correlativo `SOL-AAAA-NNNNNN` |
+| US-013 Cargar documentación | 8 | Terminada, verificada en Staging | PR #17 | Formato comprobado por contenido y no por extensión. Almacenamiento mediante el patrón Adapter |
+| US-014 Enviar solicitud | 5 | Terminada, verificada en Staging | PR #17 | Un único mensaje reúne todo lo que falta por completar |
+| US-015 Ver mis solicitudes | 3 | Terminada, verificada en Staging | PR #17 | El expediente de otro estudiante devuelve 403 |
+| US-016 Historial de la solicitud | 5 | Terminada, verificada en Staging | PR #17 | Cada transición registra fecha, autor y motivo; la tabla solo admite inserciones |
+
+### Sprint 5 · EPIC-04 — Evaluación y comités
+
+| Historia | Pts | Estado | Evidencia | Nota |
+|---|---|---|---|---|
+| US-017 Crear comité evaluador | 5 | Terminada, verificada en Staging | PR #18, PR #24 | Un comité por convocatoria, mínimo un evaluador y sin integrantes repetidos. Incluye la creación de cuentas de evaluador. Quitar un integrante con solicitudes pendientes exige confirmación y las libera para reasignación |
+| US-018 Asignar solicitudes | 8 | Terminada, verificada en Staging | PR #18 | Asignación manual y reparto automático equitativo que respeta la carga previa |
+| US-019 Evaluar una solicitud | 13 | Terminada, verificada en Staging | PR #18 | Implementada con el patrón Strategy. El puntaje lo calcula el sistema; las fórmulas están pendientes de confirmación por el Product Owner |
+| US-020 Ver mis solicitudes asignadas | 3 | Terminada, verificada en Staging | PR #18 | Solo las propias, con las pendientes primero |
+| US-021 Consolidar dictámenes | 8 | Terminada, verificada en Staging | PR #18 | Puntaje promedio, ranking y referencia de cupos disponibles |
+| US-022 Notificación por correo | 5 | No priorizada | — | US-034 cubre el aviso dentro del sistema; el canal de correo queda abierto |
+
+### Sprint 6 · EPIC-05 — Resolución y consulta pública
+
+| Historia | Pts | Estado | Evidencia | Nota |
+|---|---|---|---|---|
+| US-023 Aprobar o rechazar | 8 | Terminada, verificada en Staging | PR #19 | Implementada con el patrón Facade. El cupo se comprueba de forma atómica, verificado con tres aprobaciones simultáneas por el último cupo |
+| US-024 Adjudicar beca | 5 | Terminada, verificada en Staging | PR #19 | Beca con código `BECA-AAAA-NNNNNN`, registrada en la misma transacción que el cambio de estado |
+| US-025 Consulta pública del estado | 5 | Terminada, verificada en Staging | PR #19 | Número de solicitud y CUI por POST, solo estado y fecha, con límite de diez consultas por minuto |
+| US-026 Acta de resolución | 8 | No priorizada | — | Prioridad Media |
+| US-027 Publicación de resultados | 5 | No priorizada | — | Prioridad Baja |
+
+### Sprint 7 · EPIC-06 — Reportes y auditoría
+
+| Historia | Pts | Estado | Evidencia | Nota |
+|---|---|---|---|---|
+| US-028 Reporte de solicitudes | 8 | Terminada, verificada en Staging | PR #20 | Implementada con el patrón Builder: filtros por convocatoria, estado, nivel, departamento y fechas, con agrupación y orden |
+| US-029 Panel de estadísticas | 8 | Terminada, verificada en Staging | PR #20 | Solicitudes recibidas, tasa de aprobación, cupos disponibles y días promedio de resolución |
+| US-030 Exportar reporte | 5 | Terminada, verificada en Staging | PR #20 | CSV en UTF-8 con BOM, protegido contra inyección de fórmulas, y PDF generado sin dependencias externas |
+| US-031 Becas por región | 5 | Terminada, verificada en Staging | PR #20 | Los 22 departamentos, incluidos los que no registran becas |
+| US-032 Bitácora de auditoría | 8 | Terminada, pendiente de verificar en Staging | PR #26 | Requerimiento del Product Owner del 17 de octubre. Registra autor, recurso, operación, resultado y fecha, incluidas las peticiones rechazadas |
+
+### Sprint 8 · Requerimientos del Product Owner y cierre
+
+| Historia | Pts | Estado | Evidencia | Nota |
+|---|---|---|---|---|
+| US-033 Segunda aprobación sobre Q10,000 | 8 | Terminada, pendiente de verificar en Staging | PR #27, PR #32 | Requerimiento del Product Owner del 17 de octubre. La primera aprobación deja la solicitud en `APROBACION_PENDIENTE` sin reservar cupo; la segunda la confirma una persona distinta |
+| US-034 Avisos al estudiante | 5 | Terminada, pendiente de verificar en Staging | PR #27 | Requerimiento del Product Owner del 17 de octubre. Implementada con el patrón Observer |
+| US-035 Recuperar la contraseña | 8 | Terminada, pendiente de merge | PR #32 | Propuesta por el equipo el 24 de octubre tras revisar las prácticas de almacenamiento de contraseñas |
+
+---
+
 ## EPIC-01 · Gestión de cuentas y control de acceso
 
 ### US-001 — Registro de estudiante
@@ -388,10 +485,152 @@ cumple, la historia **no está hecha** y regresa al backlog.
 - [ ] La suite de regresión completa está en verde: no se introdujeron bugs nuevos
 - [ ] El linter pasa sin advertencias
 - [ ] La documentación técnica afectada fue creada o actualizada
-- [ ] La funcionalidad está **desplegada en Staging** y **verificada por el Product Owner**
+- [ ] La funcionalidad está **desplegada en Staging**
+- [ ] El **Proxy Product Owner** (Stuard) verificó los criterios de aceptación y movió la tarjeta
+      a *Done* en el tablero
 
-> **Nota del Scrum Master:** el último punto es el que más se olvida. Sin despliegue en Staging y
-> visto bueno del PO, una historia sigue estando "en progreso" por más terminada que se sienta.
+> **Nota del Scrum Master:** los dos últimos puntos son los que más se olvidan. Sin despliegue en
+> Staging y sin el visto bueno del Proxy PO, una historia sigue estando "en progreso" por más
+> terminada que se sienta.
+
+### La aceptación tiene dos niveles
+
+| Nivel | Quién | Cuándo | Qué significa |
+|---|---|---|---|
+| **Verificación** | Stuard, Proxy PO | Al terminar la historia | Los criterios de aceptación escritos se cumplen. La tarjeta pasa a *Done* |
+| **Aceptación formal** | Ing. Fuentes, PO | En la Sprint Review | La funcionalidad aporta el valor esperado. Se registra en la minuta |
+
+El Proxy Product Owner **solo verifica contra los criterios ya escritos**: no inventa requisitos,
+no cambia prioridades y no aprueba desviaciones de alcance. Si surge una duda que los criterios
+no resuelven, se escala al Product Owner y queda anotada para la Sprint Review.
+
+Que el Product Owner rechace en la Review algo que el Proxy ya había dado por bueno **no es un
+fallo del proceso**: significa que los criterios de aceptación estaban incompletos. En ese caso se
+corrigen los criterios de la historia, no se culpa a nadie, y es material para la Retrospectiva.
+
+---
+
+## Requerimientos incorporados después del backlog inicial
+
+> Estas cuatro historias **no estaban en el backlog de la versión 1.0**. Se documentan aquí, con
+> el mismo formato que las demás, porque un requerimiento que entra tarde sigue siendo un
+> requerimiento: lo que cambia es cuándo se estimó, no cómo se trata.
+>
+> **No todas vinieron del mismo sitio, y la diferencia importa.** US-032, US-033 y US-034 las pidió
+> el Product Owner en la clase del **17 de octubre de 2026**, cuando las 24 historias planificadas
+> ya estaban terminadas y verificadas en Staging. **US-035 la propuso el equipo** el 24 de octubre,
+> al contrastar el sistema con las buenas prácticas de seguridad vistas en clase. Una la impone el
+> cliente; la otra sale de mirarse el producto con criterio propio.
+>
+> El análisis de qué costó incorporarlas está en
+> [`23-analisis-impacto-requerimientos-po.md`](23-analisis-impacto-requerimientos-po.md).
+
+### US-032 — Bitácora de auditoría
+**Como** administrador del sistema, **quiero** que toda acción que modifique datos quede
+registrada **para poder** auditar quién hizo qué, cuándo y con qué resultado.
+
+**Criterios de aceptación**
+- Se registra el autor, su rol, la operación, el recurso afectado, el resultado y la fecha.
+- Se registran también las acciones **rechazadas** (401, 403, 409, 422): son las que más interesan.
+- Las consultas de solo lectura no se registran.
+- Ningún asiento puede modificarse ni borrarse desde la aplicación.
+- La bitácora no guarda el cuerpo de las peticiones: por ahí viajan el CUI y las contraseñas.
+- Pantalla de consulta para administración, con filtros por fecha, actor, recurso y rechazadas.
+
+> 🔧 Se implementa con un **middleware global** y no con un interceptor. En NestJS los *guards*
+> corren antes que los interceptores, de modo que un interceptor nunca vería un 403 —justo el caso
+> que más importa auditar. Queda escrito como **ADR-09** en `05-arquitectura.md`.
+
+**Prioridad:** Alta · **Estimación:** 8
+
+### US-033 — Segunda aprobación para becas de monto alto
+**Como** Product Owner, **quiero** que las solicitudes cuya beca supere los Q10,000 necesiten una
+segunda aprobación **para poder** evitar que una sola persona comprometa montos elevados.
+
+**Criterios de aceptación**
+- La convocatoria define el monto de la beca; el monto queda fijado en la solicitud al crearla.
+- Si el monto supera **Q10,000**, la primera aprobación deja la solicitud en
+  `APROBACION_PENDIENTE` y **no** reserva cupo todavía.
+- La segunda aprobación debe darla **una persona distinta** de la que dio la primera.
+- Confirmar la segunda aprobación pasa la solicitud a `APROBADA` y ahí sí reserva el cupo.
+- Desde `APROBACION_PENDIENTE` todavía se puede rechazar, con su motivo.
+- Por debajo del umbral el flujo no cambia: una sola aprobación.
+
+> 🔧 **Reutiliza el patrón State**: `APROBACION_PENDIENTE` es una clase de estado más
+> (`EstadoAprobacionPendiente`), no un `if` dentro del caso de uso. Esta historia es la prueba de
+> que la decisión de diseño del Sprint 4 valió la pena: el estado nuevo no obligó a tocar los
+> estados existentes.
+
+**Prioridad:** Alta · **Estimación:** 8
+
+### US-034 — Avisos al estudiante por cambio de estado
+**Como** estudiante, **quiero** recibir un aviso cada vez que mi solicitud cambia de estado
+**para poder** enterarme sin tener que entrar a revisar todos los días.
+
+**Criterios de aceptación**
+- Cada cambio de estado genera un aviso dirigido al estudiante dueño de la solicitud.
+- El aviso dice a qué estado pasó y, cuando lo hay, el motivo de la resolución.
+- El estudiante ve sus avisos en una pantalla propia, con los no leídos marcados.
+- Puede marcar uno como leído o marcarlos todos.
+- Un estudiante **no** puede marcar ni ver los avisos de otro.
+- Crear la solicitud no genera aviso: el estado inicial no es un *cambio* de estado.
+- Si el aviso falla al guardarse, la operación del usuario **no** se cae: ya ocurrió y es válida.
+
+> 🔧 **Aquí se implementa el patrón Observer** (séptimo patrón del proyecto). La solicitud acumula
+> lo que le pasó y el caso de uso lo publica **después de persistir**, para que nunca se avise de
+> algo que no llegó a guardarse. Justificado en `06-patrones.md`, sección 7.
+
+**Prioridad:** Alta · **Estimación:** 5
+
+---
+
+### US-035 — Recuperar la contraseña olvidada
+
+**Como** usuario de la plataforma, **quiero** recuperar mi contraseña por correo cuando la olvide
+**para poder** volver a entrar sin depender de que un administrador me la cambie a mano.
+
+> **De dónde salió esta historia.** No la pidió el Product Owner. El 24 de octubre, al contrastar
+> el sistema con las buenas prácticas de almacenamiento de contraseñas vistas en clase, se vio que
+> de las cinco el proyecto cumplía tres —biblioteca confiable, nada de MD5 ni SHA-1, y ninguna
+> contraseña en los logs— y le faltaban dos: la recuperación y el doble factor.
+>
+> **Se decidió hacer la recuperación y no el doble factor.** El segundo es bastante más trabajo del
+> que cabía en los días restantes, y la propia diapositiva lo plantea como "cuando sea posible".
+> Queda anotado como ítem no implementado, para que conste que se identificó y se descartó con un
+> motivo, no que se pasó por alto.
+
+**Criterios de aceptación**
+
+- Desde la pantalla de acceso se puede pedir un enlace de recuperación escribiendo el correo.
+- El sistema responde **exactamente igual exista o no una cuenta con ese correo**, y solo envía el
+  mensaje si existe.
+- El enlace llega por correo y permite elegir una contraseña nueva, que debe cumplir la misma
+  política que el registro.
+- El enlace **vence en una hora** y **sirve una sola vez**.
+- Al usar uno, **los demás enlaces vigentes de esa persona dejan de servir**.
+- Un enlace inexistente, uno vencido y uno ya usado producen **el mismo mensaje de error**.
+- Al restablecer la contraseña, la cuenta queda **desbloqueada**.
+- Restablecerla **no inicia sesión**: la persona vuelve al acceso y escribe la contraseña nueva.
+- Se limita a cinco intentos cada quince minutos por dirección.
+
+> 🔒 **Por qué la respuesta es idéntica exista o no la cuenta.** Es el criterio con más peso de toda
+> la historia. Si el sistema contestara "no existe esa dirección", cualquiera podría ir probando
+> correos y quedarse con la lista de quién está registrado. En un sistema de becas eso revela
+> **quién pidió ayuda económica al Estado**, que es justo el tipo de dato que la plataforma existe
+> para proteger. Hay una prueba que compara las dos respuestas carácter por carácter.
+
+> 🔧 **Aquí se vuelve a usar el patrón Adapter.** Enviar correo de verdad necesita credenciales de
+> un servidor SMTP que un entorno de pruebas no tiene. Con un puerto `EnviadorCorreo` y dos
+> adaptadores —consola y SMTP— el flujo completo se puede recorrer y demostrar sin ellas: el
+> adaptador por defecto escribe el mensaje en el log. Se cambia con la variable `CORREO_TIPO` y
+> ninguna regla de negocio se entera.
+
+> ⚠️ **Limitación conocida.** El adaptador SMTP **no está verificado contra un servidor de correo
+> real**. Funciona contra un servidor de prueba que imita a Gmail, pero eso no es lo mismo.
+> Mientras no se compruebe, el adaptador en uso es el de consola y el enlace aparece en el log del
+> servidor, no en el buzón de la persona.
+
+**Prioridad:** Media · **Estimación:** 8
 
 ---
 
@@ -406,6 +645,20 @@ cumple, la historia **no está hecha** y regresa al backlog.
 | EPIC-05 · Resolución y consulta | 5 | 31 |
 | EPIC-06 · Reportes | 4 | 26 |
 | **Total** | **31** | **176** |
+
+> **Actualización del 17 de octubre de 2026.** A estas 31 historias se sumaron **US-032, US-033 y
+> US-034**, pedidas por el Product Owner cuando el backlog inicial ya estaba terminado: **34
+> historias y 197 puntos**. Los 21 puntos nuevos equivalen a casi un sprint completo de la
+> velocidad estimada, y se absorbieron sin mover la fecha de entrega porque el trabajo planificado
+> se había adelantado. Esa holgura era el margen del proyecto, y se consumió aquí.
+>
+> **Actualización del 24 de octubre de 2026.** Se sumó **US-035**, propuesta por el equipo y no por
+> el Product Owner: **35 historias y 205 puntos**. Es la única historia del proyecto que no nació
+> ni del backlog inicial ni de una petición del cliente, sino de revisar el producto contra un
+> criterio externo. Se hizo cuando el margen ya estaba consumido, así que compite directamente con
+> el cierre de la entrega; por eso se le puso prioridad **Media** y no Alta, y por eso el doble
+> factor que surgió en el mismo análisis **se descartó de forma explícita** en lugar de dejarlo
+> abierto.
 
 Con 8 sprints disponibles, se requiere una velocidad promedio de **~22 puntos por sprint**. La
 velocidad real se medirá a partir del Sprint 2; si resulta menor, el Product Owner despriorizará

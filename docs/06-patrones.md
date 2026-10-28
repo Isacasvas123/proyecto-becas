@@ -11,18 +11,31 @@
 > el dominio de becas, y cada uno responde las cuatro preguntas exigidas: qué problema resuelve,
 > qué alternativas existían, por qué se eligió y qué ventajas aporta.
 
-**Cumplimiento del mínimo requerido:** 2 creacionales · 2 estructurales · 2 de comportamiento.
+**Cumplimiento del mínimo requerido:** 2 creacionales · 2 estructurales · **3** de comportamiento.
+El mínimo pedía 2 de comportamiento; el tercero lo trajo un requerimiento nuevo del Product Owner
+el 17 de octubre, no el deseo de sumar patrones.
 
-| Tipo | Patrón | Dónde vive | Sprint |
-|---|---|---|---|
-| Creacional | Factory Method | `modules/convocatorias/domain/factories/` | 3 |
-| Creacional | Builder | `modules/reportes/application/builders/` | 7 |
-| Estructural | Adapter | `modules/solicitudes/infrastructure/adapters/` | 4 |
-| Estructural | Facade | `modules/solicitudes/application/facades/` | 6 |
-| Comportamiento | State | `modules/solicitudes/domain/estados/` | 4 |
-| Comportamiento | Strategy | `modules/evaluaciones/domain/strategies/` | 5 |
-| *Extra* | Observer | `shared/patterns/observer/` | 5 (opcional) |
-| *Extra* | Chain of Responsibility | `modules/solicitudes/domain/validaciones/` | 6 (opcional) |
+| Tipo | Patrón | Dónde vive | Sprint | Estado |
+|---|---|---|---|---|
+| Creacional | **Factory Method** | `modules/convocatorias/domain/factories/` | **3** | ✅ **Implementado** (adelantado al 12 Sep) |
+| Creacional | **Builder** | `modules/reportes/application/builders/` | **7** | ✅ **Implementado** (adelantado al 16 Sep) |
+| Estructural | **Adapter** | `modules/usuarios/infrastructure/adapters/` | **1** | ✅ **Implementado** |
+| Estructural | **Facade** | `modules/resoluciones/application/facades/` | **6** | ✅ **Implementado** (adelantado al 16 Sep) |
+| Comportamiento | **State** | `modules/solicitudes/domain/estados/` | **4** | ✅ **Implementado** (adelantado al 16 Sep) |
+| Comportamiento | **Strategy** | `modules/evaluaciones/domain/strategies/` | **5** | ✅ **Implementado** (adelantado al 16 Sep) |
+| Comportamiento | **Observer** | `modules/solicitudes/domain/events/` | — | ✅ **Implementado** (17 Oct, exigencia del PO) |
+| *Extra* | Chain of Responsibility | `modules/solicitudes/domain/validaciones/` | 6 (opcional) | Pendiente |
+
+> **Actualización del 3 de septiembre de 2026.** El patrón **Adapter se adelantó al Sprint 1**:
+> el inicio de sesión (US-002) necesitaba calcular y verificar hashes de contraseña y emitir
+> tokens de sesión, y ninguna de las dos cosas puede vivir en el dominio sin acoplarlo a
+> `bcryptjs` y a `@nestjs/jwt`. Se resolvió con dos puertos y sus adaptadores, exactamente el
+> mismo mecanismo previsto para el almacenamiento de documentos en el Sprint 4.
+>
+> No fue una decisión de calendario sino de diseño: el patrón apareció porque el problema
+> apareció, que es justamente el criterio del curso —*"el objetivo no es utilizar patrones por
+> obligación, es resolver problemas de diseño"*. Ver la sección **Adapter** más abajo, donde se
+> documentan las tres implementaciones actuales.
 
 ---
 
@@ -67,53 +80,75 @@ del código existente.
 - **Imposible crear una convocatoria en estado inválido**: la fábrica garantiza las invariantes.
 - **Testeable**: cada fábrica concreta se prueba de forma aislada.
 
-### Esquema
+### Implementación real — Sprint 3
+
+**✅ IMPLEMENTADO** en `modules/convocatorias/domain/factories/convocatoria.factory.ts`, con 18
+pruebas propias en `convocatoria.factory.spec.ts`.
 
 ```ts
-// domain/factories/convocatoria.factory.ts
 export abstract class ConvocatoriaFactory {
-  // Template: el algoritmo de creación es común; los detalles los define cada subclase.
-  crear(datos: DatosConvocatoria): Convocatoria {
-    const convocatoria = new Convocatoria({
-      ...datos,
-      tipo: this.tipo(),
-      requisitos: this.requisitosPorDefecto(),
-      documentosExigidos: this.documentosExigidos(),
-      criterioEvaluacion: this.criterioPorDefecto(),
-    });
+  // EL MÉTODO PLANTILLA: igual para todos los tipos; no se sobrescribe.
+  crear(datos: DatosNuevaConvocatoria): Convocatoria {
     this.validarCupos(datos.cupos);
-    return convocatoria;
+    return Convocatoria.nuevaEnBorrador({
+      ...,
+      tipo: this.tipo(),
+      requisitos: datos.requisitos ?? this.requisitosPorDefecto(),
+      documentosExigidos: datos.documentosExigidos ?? this.documentosPorDefecto(),
+    });
   }
 
-  protected abstract tipo(): TipoBeca;
-  protected abstract requisitosPorDefecto(): Requisito[];
-  protected abstract documentosExigidos(): TipoDocumento[];
-  protected abstract criterioPorDefecto(): TipoCriterio;
-  protected abstract validarCupos(cupos: number): void;
+  abstract tipo(): TipoBeca;
+  abstract prefijoCodigo(): string;                      // UNIV-2026-001
+  abstract requisitosPorDefecto(): readonly Requisito[];
+  abstract documentosPorDefecto(): readonly TipoDocumento[];
+  protected validarCupos(_cupos: number): void {}        // gancho opcional
 }
 
 export class ConvocatoriaPosgradoFactory extends ConvocatoriaFactory {
-  protected tipo() { return TipoBeca.POSGRADO; }
-  protected requisitosPorDefecto() {
-    return [Requisito.TITULO_UNIVERSITARIO, Requisito.PROMEDIO_MINIMO_80,
-            Requisito.CARTA_RECOMENDACION];
-  }
-  protected documentosExigidos() {
-    return [TipoDocumento.DPI, TipoDocumento.TITULO, TipoDocumento.CERTIFICADO_CURSOS,
-            TipoDocumento.CARTA_RECOMENDACION];
-  }
-  protected criterioPorDefecto() { return TipoCriterio.MERITO_ACADEMICO; }
   protected validarCupos(cupos: number) {
-    if (cupos > 50) throw new ReglaDeNegocioError('Posgrado admite máximo 50 cupos');
+    if (cupos > 50) throw new ReglaDeNegocioError('... como máximo 50 cupos.');
   }
+  // ...
 }
+
+// El único punto que asocia tipo y fábrica. `satisfies` hace que olvidar un tipo sea
+// un error de COMPILACIÓN, no un fallo en producción.
+export const FABRICAS_CONVOCATORIA = {
+  [TipoBeca.NIVEL_MEDIO]:   new ConvocatoriaNivelMedioFactory(),
+  [TipoBeca.UNIVERSITARIA]: new ConvocatoriaUniversitariaFactory(),
+  [TipoBeca.POSGRADO]:      new ConvocatoriaPosgradoFactory(),
+} as const satisfies Readonly<Record<TipoBeca, ConvocatoriaFactory>>;
 ```
+
+El servicio de aplicación no tiene ni un `if` por tipo: pide la fábrica y le dice "crea".
+
+### Diferencias con el diseño original, y por qué
+
+| Diseño original | Implementación | Motivo |
+|---|---|---|
+| `criterioPorDefecto()` en cada fábrica | **No está** | El criterio de evaluación es el patrón Strategy del Sprint 5. Declararlo hoy sería un método sin nadie que lo use |
+| — | `prefijoCodigo()` | Apareció al implementar: el código correlativo también varía por tipo, y es exactamente la clase de regla que el patrón encapsula |
+| — | Registro `FABRICAS_CONVOCATORIA` | El diseño no decía cómo elegir la fábrica. Un mapa y no un `switch`, por la misma razón que existe el patrón |
+| "Un tipo nuevo sin tocar código existente" | Casi | Hay que agregar una línea al registro y el valor en `TipoBeca`. No se toca ninguna fábrica ni el servicio. Se dice tal cual en el código |
+
+**Valores por defecto de cada tipo**, verificables en el código y en `GET /convocatorias/catalogo`:
+
+| Tipo | Requisitos | Documentos | Regla propia |
+|---|---|---|---|
+| Nivel medio | Nacionalidad, inscrito en nivel medio, promedio ≥70, ingreso familiar limitado | **Certificado de nacimiento** (no DPI: la mayoría son menores de edad), inscripción, notas, ingresos | — |
+| Universitaria | Nacionalidad, inscrito en universidad, promedio ≥75 | DPI, inscripción, notas, ingresos | — |
+| Posgrado | Título universitario, promedio ≥80, carta de recomendación | DPI, título, notas, carta | **Máximo 50 cupos** ⚠️ pendiente de confirmar con el PO |
 
 ---
 
 ## 2. Builder — `ReporteBuilder`
 
+**✅ IMPLEMENTADO EL 16 DE SEPTIEMBRE** (previsto para el Sprint 7; llegó con US-028). Con él, **los seis
+patrones están implementados**.
+
 **Ubicación:** `modules/reportes/application/builders/reporte.builder.ts`
+**Pruebas:** `reporte.builder.spec.ts`.
 
 ### ¿Qué problema resuelve?
 
@@ -138,7 +173,7 @@ con un único constructor produce el anti-patrón del **constructor telescópico
 ### ¿Por qué se seleccionó Builder?
 
 Porque separa la **construcción** de un objeto complejo de su **representación**, permite
-construirlo paso a paso con una interfaz fluida y legible, y —lo decisivo— permite **validar en
+construirlo paso a paso con una interfaz fluida y legible, y permite **validar en
 el método `build()`** que la combinación de filtros elegida es coherente antes de producir el
 reporte.
 
@@ -150,27 +185,63 @@ reporte.
 - Habilita **reutilización**: el mismo builder alimenta la vista web, la exportación a CSV y la
   exportación a PDF.
 
-### Esquema
+### Esquema — tal como quedó implementado
 
 ```ts
-const reporte = new ReporteBuilder()
-  .deConvocatoria(convocatoriaId)
-  .conEstado(EstadoSolicitud.APROBADA)
-  .entreFechas(inicio, fin)
-  .porDepartamento('Quetzaltenango')
-  .agrupadoPor(Agrupacion.CENTRO_EDUCATIVO)
-  .enFormato(FormatoSalida.CSV)
-  .build();   // valida coherencia y devuelve el Reporte listo
+const spec = new ReporteBuilder()
+  .conEstados(['APROBADA', 'ADJUDICADA'])
+  .deNivel('POSGRADO')
+  .deDepartamento('QUETZALTENANGO')
+  .entreFechas(inicio, fin)                 // por fecha de envío
+  .agrupadoPor('CENTRO_EDUCATIVO')
+  .ordenadoPor('ENVIO_RECIENTE')
+  .enFormato('CSV')
+  .build();                                 // valida y devuelve una especificación congelada
+
+const reporte = await generarReporte.generar(spec);   // independiente del formato
+const archivo = exportadores.find((e) => e.formato === spec.formato).exportar(reporte);
 ```
+
+**Qué rechaza `build()`.** Fechas al revés, una lista de estados vacía y agrupar por el mismo dato
+por el que se filtró (todo caería en un solo grupo). Cada paso, además, rechaza valores fuera de
+catálogo: un borrador no es una solicitud recibida, `XLSX` no es un formato disponible.
+
+**Dónde se ve la ventaja.** En el controlador, cada parámetro de la consulta es opcional y solo se
+llama al paso que corresponde a los que llegaron: no hay un `if` por combinación ni un constructor de
+nueve argumentos. Y el reporte de becas por región (US-031) se pide con el mismo builder —solo
+adjudicadas, agrupadas por departamento— en lugar de tener su propia consulta.
+
+**Dos diferencias con la versión 1.0.** El builder produce una **especificación**, no el reporte: los
+datos los junta un servicio aparte y el formato lo aplica un exportador (CSV o PDF), de modo que un
+formato nuevo sirve para todos los reportes. Y el departamento es un **código** del catálogo, no el
+nombre escrito, por la misma razón que en el perfil (US-011).
 
 ---
 
 # PATRONES ESTRUCTURALES
 
-## 3. Adapter — `AlmacenamientoDocumentosPort`
+## 3. Adapter — puertos de infraestructura
 
-**Ubicación:** puerto en `modules/solicitudes/domain/ports/`, adaptadores en
-`modules/solicitudes/infrastructure/adapters/`
+**✅ IMPLEMENTADO EN EL SPRINT 1** (adelantado desde el Sprint 4, ver nota inicial).
+
+**Ubicaciones actuales:**
+
+| Puerto (domain) | Adaptador (infrastructure) | Qué aísla |
+|---|---|---|
+| `usuarios/domain/ports/hasher-password.ts` | `BcryptHasherAdapter` | La biblioteca de hashing (`bcryptjs`) |
+| `usuarios/domain/ports/generador-token.ts` | `JwtGeneradorTokenAdapter` | El formato de sesión (JWT HS256) |
+| `usuarios/domain/ports/verificador-token.ts` | `JwtVerificadorTokenAdapter` | La validación de la sesión, que consume el guard global (US-003) |
+| `usuarios/domain/ports/usuario.repositorio.ts` | `UsuarioPrismaRepositorio` · `UsuarioEnMemoriaRepositorio` | La persistencia |
+
+| `solicitudes/domain/ports/almacenamiento-documentos.ts` | `AlmacenamientoLocalAdapter` · `AlmacenamientoMemoriaAdapter` | Dónde se guardan los documentos (US-013). Se elige con `ALMACENAMIENTO_TIPO` |
+| `solicitudes/domain/ports/notificador-solicitudes.ts` | `NotificadorConsolaAdapter` | El canal de avisos. El de correo llega con US-022 |
+| `solicitudes/domain/ports/consultas-externas.ts` | `ConsultaConvocatoriasAdapter` · `ConsultaPerfilesAdapter` | Otros módulos: `solicitudes` no importa su dominio, solo lo que exportan |
+
+> **16 de septiembre.** Se agregó el almacenamiento de documentos que aquí estaba *previsto para el
+> Sprint 4*. El adaptador local guarda las rutas **relativas** y comprueba, antes de leer o borrar,
+> que no salgan de su carpeta: una referencia manipulada como `../../.env` no llega al disco. El
+> de la nube no existe todavía; si se configura, la API **no arranca**, para que el error se vea al
+> desplegar y no con el primer documento.
 
 ### ¿Qué problema resuelve?
 
@@ -210,27 +281,68 @@ se invierte: manda el dominio, no el proveedor.
   criterio "adaptarse al cambio".
 - El mismo patrón se reutiliza para el envío de notificaciones (`NotificacionPort`).
 
-### Esquema
+### Esquema — implementación real del Sprint 1
 
 ```ts
-// domain/ports/almacenamiento-documentos.port.ts  — lo que el dominio NECESITA
-export interface AlmacenamientoDocumentosPort {
-  guardar(archivo: ArchivoDocumento): Promise<ReferenciaDocumento>;
-  obtener(ref: ReferenciaDocumento): Promise<ArchivoDocumento>;
-  eliminar(ref: ReferenciaDocumento): Promise<void>;
+// domain/ports/hasher-password.ts  — lo que el dominio NECESITA
+export interface HasherPassword {
+  verificar(passwordEnClaro: string, hashAlmacenado: string): Promise<boolean>;
+  calcular(passwordEnClaro: string): Promise<string>;
 }
 
-// infrastructure/adapters/  — lo que cada proveedor OFRECE, adaptado
-export class AlmacenamientoLocalAdapter implements AlmacenamientoDocumentosPort { /* fs */ }
-export class AlmacenamientoNubeAdapter  implements AlmacenamientoDocumentosPort { /* SDK */ }
-export class AlmacenamientoMemoriaAdapter implements AlmacenamientoDocumentosPort { /* tests */ }
+// infrastructure/adapters/  — lo que la biblioteca OFRECE, adaptado
+export class BcryptHasherAdapter implements HasherPassword { /* bcryptjs */ }
 ```
+
+El enlace entre ambos ocurre en un solo punto, `usuarios.module.ts`:
+
+```ts
+{ provide: HASHER_PASSWORD,   useClass: BcryptHasherAdapter },
+{ provide: GENERADOR_TOKEN,   useClass: JwtGeneradorTokenAdapter },
+{ provide: VERIFICADOR_TOKEN, useClass: JwtVerificadorTokenAdapter },
+```
+
+Migrar a argon2, o cambiar JWT por sesiones en servidor, es cambiar **una línea** de ese archivo.
+Ni la entidad `Usuario`, ni el caso de uso `AutenticarUsuarioService`, ni el controlador se
+enteran. La ventaja es comprobable: la prueba unitaria del caso de uso inyecta un
+hasher falso y corre en milisegundos, sin bcrypt real.
+
+### Esquema — almacenamiento de documentos (implementado el 16 Sep)
+
+```ts
+// solicitudes/domain/ports/almacenamiento-documentos.ts
+export interface AlmacenamientoDocumentos {
+  guardar(contenido: Buffer, destino: { carpeta: string; nombre: string }): Promise<string>;
+  obtener(referencia: string): Promise<Buffer>;
+  eliminar(referencia: string): Promise<void>;
+}
+
+// solicitudes/infrastructure/almacenamiento/
+export class AlmacenamientoLocalAdapter   implements AlmacenamientoDocumentos { /* node:fs */ }
+export class AlmacenamientoMemoriaAdapter implements AlmacenamientoDocumentos { /* pruebas */ }
+// AlmacenamientoNubeAdapter: cuando haya proveedor. Es una clase nueva y una línea en el módulo.
+```
+
+El caso de uso `CargarDocumentoService` usa el puerto en un orden deliberado: **guarda el archivo
+nuevo con un nombre único, actualiza la solicitud, y solo entonces borra el anterior**. Si guardar
+la solicitud falla, borra el archivo recién subido. Así nunca queda un documento marcado como
+cargado sin archivo detrás (flujo de excepción 3a de CU-07). Las pruebas lo verifican con el
+adaptador en memoria, forzando el fallo del repositorio.
 
 ---
 
-## 4. Facade — `SolicitudFacade`
+## 4. Facade — `ResolucionFacade`
 
-**Ubicación:** `modules/solicitudes/application/facades/solicitud.facade.ts`
+**✅ IMPLEMENTADO EL 16 DE SEPTIEMBRE** (previsto para el Sprint 6; llegó con US-023).
+
+**Ubicación:** `modules/resoluciones/application/facades/resolucion.facade.ts`
+**Pruebas:** `casos-de-uso-resoluciones.spec.ts` con dobles de cada colaborador.
+
+> **Por qué cambió de lugar.** La versión 1.0 la ponía en `solicitudes`. Pero resolver necesita los
+> dictámenes de `evaluaciones`, y `evaluaciones` ya depende de `solicitudes`: la fachada ahí habría
+> creado un ciclo entre módulos. Vive en un módulo propio, `resoluciones`, del que nadie depende.
+> También cambió el nombre: `SolicitudFacade` sugería una fachada de todo lo que se hace con una
+> solicitud, y esta resuelve.
 
 ### ¿Qué problema resuelve?
 
@@ -270,32 +382,52 @@ especializado. Así se preserva la responsabilidad única de cada uno.
   aplica nada.
 - **Testeable de punta a punta** sin levantar el servidor HTTP.
 
-### Esquema
+### Esquema — tal como quedó implementado
 
 ```ts
-export class SolicitudFacade {
+@Injectable()
+export class ResolucionFacade {
   constructor(
-    private readonly solicitudes: SolicitudRepositorio,
-    private readonly cupos: VerificadorCuposService,
-    private readonly auditoria: AuditoriaService,
-    private readonly actas: GeneradorActaService,
-    private readonly notificador: NotificacionPort,
+    private readonly solicitudes: ConsultaSolicitudesResolucion,   // → solicitudes (State)
+    private readonly dictamenes: ConsultaDictamenes,               // → evaluaciones
+    private readonly convocatorias: ConsultaConvocatoriasResolucion, // → convocatorias (cupos)
+    private readonly notificador: NotificadorResoluciones,         // → aviso al estudiante
   ) {}
 
-  async resolver(id: SolicitudId, decision: Decision, motivo: string): Promise<Resolucion> {
-    const solicitud = await this.solicitudes.obtener(id);
-    if (decision === Decision.APROBAR) await this.cupos.verificarDisponibilidad(solicitud);
+  async resolver(solicitudId, decision, motivo, adminId) {
+    // 1. Validaciones que no cambian nada
+    exigirMotivo(motivo);                                           // criterio 2
+    const solicitud = await this.cargarSolicitud(solicitudId);
+    if ((await this.dictamenes.resumen(solicitud.id)).total === 0)  // criterio 1
+      throw new ReglaDeNegocioError('... no tiene ningún dictamen ...');
+    const convocatoria = await this.cargarConvocatoria(solicitud.convocatoriaId);
+    if (decision === 'APROBAR') (await this.ocupacion(convocatoria)).asegurarCupoParaAprobar();
 
-    solicitud.resolver(decision, motivo);        // el patrón State valida la transición
-    await this.solicitudes.guardar(solicitud);
+    // 2. La única escritura: transición (State) + historial + comprobación ATÓMICA del cupo
+    const resuelta = await this.solicitudes.resolver(solicitud.id, decision, motivo, adminId,
+                                                     convocatoria.cupos);   // criterios 3 y 4
 
-    await this.auditoria.registrar(solicitud, motivo);
-    const acta = await this.actas.generar(solicitud);
-    await this.notificador.enviar(solicitud.estudiante, PlantillaNotificacion.RESOLUCION);
-    return new Resolucion(solicitud, acta);
+    // 3. El aviso; si falla, la resolución ya está hecha
+    await this.avisar(resuelta, motivo);
+    return this.resultado(resuelta, convocatoria);
   }
 }
+
+// El controlador: una línea por operación, sin saber cuántos colaboradores hay detrás.
+resolver(@UsuarioActual() adminId, @Param('id') id, @Body() p) {
+  return this.fachada.resolver(id, p.decision, p.motivo, adminId);
+}
 ```
+
+**La comprobación del cupo ocurre dos veces, a propósito.** La de la fachada da un buen mensaje
+antes de intentar. La definitiva está en el repositorio de solicitudes: bloquea la fila de la
+convocatoria (`SELECT … FOR UPDATE`), cuenta y guarda en la misma transacción. Se verificó contra
+PostgreSQL lanzando **tres aprobaciones simultáneas por el último cupo: pasó una, las otras dos
+recibieron 422**. Sin el bloqueo, las tres habrían visto un cupo libre.
+
+**Auditoría:** no es un colaborador aparte porque ya la da el patrón State: cada transición queda en
+el historial con autor, fecha y motivo, en la misma transacción. **Acta:** es US-026; cuando exista,
+será un colaborador más de la fachada y el controlador no cambiará.
 
 ---
 
@@ -303,7 +435,11 @@ export class SolicitudFacade {
 
 ## 5. State — `EstadoSolicitud`
 
-**Ubicación:** `modules/solicitudes/domain/estados/`
+**✅ IMPLEMENTADO EL 16 DE SEPTIEMBRE** (previsto para el Sprint 4; llegó con US-012).
+
+**Ubicación:** `modules/solicitudes/domain/estados/estados-solicitud.ts`
+**Pruebas:** `estados-solicitud.spec.ts` recorre **los 30 pares** estado × acción contra la tabla del
+diagrama: si alguien habilita una transición que no está dibujada, una prueba falla.
 
 ### ¿Qué problema resuelve?
 
@@ -353,39 +489,60 @@ recordarlo.
 - **El diagrama de estados se traduce uno a uno al código**, y el código sirve de documentación.
 - Cada estado se prueba unitariamente por separado.
 
-### Esquema
+### Esquema — tal como quedó implementado
 
 ```ts
 export abstract class EstadoSolicitud {
-  abstract get nombre(): NombreEstado;
-  cargarDocumento(_: Solicitud, __: Documento): void { this.rechazar('cargar documentos'); }
-  enviar(_: Solicitud): void                        { this.rechazar('enviar'); }
-  evaluar(_: Solicitud, __: Evaluacion): void       { this.rechazar('evaluar'); }
-  resolver(_: Solicitud, __: Decision): void        { this.rechazar('resolver'); }
+  abstract readonly nombre: NombreEstado;
+  verificarCargaDeDocumentos(): void              { this.rechazar('cargar o reemplazar documentos de'); }
+  enviar(_s: VistaSolicitud): EstadoSolicitud     { return this.rechazar('enviar'); }
+  iniciarEvaluacion(): EstadoSolicitud            { return this.rechazar('pasar a evaluación'); }
+  resolver(_d: Decision): EstadoSolicitud         { return this.rechazar('resolver'); }
+  adjudicar(): EstadoSolicitud                    { return this.rechazar('adjudicar'); }
+  estaActiva(): boolean                           { return true; }
 
   protected rechazar(accion: string): never {
-    throw new TransicionInvalidaError(
-      `No se puede ${accion} una solicitud en estado ${this.nombre}`);
+    throw new TransicionInvalidaError(`No se puede ${accion} una solicitud en estado ${this.nombre}.`);
   }
 }
 
 export class EstadoBorrador extends EstadoSolicitud {
-  get nombre() { return NombreEstado.BORRADOR; }
-  cargarDocumento(solicitud: Solicitud, doc: Documento) { solicitud.agregarDocumento(doc); }
-  enviar(solicitud: Solicitud) {
-    if (!solicitud.tieneTodosLosDocumentos())
-      throw new ReglaDeNegocioError('Faltan documentos exigidos por la convocatoria');
-    solicitud.cambiarEstado(new EstadoEnviada());
+  readonly nombre = NombreEstado.BORRADOR;
+  verificarCargaDeDocumentos(): void { /* permitido */ }
+  enviar(solicitud: VistaSolicitud): EstadoSolicitud {
+    const faltantes = solicitud.documentosFaltantes();
+    if (faltantes.length > 0) throw new ReglaDeNegocioError(`Faltan documentos exigidos: ...`);
+    return new EstadoEnviada();
   }
-  // evaluar() y resolver() heredan el rechazo: son imposibles desde BORRADOR.
+  // iniciarEvaluacion(), resolver() y adjudicar() heredan el rechazo.
+}
+
+// En la entidad: no hay un solo if sobre el estado.
+enviar(ahora: Date, autorId: string): void {
+  this.transicionar(this.estado.enviar(this), ahora, autorId, null);
+  this._enviadaEn = ahora;
 }
 ```
+
+**Una diferencia con la versión 1.0 de este esquema, y por qué.** En la variante clásica el estado
+llama a `solicitud.cambiarEstado(...)`, lo que obliga a exponer ese método a cualquiera. Aquí cada
+transición **devuelve** el estado siguiente y es la `Solicitud` quien lo aplica y lo anota en el
+historial (US-016). Resultado: la solicitud es la única que se modifica a sí misma, ningún código
+externo puede saltarse el historial, y cada estado se prueba sin construir una solicitud completa.
+`VistaSolicitud` es la interfaz mínima que un estado necesita ver: solo los documentos faltantes.
+
+Los estados de evaluación y adjudicación ya existen y están probados porque son parte del modelo;
+los **casos de uso** que los disparan llegan con sus historias (US-018, US-023, US-024).
 
 ---
 
 ## 6. Strategy — `CriterioEvaluacionStrategy`
 
+**✅ IMPLEMENTADO EL 16 DE SEPTIEMBRE** (previsto para el Sprint 5; llegó con US-019).
+
 **Ubicación:** `modules/evaluaciones/domain/strategies/`
+**Pruebas:** `criterios.spec.ts` — cada fórmula en sus extremos, y que el mixto use lo que devuelven
+los otros dos criterios en vez de repetir sus fórmulas.
 
 ### ¿Qué problema resuelve?
 
@@ -425,59 +582,182 @@ que el código cliente cambie.
 - **Elimina los condicionales** del servicio de evaluación.
 - Permite **comparar** el resultado de una misma solicitud bajo distintos criterios.
 
-### Esquema
+### Esquema — tal como quedó implementado
 
 ```ts
 export interface CriterioEvaluacionStrategy {
   readonly nombre: string;
-  calcular(solicitud: Solicitud): Puntaje;   // 0..100
-  desglose(solicitud: Solicitud): DesglosePuntaje;  // para justificar el dictamen
+  calcular(datos: DatosEvaluables): ResultadoCriterio;  // { criterio, puntaje 0..100, desglose }
 }
 
 export class CriterioMeritoAcademico implements CriterioEvaluacionStrategy {
   readonly nombre = 'Mérito académico';
-  calcular(s: Solicitud): Puntaje {
-    return Puntaje.de(
-      s.estudiante.promedio * 0.7 + s.estudiante.reconocimientos.length * 5,
-    );
-  }
-  desglose(s: Solicitud) { /* ... */ }
+  calcular(d: DatosEvaluables) { /* puntaje = promedio */ }
 }
 
-export class CriterioNecesidadSocioeconomica implements CriterioEvaluacionStrategy { /* ... */ }
+export class CriterioNecesidadSocioeconomica implements CriterioEvaluacionStrategy {
+  readonly nombre = 'Necesidad socioeconómica';
+  calcular(d: DatosEvaluables) { /* ingreso ÷ dependientes: 100 si ≤ Q500, 0 si ≥ Q5,000, lineal */ }
+}
 
 export class CriterioMixto implements CriterioEvaluacionStrategy {
   constructor(
     private readonly academico: CriterioEvaluacionStrategy,
     private readonly social: CriterioEvaluacionStrategy,
-    private readonly pesoAcademico = 0.5,
+    private readonly pesoAcademico: number,
   ) {}
-  calcular(s: Solicitud): Puntaje {
-    return Puntaje.de(
-      this.academico.calcular(s).valor * this.pesoAcademico +
-      this.social.calcular(s).valor * (1 - this.pesoAcademico),
-    );
+  calcular(d: DatosEvaluables) {
+    const a = this.academico.calcular(d);
+    const s = this.social.calcular(d);
+    return { puntaje: a.puntaje × peso + s.puntaje × (1 − peso), desglose: [...a, ...s] };
   }
 }
+
+// El único lugar que relaciona tipos con criterios:
+const CRITERIOS = {
+  NIVEL_MEDIO: merito,
+  UNIVERSITARIA: new CriterioMixto(merito, necesidad, 0.6),
+  POSGRADO: merito,
+};
+
+// En el caso de uso, sin un solo if sobre el tipo de beca:
+criterioPara(convocatoria.tipo).calcular(perfil);
 ```
 
-> Nótese que `CriterioMixto` **compone** otras dos estrategias en lugar de duplicar sus fórmulas:
+**Tres diferencias con la versión 1.0 de este esquema, y por qué.**
+
+1. **Recibe los datos, no la solicitud.** `DatosEvaluables` tiene solo promedio, ingreso y
+   dependientes. El criterio no necesita la solicitud entera, y así se prueba con tres números.
+2. **`calcular` devuelve el desglose junto con el puntaje**, en vez de dos métodos. Se guarda con
+   el dictamen: si el perfil o la fórmula cambian después, el dictamen sigue explicando su puntaje.
+3. **No hay "reconocimientos".** El perfil (US-011) no pide ese dato, y no se inventó un campo para
+   una fórmula.
+
+> ⚠️ **Las fórmulas y los umbrales son una propuesta del equipo** (16 Sep) y están **pendientes de
+> confirmar con el Product Owner**. Cambiarlos es editar una clase y sus pruebas; nada más.
+
+> `CriterioMixto` **compone** otras dos estrategias en lugar de duplicar sus fórmulas:
 > composición sobre herencia.
 
 ---
 
-# PATRONES EXTRA (opcionales, si el cronograma lo permite)
+## 7. Observer — `ObservadorSolicitud`
 
-## 7. Observer — Notificaciones de cambio de estado
+**✅ IMPLEMENTADO EL 17 DE OCTUBRE DE 2026.** No estaba en el plan como patrón obligatorio: entró
+porque el Product Owner pidió que *"cuando una solicitud cambie de estado, el sistema deberá
+registrar el evento y generar una notificación para el estudiante"*. El requerimiento describía el
+problema que este patrón resuelve, así que el patrón dejó de ser opcional.
 
-Cuando una solicitud cambia de estado deben ocurrir efectos secundarios: notificar al estudiante,
-registrar auditoría y actualizar estadísticas. Acoplarlos al método de transición violaría
-responsabilidad única y obligaría a modificarlo cada vez que se agregue un efecto nuevo. Observer
-permite que la solicitud publique el evento y que los interesados se suscriban, sin conocerse
-entre sí.
+**Ubicación:** `modules/solicitudes/domain/events/evento-solicitud.ts` (el contrato),
+`application/services/publicador-eventos.service.ts` (el sujeto),
+`infrastructure/notificaciones/notificador-estudiante.observador.ts` (el primer observador).
+**Pruebas:** dobles de prueba en `casos-de-uso-solicitudes.spec.ts` y
+`solicitudes-para-resolucion.service.spec.ts`, más cuatro pruebas e2e del buzón en
+`solicitudes.e2e-spec.ts`.
 
-*Alternativa considerada:* llamadas directas dentro del método de transición — descartada por
-acoplamiento y porque impide agregar efectos sin modificar el dominio.
+### ¿Qué problema resuelve?
+
+Un cambio de estado le interesa a cosas que no tienen ninguna relación entre sí: al estudiante, que
+debe recibir su aviso; al servidor, que lo registra; y mañana al correo (US-022) o a una
+integración con otra institución. El cambio de estado ocurre en **seis lugares distintos** del
+sistema: crear la solicitud, enviarla, pasarla a evaluación, aprobar, confirmar la segunda
+aprobación y adjudicar.
+
+Si cada uno de esos seis casos de uso llamara directamente a cada interesado, la lista de
+interesados quedaría copiada seis veces. Agregar un séptimo interesado obligaría a encontrar y
+modificar los seis, y basta olvidar uno para que un estudiante no reciba el aviso de que le
+aprobaron la beca.
+
+### ¿Qué otras alternativas existían?
+
+1. **Llamar al notificador dentro de cada caso de uso.** Descartada: es exactamente la duplicación
+   descrita arriba. Además acopla cada caso de uso a *todos* los efectos secundarios presentes y
+   futuros.
+2. **Notificar desde el propio método `transicionar` de la entidad.** Descartada por dos razones.
+   La primera es de diseño: el dominio quedaría dependiendo de infraestructura (base de datos,
+   correo), justo lo que la arquitectura prohíbe (ADR-08). La segunda es peor y es de corrección:
+   `transicionar` ocurre **antes** de guardar, así que un cambio que después falle al persistirse
+   habría generado igual la notificación. El estudiante vería "su solicitud fue aprobada" de algo
+   que no quedó aprobado.
+3. **Un disparador (trigger) en PostgreSQL sobre la tabla de solicitudes.** Descartada: mueve una
+   regla de negocio a un lugar que no se puede probar con Jest, que no aparece en el código
+   revisado en los Pull Requests y que no funciona con los repositorios en memoria de las pruebas.
+4. **El `EventEmitter2` de NestJS.** Descartada, aunque es tentadora: los eventos se publican por
+   un nombre en texto (`'solicitud.cambiada'`), de modo que un error de tipeo en el nombre
+   desconecta un observador **sin que nada falle**. Con un puerto propio y un `Symbol`, el que no
+   implemente la interfaz no compila.
+
+### ¿Por qué se seleccionó Observer?
+
+Porque el problema es el del patrón: un objeto cuyo cambio de estado debe avisar a un número
+indeterminado de interesados que no se conocen entre sí. La solicitud **anuncia** lo que le pasó y
+no sabe quién escucha; sumar un observador es registrar una clase más en el módulo, sin tocar
+ningún caso de uso.
+
+### ¿Qué ventajas aporta al proyecto?
+
+- **Los seis casos de uso quedaron iguales:** una sola línea, `await this.eventos.publicarDe(solicitud)`.
+- **Agregar un efecto nuevo no modifica código existente** (Open/Closed). El correo de US-022 será
+  una clase que implemente `ObservadorSolicitud` y una línea en la fábrica del módulo.
+- **El dominio no se enteró de que existen las notificaciones:** la entidad solo acumula eventos.
+- **Un observador que falla no tumba la operación del usuario**, que ya ocurrió y es válida.
+- **Se prueba sin base de datos:** los specs usan un observador falso que cuenta lo que recibió.
+
+### Esquema — tal como quedó implementado
+
+```ts
+// domain/events — el contrato. El dominio define QUÉ se anuncia, no quién escucha.
+export interface EventoCambioEstado {
+  readonly solicitudId: string;
+  readonly numero: string;
+  readonly estudianteId: string;
+  readonly desde: NombreEstado | null;   // nulo solo en la creación
+  readonly hacia: NombreEstado;
+  readonly motivo: string | null;
+  readonly ocurridoEn: Date;
+}
+
+export interface ObservadorSolicitud {
+  readonly nombre: string;
+  notificar(evento: EventoCambioEstado): Promise<void>;  // no debe lanzar
+}
+
+// domain/entities — la entidad ACUMULA, no publica.
+private readonly eventos: EventoCambioEstado[] = [];
+
+private transicionar(siguiente: EstadoSolicitud, ahora: Date, autorId: string, motivo: string | null): void {
+  this.eventos.push({ /* desde el estado anterior hacia el nuevo */ });
+  // ... aplica el estado y anota el historial (US-016)
+}
+
+drenarEventos(): EventoCambioEstado[] { /* devuelve y vacía */ }
+
+// application — el SUJETO. Lo llaman los casos de uso DESPUÉS de guardar.
+async publicarDe(solicitud: Solicitud): Promise<void> {
+  for (const evento of solicitud.drenarEventos()) {
+    const resultados = await Promise.allSettled(this.observadores.map((o) => o.notificar(evento)));
+    // un observador que falla solo deja un registro en el log; los demás siguen
+  }
+}
+```
+
+**Dos decisiones que se apartan de la formulación clásica del patrón.**
+
+*El evento se acumula en la entidad y se publica después de persistir.* En la versión clásica el
+sujeto avisa en el momento del cambio. Aquí no se puede: el cambio todavía no es cierto hasta que
+el repositorio lo guarda. La prueba `lo que no se guarda no se anuncia` fija esa regla: cuando el
+guardado falla por falta de cupo, el contador del observador falso se queda en cero.
+
+*La creación de una solicitud no emite evento.* `Solicitud.nueva` no pasa por `transicionar`
+—escribe el `BORRADOR` inicial directamente— porque crear no es *cambiar* de estado. Es
+intencional y está probado: enviar una solicitud recién creada genera **una** notificación (la de
+`ENVIADA`), no dos.
+
+---
+
+---
+
+# PATRÓN EXTRA (opcional, si el cronograma lo permite)
 
 ## 8. Chain of Responsibility — Validación previa al envío
 

@@ -1,0 +1,14 @@
+node_modules
+dist
+build
+coverage
+.git
+
+# La documentación se escribe a mano y se revisa en Pull Request; Prettier no la reformatea.
+docs
+README.md
+*.md
+
+# Artefactos generados por herramientas
+apps/api/prisma/migrations
+package-lock.json
