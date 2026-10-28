@@ -228,8 +228,10 @@ export function PaginaComite(): ReactElement {
               </p>
               {cupos !== null && (
                 <p className="conteo">
-                  <strong>{cupos.disponibles}</strong> cupos disponibles · {cupos.aprobadas}{' '}
-                  aprobadas · {cupos.adjudicadas} adjudicadas
+                  <strong>{cupos.disponibles}</strong>{' '}
+                  {cupos.disponibles === 1 ? 'cupo disponible' : 'cupos disponibles'} ·{' '}
+                  {cantidad(cupos.aprobadas, 'aprobada', 'aprobadas')} ·{' '}
+                  {cantidad(cupos.adjudicadas, 'adjudicada', 'adjudicadas')}
                 </p>
               )}
               <p className="conteo">
@@ -538,6 +540,33 @@ function PanelDecision({
   // PO, 17 Oct 2026: la beca pasó del umbral y espera una segunda firma, que debe dar otra persona.
   const confirmandoSegunda = fila.estado === 'APROBACION_PENDIENTE';
 
+  /*
+   * El motivo se pide en DOS modos: al resolver y al dar la segunda firma. Se declara una
+   * sola vez porque tenerlo duplicado fue justamente el defecto: la condición que deshabilita
+   * el botón exigía un motivo de 15 caracteres también en la segunda aprobación, pero el
+   * campo para escribirlo solo se dibujaba en el otro modo. El botón no se podía habilitar
+   * nunca y la doble aprobación no se podía completar desde la pantalla.
+   *
+   * Lo encontró una persona usando la aplicación. Las pruebas e2e no lo vieron porque llaman
+   * a la API directamente, sin pasar por la interfaz.
+   */
+  const campoMotivo = (
+    <div className="campo">
+      <label htmlFor="motivo">Motivo</label>
+      <textarea
+        id="motivo"
+        rows={3}
+        maxLength={2000}
+        value={motivo}
+        onChange={(e) => setMotivo(e.target.value)}
+        placeholder="El estudiante lo verá en el historial de su solicitud."
+      />
+      <span className={`pista ${largo > 0 && largo < MINIMO_MOTIVO ? 'alerta' : ''}`}>
+        Obligatorio, al menos {MINIMO_MOTIVO} caracteres (lleva {largo}).
+      </span>
+    </div>
+  );
+
   return (
     <div className="decision" role="region" aria-label={`Decisión sobre ${fila.numero}`}>
       <h3>
@@ -593,6 +622,7 @@ function PanelDecision({
             La segunda firma debe darla una persona distinta de la que aprobó primero. Si es la
             misma, el sistema lo rechaza.
           </p>
+          {campoMotivo}
         </>
       ) : (
         <>
@@ -623,20 +653,7 @@ function PanelDecision({
               Rechazar
             </label>
           </fieldset>
-          <div className="campo">
-            <label htmlFor="motivo">Motivo</label>
-            <textarea
-              id="motivo"
-              rows={3}
-              maxLength={2000}
-              value={motivo}
-              onChange={(e) => setMotivo(e.target.value)}
-              placeholder="El estudiante lo verá en el historial de su solicitud."
-            />
-            <span className={`pista ${largo > 0 && largo < MINIMO_MOTIVO ? 'alerta' : ''}`}>
-              Obligatorio, al menos {MINIMO_MOTIVO} caracteres (lleva {largo}).
-            </span>
-          </div>
+          {campoMotivo}
         </>
       )}
 

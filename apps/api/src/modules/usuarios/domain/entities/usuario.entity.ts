@@ -220,14 +220,31 @@ export class Usuario {
     return this.intentosFallidos > 0 || this.bloqueadoHasta !== null;
   }
 
-  private copiar(cambios: { intentosFallidos: number; bloqueadoHasta: Date | null }): Usuario {
+  /**
+   * Devuelve el usuario con otra contraseña, y de paso DESBLOQUEADO (US-035).
+   *
+   * Lo segundo no es un extra: alguien que olvidó su contraseña suele haber fallado varias
+   * veces antes de pedir el enlace, así que lo normal es que llegue aquí con la cuenta
+   * bloqueada. Restablecerla y dejarlo fuera igual sería devolverle una llave a una puerta
+   * que sigue trabada. Además, quien llega hasta aquí ya demostró tener acceso al correo
+   * de la cuenta, que es una prueba de identidad más fuerte que el contador de intentos.
+   */
+  conNuevaPassword(hashPassword: string): Usuario {
+    return this.copiar({ intentosFallidos: 0, bloqueadoHasta: null, hashPassword });
+  }
+
+  private copiar(cambios: {
+    intentosFallidos: number;
+    bloqueadoHasta: Date | null;
+    hashPassword?: string;
+  }): Usuario {
     // El hash se copia mediante `hashAlmacenado()`: el campo `#` no es accesible ni siquiera
     // desde otra instancia por desestructuración, y así sigue sin poder filtrarse.
     return new Usuario({
       id: this.id,
       nombreUsuario: this.nombreUsuario,
       correo: this.correo,
-      hashPassword: this.hashAlmacenado(),
+      hashPassword: cambios.hashPassword ?? this.hashAlmacenado(),
       rol: this.rol,
       activo: this.activo,
       nombreCompleto: this.nombreCompleto,
