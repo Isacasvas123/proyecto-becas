@@ -173,7 +173,7 @@ con un único constructor produce el anti-patrón del **constructor telescópico
 ### ¿Por qué se seleccionó Builder?
 
 Porque separa la **construcción** de un objeto complejo de su **representación**, permite
-construirlo paso a paso con una interfaz fluida y legible, y —lo decisivo— permite **validar en
+construirlo paso a paso con una interfaz fluida y legible, y permite **validar en
 el método `build()`** que la combinación de filtros elegida es coherente antes de producir el
 reporte.
 
@@ -304,7 +304,7 @@ El enlace entre ambos ocurre en un solo punto, `usuarios.module.ts`:
 
 Migrar a argon2, o cambiar JWT por sesiones en servidor, es cambiar **una línea** de ese archivo.
 Ni la entidad `Usuario`, ni el caso de uso `AutenticarUsuarioService`, ni el controlador se
-enteran. Esa es la ventaja, y es verificable: la prueba unitaria del caso de uso inyecta un
+enteran. La ventaja es comprobable: la prueba unitaria del caso de uso inyecta un
 hasher falso y corre en milisegundos, sin bcrypt real.
 
 ### Esquema — almacenamiento de documentos (implementado el 16 Sep)
@@ -636,7 +636,7 @@ criterioPara(convocatoria.tipo).calcular(perfil);
 > ⚠️ **Las fórmulas y los umbrales son una propuesta del equipo** (16 Sep) y están **pendientes de
 > confirmar con el Product Owner**. Cambiarlos es editar una clase y sus pruebas; nada más.
 
-> Nótese que `CriterioMixto` **compone** otras dos estrategias en lugar de duplicar sus fórmulas:
+> `CriterioMixto` **compone** otras dos estrategias en lugar de duplicar sus fórmulas:
 > composición sobre herencia.
 
 ---
@@ -741,7 +741,7 @@ async publicarDe(solicitud: Solicitud): Promise<void> {
 }
 ```
 
-**Las dos decisiones que no son del patrón de libro, y por qué.**
+**Dos decisiones que se apartan de la formulación clásica del patrón.**
 
 *El evento se acumula en la entidad y se publica después de persistir.* En la versión clásica el
 sujeto avisa en el momento del cambio. Aquí no se puede: el cambio todavía no es cierto hasta que

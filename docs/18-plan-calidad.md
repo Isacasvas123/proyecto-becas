@@ -41,7 +41,7 @@ que se entrega el software. Cubre el ciclo de vida completo de cada sprint.
 |                    | Código de pruebas                              | Sujeto al mismo estándar que el de producción                              |
 | **Incremento**     | Software funcional                             | Cumple la Definition of Done completa                                      |
 
-> **Por qué "verificados contra el código" está en negrita.** En el Sprint 1 el diagrama de clases
+> **Sobre la verificación de los diagramas contra el código.** En el Sprint 1 el diagrama de clases
 > declaraba un método `estaVigente(Date)` que nunca existió: la idea se había separado en dos
 > consultas distintas y el diagrama no lo reflejaba. Un diagrama desalineado es peor que no tener
 > diagrama, porque se le cree. Desde entonces la verificación contra el código es parte del
@@ -67,18 +67,14 @@ de integrarse, mediante Pull Request.
 
 | Regla                                                                        | Por qué existe                                                                 |
 | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| El revisor **se asigna en el Sprint Planning**, no cuando el PR ya está abierto | Acción de mejora de la Retrospectiva 1. Asignar al final es cómo se queda sin revisor |
+| El revisor **se asigna en el Sprint Planning**, no cuando el PR ya está abierto | Acción de mejora de la Retrospectiva 1. Asignarlo al cierre deja el PR sin revisor disponible |
 | El revisor es de la **pareja de turnos contraria** al autor                    | Con las parejas fijas, si no se fuerza, media del equipo nunca ve el trabajo de la otra |
-| **Mínimo tres comentarios anclados a línea** por PR                            | Un PR aprobado en treinta segundos sin un comentario se nota, y el enunciado evalúa el code review |
+| **Mínimo tres comentarios anclados a línea** por PR                            | El enunciado evalúa el code review como criterio propio, y una aprobación sin comentarios no constituye evidencia |
 | Se comenta el **trabajo**, nunca la persona                                   | Anexo 3, respeto mutuo                                                          |
 | Nada de comentarios de estilo                                                 | Eso lo resuelve el linter. El review es para diseño, casos límite y pruebas que faltan |
 
 **Revisión de documentación.** Los documentos clave los revisa el equipo mediante PR, igual que el
-código. Un documento sin revisar es el borrador de una sola persona.
-
-**Uso de asistentes de IA.** Permitido según `02-politica-equipo.md` §3, con dos condiciones
-innegociables: **quien lo use debe entender y poder explicar todo lo que integre**, y todo pasa por
-el mismo code review. Nadie sube código que no sabría defender ante el catedrático.
+código, de modo que ningún documento se entrega con la revisión de una sola persona.
 
 ### 4.2 Pruebas
 
@@ -95,9 +91,8 @@ Definidas en detalle en el **Anexo 7** (`19-plan-pruebas.md`). El resumen del pr
 Cada Pull Request dispara GitHub Actions con PostgreSQL real: **lint, pruebas y build**. Un PR con
 el CI en rojo no se mergea.
 
-> **El CI es la única parte del proceso que no depende de que alguien se acuerde**, y por eso es la
-> más valiosa. La conclusión práctica: cuando una regla de calidad se pueda automatizar, se
-> automatiza, en vez de escribirla en un documento y confiar en la disciplina.
+> El equipo adopta como criterio que toda regla de calidad que pueda automatizarse se implemente en
+> el pipeline de integración continua, en lugar de quedar únicamente documentada.
 
 ### 4.4 Auditorías de proceso
 
@@ -179,7 +174,7 @@ Product Owner. Detalle en `17-staging.md`.
 
 ## 8. Roles y responsabilidades
 
-La calidad es responsabilidad compartida. Lo que cambia es de qué responde cada uno.
+La calidad es una responsabilidad compartida por todo el equipo. La tabla detalla de qué responde cada rol.
 
 | Rol                                    | Responsabilidad de calidad                                                                                   |
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
@@ -192,26 +187,25 @@ La calidad es responsabilidad compartida. Lo que cambia es de qué responde cada
 
 ## 9. Métricas de calidad que se siguen
 
-Pocas y medibles. Una métrica que nadie mide no es una métrica.
+El equipo sigue un conjunto reducido de métricas, todas con una fuente de medición objetiva.
 
-| Métrica                              | Meta                    | Al 12 Sep 2026        | Dónde se mide                     |
-| ------------------------------------ | ----------------------- | --------------------- | --------------------------------- |
-| Pruebas automatizadas                | Creciente cada sprint   | **138** (106 + 32)    | Salida del CI                     |
-| Cobertura de sentencias              | ≥ 60 % al 21 Oct        | **84.35 %** ✅ (antes 41.89 %, mal medida) | `npm run test:cov` |
-| PRs con aprobación de otro integrante | 100 %                  | **40 %** (2 de 5)     | Historial de Pull Requests        |
-| Advertencias del linter              | 0                       | **0**                 | Salida del CI                     |
-| Defectos abiertos de severidad Alta   | 0 al cerrar el sprint  | **1** (US-008)        | Issues con etiqueta `bug`         |
-| Patrones implementados y probados     | 6 al 31 Oct            | **1** (Adapter, ya probado) | `06-patrones.md`            |
+| Métrica | Meta | Medición al 21 Oct 2026 | Dónde se mide |
+|---|---|---|---|
+| Pruebas automatizadas | Creciente cada sprint | **675** (504 unitarias + 171 de integración) | Salida del CI |
+| Cobertura de sentencias | ≥ 60 % al 21 Oct | **91.83 %** | `npm run test:cov` |
+| PRs con aprobación de otro integrante | 100 % | **100 %** (31 de 31) | Historial de Pull Requests |
+| Advertencias del linter | 0 | **0** | Salida del CI |
+| Defectos abiertos de severidad Alta | 0 al cerrar el sprint | **0** | Issues con etiqueta `bug` |
+| Patrones implementados y probados | 6 al 31 Oct | **8** | `06-patrones.md` |
 
-> **Al escribir este plan había tres métricas en rojo**, dichas antes de que nadie las descubriera:
-> el 40 % de PRs revisados, la cobertura mal medida y el único patrón implementado sin pruebas. **Dos
-> ya están resueltas** (DEF-02 y DEF-03, 12 de septiembre): la cobertura real es 84.35 % y el Adapter
-> tiene pruebas con las bibliotecas reales. Sigue en rojo la de PRs revisados, y la de patrones
-> sigue lejos de la meta. Reportar una métrica sin acción asociada es decorar.
+> **Evolución de las métricas durante el proyecto.** Al redactarse este plan, el 12 de septiembre,
+> tres indicadores estaban por debajo de la meta: el 40 % de Pull Requests con revisión, una medición
+> de cobertura que excluía las pruebas de integración y un único patrón implementado sin pruebas
+> propias. Los tres se corrigieron mediante los defectos DEF-02 y DEF-03 y la acción de mejora de la
+> Retrospectiva 1, que fijó la asignación del revisor en el Sprint Planning. La tabla recoge la
+> última medición disponible.
 
-## 10. Qué hacemos cuando la calidad falla
-
-Un plan de calidad sin procedimiento de fallo es una lista de deseos.
+## 10. Procedimiento ante incumplimientos de calidad
 
 | Situación                                                   | Qué se hace                                                                                       |
 | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |

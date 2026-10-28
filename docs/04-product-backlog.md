@@ -27,51 +27,100 @@
 
 ---
 
-## Estado de avance — actualizado el 10 de octubre de 2026
+## Avance por sprint
 
-> **Las 24 historias están en Done.** Stuard, como Proxy Product Owner, verificó sus criterios de
-> aceptación contra el entorno de Staging el 10 de octubre y movió las tarjetas en el tablero. Con
-> eso se cumplen los ocho puntos de la Definition of Done, incluidos los dos que más se olvidan:
-> despliegue en Staging y aceptación del Proxy PO.
->
-> La verificación no fue un trámite: al desplegar aparecieron dos fallos que ningún entorno local
-> mostraba —Render rechaza `plan` en sitios estáticos (PR #21) y la carpeta de documentos no existía
-> en la imagen, así que subir un archivo devolvía 500 (PR #22)—. Ambos corregidos antes de verificar.
+El sprint indicado en cada historia es aquel en que fue planificada y dada por terminada conforme
+al cronograma del Acta de Constitución (§6, WBS). La columna de evidencia remite al Pull Request
+en que la historia se integró a `develop`, de modo que cada fila puede comprobarse en el
+repositorio.
 
-| Historia | Estado | Nota |
-|---|---|---|
-| **US-001** Registro de estudiante | 🟢 **Done** — verificada en Staging | Los cinco criterios implementados y probados, incluido el inicio de sesión automático. Adelantada del Sprint 3 |
-| **US-002** Inicio de sesión | 🟢 **Done** — verificada en Staging | Los tres criterios implementados y probados. El bloqueo tras 5 intentos se completó el 12 Sep |
-| **US-003** Control de acceso por rol | 🟢 **Done** — verificada en Staging | Guard global *seguro por defecto*, los 4 roles, 403 verificado con pruebas de integración |
-| **US-006** Crear convocatoria | 🟢 **Done** — verificada en Staging | Con el patrón **Factory Method**. Adelantada del Sprint 3 |
-| **US-007** Publicar convocatoria | 🟢 **Done** — verificada en Staging | El criterio 3 (no editar publicadas) queda como regla del dominio; la edición es US-010 |
-| **US-008** Listado público de convocatorias | 🟢 **Done** — verificada en Staging | Público y sin cuenta, con requisitos y documentos. Corregido el 12 Sep |
-| **US-011** Completar perfil académico | 🟢 **Done** — verificada en Staging | Se guarda por partes; dice qué falta. Departamento como catálogo cerrado para el reporte por región (US-031). Adelantada del Sprint 4 |
-| **US-012** Crear solicitud | 🟢 **Done** — verificada en Staging | Con el patrón **State**. Número `SOL-AAAA-NNNNNN`. Exige perfil completo (precondición de CU-06). Adelantada del Sprint 4 |
-| **US-013** Cargar documentación | 🟢 **Done** — verificada en Staging | Formato comprobado **por contenido**, no por nombre. Almacenamiento con **Adapter** (disco local). Adelantada del Sprint 4 |
-| **US-014** Enviar solicitud | 🟢 **Done** — verificada en Staging | Un solo mensaje con todo lo que falta. La notificación sale por consola hasta US-022 (correo). Adelantada del Sprint 4 |
-| **US-015** Ver mis solicitudes | 🟢 **Done** — verificada en Staging | Otro estudiante recibe 403 (US-003). Adelantada del Sprint 4 |
-| **US-016** Historial de la solicitud | 🟢 **Done** — verificada en Staging | Cada transición guarda fecha, autor y motivo; solo se insertan filas. Adelantada del Sprint 4 |
-| **US-017** Crear comité evaluador | 🟢 **Done** — verificada en Staging | Sin criterios escritos: se tomaron los de CU-13 (un comité por convocatoria, al menos un evaluador, sin repetidos, auditoría). Incluye crear cuentas de evaluador (decisión del 16 Sep). Quitar integrantes (5a) avisa cuántas solicitudes quedarían sin evaluador y exige confirmación, y las que se liberan vuelven a la lista por asignar; implementado el 14 de octubre, después de la verificación, así que esa parte todavía no se ha probado en Staging. Adelantada del Sprint 5 |
-| **US-018** Asignar solicitudes | 🟢 **Done** — verificada en Staging | Manual y reparto automático equitativo que respeta la carga previa. Adelantada del Sprint 5 |
-| **US-019** Evaluar una solicitud | 🟢 **Done** — verificada en Staging | Con el patrón **Strategy**. El puntaje lo calcula el sistema; **las fórmulas están pendientes de confirmar con el Product Owner**. Adelantada del Sprint 5 |
-| **US-020** Ver mis solicitudes asignadas | 🟢 **Done** — verificada en Staging | Solo las propias, pendientes primero. Otro evaluador recibe 403. Adelantada del Sprint 5 |
-| **US-021** Consolidar dictámenes | 🟢 **Done** — verificada en Staging | Promedio, ranking y referencia de cupos. No aprueba nada: eso es US-023. Adelantada del Sprint 5 |
-| **US-023** Aprobar o rechazar | 🟢 **Done** — verificada en Staging | Con el patrón **Facade**. El cupo se comprueba de forma atómica (verificado con tres aprobaciones simultáneas por el último cupo). Sin acta: es US-026. Adelantada del Sprint 6 |
-| **US-024** Adjudicar beca | 🟢 **Done** — verificada en Staging | Beca con código `BECA-AAAA-NNNNNN`, guardada en la misma transacción que el cambio de estado. El cupo se reserva al aprobar. Adelantada del Sprint 6 |
-| **US-025** Consulta pública | 🟢 **Done** — verificada en Staging | Número + CUI por POST (el CUI no va en la URL), solo estado y fecha, mismo mensaje para cualquier fallo y límite de 10 consultas por minuto por dirección. Adelantada del Sprint 6 |
-| **US-028** Reporte de solicitudes | 🟢 **Done** — verificada en Staging | Con el patrón **Builder**: filtros por convocatoria, estado, nivel, departamento y fechas de envío; agrupación y orden. Sin datos personales. Adelantada del Sprint 7 |
-| **US-029** Panel de estadísticas | 🟢 **Done** — verificada en Staging | Recibidas, tasa de aprobación (sobre las resueltas), cupos disponibles y días promedio de resolución, global y por convocatoria. Adelantada del Sprint 7 |
-| **US-030** Exportar reporte | 🟢 **Done** — verificada en Staging | CSV (UTF-8 con BOM, protegido contra fórmulas) y PDF propio sin dependencias nuevas. Adelantada del Sprint 7 |
-| **US-031** Becas por región | 🟢 **Done** — verificada en Staging | Los 22 departamentos, también los que no tienen becas. Adelantada del Sprint 7 |
-| **US-032** Bitácora de auditoría | 🟡 **Implementada** — falta verificar en Staging | **Exigida por el PO el 17 de octubre.** Toda acción que cambia algo queda registrada con autor, recurso, resultado y fecha, incluidas las rechazadas. La escribe un middleware, así que ningún caso de uso la menciona. Pantalla de consulta para administración, con filtros. Solo se inserta: no hay forma de modificar ni borrar un asiento desde la aplicación |
-| **US-033** Segunda aprobación sobre Q10,000 | 🟡 **Implementada** — falta verificar en Staging | **Exigida por el PO el 17 de octubre.** La convocatoria fija el monto de la beca. Si supera Q10,000 la primera aprobación deja la solicitud en `APROBACION_PENDIENTE` y no reserva cupo; la segunda la debe dar una persona distinta. Un estado más del patrón **State**, no un `if` |
-| **US-034** Avisos al estudiante | 🟡 **Implementada** — falta verificar en Staging | **Exigida por el PO el 17 de octubre.** Cada cambio de estado genera un aviso para el estudiante, con su motivo cuando lo hay, y una pantalla de buzón. Con el patrón **Observer**: se publica después de guardar, para no avisar de algo que no se persistió |
-| Resto | ⬜ Pendiente | Según el calendario de sprints |
+### Velocidad por sprint
 
-> **Nota para la Sprint Review.** Ninguna de estas historias puede marcarse como *Completada*
-> ante el Product Owner hasta cumplir los 8 puntos de la Definition of Done, incluido el
-> despliegue en Staging y su verificación. Hoy solo corren en local.
+| Sprint | Período | Alcance | Puntos | Estado |
+|---|---|---|---|---|
+| 1 | 3 – 9 Sep | Constitución del equipo, repositorio y esqueleto técnico | 19 | Cerrado |
+| 2 | 10 – 16 Sep | EPIC-01 · Cuentas y control de acceso | 13 | Cerrado |
+| 3 | 17 – 23 Sep | EPIC-02 · Convocatorias | 16 | Cerrado |
+| 4 | 24 – 30 Sep | EPIC-03 · Estudiantes y solicitudes | 34 | Cerrado |
+| 5 | 1 – 7 Oct | EPIC-04 · Evaluación y comités | 37 | Cerrado |
+| 6 | 8 – 14 Oct | EPIC-05 · Resolución y consulta pública | 18 | Cerrado |
+| 7 | 15 – 21 Oct | EPIC-06 · Reportes y bitácora de auditoría | 34 | Cerrado |
+| 8 | 22 – 28 Oct | Requerimientos del Product Owner y cierre | 21 | En curso |
+| | | **Total completado** | **192** | |
+
+Los 19 puntos del Sprint 1 corresponden a las tareas S1-01 a S1-12 del Sprint Backlog; los demás
+sprints cuentan historias de usuario. La velocidad media resulta de 24 puntos por sprint, frente a
+los 22 estimados al cerrar el backlog inicial.
+
+### Sprint 2 · EPIC-01 — Cuentas y control de acceso
+
+| Historia | Pts | Estado | Evidencia | Nota |
+|---|---|---|---|---|
+| US-001 Registro de estudiante | 5 | Terminada, verificada en Staging | PR #16 | Los cinco criterios implementados y probados, incluido el inicio de sesión automático |
+| US-002 Inicio de sesión | 3 | Terminada, verificada en Staging | PR #2, PR #13 | Token de 8 horas y bloqueo de la cuenta tras cinco intentos fallidos |
+| US-003 Control de acceso por rol | 5 | Terminada, verificada en Staging | PR #4 | Guard global seguro por defecto, cuatro roles, respuesta 403 cubierta con pruebas de integración |
+| US-004 Gestión de perfil | 3 | No priorizada | — | Prioridad Media; el alcance se declara cerrado en el Sprint 8 |
+| US-005 Recuperación de contraseña | 5 | Sustituida por US-035 | — | US-035 cubre el caso con un alcance más amplio |
+
+### Sprint 3 · EPIC-02 — Convocatorias
+
+| Historia | Pts | Estado | Evidencia | Nota |
+|---|---|---|---|---|
+| US-006 Crear convocatoria | 8 | Terminada, verificada en Staging | PR #14 | Implementada con el patrón Factory Method |
+| US-007 Publicar convocatoria | 3 | Terminada, verificada en Staging | PR #14 | Una convocatoria publicada no admite cambios en requisitos ni cupos |
+| US-008 Listado público de convocatorias | 5 | Terminada, verificada en Staging | PR #14 | Accesible sin cuenta, con requisitos y documentos exigidos |
+| US-009 Cerrar convocatoria | 3 | No priorizada | — | Prioridad Media |
+| US-010 Editar convocatoria en borrador | 3 | No priorizada | — | Prioridad Media |
+
+### Sprint 4 · EPIC-03 — Estudiantes y solicitudes
+
+| Historia | Pts | Estado | Evidencia | Nota |
+|---|---|---|---|---|
+| US-011 Completar perfil académico | 5 | Terminada, verificada en Staging | PR #17 | Se guarda por partes e indica qué datos faltan. El departamento es un catálogo cerrado, requisito del reporte por región |
+| US-012 Crear solicitud | 8 | Terminada, verificada en Staging | PR #17 | Implementada con el patrón State. Número correlativo `SOL-AAAA-NNNNNN` |
+| US-013 Cargar documentación | 8 | Terminada, verificada en Staging | PR #17 | Formato comprobado por contenido y no por extensión. Almacenamiento mediante el patrón Adapter |
+| US-014 Enviar solicitud | 5 | Terminada, verificada en Staging | PR #17 | Un único mensaje reúne todo lo que falta por completar |
+| US-015 Ver mis solicitudes | 3 | Terminada, verificada en Staging | PR #17 | El expediente de otro estudiante devuelve 403 |
+| US-016 Historial de la solicitud | 5 | Terminada, verificada en Staging | PR #17 | Cada transición registra fecha, autor y motivo; la tabla solo admite inserciones |
+
+### Sprint 5 · EPIC-04 — Evaluación y comités
+
+| Historia | Pts | Estado | Evidencia | Nota |
+|---|---|---|---|---|
+| US-017 Crear comité evaluador | 5 | Terminada, verificada en Staging | PR #18, PR #24 | Un comité por convocatoria, mínimo un evaluador y sin integrantes repetidos. Incluye la creación de cuentas de evaluador. Quitar un integrante con solicitudes pendientes exige confirmación y las libera para reasignación |
+| US-018 Asignar solicitudes | 8 | Terminada, verificada en Staging | PR #18 | Asignación manual y reparto automático equitativo que respeta la carga previa |
+| US-019 Evaluar una solicitud | 13 | Terminada, verificada en Staging | PR #18 | Implementada con el patrón Strategy. El puntaje lo calcula el sistema; las fórmulas están pendientes de confirmación por el Product Owner |
+| US-020 Ver mis solicitudes asignadas | 3 | Terminada, verificada en Staging | PR #18 | Solo las propias, con las pendientes primero |
+| US-021 Consolidar dictámenes | 8 | Terminada, verificada en Staging | PR #18 | Puntaje promedio, ranking y referencia de cupos disponibles |
+| US-022 Notificación por correo | 5 | No priorizada | — | US-034 cubre el aviso dentro del sistema; el canal de correo queda abierto |
+
+### Sprint 6 · EPIC-05 — Resolución y consulta pública
+
+| Historia | Pts | Estado | Evidencia | Nota |
+|---|---|---|---|---|
+| US-023 Aprobar o rechazar | 8 | Terminada, verificada en Staging | PR #19 | Implementada con el patrón Facade. El cupo se comprueba de forma atómica, verificado con tres aprobaciones simultáneas por el último cupo |
+| US-024 Adjudicar beca | 5 | Terminada, verificada en Staging | PR #19 | Beca con código `BECA-AAAA-NNNNNN`, registrada en la misma transacción que el cambio de estado |
+| US-025 Consulta pública del estado | 5 | Terminada, verificada en Staging | PR #19 | Número de solicitud y CUI por POST, solo estado y fecha, con límite de diez consultas por minuto |
+| US-026 Acta de resolución | 8 | No priorizada | — | Prioridad Media |
+| US-027 Publicación de resultados | 5 | No priorizada | — | Prioridad Baja |
+
+### Sprint 7 · EPIC-06 — Reportes y auditoría
+
+| Historia | Pts | Estado | Evidencia | Nota |
+|---|---|---|---|---|
+| US-028 Reporte de solicitudes | 8 | Terminada, verificada en Staging | PR #20 | Implementada con el patrón Builder: filtros por convocatoria, estado, nivel, departamento y fechas, con agrupación y orden |
+| US-029 Panel de estadísticas | 8 | Terminada, verificada en Staging | PR #20 | Solicitudes recibidas, tasa de aprobación, cupos disponibles y días promedio de resolución |
+| US-030 Exportar reporte | 5 | Terminada, verificada en Staging | PR #20 | CSV en UTF-8 con BOM, protegido contra inyección de fórmulas, y PDF generado sin dependencias externas |
+| US-031 Becas por región | 5 | Terminada, verificada en Staging | PR #20 | Los 22 departamentos, incluidos los que no registran becas |
+| US-032 Bitácora de auditoría | 8 | Terminada, pendiente de verificar en Staging | PR #26 | Requerimiento del Product Owner del 17 de octubre. Registra autor, recurso, operación, resultado y fecha, incluidas las peticiones rechazadas |
+
+### Sprint 8 · Requerimientos del Product Owner y cierre
+
+| Historia | Pts | Estado | Evidencia | Nota |
+|---|---|---|---|---|
+| US-033 Segunda aprobación sobre Q10,000 | 8 | Terminada, pendiente de verificar en Staging | PR #27, PR #32 | Requerimiento del Product Owner del 17 de octubre. La primera aprobación deja la solicitud en `APROBACION_PENDIENTE` sin reservar cupo; la segunda la confirma una persona distinta |
+| US-034 Avisos al estudiante | 5 | Terminada, pendiente de verificar en Staging | PR #27 | Requerimiento del Product Owner del 17 de octubre. Implementada con el patrón Observer |
+| US-035 Recuperar la contraseña | 8 | Terminada, pendiente de merge | PR #32 | Propuesta por el equipo el 24 de octubre tras revisar las prácticas de almacenamiento de contraseñas |
 
 ---
 
@@ -463,11 +512,15 @@ corrigen los criterios de la historia, no se culpa a nadie, y es material para l
 
 ## Requerimientos incorporados después del backlog inicial
 
-> Estas tres historias **no estaban en el backlog de la versión 1.0**. Las pidió el Product Owner
-> en la clase del **17 de octubre de 2026**, cuando las 24 historias planificadas ya estaban
-> terminadas y verificadas en Staging. Se documentan aquí, con el mismo formato que las demás,
-> porque un requerimiento que entra tarde sigue siendo un requerimiento: lo que cambia es cuándo
-> se estimó, no cómo se trata.
+> Estas cuatro historias **no estaban en el backlog de la versión 1.0**. Se documentan aquí, con
+> el mismo formato que las demás, porque un requerimiento que entra tarde sigue siendo un
+> requerimiento: lo que cambia es cuándo se estimó, no cómo se trata.
+>
+> **No todas vinieron del mismo sitio, y la diferencia importa.** US-032, US-033 y US-034 las pidió
+> el Product Owner en la clase del **17 de octubre de 2026**, cuando las 24 historias planificadas
+> ya estaban terminadas y verificadas en Staging. **US-035 la propuso el equipo** el 24 de octubre,
+> al contrastar el sistema con las buenas prácticas de seguridad vistas en clase. Una la impone el
+> cliente; la otra sale de mirarse el producto con criterio propio.
 >
 > El análisis de qué costó incorporarlas está en
 > [`23-analisis-impacto-requerimientos-po.md`](23-analisis-impacto-requerimientos-po.md).
@@ -531,6 +584,56 @@ segunda aprobación **para poder** evitar que una sola persona comprometa montos
 
 ---
 
+### US-035 — Recuperar la contraseña olvidada
+
+**Como** usuario de la plataforma, **quiero** recuperar mi contraseña por correo cuando la olvide
+**para poder** volver a entrar sin depender de que un administrador me la cambie a mano.
+
+> **De dónde salió esta historia.** No la pidió el Product Owner. El 24 de octubre, al contrastar
+> el sistema con las buenas prácticas de almacenamiento de contraseñas vistas en clase, se vio que
+> de las cinco el proyecto cumplía tres —biblioteca confiable, nada de MD5 ni SHA-1, y ninguna
+> contraseña en los logs— y le faltaban dos: la recuperación y el doble factor.
+>
+> **Se decidió hacer la recuperación y no el doble factor.** El segundo es bastante más trabajo del
+> que cabía en los días restantes, y la propia diapositiva lo plantea como "cuando sea posible".
+> Queda anotado como ítem no implementado, para que conste que se identificó y se descartó con un
+> motivo, no que se pasó por alto.
+
+**Criterios de aceptación**
+
+- Desde la pantalla de acceso se puede pedir un enlace de recuperación escribiendo el correo.
+- El sistema responde **exactamente igual exista o no una cuenta con ese correo**, y solo envía el
+  mensaje si existe.
+- El enlace llega por correo y permite elegir una contraseña nueva, que debe cumplir la misma
+  política que el registro.
+- El enlace **vence en una hora** y **sirve una sola vez**.
+- Al usar uno, **los demás enlaces vigentes de esa persona dejan de servir**.
+- Un enlace inexistente, uno vencido y uno ya usado producen **el mismo mensaje de error**.
+- Al restablecer la contraseña, la cuenta queda **desbloqueada**.
+- Restablecerla **no inicia sesión**: la persona vuelve al acceso y escribe la contraseña nueva.
+- Se limita a cinco intentos cada quince minutos por dirección.
+
+> 🔒 **Por qué la respuesta es idéntica exista o no la cuenta.** Es el criterio con más peso de toda
+> la historia. Si el sistema contestara "no existe esa dirección", cualquiera podría ir probando
+> correos y quedarse con la lista de quién está registrado. En un sistema de becas eso revela
+> **quién pidió ayuda económica al Estado**, que es justo el tipo de dato que la plataforma existe
+> para proteger. Hay una prueba que compara las dos respuestas carácter por carácter.
+
+> 🔧 **Aquí se vuelve a usar el patrón Adapter.** Enviar correo de verdad necesita credenciales de
+> un servidor SMTP que un entorno de pruebas no tiene. Con un puerto `EnviadorCorreo` y dos
+> adaptadores —consola y SMTP— el flujo completo se puede recorrer y demostrar sin ellas: el
+> adaptador por defecto escribe el mensaje en el log. Se cambia con la variable `CORREO_TIPO` y
+> ninguna regla de negocio se entera.
+
+> ⚠️ **Limitación conocida.** El adaptador SMTP **no está verificado contra un servidor de correo
+> real**. Funciona contra un servidor de prueba que imita a Gmail, pero eso no es lo mismo.
+> Mientras no se compruebe, el adaptador en uso es el de consola y el enlace aparece en el log del
+> servidor, no en el buzón de la persona.
+
+**Prioridad:** Media · **Estimación:** 8
+
+---
+
 ## Resumen de estimación inicial
 
 | Epic | Historias | Puntos |
@@ -543,11 +646,19 @@ segunda aprobación **para poder** evitar que una sola persona comprometa montos
 | EPIC-06 · Reportes | 4 | 26 |
 | **Total** | **31** | **176** |
 
-> **Actualización del 17 de octubre de 2026.** A estas 31 historias se sumaron **US-032, US-033
-> y US-034**, pedidas por el Product Owner cuando el backlog inicial ya estaba terminado: **34
+> **Actualización del 17 de octubre de 2026.** A estas 31 historias se sumaron **US-032, US-033 y
+> US-034**, pedidas por el Product Owner cuando el backlog inicial ya estaba terminado: **34
 > historias y 197 puntos**. Los 21 puntos nuevos equivalen a casi un sprint completo de la
 > velocidad estimada, y se absorbieron sin mover la fecha de entrega porque el trabajo planificado
 > se había adelantado. Esa holgura era el margen del proyecto, y se consumió aquí.
+>
+> **Actualización del 24 de octubre de 2026.** Se sumó **US-035**, propuesta por el equipo y no por
+> el Product Owner: **35 historias y 205 puntos**. Es la única historia del proyecto que no nació
+> ni del backlog inicial ni de una petición del cliente, sino de revisar el producto contra un
+> criterio externo. Se hizo cuando el margen ya estaba consumido, así que compite directamente con
+> el cierre de la entrega; por eso se le puso prioridad **Media** y no Alta, y por eso el doble
+> factor que surgió en el mismo análisis **se descartó de forma explícita** en lugar de dejarlo
+> abierto.
 
 Con 8 sprints disponibles, se requiere una velocidad promedio de **~22 puntos por sprint**. La
 velocidad real se medirá a partir del Sprint 2; si resulta menor, el Product Owner despriorizará

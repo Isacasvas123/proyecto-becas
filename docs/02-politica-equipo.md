@@ -66,11 +66,6 @@ en el Manual Técnico. Respetamos las normas académicas sobre plagio.
 Esto implica revisar de verdad el trabajo de los compañeros —code reviews y revisión de
 documentos— y estar abiertos a recibir retroalimentación.
 
-**Uso de herramientas de asistencia con IA.** Se permite su uso como apoyo, con dos condiciones
-innegociables: quien lo use debe **entender y poder explicar** todo el código que integre, y
-todo lo generado pasa por el mismo code review que cualquier otro cambio. Nadie sube código que
-no sabría defender ante el catedrático.
-
 ---
 
 ## 4. Participación Equitativa Garantizada

@@ -346,7 +346,7 @@ suya.
 
 ## 12. Lo que todavía no está disponible
 
-Esta es la parte honesta del manual. Lo siguiente **aún no funciona**, con la fecha prevista:
+Lo siguiente **aún no está disponible**, con la fecha prevista para cada punto:
 
 | Funcionalidad                                | Estado           | Previsto para |
 | -------------------------------------------- | ---------------- | ------------- |
