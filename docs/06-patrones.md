@@ -24,7 +24,7 @@ el 17 de octubre, no el deseo de sumar patrones.
 | Comportamiento | **State** | `modules/solicitudes/domain/estados/` | **4** | ✅ **Implementado** (adelantado al 16 Sep) |
 | Comportamiento | **Strategy** | `modules/evaluaciones/domain/strategies/` | **5** | ✅ **Implementado** (adelantado al 16 Sep) |
 | Comportamiento | **Observer** | `modules/solicitudes/domain/events/` | — | ✅ **Implementado** (17 Oct, exigencia del PO) |
-| *Extra* | Chain of Responsibility | `modules/solicitudes/domain/validaciones/` | 6 (opcional) | Pendiente |
+| *Opcional* | Chain of Responsibility | — | — | No implementado (ver sección 8) |
 
 > **Actualización del 3 de septiembre de 2026.** El patrón **Adapter se adelantó al Sprint 1**:
 > el inicio de sesión (US-002) necesitaba calcular y verificar hashes de contraseña y emitir
@@ -32,10 +32,8 @@ el 17 de octubre, no el deseo de sumar patrones.
 > `bcryptjs` y a `@nestjs/jwt`. Se resolvió con dos puertos y sus adaptadores, exactamente el
 > mismo mecanismo previsto para el almacenamiento de documentos en el Sprint 4.
 >
-> No fue una decisión de calendario sino de diseño: el patrón apareció porque el problema
-> apareció, que es justamente el criterio del curso —*"el objetivo no es utilizar patrones por
-> obligación, es resolver problemas de diseño"*. Ver la sección **Adapter** más abajo, donde se
-> documentan las tres implementaciones actuales.
+> Fue una decisión de diseño y no de calendario: el patrón apareció porque el problema apareció.
+> La sección **Adapter** más abajo documenta las implementaciones actuales.
 
 ---
 
@@ -58,7 +56,7 @@ nuevo.
 
 1. **Un constructor único con un `switch` sobre el tipo.** Descartada: cada nuevo tipo de beca
    obliga a modificar una clase ya probada y en producción, violando el principio Open/Closed.
-   Con un PO que anunció que cambiará los requerimientos, es la peor opción posible.
+   Con un PO que anunció que cambiará los requerimientos, es una mala opción.
 2. **Un constructor con todos los parámetros opcionales.** Descartada: traslada al llamador la
    responsabilidad de conocer las reglas de cada tipo de beca, y nada impide construir una
    convocatoria inválida.
@@ -82,12 +80,12 @@ del código existente.
 
 ### Implementación real — Sprint 3
 
-**✅ IMPLEMENTADO** en `modules/convocatorias/domain/factories/convocatoria.factory.ts`, con 18
-pruebas propias en `convocatoria.factory.spec.ts`.
+Implementado en `modules/convocatorias/domain/factories/convocatoria.factory.ts`, con 18 pruebas
+propias en `convocatoria.factory.spec.ts`.
 
 ```ts
 export abstract class ConvocatoriaFactory {
-  // EL MÉTODO PLANTILLA: igual para todos los tipos; no se sobrescribe.
+  // El método plantilla: igual para todos los tipos; no se sobrescribe.
   crear(datos: DatosNuevaConvocatoria): Convocatoria {
     this.validarCupos(datos.cupos);
     return Convocatoria.nuevaEnBorrador({
@@ -113,7 +111,7 @@ export class ConvocatoriaPosgradoFactory extends ConvocatoriaFactory {
 }
 
 // El único punto que asocia tipo y fábrica. `satisfies` hace que olvidar un tipo sea
-// un error de COMPILACIÓN, no un fallo en producción.
+// un error de compilación y no un fallo en producción.
 export const FABRICAS_CONVOCATORIA = {
   [TipoBeca.NIVEL_MEDIO]:   new ConvocatoriaNivelMedioFactory(),
   [TipoBeca.UNIVERSITARIA]: new ConvocatoriaUniversitariaFactory(),
@@ -144,8 +142,7 @@ El servicio de aplicación no tiene ni un `if` por tipo: pide la fábrica y le d
 
 ## 2. Builder — `ReporteBuilder`
 
-**✅ IMPLEMENTADO EL 16 DE SEPTIEMBRE** (previsto para el Sprint 7; llegó con US-028). Con él, **los seis
-patrones están implementados**.
+Implementado el 16 de septiembre (previsto para el Sprint 7; llegó con US-028).
 
 **Ubicación:** `modules/reportes/application/builders/reporte.builder.ts`
 **Pruebas:** `reporte.builder.spec.ts`.
@@ -222,7 +219,7 @@ nombre escrito, por la misma razón que en el perfil (US-011).
 
 ## 3. Adapter — puertos de infraestructura
 
-**✅ IMPLEMENTADO EN EL SPRINT 1** (adelantado desde el Sprint 4, ver nota inicial).
+Implementado en el Sprint 1 (adelantado desde el Sprint 4, ver nota inicial).
 
 **Ubicaciones actuales:**
 
@@ -232,9 +229,9 @@ nombre escrito, por la misma razón que en el perfil (US-011).
 | `usuarios/domain/ports/generador-token.ts` | `JwtGeneradorTokenAdapter` | El formato de sesión (JWT HS256) |
 | `usuarios/domain/ports/verificador-token.ts` | `JwtVerificadorTokenAdapter` | La validación de la sesión, que consume el guard global (US-003) |
 | `usuarios/domain/ports/usuario.repositorio.ts` | `UsuarioPrismaRepositorio` · `UsuarioEnMemoriaRepositorio` | La persistencia |
-
+| `usuarios/domain/ports/enviador-correo.ts` | `CorreoConsolaAdapter` · `CorreoSmtpAdapter` | El envío de correo (US-035). Se elige con `CORREO_TIPO`; el SMTP no está verificado contra un servidor real |
 | `solicitudes/domain/ports/almacenamiento-documentos.ts` | `AlmacenamientoLocalAdapter` · `AlmacenamientoMemoriaAdapter` | Dónde se guardan los documentos (US-013). Se elige con `ALMACENAMIENTO_TIPO` |
-| `solicitudes/domain/ports/notificador-solicitudes.ts` | `NotificadorConsolaAdapter` | El canal de avisos. El de correo llega con US-022 |
+| `solicitudes/domain/ports/notificador-solicitudes.ts` | `NotificadorConsolaAdapter` | El canal de avisos. El de correo para US-022 no está implementado |
 | `solicitudes/domain/ports/consultas-externas.ts` | `ConsultaConvocatoriasAdapter` · `ConsultaPerfilesAdapter` | Otros módulos: `solicitudes` no importa su dominio, solo lo que exportan |
 
 > **16 de septiembre.** Se agregó el almacenamiento de documentos que aquí estaba *previsto para el
@@ -277,9 +274,8 @@ se invierte: manda el dominio, no el proveedor.
   ni credenciales.
 - **Cambiar de proveedor no toca el dominio**: se registra otro adaptador en el módulo.
 - **Preparado para el cambio anunciado**: cuando el PO exija integrar RENAP o el sistema del
-  MinEduc, se agrega un adaptador nuevo. Este es el argumento más fuerte del documento frente al
-  criterio "adaptarse al cambio".
-- El mismo patrón se reutiliza para el envío de notificaciones (`NotificacionPort`).
+  MinEduc, se agrega un adaptador nuevo.
+- El mismo patrón se reutiliza para los avisos al estudiante y para el envío de correo.
 
 ### Esquema — implementación real del Sprint 1
 
@@ -333,7 +329,7 @@ adaptador en memoria, forzando el fallo del repositorio.
 
 ## 4. Facade — `ResolucionFacade`
 
-**✅ IMPLEMENTADO EL 16 DE SEPTIEMBRE** (previsto para el Sprint 6; llegó con US-023).
+Implementado el 16 de septiembre (previsto para el Sprint 6; llegó con US-023).
 
 **Ubicación:** `modules/resoluciones/application/facades/resolucion.facade.ts`
 **Pruebas:** `casos-de-uso-resoluciones.spec.ts` con dobles de cada colaborador.
@@ -419,8 +415,8 @@ resolver(@UsuarioActual() adminId, @Param('id') id, @Body() p) {
 }
 ```
 
-**La comprobación del cupo ocurre dos veces, a propósito.** La de la fachada da un buen mensaje
-antes de intentar. La definitiva está en el repositorio de solicitudes: bloquea la fila de la
+**La comprobación del cupo ocurre dos veces.** La de la fachada da un buen mensaje antes de
+intentar. La definitiva está en el repositorio de solicitudes: bloquea la fila de la
 convocatoria (`SELECT … FOR UPDATE`), cuenta y guarda en la misma transacción. Se verificó contra
 PostgreSQL lanzando **tres aprobaciones simultáneas por el último cupo: pasó una, las otras dos
 recibieron 422**. Sin el bloqueo, las tres habrían visto un cupo libre.
@@ -435,10 +431,10 @@ será un colaborador más de la fachada y el controlador no cambiará.
 
 ## 5. State — `EstadoSolicitud`
 
-**✅ IMPLEMENTADO EL 16 DE SEPTIEMBRE** (previsto para el Sprint 4; llegó con US-012).
+Implementado el 16 de septiembre (previsto para el Sprint 4; llegó con US-012).
 
 **Ubicación:** `modules/solicitudes/domain/estados/estados-solicitud.ts`
-**Pruebas:** `estados-solicitud.spec.ts` recorre **los 30 pares** estado × acción contra la tabla del
+**Pruebas:** `estados-solicitud.spec.ts` recorre todos los pares estado × acción contra la tabla del
 diagrama: si alguien habilita una transición que no está dibujada, una prueba falla.
 
 ### ¿Qué problema resuelve?
@@ -449,6 +445,10 @@ Una solicitud atraviesa un ciclo de vida estricto:
 BORRADOR → ENVIADA → EN_EVALUACION → APROBADA → ADJUDICADA
                                    ↘ RECHAZADA
 ```
+
+Si el monto de la beca supera Q10,000 (US-033), la primera aprobación lleva a un estado
+intermedio, `APROBACION_PENDIENTE`, y la segunda firma, de otra persona, a `APROBADA`. Desde ahí
+todavía se puede rechazar.
 
 Cada estado permite operaciones distintas: en `BORRADOR` se pueden cargar y reemplazar
 documentos, pero no evaluar; en `EN_EVALUACION` se puede dictaminar, pero no editar; en
@@ -531,14 +531,14 @@ historial (US-016). Resultado: la solicitud es la única que se modifica a sí m
 externo puede saltarse el historial, y cada estado se prueba sin construir una solicitud completa.
 `VistaSolicitud` es la interfaz mínima que un estado necesita ver: solo los documentos faltantes.
 
-Los estados de evaluación y adjudicación ya existen y están probados porque son parte del modelo;
-los **casos de uso** que los disparan llegan con sus historias (US-018, US-023, US-024).
+Los casos de uso que disparan las transiciones de evaluación, resolución y adjudicación son
+US-018, US-023 y US-024.
 
 ---
 
 ## 6. Strategy — `CriterioEvaluacionStrategy`
 
-**✅ IMPLEMENTADO EL 16 DE SEPTIEMBRE** (previsto para el Sprint 5; llegó con US-019).
+Implementado el 16 de septiembre (previsto para el Sprint 5; llegó con US-019).
 
 **Ubicación:** `modules/evaluaciones/domain/strategies/`
 **Pruebas:** `criterios.spec.ts` — cada fórmula en sus extremos, y que el mixto use lo que devuelven
@@ -643,10 +643,9 @@ criterioPara(convocatoria.tipo).calcular(perfil);
 
 ## 7. Observer — `ObservadorSolicitud`
 
-**✅ IMPLEMENTADO EL 17 DE OCTUBRE DE 2026.** No estaba en el plan como patrón obligatorio: entró
-porque el Product Owner pidió que *"cuando una solicitud cambie de estado, el sistema deberá
-registrar el evento y generar una notificación para el estudiante"*. El requerimiento describía el
-problema que este patrón resuelve, así que el patrón dejó de ser opcional.
+Implementado el 17 de octubre de 2026. No estaba en el plan como patrón obligatorio: entró porque
+el Product Owner pidió que *"cuando una solicitud cambie de estado, el sistema deberá registrar el
+evento y generar una notificación para el estudiante"*, que describe el problema que resuelve.
 
 **Ubicación:** `modules/solicitudes/domain/events/evento-solicitud.ts` (el contrato),
 `application/services/publicador-eventos.service.ts` (el sujeto),
@@ -741,7 +740,7 @@ async publicarDe(solicitud: Solicitud): Promise<void> {
 }
 ```
 
-**Dos decisiones que se apartan de la formulación clásica del patrón.**
+**Dos decisiones que se apartan de la formulación clásica del patrón:**
 
 *El evento se acumula en la entidad y se publica después de persistir.* En la versión clásica el
 sujeto avisa en el momento del cambio. Aquí no se puede: el cambio todavía no es cierto hasta que
@@ -749,35 +748,34 @@ el repositorio lo guarda. La prueba `lo que no se guarda no se anuncia` fija esa
 guardado falla por falta de cupo, el contador del observador falso se queda en cero.
 
 *La creación de una solicitud no emite evento.* `Solicitud.nueva` no pasa por `transicionar`
-—escribe el `BORRADOR` inicial directamente— porque crear no es *cambiar* de estado. Es
-intencional y está probado: enviar una solicitud recién creada genera **una** notificación (la de
-`ENVIADA`), no dos.
+—escribe el `BORRADOR` inicial directamente— porque crear no es *cambiar* de estado. Está probado: enviar una solicitud recién creada genera **una** notificación (la de `ENVIADA`),
+no dos.
 
 ---
 
----
+# PATRÓN OPCIONAL
 
-# PATRÓN EXTRA (opcional, si el cronograma lo permite)
+## 8. Chain of Responsibility — validación previa al envío
 
-## 8. Chain of Responsibility — Validación previa al envío
+Se evaluó como patrón opcional y **no se implementó**: el tiempo restante se dedicó a los
+requerimientos del Product Owner. Los siete patrones implementados superan el mínimo de seis.
 
-Antes de enviar una solicitud deben verificarse varias condiciones en cadena: perfil completo,
-documentos exigidos cargados, convocatoria vigente, requisitos de elegibilidad cumplidos, sin
-solicitud duplicada. Modelarlas como una cadena de manejadores permite agregar, quitar y reordenar
-validaciones sin tocar las existentes, y reporta el primer incumplimiento con un mensaje preciso.
-
-*Alternativa considerada:* un método con validaciones secuenciales — descartada porque cada
-requisito nuevo del PO obliga a modificarlo, y no permite reutilizar validaciones entre distintos
-tipos de beca.
+La idea era modelar como cadena de manejadores las condiciones previas al envío —perfil completo,
+documentos cargados, convocatoria vigente, sin solicitud duplicada—, de modo que agregar o
+reordenar validaciones no tocara las existentes. La alternativa, un método con validaciones
+secuenciales, obliga a modificarlo con cada requisito nuevo, y es la que está en uso
+(`EnviarSolicitudService`).
 
 ---
 
-## Evidencia para la evaluación
+## Dónde se comprueba cada patrón
 
-Para cada patrón, al cierre del sprint correspondiente debe existir:
-
-- [ ] La implementación en el repositorio, en la ruta indicada en la tabla inicial
-- [ ] Pruebas unitarias que ejerciten el comportamiento propio del patrón
-- [ ] La sección de justificación de este documento, completa con las cuatro preguntas
-- [ ] El diagrama de clases del patrón en `docs/diagramas/patrones/`
-- [ ] El Pull Request donde se introdujo, con la discusión del code review
+| Patrón | Código | Pruebas | Pull Request |
+|---|---|---|---|
+| Factory Method | `convocatorias/domain/factories/` | `convocatoria.factory.spec.ts` | #14 |
+| Builder | `reportes/application/builders/` | `reporte.builder.spec.ts` | #20 |
+| Adapter | `usuarios/infrastructure/adapters/` | `bcrypt-hasher.adapter.spec.ts`, `jwt-token.adapter.spec.ts` | #2, #12 |
+| Facade | `resoluciones/application/facades/` | `casos-de-uso-resoluciones.spec.ts` | #19 |
+| State | `solicitudes/domain/estados/` | `estados-solicitud.spec.ts` | #17 |
+| Strategy | `evaluaciones/domain/strategies/` | `criterios.spec.ts` | #18 |
+| Observer | `solicitudes/domain/events/` | `casos-de-uso-solicitudes.spec.ts`, `solicitudes.e2e-spec.ts` | #27 |

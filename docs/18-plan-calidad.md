@@ -196,7 +196,7 @@ El equipo sigue un conjunto reducido de métricas, todas con una fuente de medic
 | PRs con aprobación de otro integrante | 100 % | **100 %** (31 de 31) | Historial de Pull Requests |
 | Advertencias del linter | 0 | **0** | Salida del CI |
 | Defectos abiertos de severidad Alta | 0 al cerrar el sprint | **0** | Issues con etiqueta `bug` |
-| Patrones implementados y probados | 6 al 31 Oct | **8** | `06-patrones.md` |
+| Patrones implementados y probados | 6 al 31 Oct | **7** | `06-patrones.md` |
 
 > **Evolución de las métricas durante el proyecto.** Al redactarse este plan, el 12 de septiembre,
 > tres indicadores estaban por debajo de la meta: el 40 % de Pull Requests con revisión, una medición

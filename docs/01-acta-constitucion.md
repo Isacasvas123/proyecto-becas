@@ -38,10 +38,9 @@
 y es externo al equipo de desarrollo. Le corresponde priorizar el Product Backlog, emitir los
 cambios de requerimientos y **dar la aceptación formal** de las historias en la Sprint Review.
 
-Ahora bien, el Product Owner no participa en el día a día del equipo, y una historia no puede
-quedarse en el limbo hasta la siguiente clase esperando que alguien diga si está aceptada. Por
-eso el equipo designa un **Proxy Product Owner**, figura reconocida en Scrum precisamente para
-cuando el PO no está disponible de forma continua.
+El Product Owner no participa en el día a día del equipo, y una historia no puede esperar hasta
+la siguiente clase para saber si está aceptada. Por eso el equipo designa un **Proxy Product
+Owner**, figura reconocida en Scrum para cuando el PO no está disponible de forma continua.
 
 | | Product Owner | Proxy Product Owner |
 |---|---|---|
@@ -50,21 +49,20 @@ cuando el PO no está disponible de forma continua.
 | **Cuándo** | Sprint Review y clases | Día a día, conforme se terminan las historias |
 | **Alcance** | Puede crear, cambiar y despriorizar historias | **No puede cambiar el alcance ni inventar criterios** |
 
-**Límite explícito del Proxy.** Solo verifica el cumplimiento de los criterios de aceptación que
-ya están escritos en el Product Backlog. No decide si una funcionalidad debía existir, no altera
-prioridades y no aprueba desviaciones de alcance: eso sigue siendo exclusivo del Product Owner.
-Si aparece una duda que los criterios no resuelven, se escala al catedrático y se registra.
+**Límite del Proxy.** Solo verifica los criterios de aceptación ya escritos en el Product
+Backlog. No decide si una funcionalidad debía existir, no altera prioridades y no aprueba
+desviaciones de alcance, que son del Product Owner. Si una duda no la resuelven los criterios, se
+escala al catedrático y se registra.
 
-**Por qué Stuard y no el Scrum Master.** Concentrar Scrum Master y Proxy Product Owner en una
-sola persona es un anti-patrón: el Scrum Master protege el proceso y al equipo, mientras que el
-Product Owner decide sobre el producto. Si Isaac ocupara ambos roles, acabaría juzgando el
-resultado de su propia facilitación. Stuard es además responsable de la Visión del Producto, del
-Product Backlog y del Manual de Usuario, así que es quien está más cerca de la voz del usuario.
+**Por qué Stuard y no el Scrum Master.** Reunir ambos roles en una persona es un anti-patrón: el
+Scrum Master protege el proceso y al equipo, y el Product Owner decide sobre el producto. Si
+Isaac ocupara los dos, acabaría juzgando el resultado de su propia facilitación. Stuard, además,
+es responsable de la Visión del Producto y del Manual de Usuario, y es quien está más cerca del
+usuario.
 
-**Cómo se registra la aceptación.** El Proxy Product Owner es el **único** que mueve una tarjeta
-a la columna *Done* en el tablero de GitHub Projects. Ese movimiento constituye la aceptación de
-la historia. Las historias aceptadas y rechazadas durante la semana se listan además en la minuta
-del jueves.
+**Cómo se registra la aceptación.** Solo el Proxy Product Owner mueve una tarjeta a *Done* en el
+tablero de GitHub Projects, y ese movimiento es la aceptación de la historia. Las aceptadas y
+rechazadas de la semana se listan además en la minuta del jueves.
 
 ---
 
@@ -167,7 +165,7 @@ Sprints semanales de **jueves a miércoles**. Ceremonias todos los jueves.
 | 1.1 | Acta de Constitución y Política de Trabajo | Jue 3 Sep | Isaac | Anexos 1 y 3 |
 | 1.2 | Visión del Producto y User Personas | Mié 9 Sep | Stuard | Anexo 4 §2-3 |
 | 1.3 | Product Backlog inicial (6 epics, ~30 historias) | Mié 9 Sep | Stuard, Isaac | Anexo 4 §4 |
-| 1.4 | Repositorio Git, ramas, CI | Mié 9 Sep | Ivan | Protección de `main` pendiente de GitHub Pro |
+| 1.4 | Repositorio Git, ramas, CI | Mié 9 Sep · Completado | Ivan | Protección de `main` y `develop` activa, con CI obligatorio |
 | 1.5 | Walking skeleton: estudiar, criticar y abrir su PR | Mié 9 Sep | Fernando | Construido el 2 Sep; su dueño debe poder defenderlo |
 | 1.6 | Documento de Arquitectura v1 | Mié 9 Sep | Ivan | Anexo 5 §2 |
 | 1.7 | Invitar al equipo al repositorio | Jue 3 Sep | Isaac | Bloquea a los tres integrantes |
@@ -187,29 +185,29 @@ Sprints semanales de **jueves a miércoles**. Ceremonias todos los jueves.
 | 3.2 | Patrón Factory Method implementado y documentado | Mié 23 Sep · Completado | Stuard | Creacional 1 · 18 pruebas propias |
 | 3.3 | Entorno de Staging desplegado y accesible | Ver tarea 2.7 | Ivan | Reprogramado al Sprint 2: la Definition of Done no puede cumplirse sin este entorno |
 | 3.4 | Registro de estudiante (US-001) + bloqueo tras 5 intentos (US-002) | Mié 23 Sep · Completado | Isaac, Stuard | Reprogramado desde la tarea 2.4 |
-| 3.5 | Cerrar las 4 revisiones documentales del Sprint 1 (S1-07 a S1-10) | Mié 23 Sep | Fernando, Stuard, Ivan | Deuda declarada del Sprint 1 |
-| 3.6 | Detalle de los casos de uso CU-03, CU-13 y CU-16 | Mié 23 Sep | Fernando | Completa el 2.1 |
+| 3.5 | Cerrar las 4 revisiones documentales del Sprint 1 (S1-07 a S1-10) | Mié 23 Sep · Completado | Fernando, Stuard, Ivan | Deuda declarada del Sprint 1 |
+| 3.6 | Detalle de los casos de uso CU-03, CU-13 y CU-16 | Mié 23 Sep · Completado | Fernando | Completa el 2.1 |
 | 4 | **Sprint 4 — Estudiantes y solicitudes** | Mié 30 Sep 2026 | Equipo | |
 | 4.1 | Creación de solicitudes | Mié 30 Sep · Completado | Isaac, Ivan | EPIC-03 completa: perfil (US-011), crear, cargar, enviar, listar e historial (US-012 a US-016) |
-| 4.4 | Gestión de perfil (US-004) y recuperación de contraseña (US-005) | Mié 30 Sep | Isaac, Stuard | Reprogramados desde la tarea 2.4 |
+| 4.4 | Gestión de perfil (US-004) y recuperación de contraseña (US-005) | Mié 30 Sep | Isaac, Stuard | Reprogramados desde la tarea 2.4 · US-005 la cubre US-035; US-004 queda sin implementar |
 | 4.2 | Patrón State (ciclo de vida de la solicitud) | Mié 30 Sep · Completado | Stuard | Comportamiento 1 · los 30 pares estado × acción probados |
 | 4.3 | Carga de documentación + patrón Adapter | Mié 30 Sep · Completado | Fernando | Estructural 1 · almacenamiento local; el de nube queda para cuando haya proveedor |
 | 5 | **Sprint 5 — Evaluación** | Mié 7 Oct 2026 | Equipo | |
-| 5.1 | Comités evaluadores y asignación de solicitudes | Mié 7 Oct · Completado | Isaac, Fernando | EPIC-04 (US-017 a US-021) · falta quitar integrantes |
+| 5.1 | Comités evaluadores y asignación de solicitudes | Mié 7 Oct · Completado | Isaac, Fernando | EPIC-04 (US-017 a US-021), incluido quitar integrantes de un comité |
 | 5.2 | Patrón Strategy (criterios de puntuación) | Mié 7 Oct · Completado | Stuard | Comportamiento 2 · **fórmulas por confirmar con el PO** |
 | 5.3 | Notificaciones de cambio de estado | Mié 7 Oct | Ivan | Observer (opcional) |
 | 6 | **Sprint 6 — Resolución y consulta** | Mié 14 Oct 2026 | Equipo | |
 | 6.1 | Aprobación, rechazo y adjudicación de becas | Mié 14 Oct · Completado | Isaac, Stuard | EPIC-05 (US-023, US-024) · falta el acta (US-026) |
 | 6.2 | Consulta pública del estado de una beca | Mié 14 Oct · Completado | Fernando | Sin autenticación (US-025) · con límite de consultas |
-| 6.3 | Patrón Facade + análisis de impacto de cambio del PO | Mié 14 Oct · Completado | Ivan | Estructural 2 · queda el análisis de impacto |
+| 6.3 | Patrón Facade + análisis de impacto de cambio del PO | Mié 14 Oct · Completado | Ivan | Estructural 2 · análisis de impacto en `docs/23-analisis-impacto-requerimientos-po.md` |
 | 7 | **Sprint 7 — Reportes y calidad** | Mié 21 Oct 2026 | Equipo | Feriado 20 Oct |
 | 7.1 | Módulo de reportes + patrón Builder | Mié 21 Oct · Completado | Stuard, Isaac | Creacional 2 · EPIC-06 completa (US-028 a US-031) |
-| 7.2 | QAP y Plan de Pruebas finales | Mié 21 Oct | Fernando | Anexos 6 y 7 |
-| 7.3 | Pruebas de integración, regresión y cobertura ≥60% | Mié 21 Oct | Fernando, Ivan | |
+| 7.2 | QAP y Plan de Pruebas finales | Mié 21 Oct · Completado | Fernando | Anexos 6 y 7 |
+| 7.3 | Pruebas de integración, regresión y cobertura ≥60% | Mié 21 Oct · Completado | Fernando, Ivan | Cobertura de 91.83 %, medida el 21 de octubre |
 | 8 | **Sprint 8 — Cierre técnico** | Mié 28 Oct 2026 | Equipo | |
-| 8.1 | Manual Técnico | Mié 28 Oct | Isaac | |
-| 8.2 | Manual de Usuario | Mié 28 Oct | Stuard | |
-| 8.3 | Justificación final de Arquitectura y Patrones | Mié 28 Oct | Ivan, Stuard | |
+| 8.1 | Manual Técnico | Mié 28 Oct · Completado | Isaac | |
+| 8.2 | Manual de Usuario | Mié 28 Oct · Completado | Stuard | |
+| 8.3 | Justificación final de Arquitectura y Patrones | Mié 28 Oct · Completado | Ivan, Stuard | |
 | 8.4 | Corrección de bugs y despliegue estable | Mié 28 Oct | Todos | **Code freeze** |
 | 9 | **Cierre y entrega** | Sáb 31 Oct 2026 | Equipo | |
 | 9.1 | Presentación final y ensayo de demo | Vie 30 Oct | Isaac | |

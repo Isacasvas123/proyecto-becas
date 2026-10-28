@@ -41,7 +41,7 @@ y dejar el sistema desplegado y verificable en el entorno de Staging.
 
 **¿Se cumplió?** ☒ Sí completamente ☐ Parcialmente ☐ No
 
-Las seis épicas quedaron entregadas y los ocho patrones implementados y probados. Las mejoras al
+Las seis épicas quedaron entregadas y los siete patrones implementados y probados. Las mejoras al
 proceso de trabajo se tratan en la retrospectiva de esta misma sesión.
 
 ---
