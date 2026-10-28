@@ -24,7 +24,6 @@ el 17 de octubre, no el deseo de sumar patrones.
 | Comportamiento | **State** | `modules/solicitudes/domain/estados/` | **4** | ✅ **Implementado** (adelantado al 16 Sep) |
 | Comportamiento | **Strategy** | `modules/evaluaciones/domain/strategies/` | **5** | ✅ **Implementado** (adelantado al 16 Sep) |
 | Comportamiento | **Observer** | `modules/solicitudes/domain/events/` | — | ✅ **Implementado** (17 Oct, exigencia del PO) |
-| *Opcional* | Chain of Responsibility | — | — | No implementado (ver sección 8) |
 
 > **Actualización del 3 de septiembre de 2026.** El patrón **Adapter se adelantó al Sprint 1**:
 > el inicio de sesión (US-002) necesitaba calcular y verificar hashes de contraseña y emitir
@@ -750,21 +749,6 @@ guardado falla por falta de cupo, el contador del observador falso se queda en c
 *La creación de una solicitud no emite evento.* `Solicitud.nueva` no pasa por `transicionar`
 —escribe el `BORRADOR` inicial directamente— porque crear no es *cambiar* de estado. Está probado: enviar una solicitud recién creada genera **una** notificación (la de `ENVIADA`),
 no dos.
-
----
-
-# PATRÓN OPCIONAL
-
-## 8. Chain of Responsibility — validación previa al envío
-
-Se evaluó como patrón opcional y **no se implementó**: el tiempo restante se dedicó a los
-requerimientos del Product Owner. Los siete patrones implementados superan el mínimo de seis.
-
-La idea era modelar como cadena de manejadores las condiciones previas al envío —perfil completo,
-documentos cargados, convocatoria vigente, sin solicitud duplicada—, de modo que agregar o
-reordenar validaciones no tocara las existentes. La alternativa, un método con validaciones
-secuenciales, obliga a modificarlo con cada requisito nuevo, y es la que está en uso
-(`EnviarSolicitudService`).
 
 ---
 
