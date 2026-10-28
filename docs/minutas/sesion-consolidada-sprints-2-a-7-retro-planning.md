@@ -105,7 +105,7 @@ Cuatro defectos los encontró alguien usando la aplicación, no la suite de prue
 | Integrantes del comité que no se quitaban de la base | Prueba de humo contra PostgreSQL | #24 |
 | El monto de la beca no se guardaba, y la doble aprobación nunca ocurría | Verificando en Staging | #30 |
 | Cuatro fallos de sesión, dictámenes y cupos | Verificando en Staging | #31 |
-| El botón de la segunda firma no se podía habilitar nunca | Verificando en Staging | #32 |
+| El botón de la segunda firma no se podía habilitar nunca | Verificando en Staging | #34 |
 
 Los cuatro comparten una misma causa: las pruebas de integración llaman a la API directamente, sin
 pasar por la interfaz, y `apps/web` no cuenta con pruebas automáticas. Ninguno de los cuatro podía

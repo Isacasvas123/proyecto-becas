@@ -6,12 +6,11 @@
 | --------------- | ------------------------------------------------------------ |
 | **Proyecto**    | Plataforma Nacional para la Gestión Integral de Becas        |
 | **Responsable** | **Todo el equipo Scrum** · coordina Fernando Herrera         |
-| **Versión**     | 1.0                                                          |
-| **Fecha**       | 12 de septiembre de 2026                                     |
+| **Versión**     | 2.0                                                          |
+| **Fecha**       | 28 de octubre de 2026                                        |
 
-> **La calidad se construye, no se añade al final.** Este plan describe cómo se previene, no cómo
-> se inspecciona al cierre. Si al final del proyecto hay que "arreglar la calidad", este documento
-> habrá fracasado.
+> La calidad se construye durante el desarrollo y no se añade al final. Este plan describe cómo se
+> previene, no cómo se inspecciona al cierre.
 
 > **Relación con el Plan de Pruebas.** Este QAP define el proceso: qué se revisa, quién, cuándo
 > y con qué estándar. El Plan de Pruebas (`19-plan-pruebas.md`, Anexo 7) define la **estrategia de
@@ -145,13 +144,14 @@ flowchart LR
 | `feature/*`  | Una historia cada una           | Su autor                            |
 | `docs/*`     | Documentación                   | Su autor                            |
 
-> ⚠️ **Hueco conocido en este control.** La prohibición de escribir directo en `main` y `develop`
-> es un acuerdo, no una restricción técnica: sin GitHub Pro no se pueden activar las reglas de
-> protección de rama. Mientras eso siga así, el control depende de que los cuatro se acuerden.
+> **Protección de ramas.** `main` y `develop` tienen protección activa en GitHub: exigen Pull
+> Request y que el CI esté en verde, no admiten force-push ni borrado, y `main` exige además una
+> aprobación. En `develop` GitHub no exige la aprobación de otro integrante: esa regla es del
+> equipo (Definition of Done).
 >
-> Es un riesgo real y ya se materializó: en el Sprint 1 tres de cinco PRs se mergearon sin
-> aprobación. **Activar la protección de rama en cuanto entre GitHub Pro es la mitigación
-> estructural**, y está registrada como tal en la Retrospectiva 1.
+> Antes de activarla, la prohibición era un acuerdo y no una restricción técnica, y se incumplió:
+> en el Sprint 1 y en la tanda de documentos del 12 de septiembre, ocho PRs se mergearon sin
+> aprobación (#2, #3, #5 y del #7 al #11). Desde el #12 todos la tienen.
 
 **Gestión de entornos.** Local para desarrollo, CI para regresión, Staging para la aceptación del
 Product Owner. Detalle en `17-staging.md`.
@@ -189,11 +189,11 @@ La calidad es una responsabilidad compartida por todo el equipo. La tabla detall
 
 El equipo sigue un conjunto reducido de métricas, todas con una fuente de medición objetiva.
 
-| Métrica | Meta | Medición al 21 Oct 2026 | Dónde se mide |
+| Métrica | Meta | Última medición | Dónde se mide |
 |---|---|---|---|
 | Pruebas automatizadas | Creciente cada sprint | **675** (504 unitarias + 171 de integración) | Salida del CI |
 | Cobertura de sentencias | ≥ 60 % al 21 Oct | **91.83 %** | `npm run test:cov` |
-| PRs con aprobación de otro integrante | 100 % | **100 %** (31 de 31) | Historial de Pull Requests |
+| PRs con aprobación de otro integrante | 100 % | **76 %** (25 de 33). Desde el PR #12, **100 %** (23 de 23) | Historial de Pull Requests |
 | Advertencias del linter | 0 | **0** | Salida del CI |
 | Defectos abiertos de severidad Alta | 0 al cerrar el sprint | **0** | Issues con etiqueta `bug` |
 | Patrones implementados y probados | 6 al 31 Oct | **7** | `06-patrones.md` |

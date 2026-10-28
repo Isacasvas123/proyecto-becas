@@ -6,9 +6,9 @@
 | -------------------- | -------------------------------------------------------------- |
 | **Proyecto**         | Plataforma Nacional para la Gestión Integral de Becas          |
 | **Responsable**      | Fernando Herrera (calidad y pruebas) · revisado por el equipo  |
-| **Versión**          | 1.0                                                            |
-| **Fecha**            | 12 de septiembre de 2026                                       |
-| **Estado de la suite**               | 106 pruebas unitarias + 32 de integración, todas en verde · cobertura 84.35 % |
+| **Versión**          | 2.0                                                            |
+| **Fecha**            | 28 de octubre de 2026                                          |
+| **Estado de la suite**               | 504 pruebas unitarias + 171 de integración · cobertura de 91.83 % medida el 21 de octubre |
 
 > Este plan es una guía de alto nivel. El plan de prueba detallado de cada historia son sus
 > **criterios de aceptación**, escritos en `04-product-backlog.md`. Aquí se define la estrategia;
@@ -80,9 +80,9 @@ Se declara explícitamente para que nadie lo dé por hecho:
 
 **Navegadores soportados:** últimas versiones de Chrome, Firefox y Edge.
 
-> ⚠️ **Staging todavía no existe** al escribir este documento. Mientras siga así, el nivel 3
-> (§5.1) no se puede ejecutar, y por lo tanto ninguna historia puede cumplir la Definition of
-> Done. Es el impedimento principal del proyecto, no un detalle pendiente.
+> Staging está desplegado en Render y se verifica con el workflow *Verificar Staging*
+> (`17-staging.md`). El nivel 3 (§5.1) lo ejecuta el Proxy Product Owner a diario y el catedrático
+> en la Sprint Review.
 
 ## 5. Estrategia de Pruebas
 
@@ -91,8 +91,8 @@ Pirámide de pruebas: muchas rápidas y baratas abajo, pocas lentas y caras arri
 ```mermaid
 flowchart TB
     N3["<b>Nivel 3 — Sistema y Aceptación</b><br/>pocas · lentas · en Staging<br/>las hace el Product Owner"]
-    N2["<b>Nivel 2 — Integración</b> · 32 pruebas<br/>HTTP real con supertest, sin base de datos<br/>las hacen los desarrolladores"]
-    N1["<b>Nivel 1 — Unitarias</b> · 106 pruebas<br/>milisegundos · sin Docker ni red<br/>las hacen los desarrolladores"]
+    N2["<b>Nivel 2 — Integración</b> · 171 pruebas<br/>HTTP real con supertest, casi todas sin base de datos<br/>las hacen los desarrolladores"]
+    N1["<b>Nivel 1 — Unitarias</b> · 504 pruebas<br/>milisegundos · sin Docker ni red<br/>las hacen los desarrolladores"]
 
     N3 --- N2 --- N1
 ```
@@ -121,8 +121,8 @@ testeabilidad de `05-arquitectura.md` §2.2 comprobado en vez de afirmado.
 
 > **Las pruebas negativas no son opcionales en este proyecto.** El criterio de US-003 no dice
 > "el administrador entra": dice *"un acceso no autorizado devuelve 403, no 404 ni el recurso"*.
-> Eso solo se puede probar intentando entrar sin permiso. De las 32 pruebas de integración
-> actuales, la mayoría son negativas.
+> Eso solo se puede probar intentando entrar sin permiso, y buena parte de las pruebas de
+> integración son negativas.
 
 ### 5.3 Criterios de entrada y salida
 
@@ -160,8 +160,9 @@ Nacen de defectos reales encontrados en el Sprint 1, no de teoría:
 
 **Meta:** ≥ 60 % de sentencias para el 21 de octubre de 2026 (WBS 7.3).
 
-**Medición corregida al 12 de septiembre de 2026:** 84.35 % de sentencias · 84.21 % de ramas.
-La meta ya está superada; a partir de aquí se vigila que no baje.
+**Última medición, 21 de octubre de 2026:** 91.83 % de sentencias. El 12 de septiembre, con la
+medición ya corregida, era de 84.35 % de sentencias y 84.21 % de ramas. La meta está superada y se
+vigila que no baje.
 
 > ### Historia de este número — el primero que se reportó estaba mal medido
 >
@@ -191,7 +192,7 @@ pruebas que no pueden fallar no vale nada.
 | --------- | ------------------------------------------------------- | ----------------------------------------------------------- |
 | **1**     | Entidades, objetos de valor y casos de uso              | Es donde viven las reglas de negocio                        |
 | **2**     | Guards y control de acceso                              | Un fallo aquí es una fuga de datos, no una molestia          |
-| **3**     | Adaptadores con bibliotecas reales (bcrypt, JWT)         | Hoy a 0 %, y son la evidencia del patrón Adapter             |
+| **3**     | Adaptadores con bibliotecas reales (bcrypt, JWT)         | Cubiertos con las bibliotecas reales desde DEF-02; son la evidencia del patrón Adapter |
 | **4**     | Controladores y DTO                                      | Cubiertos por integración, no por unitarias                  |
 | _No se exige_ | Módulos de NestJS y `main.ts`                      | Son configuración. Ya están excluidos de la medición          |
 
@@ -219,19 +220,28 @@ Product Backlog priorizados por el Product Owner como cualquier otra historia.
 | **Medio**     | Falla con alternativa, o un criterio de aceptación incumplido     | Se prioriza en el siguiente Planning     |
 | **Bajo**      | Cosmético, o molestia menor                                      | Cuando haya holgura                      |
 
-### 7.1 Defectos abiertos al 12 de septiembre de 2026
+### 7.1 Defectos al 28 de octubre de 2026
 
 | ID       | Defecto                                                                | Severidad | Estado                     |
 | -------- | ---------------------------------------------------------------------- | --------- | -------------------------- |
 | DEF-01   | `ConvocatoriaPrismaRepositorio` sin cobertura de pruebas (issue #6)     | Medio     | Abierto                    |
-| DEF-02   | Los tres adaptadores del patrón Adapter a 0 % de cobertura              | Medio     | ✅ Corregido 12 Sep        |
-| DEF-03   | La medición de cobertura excluye las pruebas de integración              | Medio     | ✅ Corregido 12 Sep        |
-| US-008   | El listado público quedó detrás del login: criterio incumplido           | **Alto**  | Diferido al Sprint 3 con decisión escrita |
-| US-002   | Falta el bloqueo tras 5 intentos fallidos: criterio incumplido           | Medio     | ✅ Corregido 12 Sep        |
+| DEF-02   | Los tres adaptadores del patrón Adapter a 0 % de cobertura              | Medio     | ✅ Corregido 12 Sep (PR #12) |
+| DEF-03   | La medición de cobertura excluye las pruebas de integración              | Medio     | ✅ Corregido 12 Sep (PR #12) |
+| US-008   | El listado público quedó detrás del login: criterio incumplido           | Alto      | ✅ Corregido en el Sprint 3 (PR #14) |
+| US-002   | Falta el bloqueo tras 5 intentos fallidos: criterio incumplido           | Medio     | ✅ Corregido 12 Sep (PR #13) |
+| DEF-04   | Los integrantes quitados de un comité seguían en la base                 | Medio     | ✅ Corregido (PR #24)      |
+| DEF-05   | El monto de la beca no se guardaba: la segunda aprobación nunca ocurría  | Alto      | ✅ Corregido (PR #30)      |
+| DEF-06   | Cuatro fallos de sesión, dictámenes y cupos hallados verificando en Staging | Medio  | ✅ Corregido (PR #31)      |
+| DEF-07   | El botón de la segunda firma no se podía habilitar nunca                 | Alto      | ✅ Corregido (PR #34)      |
+| DEF-08   | Las credenciales del administrador aparecían en el login desplegado      | Crítico   | ✅ Corregido en el código (PR #28); falta cambiar la contraseña en Render |
 
-> Los dos últimos son criterios de aceptación incumplidos, no errores de programación. Se
+> Los criterios de aceptación incumplidos (US-008 y US-002) no son errores de programación. Se
 > registran igual: para el Product Owner la diferencia es irrelevante, porque en ambos casos el
 > sistema no hace lo que se acordó.
+>
+> DEF-04 a DEF-07 los encontró una persona usando la aplicación o una prueba de humo contra
+> PostgreSQL, y ninguno podía detectarlo la suite: las pruebas de integración llaman a la API sin
+> pasar por la interfaz y `apps/web` no tiene pruebas automáticas.
 
 ## 8. Resultados esperados (entregables)
 
@@ -249,8 +259,8 @@ Las pruebas no producen un documento final, sino artefactos continuos:
 ## 9. Cómo se ejecuta
 
 ```bash
-npm run test        # 106 pruebas unitarias, sin Docker
-npm run test:e2e    # 32 pruebas de integración
+npm run test        # 504 pruebas unitarias, sin Docker
+npm run test:e2e    # 171 pruebas de integración
 npm run test:cov    # unitarias + integración con cobertura (necesita Docker)
 npm run lint        # ESLint + Prettier
 ```
