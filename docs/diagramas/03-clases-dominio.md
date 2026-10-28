@@ -4,7 +4,7 @@
 | | |
 |---|---|
 | **Responsable** | Fernando (diagramas) · revisado por el equipo |
-| **Fecha** | 5 de septiembre de 2026 · **Versión** 1.1 (11 sep: verificado contra el código) |
+| **Fecha** | 5 de septiembre de 2026 · **Versión** 1.3 (28 oct: avisos, bitácora, recuperación de contraseña y segunda aprobación) |
 
 > Este es el modelo de dominio, no el esquema de la base de datos. Se parecen hoy y no tienen
 > por qué seguir pareciéndose: la traducción entre ambos es responsabilidad de los *mappers* de
@@ -38,6 +38,7 @@ classDiagram
         +estaBloqueado(Date) boolean
         +conIntentoFallido(Date) Usuario
         +conAccesoCorrecto() Usuario
+        +conNuevaPassword(String) Usuario
         +asegurarPuedeIniciarSesion() void
         +esAdministrador() boolean
     }
@@ -61,6 +62,7 @@ classDiagram
         +TipoBeca tipo
         +EstadoConvocatoria estado
         +int cupos
+        +int montoBeca
         +PeriodoPostulacion periodo
         +Requisito[] requisitos
         +TipoDocumento[] documentosExigidos
@@ -69,6 +71,7 @@ classDiagram
         +esVisiblePublicamente(Date) boolean
         +admiteSolicitudes(Date) boolean
         +admiteEdicion() boolean
+        +exigeSegundaAprobacion() boolean
         +publicar() void
         +cerrar() void
         +descontarCupo() void
@@ -79,12 +82,16 @@ classDiagram
         +String numero
         +EstadoSolicitud estado
         +Date enviadaEn
+        +int montoBeca
         +cargarDocumento(Documento) void
         +enviar() void
         +evaluar(Evaluacion) void
         +resolver(Decision, String) void
+        +confirmarAprobacion(String) void
+        +necesitaSegundaAprobacion() boolean
         +tieneTodosLosDocumentos() boolean
         +puntajeConsolidado() Puntaje
+        +drenarEventos() EventoCambioEstado[]
     }
 
     class Documento {
@@ -125,6 +132,37 @@ classDiagram
         +Date ocurridoEn
     }
 
+    class TokenRecuperacion {
+        +String id
+        +String usuarioId
+        -String hashToken
+        +Date expiraEn
+        +Date usadoEn
+        +estaVigente(Date) boolean
+        +usar(Date) TokenRecuperacion
+    }
+
+    class Notificacion {
+        +String id
+        +String estudianteId
+        +String solicitudId
+        +NombreEstado desde
+        +NombreEstado hacia
+        +String mensaje
+        +boolean leida
+    }
+
+    class RegistroBitacora {
+        +String id
+        +String actorUsuario
+        +RolUsuario actorRol
+        +String accion
+        +String entidad
+        +String entidadId
+        +int resultado
+        +Date ocurridoEn
+    }
+
     Usuario "1" -- "0..1" Estudiante : es
     Convocatoria "1" -- "0..*" Solicitud : recibe
     Estudiante "1" -- "0..*" Solicitud : presenta
@@ -135,6 +173,10 @@ classDiagram
     Comite "1" -- "1" Convocatoria : evalúa
     Comite "1" -- "1..*" Usuario : integra
     Evaluacion "1" -- "1" Usuario : emitida por
+    Usuario "1" -- "0..*" TokenRecuperacion : solicita
+    Usuario "1" -- "0..*" Notificacion : recibe
+    Solicitud "1" -- "0..*" Notificacion : genera
+    Usuario "0..1" -- "0..*" RegistroBitacora : realiza
 ```
 
 ### Cómo leer las relaciones
@@ -164,6 +206,7 @@ classDiagram
         +enviar(Date, autorId) void
         +iniciarEvaluacion(Date, autorId) void
         +resolver(Decision, Date, autorId, motivo) void
+        +confirmarAprobacion(Date, autorId, motivo) void
         +adjudicar(Date, autorId) void
         +documentosFaltantes() String[]
         -transicionar(EstadoSolicitud, Date, autorId, motivo) void
@@ -176,6 +219,7 @@ classDiagram
         +enviar(VistaSolicitud) EstadoSolicitud
         +iniciarEvaluacion() EstadoSolicitud
         +resolver(Decision) EstadoSolicitud
+        +confirmarAprobacion() EstadoSolicitud
         +adjudicar() EstadoSolicitud
         +estaActiva() boolean
         #rechazar(String) never
@@ -191,6 +235,10 @@ classDiagram
     class EstadoEnEvaluacion {
         +resolver() permitido
     }
+    class EstadoAprobacionPendiente {
+        +confirmarAprobacion() permitido
+        +resolver() solo rechazar
+    }
     class EstadoAprobada {
         +adjudicar() permitido
     }
@@ -205,6 +253,7 @@ classDiagram
     EstadoSolicitud <|-- EstadoBorrador
     EstadoSolicitud <|-- EstadoEnviada
     EstadoSolicitud <|-- EstadoEnEvaluacion
+    EstadoSolicitud <|-- EstadoAprobacionPendiente
     EstadoSolicitud <|-- EstadoAprobada
     EstadoSolicitud <|-- EstadoRechazada
     EstadoSolicitud <|-- EstadoAdjudicada
@@ -223,7 +272,10 @@ stateDiagram-v2
     [*] --> BORRADOR : crear solicitud
     BORRADOR --> ENVIADA : enviar (exige documentos completos)
     ENVIADA --> EN_EVALUACION : asignar a comité
-    EN_EVALUACION --> APROBADA : resolver favorablemente
+    EN_EVALUACION --> APROBADA : resolver favorablemente (monto hasta Q10,000)
+    EN_EVALUACION --> APROBACION_PENDIENTE : primera aprobación (monto mayor a Q10,000)
+    APROBACION_PENDIENTE --> APROBADA : segunda aprobación, de otra persona
+    APROBACION_PENDIENTE --> RECHAZADA : rechazar
     EN_EVALUACION --> RECHAZADA : resolver desfavorablemente
     APROBADA --> ADJUDICADA : adjudicar (exige cupo disponible)
     RECHAZADA --> [*]
@@ -290,10 +342,11 @@ construirse** y después son inmutables.
 |---|---|---|
 | `NombreUsuario` | 3 a 30 caracteres, normalizado a minúsculas | 🟢 Implementado |
 | `PeriodoPostulacion` | Que el cierre sea posterior a la apertura | 🟢 Implementado |
-| `Cui` | 13 dígitos | 🔴 Sprint 2 |
-| `Promedio` | Entre 0 y 100 | 🔴 Sprint 4 |
-| `Puntaje` | Entre 0 y 100 | 🔴 Sprint 5 |
-| `ReferenciaArchivo` | Identificador opaco del almacenamiento | 🔴 Sprint 4 |
+| `Cui` | 13 dígitos | 🟢 Implementado |
+| `Puntaje` | Entre 0 y 100, con dos decimales | 🟢 Implementado |
+| `ArchivoDocumento` | Formato (PDF, JPG, PNG) y tamaño (5 MB), comprobados por el contenido | 🟢 Implementado |
+| `Promedio` | Entre 0 y 100 | 🟡 Se valida dentro de `Estudiante`, no es una clase aparte |
+| `ReferenciaArchivo` | Identificador opaco del almacenamiento | 🟡 Es una cadena dentro del documento cargado, no una clase aparte |
 
 **Por qué no usar un `string` o un `number` suelto:** un `string` puede venir vacío o mal
 formado, y cada punto del código tendría que acordarse de validarlo. Al encapsularlo, la regla
@@ -309,7 +362,7 @@ válido. Además el compilador impide confundirlo con cualquier otro texto.
 | `RolUsuario` | `ESTUDIANTE` · `EVALUADOR` · `ADMINISTRADOR` · `PUBLICO` ¹ |
 | `TipoBeca` | `NIVEL_MEDIO` · `UNIVERSITARIA` · `POSGRADO` |
 | `EstadoConvocatoria` | `BORRADOR` · `PUBLICADA` · `CERRADA` |
-| `NombreEstado` | `BORRADOR` · `ENVIADA` · `EN_EVALUACION` · `APROBADA` · `RECHAZADA` · `ADJUDICADA` |
+| `NombreEstado` | `BORRADOR` · `ENVIADA` · `EN_EVALUACION` · `APROBACION_PENDIENTE` · `APROBADA` · `RECHAZADA` · `ADJUDICADA` |
 | `Decision` | `APROBAR` · `RECHAZAR` |
 
 > ¹ **`PUBLICO` no existe en el `schema.prisma`, y es deliberado.** Representa al visitante sin
@@ -342,6 +395,9 @@ válido. Además el compilador impide confundirlo con cualquier otro texto.
 | `Comite` | evaluaciones | 🟢 Implementado (16 Sep) con el reparto equitativo. Las asignaciones son `Asignacion` |
 | `Beca` | solicitudes | 🟢 Implementada (16 Sep) como `BecaOtorgada` dentro de `Solicitud` (composición 0..1): se guarda en la misma transacción que la adjudicación. Tiene código y fecha; el acta es US-026 |
 | `HistorialEstado` | solicitudes | 🟢 Implementado como `EntradaHistorial` (16 Sep): solo crece |
+| `Notificacion` | solicitudes | 🟢 Implementada (US-034) como `NotificacionGuardada` del puerto de avisos: no tiene comportamiento propio. La crea el observador de cambios de estado |
+| `RegistroBitacora` | bitacora | 🟢 Implementada (US-032). Inmutable: la aplicación solo la escribe y la lee |
+| `TokenRecuperacion` | usuarios | 🟢 Implementada (US-035) con sus tres reglas: caduca, se usa una vez y, al usarse, mueren los demás de esa persona |
 
 ### ² Nota sobre `Convocatoria`
 
@@ -381,3 +437,61 @@ La versión 1.0 ponía el **CUI en `Estudiante`**. Al implementar el registro (U
 En `Usuario` son opcionales porque las cuentas creadas por el Ministerio no pasan por el registro
 público. También se agregan al diagrama los miembros del bloqueo por intentos fallidos (US-002),
 que ya existían en el código.
+
+
+---
+
+## 7. El patrón Observer — avisos por cambio de estado
+
+Lo pidió el Product Owner el 17 de octubre: cuando una solicitud cambia de estado, el sistema debe
+registrar el evento y generar un aviso para el estudiante (US-034). La justificación está en
+`docs/06-patrones.md §7`.
+
+```mermaid
+classDiagram
+    direction LR
+
+    class Solicitud {
+        -EventoCambioEstado[] eventos
+        -transicionar(EstadoSolicitud, Date, autorId, motivo) void
+        +drenarEventos() EventoCambioEstado[]
+    }
+
+    class EventoCambioEstado {
+        <<interface>>
+        +String solicitudId
+        +String numero
+        +String estudianteId
+        +NombreEstado desde
+        +NombreEstado hacia
+        +String motivo
+        +Date ocurridoEn
+    }
+
+    class ObservadorSolicitud {
+        <<interface>>
+        +String nombre
+        +notificar(EventoCambioEstado) Promise
+    }
+
+    class PublicadorEventosSolicitud {
+        +publicarDe(Solicitud) Promise
+    }
+
+    class NotificadorEstudianteObservador {
+        +notificar(EventoCambioEstado) Promise
+    }
+
+    class Notificacion
+
+    Solicitud ..> EventoCambioEstado : acumula
+    PublicadorEventosSolicitud ..> Solicitud : drena los eventos
+    PublicadorEventosSolicitud o-- ObservadorSolicitud : avisa a todos
+    ObservadorSolicitud <|.. NotificadorEstudianteObservador
+    NotificadorEstudianteObservador ..> Notificacion : crea
+```
+
+La entidad no avisa a nadie: solo acumula lo que le pasó. El caso de uso publica los eventos
+después de guardar, para que un cambio que no llegó a persistirse tampoco se anuncie, y un
+observador que falla no impide que los demás reciban el aviso. Sumar un observador nuevo, como el
+correo de US-022, es una clase más y no cambia ningún caso de uso.
