@@ -4,7 +4,7 @@
 | | |
 |---|---|
 | **Responsable** | Fernando (diagramas) · revisado por el equipo |
-| **Fecha** | 5 de septiembre de 2026 · **Versión** 1.1 (11 sep: verificado contra el código) |
+| **Fecha** | 5 de septiembre de 2026 · **Versión** 1.3 (28 oct: los nueve módulos, los puertos actuales y el despliegue real) |
 
 > Este diagrama debe reflejar la arquitectura elegida —monolito modular en capas con puertos y
 > adaptadores— y mostrar las interfaces, no solo las cajas. Las flechas indican dependencia:
@@ -34,7 +34,7 @@ flowchart TB
 
     BD[("🗄️ PostgreSQL 16")]
     ALM["📁 Almacenamiento<br/>de documentos"]
-    NOTI["✉️ Servicio de<br/>notificaciones"]
+    NOTI["✉️ Correo<br/><i>consola o SMTP</i>"]
     EXT["🏛️ Entidades externas<br/><i>RENAP, MinEduc</i>"]
 
     NAV -->|HTTPS| WEB
@@ -45,7 +45,7 @@ flowchart TB
     INFR --> BD
     INFR --> ALM
     INFR --> NOTI
-    INFR -.->|Sprint 6| EXT
+    INFR -.->|no implementada| EXT
 
     style DOMI fill:#fef3e2,stroke:#b45309,stroke-width:3px
     style DESPLIEGUE fill:#f0f7fc,stroke:#12609c,stroke-width:2px
@@ -71,37 +71,52 @@ El monolito está dividido por dentro. Cada módulo repite las cuatro capas.
 flowchart LR
     subgraph MODULOS["modules/"]
         direction TB
-        M1["<b>usuarios</b> ✅<br/>autenticación y roles"]
-        M2["<b>convocatorias</b> ✅<br/>programas de beca"]
-        M3["<b>estudiantes</b> ⬜<br/>perfil del aspirante"]
-        M4["<b>solicitudes</b> ⬜<br/>expediente y su ciclo"]
-        M5["<b>evaluaciones</b> ⬜<br/>comités y dictámenes"]
-        M6["<b>reportes</b> ⬜<br/>estadísticas"]
-        M7["<b>salud</b> ✅<br/>liveness y readiness"]
+        M1["<b>usuarios</b><br/>cuentas, acceso y recuperación"]
+        M2["<b>convocatorias</b><br/>programas de beca"]
+        M3["<b>estudiantes</b><br/>perfil del aspirante"]
+        M4["<b>solicitudes</b><br/>expediente, ciclo y avisos"]
+        M5["<b>evaluaciones</b><br/>comités y dictámenes"]
+        M6["<b>resoluciones</b><br/>aprobar, adjudicar y consulta pública"]
+        M7["<b>reportes</b><br/>estadísticas y exportación"]
+        M8["<b>bitacora</b><br/>auditoría"]
+        M9["<b>salud</b><br/>liveness y readiness"]
     end
 
     subgraph COMPARTIDO["shared/"]
         direction TB
         S1["<b>exceptions</b><br/>errores de dominio<br/>y filtro global"]
         S2["<b>persistence</b><br/>PrismaService"]
+        S3["<b>reglas</b><br/>umbral de la segunda aprobación"]
     end
 
-    M4 -->|capa de aplicación| M2
-    M4 -->|capa de aplicación| M3
-    M5 -->|capa de aplicación| M4
-    M6 -->|capa de aplicación| M4
+    M4 --> M2
+    M4 --> M3
+    M5 --> M4
+    M5 --> M2
+    M5 --> M3
+    M5 --> M1
+    M6 --> M4
+    M6 --> M5
+    M6 --> M2
+    M6 --> M1
+    M7 --> M4
+    M7 --> M3
+    M7 --> M2
 
     M1 --> COMPARTIDO
     M2 --> COMPARTIDO
     M4 --> COMPARTIDO
+    M8 --> COMPARTIDO
+    M9 --> COMPARTIDO
 
-    style M1 fill:#e4f4ec,stroke:#0f7a52
-    style M2 fill:#e4f4ec,stroke:#0f7a52
+    style M6 fill:#fef3e2,stroke:#b45309
     style MODULOS fill:#f0f7fc,stroke:#12609c
     style COMPARTIDO fill:#fef3e2,stroke:#b45309
 ```
 
-✅ construido · ⬜ pendiente
+Cada flecha entre módulos pasa por la capa de aplicación. `resoluciones` está resaltado porque es el módulo más alto: depende de cuatro y nadie depende de él.
+`bitacora` no depende de ningún otro módulo: la escribe un middleware global y los demás ni lo
+mencionan.
 
 **Regla de comunicación entre módulos.** Un módulo solo llama a la capa de aplicación de
 otro. Nunca importa sus entidades de dominio ni su repositorio.
@@ -118,12 +133,19 @@ ninguna de sus ventajas. Se verifica en cada code review.
 
 | Interfaz | Consumidor | Estado |
 |---|---|---|
-| `POST /auth/login` | WebApp | 🟢 Implementada |
-| `GET /convocatorias` | WebApp | 🟢 Implementada |
-| `GET /health` | Monitoreo · CI | 🟢 Implementada — *liveness*: responde si el proceso vive |
-| `GET /ready` | Monitoreo · CI · Staging | 🟢 Implementada — *readiness*: 503 si PostgreSQL no responde |
-| `POST /solicitudes` | WebApp | 🔴 Sprint 4 |
-| `GET /consulta-publica/{numero}` | WebApp, sin autenticación | 🔴 Sprint 6 |
+| `/auth/*`: login, registro y recuperación de contraseña | WebApp | 🟢 |
+| `/convocatorias/*` | WebApp | 🟢 |
+| `/estudiantes/*` | WebApp | 🟢 |
+| `/solicitudes/*` y `/notificaciones/*` | WebApp | 🟢 |
+| `/evaluadores`, `/comites/*` y `/evaluaciones/*` | WebApp | 🟢 |
+| `/resoluciones/*` | WebApp | 🟢 |
+| `POST /consulta-publica` | WebApp, sin autenticación | 🟢 |
+| `/reportes/*` | WebApp | 🟢 |
+| `/bitacora/*` | WebApp | 🟢 |
+| `GET /health` | Monitoreo · CI | 🟢 *Liveness*: responde si el proceso vive |
+| `GET /ready` | Monitoreo · CI · Staging | 🟢 *Readiness*: 503 si PostgreSQL no responde |
+
+El detalle de cada ruta, con su rol y sus códigos de error, está en `20-manual-tecnico.md §4.1`.
 
 ### Puertos que el dominio declara
 
@@ -137,12 +159,21 @@ en `domain/`; cada adaptador la implementa en `infrastructure/`.
 | `GeneradorToken` | `JwtGeneradorTokenAdapter` | usuarios | 🟢 |
 | `VerificadorToken` | `JwtVerificadorTokenAdapter` | usuarios | 🟢 — lo consume el guard global (US-003) |
 | `ConvocatoriaRepositorio` | `ConvocatoriaPrismaRepositorio`<br/>`ConvocatoriaEnMemoriaRepositorio` | convocatorias | 🟢 |
-| `AlmacenamientoDocumentosPort` | `AlmacenamientoLocalAdapter`<br/>`AlmacenamientoNubeAdapter` | solicitudes | 🔴 Sprint 4 |
-| `NotificacionPort` | `NotificacionConsolaAdapter`<br/>`NotificacionCorreoAdapter` | solicitudes | 🔴 Sprint 5 |
+| `EnviadorCorreo` | `CorreoConsolaAdapter`<br/>`CorreoSmtpAdapter` | usuarios | 🟢 El SMTP no está verificado contra un servidor real |
+| `TokenRecuperacionRepositorio` | `TokenRecuperacionPrismaRepositorio`<br/>`TokenRecuperacionEnMemoriaRepositorio` | usuarios | 🟢 |
+| `AlmacenamientoDocumentos` | `AlmacenamientoLocalAdapter`<br/>`AlmacenamientoMemoriaAdapter` | solicitudes | 🟢 El de nube no existe |
+| `NotificadorSolicitudes` | `NotificadorConsolaAdapter` | solicitudes | 🟢 |
+| `NotificacionRepositorio` | `NotificacionPrismaRepositorio`<br/>`NotificacionEnMemoriaRepositorio` | solicitudes | 🟢 La bandeja de avisos (US-034) |
+| `BitacoraRepositorio` | `BitacoraPrismaRepositorio`<br/>`BitacoraEnMemoriaRepositorio` | bitacora | 🟢 Solo escribe y lee |
+| `ExportadorReporte` | `CsvExportador`<br/>`PdfExportador` | reportes | 🟢 |
 
-> **Cada puerto cuenta con dos adaptadores**, uno real y uno de prueba. Es lo que
-> permite que las 106 pruebas unitarias corran en segundos sin levantar PostgreSQL, y es la demostración
-> práctica del principio de sustitución de Liskov.
+> Los puertos de persistencia tienen un adaptador real y uno en memoria para las pruebas. Es lo
+> que permite que las 504 pruebas unitarias corran en segundos sin levantar PostgreSQL, y es la
+> demostración práctica del principio de sustitución de Liskov.
+>
+> Los puertos que cruzan módulos (`ConsultaSolicitudes`, `ConsultaConvocatorias`,
+> `ConsultaPerfiles` y sus equivalentes en `evaluaciones`, `resoluciones` y `reportes`) no se
+> listan aquí; están en el Manual Técnico, sección 3.3.
 
 ---
 
@@ -190,26 +221,22 @@ flowchart LR
     end
 
     subgraph STAGING["Staging — develop"]
-        S1["API<br/>Render"]
-        S2["Web<br/>Vercel"]
-        S3[("PostgreSQL<br/>Neon")]
+        S1["API<br/>Render, en Docker"]
+        S2["Web<br/>Render, sitio estático"]
+        S3[("PostgreSQL<br/>Render")]
         S2 --- S1 --- S3
     end
 
-    subgraph PROD["Producción — main"]
-        P1["API + Web"]
-        P2[("PostgreSQL")]
-        P1 --- P2
-    end
+    MAIN["main<br/>rama de entrega"]
 
     LOCAL -->|Pull Request| STAGING
-    STAGING -->|release| PROD
+    STAGING -->|Pull Request aprobado| MAIN
 
     style LOCAL fill:#e6f1fa,stroke:#1d4ed8
     style STAGING fill:#fef3e2,stroke:#b45309
-    style PROD fill:#e4f4ec,stroke:#0f7a52
+    style MAIN fill:#e4f4ec,stroke:#0f7a52
 ```
 
-> ⚠️ **Staging no está desplegado todavía.** Es el bloqueo más grande del proyecto: la Definition
-> of Done exige que cada historia esté desplegada y verificada por el Product Owner, así que
-> mientras no exista, ninguna historia puede darse por terminada. Responsable: Ivan.
+Staging se despliega desde `develop` y está definido como código en `render.yaml`. El workflow
+*Verificar Staging* comprueba `/health`, `/ready`, el listado público y que el login rechace
+credenciales inválidas. `main` es la rama de entrega y no tiene un despliegue propio.
