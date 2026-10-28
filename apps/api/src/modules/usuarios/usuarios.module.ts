@@ -25,6 +25,12 @@ import { RegistrarEstudianteService } from './application/services/registrar-est
 import { GENERADOR_TOKEN } from './domain/ports/generador-token';
 import { HASHER_PASSWORD } from './domain/ports/hasher-password';
 import { USUARIO_REPOSITORIO } from './domain/ports/usuario.repositorio';
+import { TOKEN_RECUPERACION_REPOSITORIO } from './domain/ports/token-recuperacion.repositorio';
+import { ENVIADOR_CORREO } from './domain/ports/enviador-correo';
+import { RecuperacionPasswordService } from './application/services/recuperacion-password.service';
+import { TokenRecuperacionPrismaRepositorio } from './infrastructure/persistence/token-recuperacion-prisma.repositorio';
+import { CorreoConsolaAdapter } from './infrastructure/adapters/correo-consola.adapter';
+import { CorreoSmtpAdapter } from './infrastructure/adapters/correo-smtp.adapter';
 import { VERIFICADOR_TOKEN } from './domain/ports/verificador-token';
 import { BcryptHasherAdapter } from './infrastructure/adapters/bcrypt-hasher.adapter';
 import { JwtGeneradorTokenAdapter } from './infrastructure/adapters/jwt-generador-token.adapter';
@@ -62,7 +68,27 @@ import { RolesGuard } from './presentation/guards/roles.guard';
     RegistrarEstudianteService,
     CuentasEvaluadorService,
     IdentidadService,
+    RecuperacionPasswordService,
     { provide: USUARIO_REPOSITORIO, useClass: UsuarioPrismaRepositorio },
+    {
+      provide: TOKEN_RECUPERACION_REPOSITORIO,
+      useClass: TokenRecuperacionPrismaRepositorio,
+    },
+    {
+      // Patrón Adapter: el enviador se elige por configuración, igual que el almacenamiento
+      // de documentos. Por defecto escribe el correo en el log, que es lo que permite
+      // recorrer el flujo entero sin un servidor SMTP.
+      provide: ENVIADOR_CORREO,
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        const tipo = config.get<string>('CORREO_TIPO') ?? 'consola';
+        if (tipo === 'consola') return new CorreoConsolaAdapter();
+        if (tipo === 'smtp') return new CorreoSmtpAdapter(config);
+        // Fallar al arrancar y no al primer correo: un despliegue mal configurado se ve
+        // de inmediato, no cuando alguien olvida su contraseña.
+        throw new Error(`CORREO_TIPO="${tipo}" no existe. Use "consola" o "smtp".`);
+      },
+    },
     { provide: HASHER_PASSWORD, useClass: BcryptHasherAdapter },
     { provide: GENERADOR_TOKEN, useClass: JwtGeneradorTokenAdapter },
     { provide: VERIFICADOR_TOKEN, useClass: JwtVerificadorTokenAdapter },

@@ -89,6 +89,10 @@ export function FormularioLogin({ onSesionIniciada }: Props): ReactElement {
       </button>
 
       <p className="enlace-alterno">
+        <Link to="/recuperar">¿Olvidó su contraseña?</Link>
+      </p>
+
+      <p className="enlace-alterno">
         ¿Todavía no tiene cuenta? <Link to="/registro">Regístrese aquí</Link>
       </p>
 

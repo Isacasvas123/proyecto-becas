@@ -189,10 +189,18 @@ async function enviar<T>(
 }
 
 /** Para rutas que responden 204: no hay cuerpo que leer, y `respuesta.json()` fallaría. */
-async function enviarSinRespuesta(ruta: string, metodo: 'PUT' | 'DELETE'): Promise<void> {
+async function enviarSinRespuesta(
+  ruta: string,
+  metodo: 'PUT' | 'DELETE' | 'POST',
+  cuerpo?: unknown,
+): Promise<void> {
   const respuesta = await fetch(`${URL_BASE}${ruta}`, {
     method: metodo,
-    headers: cabecerasAutenticadas(),
+    headers:
+      cuerpo === undefined
+        ? cabecerasAutenticadas()
+        : cabecerasAutenticadas({ 'Content-Type': 'application/json' }),
+    body: cuerpo === undefined ? undefined : JSON.stringify(cuerpo),
   });
   if (!respuesta.ok) {
     throw new Error(await mensajeDelError(respuesta, ruta));
@@ -251,6 +259,19 @@ export function registrarEstudiante(datos: NuevoEstudiante): Promise<Sesion> {
 }
 
 /** US-002 — Iniciar sesión. */
+/**
+ * US-035, paso 1. Responde 204 exista o no la cuenta, a propósito: si contestara distinto,
+ * esta llamada serviría para averiguar quién está registrado en el sistema.
+ */
+export function solicitarRecuperacion(correo: string): Promise<void> {
+  return enviarSinRespuesta('/auth/recuperacion', 'POST', { correo });
+}
+
+/** US-035, paso 2. Canjea el enlace del correo por una contraseña nueva. */
+export function restablecerPassword(token: string, password: string): Promise<void> {
+  return enviarSinRespuesta('/auth/recuperacion/confirmar', 'POST', { token, password });
+}
+
 export function iniciarSesion(nombreUsuario: string, password: string): Promise<Sesion> {
   return enviar<Sesion>('/auth/login', { nombreUsuario, password });
 }

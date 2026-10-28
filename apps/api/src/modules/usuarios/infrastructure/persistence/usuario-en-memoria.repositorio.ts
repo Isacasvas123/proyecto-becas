@@ -28,6 +28,14 @@ export class UsuarioEnMemoriaRepositorio implements UsuarioRepositorio {
     return Promise.resolve(encontrado ?? null);
   }
 
+  buscarPorCorreo(correo: string): Promise<Usuario | null> {
+    return Promise.resolve(this.usuarios.find((u) => u.correo === correo) ?? null);
+  }
+
+  actualizarPassword(usuario: Usuario): Promise<void> {
+    return this.actualizarEstadoDeAcceso(usuario);
+  }
+
   actualizarEstadoDeAcceso(usuario: Usuario): Promise<void> {
     const indice = this.usuarios.findIndex((existente) => existente.id === usuario.id);
 
