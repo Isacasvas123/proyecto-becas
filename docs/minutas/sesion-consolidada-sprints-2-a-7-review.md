@@ -6,7 +6,6 @@
 > el período del 10 de septiembre al 21 de octubre de 2026.
 >
 > Los datos de avance, calidad y entrega están tomados del repositorio y del tablero del proyecto.
-> Las secciones que recogen el intercambio con el Product Owner se completan durante la sesión.
 
 ---
 
@@ -17,16 +16,16 @@
 | **Nombre del Proyecto** | Plataforma Nacional para la Gestión Integral de Becas |
 | **Sprints cubiertos** | 2, 3, 4, 5, 6 y 7 |
 | **Período** | jueves 10/09/2026 al miércoles 21/10/2026 |
-| **Fecha de la Reunión** | __/10/2026 |
-| **Hora de inicio / fin** | __:__ / __:__ |
+| **Fecha de la Reunión** | martes 27/10/2026 |
+| **Hora de inicio / fin** | 19:00 / 20:15 |
 
 **Asistentes**
 
-- Product Owner: Ing. Mario Fuentes — *(asistió: Sí / No)*
-- Proxy Product Owner: Ivan \_\_\_\_\_\_\_\_\_\_\_\_
+- Product Owner: Ing. Mario Fuentes — no asistió: fue una sesión interna del equipo. Sus indicaciones del período se recibieron en clase y se registran en §4
+- Proxy Product Owner: Stuard Estrada
 - Scrum Master: Isaac Castillo
-- Development Team: Fernando \_\_\_\_\_\_\_\_\_\_\_\_ · Stuard \_\_\_\_\_\_\_\_\_\_\_\_
-- Stakeholders invitados: \_\_\_\_\_\_\_\_\_\_\_\_
+- Development Team: Ivan García · Fernando Herrera
+- Stakeholders invitados: ninguno
 
 ---
 
@@ -72,10 +71,10 @@ Sprint 8, en curso con 21, quedan fuera de este cómputo por estar fuera del per
 
 | US | Por qué no se completó | ¿Regresa al backlog? |
 |---|---|---|
-| US-004, US-005 | Nunca se priorizaron; prioridad Media | ☐ Sí ☐ Se congela |
-| US-009, US-010 | Nunca se priorizaron; son las más baratas de las siete | ☐ Sí ☐ Se congela |
-| US-022 | Depende de un servidor de correo que no existía *(ver §5)* | ☐ Sí ☐ Se congela |
-| US-026, US-027 | Nunca se priorizaron; prioridad Media | ☐ Sí ☐ Se congela |
+| US-004, US-005 | Nunca se priorizaron; prioridad Media | ☐ Sí ☒ Se congela |
+| US-009, US-010 | Nunca se priorizaron; son las más baratas de las siete | ☐ Sí ☒ Se congela |
+| US-022 | Depende de un servidor de correo que no existía *(ver §5)* | ☐ Sí ☒ Se congela |
+| US-026, US-027 | Nunca se priorizaron; prioridad Media | ☐ Sí ☒ Se congela |
 
 Ninguna es de prioridad Alta, y los nueve objetivos del enunciado están cubiertos.
 
@@ -99,13 +98,15 @@ principio a fin, no funciones sueltas:
 6. **Bitácora** *(US-032)* — filtrada por operaciones rechazadas, para enseñar que se audita
    también lo que el sistema impide
 
-**Responsable(s) de la demo:** \_\_\_\_\_\_\_\_\_\_\_\_
+**Responsable(s) de la demo:** Stuard (puntos 1 y 2), Fernando (punto 3), Ivan (punto 4) e Isaac (puntos 5 y 6)
 
 **Resumen de la demostración:**
 
-`_______________________________________________________________________`
-
-`_______________________________________________________________________`
+Se recorrió en Staging un expediente completo, de la convocatoria a la adjudicación, con dos
+administradores distintos para la doble aprobación. El sistema rechazó que la misma persona diera
+la segunda firma y los cupos no bajaron hasta la confirmación. El único tropiezo fue la primera
+carga de Staging, que tarda cerca de un minuto porque el plan gratuito duerme el servicio; se anotó
+para abrirlo con anticipación en la defensa.
 
 > **Nota para quien dirija la demostración.** Conviene detenerse en los puntos 4 y 6. En el punto 4,
 > mostrar que los cupos no se descuentan con la primera firma: una aprobación a medio completar no
@@ -121,12 +122,12 @@ principio a fin, no funciones sueltas:
 
 | Quién | Comentario / Sugerencia / Pregunta | Tipo |
 |---|---|---|
-| | | ☐ Mejora ☐ Pregunta ☐ Positivo ☐ Defecto |
-| | | ☐ Mejora ☐ Pregunta ☐ Positivo ☐ Defecto |
-| | | ☐ Mejora ☐ Pregunta ☐ Positivo ☐ Defecto |
-| | | ☐ Mejora ☐ Pregunta ☐ Positivo ☐ Defecto |
+| Product Owner, clase del 17 Oct | Las becas de más de Q10,000 deben requerir la aprobación de dos personas distintas (R1) | ☒ Mejora ☐ Pregunta ☐ Positivo ☐ Defecto |
+| Product Owner, clase del 17 Oct | Cuando una solicitud cambie de estado, el sistema debe registrar el evento y notificar al estudiante (R2) | ☒ Mejora ☐ Pregunta ☐ Positivo ☐ Defecto |
+| Product Owner, clase del 17 Oct | Toda modificación relevante debe quedar en una bitácora de auditoría (R3) | ☒ Mejora ☐ Pregunta ☐ Positivo ☐ Defecto |
+| Equipo | La segunda aprobación se agregó como un estado más, sin tocar los existentes | ☐ Mejora ☐ Pregunta ☒ Positivo ☐ Defecto |
 
-**¿El Product Owner emitió algún cambio de requerimiento?** ☐ Sí ☐ No
+**¿El Product Owner emitió algún cambio de requerimiento?** ☒ Sí ☐ No
 
 Si la respuesta es sí, se registra en
 [`23-analisis-impacto-requerimientos-po.md`](../23-analisis-impacto-requerimientos-po.md) **antes
@@ -167,12 +168,15 @@ que el backlog siga siendo la única fuente de requisitos:
 
 **Repriorización de ítems existentes:**
 
-`_______________________________________________________________________`
+Los tres requerimientos del 17 de octubre pasaron al primer lugar del backlog y desplazaron a las
+siete historias de prioridad Media que quedaban. Con el margen del proyecto consumido, el equipo
+prefirió entregar completo y verificado lo que el Product Owner pidió antes que abrir historias
+nuevas a pocos días de la entrega.
 
 **Decisión sobre el alcance final** *(se toma en esta sesión):*
 
 ☐ Se intenta US-009 y US-010, que son las más baratas de las siete
-☐ Se congelan las siete pendientes y se declara el alcance cerrado
+☒ Se congelan las siete pendientes y se declara el alcance cerrado
 
 ---
 
@@ -192,7 +196,10 @@ que el backlog siga siendo la única fuente de requisitos:
 
 **Resumen general:**
 
-`_______________________________________________________________________`
+Período cumplido. Las seis épicas del MVP quedaron entregadas y verificadas en Staging, los siete
+patrones están implementados y probados, y los tres requerimientos del 17 de octubre se absorbieron
+sin mover la fecha de entrega. Lo que queda para el cierre es la Presentación Final, el ensayo de la
+defensa y dejar la documentación al día.
 
 ### Estado de los entregables documentales
 
@@ -221,7 +228,7 @@ que el backlog siga siendo la única fuente de requisitos:
 ### Próximas reuniones
 
 - Sprint Retrospective consolidada: hoy, a continuación
-- Sesión de preparación de la defensa: \_\_/10/2026
+- Sesión de preparación de la defensa: viernes 30/10/2026
 
 ---
 

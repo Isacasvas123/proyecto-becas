@@ -1,16 +1,16 @@
-******# Manual de Usuario
+# Manual de Usuario
 
 ### Plataforma Nacional para la Gestión Integral de Becas
 
 |                        |                                              |
 | ---------------------- | -------------------------------------------- |
 | **Versión del sistema** | 0.1.0                                       |
-| **Versión del manual** | 1.0                                          |
+| **Versión del manual** | 2.0                                          |
 | **Fecha**              | 12 de septiembre de 2026 · actualizado el 29 de octubre |
 | **Responsable**        | Stuard Estrada                               |
 | **Dirigido a**         | Estudiantes, evaluadores y personal del Ministerio |
 
-> > ### Lea esto antes de seguir
+> ### Lea esto antes de seguir
 >
 > Este manual describe lo que funciona en la plataforma al 29 de octubre de 2026. La sección 12
 > lista lo que no se incluyó en esta versión.
@@ -48,7 +48,7 @@ Si todavía no tiene cuenta, use **"Crear cuenta"** en la parte de arriba. Le pe
 | -------------------- | ------------------------------------------------------------------------- |
 | **Nombre completo**  | Tal como aparece en su documento de identificación                        |
 | **CUI**              | Los 13 dígitos de su DPI o, si es menor de edad, de su certificado de nacimiento del RENAP. Puede escribirlos con espacios |
-| **Correo**           | Uno que revise: por ahí le llegarán los avisos de su solicitud            |
+| **Correo**           | Uno que revise: lo necesitará si algún día olvida su contraseña           |
 | **Nombre de usuario**| El que usará para entrar. Letras, números, punto o guion                  |
 | **Contraseña**       | Al menos 8 caracteres, con una mayúscula y un número                      |
 
@@ -127,7 +127,7 @@ sesión abierta en una computadora compartida, no queda abierta indefinidamente.
    caracteres, una mayúscula y un número.
 5. Vuelva a la pantalla de acceso y entre con la contraseña nueva.
 
-6. > **El sistema responde igual exista o no una cuenta con ese correo.** Así nadie puede usar
+> 🔒 **El sistema responde igual exista o no una cuenta con ese correo.** Así nadie puede usar
 > esta pantalla para averiguar quién está registrado. Si su cuenta estaba bloqueada por intentos
 > fallidos, al cambiar la contraseña queda desbloqueada.
 
@@ -395,7 +395,7 @@ cuenta.**
 Sí, una solicitud por convocatoria. Si una le fue rechazada, puede volver a postular a esa misma.
 
 **Olvidé mi contraseña.**
-Por ahora no hay recuperación automática (Sprint 4). Comuníquese con el Ministerio.
+En la pantalla de acceso presione **¿Olvidó su contraseña?** y siga los pasos de la sección 2.7.
 
 **¿Mis documentos están seguros?**
 Su contraseña se guarda cifrada y cada persona solo puede ver lo que le corresponde: un estudiante

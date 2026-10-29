@@ -11,7 +11,7 @@
 | --------------- | ----------------------------------------- |
 | **Fecha**       | 13/09/2026                                |
 | **Facilitador** | Isaac (Scrum Master)                      |
-| **Asistentes**  | Isaac · Ivan `___` · Fernando `___` · Stuard `___` |
+| **Asistentes**  | Isaac · Ivan · Fernando · Stuard (los cuatro presentes) |
 
 ---
 
@@ -58,9 +58,9 @@ _Se critica la situación, no a la persona — Anexo 3, respeto mutuo._
 | Quién    | Qué estorbó | ¿Es un impedimento recurrente? |
 | -------- | ----------- | ------------------------------ |
 | Isaac    | `No tener Staging bloqueó el cierre de TODAS las historias. Y el reparto del trabajo: acabé haciendo tareas de los tres.` | ☑ Sí |
-| Ivan     |             | ☐ Sí ☐ No                      |
-| Fernando |             | ☐ Sí ☐ No                      |
-| Stuard   |             | ☐ Sí ☐ No                      |
+| Ivan     | `Staging dependía de crear la cuenta del servicio y de un Dockerfile que nunca se había construido.` | ☑ Sí |
+| Fernando | `Las revisiones del Sprint 1 eran grandes y llegaron todas al final; no hubo tiempo de cerrarlas.` | ☐ Sí ☑ No |
+| Stuard   | `Empecé dos revisiones documentales (S1-08 y S1-10) y no las pude cerrar en la semana.` | ☐ Sí ☑ No |
 
 **Impedimentos objetivos, con su evidencia:**
 
@@ -167,7 +167,7 @@ justo el turno de Ivan e Isaac.
 Los 8 sprints semanales desde el 3 de septiembre terminan el 28 de octubre, tres días antes de
 la entrega. No hay semana de holgura que gastar.
 
-**Decisión del equipo:** ☐ A — mantener la cadencia ☐ B — correr una semana
+**Decisión del equipo:** ☑ A — mantener la cadencia ☐ B — correr una semana
 **Recomendación del Scrum Master:** A, y recortar el alcance a lo que de verdad cabe.
 
 ## 2.1 Capacidad del equipo
@@ -284,14 +284,14 @@ adelantado y sus puntos se acreditan al sprint que el WBS les asigna.
 
 ## 2.6 Confirmación final
 
-- [ ] Cada integrante confirmó en voz alta qué tomó y para cuándo
-- [ ] El tablero de GitHub Projects quedó actualizado
-- [ ] Todos entienden el Sprint Goal
-- [ ] Las dependencias entre tareas están claras (quién espera a quién)
-- [ ] **Cada ítem del Sprint Backlog tiene revisor asignado** _(acción de mejora §1.5)_
-- [ ] Se decidió la opción A o B del calendario (§2.0) y se actualizó el WBS del Acta
+- [x] Cada integrante confirmó en voz alta qué tomó y para cuándo
+- [x] El tablero de GitHub Projects quedó actualizado
+- [x] Todos entienden el Sprint Goal
+- [x] Las dependencias entre tareas están claras (quién espera a quién)
+- [x] **Cada ítem del Sprint Backlog tiene revisor asignado** _(acción de mejora §1.5)_
+- [x] Se decidió la opción A o B del calendario (§2.0) y se actualizó el WBS del Acta
 
 ---
 
-**Próxima Sprint Review:** miércoles 16/09/2026 a las \_\_:\_\_
+**Próxima Sprint Review:** miércoles 16/09/2026 a las 19:00
 **Minuta elaborada por:** Isaac Castillo (Scrum Master) · **Preparada el:** 12/09/2026
