@@ -1,12 +1,9 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * US-007 — Publicar convocatoria.
+ * US-007: publicar convocatoria.
  *
- * Es un caso de uso corto a propósito: busca, le pide a la entidad que se publique y guarda.
- * Las reglas —solo desde BORRADOR, con al menos un requisito y un documento— viven en
- * `Convocatoria.publicar()`, no aquí. Un servicio que empieza a validar reglas del negocio
- * es un servicio que le está robando responsabilidad a la entidad.
+ * Es corto a propósito: busca, le pide a la entidad que se publique y guarda. Las reglas (solo
+ * desde BORRADOR, con al menos un requisito y un documento) viven en `Convocatoria.publicar()`.
+ * Un servicio que valida reglas del negocio le quita su responsabilidad a la entidad.
  */
 import { Inject, Injectable, Logger } from '@nestjs/common';
 

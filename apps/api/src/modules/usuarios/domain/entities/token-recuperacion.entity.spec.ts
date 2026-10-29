@@ -1,11 +1,9 @@
 /**
  * Las tres reglas que hacen seguro un permiso de recuperación (US-035).
  *
- * POR QUÉ ESTO ES UNA PRUEBA UNITARIA Y NO UNA e2e
- *   Dos de las tres reglas dependen del PASO DEL TIEMPO. Probar la caducidad por HTTP
- *   obligaría a esperar una hora o a manipular el reloj del proceso. La entidad recibe el
- *   instante como argumento justamente para que se pueda probar así: adelantando la fecha
- *   en lugar del reloj.
+ * Es una prueba unitaria y no e2e porque dos de las reglas dependen del paso del tiempo: probar
+ * la caducidad por HTTP obligaría a esperar una hora o manipular el reloj. La entidad recibe el
+ * instante como argumento justamente para adelantar la fecha y no el reloj.
  */
 import { ReglaDeNegocioError } from '../../../../shared/exceptions/errores-dominio';
 import { TokenRecuperacion, VIGENCIA_MINUTOS } from './token-recuperacion.entity';

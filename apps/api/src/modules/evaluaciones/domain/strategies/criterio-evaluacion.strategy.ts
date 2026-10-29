@@ -1,20 +1,15 @@
 /**
- * CAPA: domain/strategies/  ·  PATRÓN STRATEGY (comportamiento)
- * ────────────────────────────────────────────────────────────────────────────────
- * Justificación completa en docs/06-patrones.md §6.
+ * Patrón Strategy. Justificación en docs/06-patrones.md §6.
  *
- * Una familia de algoritmos que resuelven la misma tarea —dados los datos de un solicitante,
- * producir un puntaje— y que se eligen en tiempo de ejecución según el tipo de beca. El servicio de
- * evaluación no tiene ni un `if` sobre el tipo: pide el criterio y lo usa.
+ * Una familia de algoritmos que, dados los datos de un solicitante, producen un puntaje, y se
+ * eligen en ejecución según el tipo de beca. El servicio de evaluación no tiene un `if` sobre el
+ * tipo: pide el criterio y lo usa.
  *
- * EL DESGLOSE NO ES DECORACIÓN
- *   Cada criterio devuelve, además del puntaje, de dónde sale: qué dato se usó y cuánto aportó.
- *   Queda guardado con el dictamen. Un puntaje que asigna fondos públicos tiene que poder
- *   explicarse después, aunque el perfil del estudiante haya cambiado.
+ * Cada criterio devuelve además el desglose de su cálculo, que se guarda con el dictamen: un
+ * puntaje que asigna fondos públicos tiene que poder explicarse aunque el perfil cambie después.
  *
- * LAS FÓRMULAS SON PROVISIONALES
- *   El enunciado no las fija. Las actuales son la propuesta del equipo del 16 Sep y están
- *   pendientes de confirmar con el Product Owner. Cambiarlas es cambiar una clase, no el sistema.
+ * Las fórmulas son una propuesta del equipo del 16 de septiembre, pendiente de confirmar con el
+ * Product Owner. Cambiarlas es cambiar una clase.
  */
 import { Puntaje } from '../value-objects/puntaje.vo';
 

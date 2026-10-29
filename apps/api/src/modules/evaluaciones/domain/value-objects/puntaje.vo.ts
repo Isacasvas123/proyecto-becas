@@ -1,10 +1,7 @@
 /**
- * CAPA: domain/value-objects/
- * ────────────────────────────────────────────────────────────────────────────────
- * Un puntaje de 0 a 100 con dos decimales (US-019).
- *
- * Se redondea al crearlo para que dos cálculos iguales den exactamente el mismo valor guardado:
- * un ranking que ordena 79.999999 por encima de 80 sería difícil de explicar en una auditoría.
+ * Puntaje de 0 a 100 con dos decimales (US-019). Se redondea al crearlo para que dos cálculos
+ * iguales den el mismo valor guardado: un ranking que pone 79.999999 sobre 80 no se explica en una
+ * auditoría.
  */
 import { ReglaDeNegocioError } from '../../../../shared/exceptions/errores-dominio';
 

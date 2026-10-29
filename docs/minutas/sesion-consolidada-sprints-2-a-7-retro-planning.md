@@ -5,14 +5,13 @@
 > [Review consolidada](sesion-consolidada-sprints-2-a-7-review.md). Cubre el período del 10 de
 > septiembre al 21 de octubre de 2026, y planifica lo que queda hasta la entrega del 31 de octubre.
 >
-> Los datos de la parte 1 están tomados del repositorio y del tablero. Las conclusiones y los
-> acuerdos se registran durante la sesión.
+> Los datos de la parte 1 están tomados del repositorio y del tablero.
 
 | | |
 |---|---|
-| **Fecha de la Reunión** | \_\_/10/2026 · \_\_:\_\_ a \_\_:\_\_ |
+| **Fecha de la Reunión** | martes 27/10/2026 · 20:15 a 21:30 |
 | **Facilitador** | Isaac Castillo (Scrum Master) |
-| **Asistentes** | Ivan \_\_\_\_\_\_ · Fernando \_\_\_\_\_\_ · Stuard \_\_\_\_\_\_ |
+| **Asistentes** | Isaac · Ivan · Fernando · Stuard (los cuatro presentes) |
 
 ---
 
@@ -20,10 +19,10 @@
 
 ## 1.1 Seguimiento de la acción de mejora anterior
 
-La acción de mejora del Sprint 1 fue **celebrar las ceremonias todos los jueves**, según fija
+La acción de mejora del Sprint 1 fue celebrar las ceremonias todos los jueves, según fija
 [`02-politica-equipo.md`](../02-politica-equipo.md).
 
-**¿Se cumplió?** ☐ Sí ☒ **No**
+**¿Se cumplió?** ☐ Sí ☒ No
 
 **Evidencia:** las ceremonias de los Sprints 2 a 7 no se celebraron en su fecha semanal. El equipo
 las agrupó en la sesión consolidada que recogen esta minuta y la Review que la precede.
@@ -52,7 +51,7 @@ Hechos comprobables, no opiniones:
   la fila seguía en la base. Ninguna prueba unitaria lo veía, porque el repositorio en memoria
   guarda la misma instancia. Lo encontró una prueba de humo contra la base real.
 
-- **Se superó el mínimo de patrones.** El enunciado exige 6 y se implementaron **8**, cada uno con
+- **Se superó el mínimo de patrones.** El enunciado exige 6 y se implementaron 7, cada uno con
   su justificación técnica y sus pruebas.
 
 - **La cobertura se mantuvo alta sin que nadie la persiguiera:** 91.83 % de sentencias.
@@ -93,19 +92,19 @@ Hechos comprobables, no opiniones:
 |---|---|---|
 | Pruebas totales | 675 | 504 unitarias, 171 de integración |
 | Cobertura de sentencias | 91.83 % | Medida el 17 Oct |
-| PRs sin revisión | 0 | Todos aprobados por otro integrante |
+| PRs sin aprobación | 8 | Los ocho son anteriores al PR #12; desde entonces, ninguno |
 | Defectos encontrados por personas, no por pruebas | **4** | Ver abajo |
 
 ### Defectos detectados fuera de la suite de pruebas
 
-Cuatro defectos los encontró **alguien usando la aplicación**, no la suite de pruebas:
+Cuatro defectos los encontró alguien usando la aplicación, no la suite de pruebas:
 
 | Defecto | Cómo se encontró | PR |
 |---|---|---|
 | Integrantes del comité que no se quitaban de la base | Prueba de humo contra PostgreSQL | #24 |
 | El monto de la beca no se guardaba, y la doble aprobación nunca ocurría | Verificando en Staging | #30 |
 | Cuatro fallos de sesión, dictámenes y cupos | Verificando en Staging | #31 |
-| El botón de la segunda firma no se podía habilitar nunca | Verificando en Staging | #32 |
+| El botón de la segunda firma no se podía habilitar nunca | Verificando en Staging | #34 |
 
 Los cuatro comparten una misma causa: las pruebas de integración llaman a la API directamente, sin
 pasar por la interfaz, y `apps/web` no cuenta con pruebas automáticas. Ninguno de los cuatro podía
@@ -126,13 +125,15 @@ interfaz— permanece sin cubrir.
 
 **Acción acordada:**
 
-`_______________________________________________________________________`
+Antes de cerrar una historia con interfaz, un integrante distinto de quien la programó la ejecuta
+en Staging y deja una captura en el Pull Request.
 
 **Cómo se comprueba que se cumplió:**
 
-`_______________________________________________________________________`
+Cada Pull Request con cambios de interfaz del tramo final tiene un comentario de otro integrante con
+la captura de la prueba en Staging.
 
-**Quién la revisa y cuándo:** \_\_\_\_\_\_\_\_\_\_\_\_
+**Quién la revisa y cuándo:** Isaac, al cierre del 28 de octubre
 
 **Propuesta del Scrum Master:** antes de dar por terminada una historia con interfaz, un integrante
 distinto de quien la programó debe ejecutarla en Staging y dejar constancia. Es la medida que puede
@@ -144,14 +145,14 @@ adoptarse de inmediato sin ampliar la suite de pruebas.
 
 ## 2.1 Capacidad del equipo
 
-**Período:** del \_\_/10/2026 al **31 de octubre de 2026** *(entrega)*
+**Período:** del 27/10/2026 al 31 de octubre de 2026 *(entrega)*
 
 | Integrante | Días disponibles | Observaciones |
 |---|---|---|
-| Isaac | | |
-| Ivan | | |
-| Fernando | | |
-| Stuard | | |
+| Isaac | 4 días, unas 3 horas por día | Presentación Final, documentación y merges a `develop` y `main` |
+| Ivan | 3 días | Verificación del despliegue en Staging y limpieza de la configuración |
+| Fernando | 3 días | Revisión del PR #34 y pruebas de persistencia pendientes (DEF-01) |
+| Stuard | 3 días | Manual de Usuario al día y guion de la demostración |
 
 > Quedan cuatro días. No es un sprint: es un cierre. La capacidad real debe contarse en horas, no
 > en días, y debe acordarse antes de comprometer el alcance.
@@ -165,9 +166,10 @@ documentación al día, y la Presentación Final lista para defender."*
 
 **Objetivo acordado:**
 
-`_______________________________________________________________________`
+Cerrar el proyecto entregable: todo lo construido verificado en Staging, toda la documentación al
+día y la Presentación Final lista para defender. Se adopta la propuesta sin cambios.
 
-> El objetivo **no incluye construir funcionalidad nueva**. Con cuatro días, cada
+> El objetivo no incluye construir funcionalidad nueva. Con cuatro días, cada
 > historia que se empiece compite con la presentación, que es un entregable obligatorio y está sin
 > empezar.
 
@@ -179,22 +181,22 @@ Ordenado por lo que más daña si no se hace:
 
 | # | Tarea | Responsable | Estimación | Estado |
 |---|---|---|---|---|
-| 1 | Aprobar y mergear el PR #32 | Fernando | 30 min | ☐ |
-| 2 | Verificar US-033 completa en Staging, con capturas | Isaac + Fernando | 1 h | ☐ |
+| 1 | Aprobar y mergear el PR #32 | Fernando | 30 min | ☒ Hecho el 28 Oct · se reabrió como **PR #34** |
+| 2 | Verificar US-033 completa en Staging, con capturas | Isaac + Fernando | 1 h | ☒ Hecho el 27 Oct · 20 capturas, con dos administradores |
 | 3 | **Presentación Final** | Equipo | 1 día | ☐ |
-| 4 | Agregar US-035 al Product Backlog | Isaac | 30 min | ☐ |
-| 5 | Mergear `develop` a `main` *(va 102 commits por detrás)* | Isaac | 30 min | ☐ |
+| 4 | Agregar US-035 al Product Backlog | Isaac | 30 min | ☒ Hecho |
+| 5 | Mergear `develop` a `main` *(va 102 commits por detrás)* | Isaac | 30 min | ☒ Hecho el 28 Oct · **PR #36** |
 | 6 | Cambiar la contraseña de Staging en Render | Isaac | 15 min | ☐ |
 | 7 | Volver a medir la cobertura y actualizar los documentos | Isaac | 30 min | ☐ |
 | 8 | Video del patrón State *(guion listo desde el 18 Sep)* | Isaac | 1 h | ☐ |
-| 9 | Cerrar DEF-01, S1-10 y S1-12, o cerrarlos con motivo escrito | Equipo | 30 min | ☐ |
+| 9 | Cerrar DEF-01, S1-10 y S1-12, o cerrarlos con motivo escrito | Equipo | 30 min | 🟡 S1-10 y S1-12 cerradas · DEF-01 sigue abierta |
 | 10 | Ensayo de la defensa | Equipo | 2 h | ☐ |
 
 **Lo que el equipo decide NO hacer:**
 
-- ☐ Las siete historias pendientes *(ninguna es de prioridad Alta)*
-- ☐ El doble factor para cuentas administrativas
-- ☐ Verificar el envío de correo por SMTP real
+- ☒ Las siete historias pendientes *(ninguna es de prioridad Alta)*
+- ☒ El doble factor para cuentas administrativas
+- ☒ Verificar el envío de correo por SMTP real
 
 > El alcance excluido se declara de forma expresa para que quede constancia de que fue evaluado y
 > descartado, y no omitido.
@@ -211,16 +213,21 @@ Ordenado por lo que más daña si no se hace:
 | La contraseña de Staging sigue expuesta | Medio | Cambiarla en Render | Isaac |
 | Nadie ensaya la defensa | Medio | Agendar el ensayo ahora, no "cuando se pueda" | Equipo |
 
+> **Al 28 de octubre**, de estos cinco riesgos quedan vivos dos: la contraseña de Staging, que sigue
+> sin cambiarse, y el ensayo de la defensa. Los otros tres se cerraron: la Presentación Final ya está
+> armada, `main` se actualizó con el PR #36 y el PR #32 se aprobó.
+
 ---
 
 ## 2.5 Confirmación final
 
-**¿El equipo se compromete con este cierre?** ☐ Sí ☐ Con ajustes
+**¿El equipo se compromete con este cierre?** ☐ Sí ☒ Con ajustes
 
 **Ajustes acordados:**
 
-`_______________________________________________________________________`
+La Presentación Final sube al primer lugar del backlog del cierre, por encima de los merges, y el
+ensayo de la defensa se fija para el viernes 30 de octubre con los cuatro integrantes.
 
 ---
 
-**Minuta elaborada por:** \_\_\_\_\_\_\_\_\_\_\_\_ · **Publicada en el repositorio el:** \_\_/10/2026
+**Minuta elaborada por:** Isaac Castillo (Scrum Master) · **Publicada en el repositorio el:** 28/10/2026

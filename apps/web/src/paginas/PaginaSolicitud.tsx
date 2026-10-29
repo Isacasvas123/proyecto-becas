@@ -1,19 +1,15 @@
 /**
- * PÁGINA `/solicitudes/:id` — expediente de una solicitud.
+ * Página `/solicitudes/:id`: expediente de una solicitud. Reúne tres historias porque para el
+ * estudiante son un mismo trámite: los documentos exigidos con su botón para cargar o reemplazar
+ * (US-013), el envío, que solo se habilita cuando no falta nada (US-014), y la línea de tiempo de
+ * estados (US-016).
  *
- * Reúne tres historias en una pantalla, porque para el estudiante son un mismo trámite:
- *   - US-013: la lista de documentos exigidos, cada uno con su botón para cargar o reemplazar.
- *   - US-014: el envío, que solo se habilita cuando no falta nada.
- *   - US-016: la línea de tiempo de estados.
+ * La comprobación del archivo en el navegador es solo cortesía: se revisan formato y tamaño para
+ * no hacer esperar a alguien con conexión lenta por un archivo que será rechazado. Decide el
+ * servidor, que además revisa el contenido, y su mensaje se muestra tal cual.
  *
- * LA COMPROBACIÓN DEL ARCHIVO EN EL NAVEGADOR ES SOLO CORTESÍA
- *   Se revisan formato y tamaño antes de subir para no hacer esperar a alguien con conexión lenta
- *   por un archivo de 20 MB que será rechazado. Quien decide es el servidor, que además revisa el
- *   CONTENIDO del archivo; su mensaje se muestra tal cual.
- *
- * ENVIAR PIDE CONFIRMACIÓN
- *   Es irreversible: después de enviada, la solicitud ya no se puede modificar (criterio 3). Un
- *   clic accidental no debe cerrar el expediente.
+ * Enviar pide confirmación porque es irreversible (criterio 3): un clic accidental no debe cerrar
+ * el expediente.
  */
 import { useEffect, useRef, useState, type ReactElement } from 'react';
 import { Link, useParams } from 'react-router-dom';

@@ -1,16 +1,13 @@
 /**
  * Formulario de nueva convocatoria (US-006).
  *
- * DE DÓNDE SALEN LOS REQUISITOS POR DEFECTO
- *   De `GET /convocatorias/catalogo`, que a su vez los lee de las fábricas del backend
- *   (Factory Method). El frontend NO tiene su propia lista: si la tuviera, el día que el
- *   Ministerio cambie los documentos de posgrado habría dos listas y una estaría mal.
+ * Los requisitos por defecto salen de `GET /convocatorias/catalogo`, que los lee de las fábricas
+ * del backend. El frontend no tiene su propia lista: con dos, una quedaría mal cuando cambien los
+ * documentos de posgrado.
  *
- * QUÉ SE VALIDA AQUÍ Y QUÉ NO
- *   Aquí solo lo que el navegador ya sabe hacer (`required`, `min`) para ahorrarle un viaje al
- *   servidor al administrador. Las reglas de verdad —cierre posterior a apertura, el tope de
- *   posgrado— las decide el backend y su mensaje se muestra tal cual. Repetirlas aquí sería
- *   tener dos definiciones de la misma regla que tarde o temprano dirían cosas distintas.
+ * Aquí solo se valida lo que el navegador ya sabe hacer (`required`, `min`). Las reglas de verdad,
+ * como el cierre posterior a la apertura o el tope de posgrado, las decide el backend y su mensaje
+ * se muestra tal cual; repetirlas daría dos definiciones que tarde o temprano divergirían.
  */
 import { useEffect, useState, type FormEvent, type ReactElement } from 'react';
 
@@ -36,7 +33,7 @@ interface Props {
  */
 const UMBRAL_SEGUNDA_APROBACION = 10_000;
 
-/** Hoy en fecha LOCAL. `toISOString()` daria el dia de ayer para quien esta en Guatemala. */
+/** Hoy en fecha local. `toISOString()` daria el dia de ayer para quien esta en Guatemala. */
 const HOY = (() => {
   const d = new Date();
   const dosDigitos = (n: number) => String(n).padStart(2, '0');

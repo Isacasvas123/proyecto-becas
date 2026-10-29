@@ -6,11 +6,11 @@
 | -------------------- | -------------------------------------------------------------- |
 | **Proyecto**         | Plataforma Nacional para la Gestión Integral de Becas          |
 | **Responsable**      | Fernando Herrera (calidad y pruebas) · revisado por el equipo  |
-| **Versión**          | 1.0                                                            |
-| **Fecha**            | 12 de septiembre de 2026                                       |
-| **Estado de la suite**               | 106 pruebas unitarias + 32 de integración, todas en verde · cobertura 84.35 % |
+| **Versión**          | 2.0                                                            |
+| **Fecha**            | 28 de octubre de 2026                                          |
+| **Estado de la suite**               | 504 pruebas unitarias + 171 de integración · cobertura de 91.83 % medida el 21 de octubre |
 
-> Este plan es una **guía de alto nivel**. El plan de prueba detallado de cada historia son sus
+> Este plan es una guía de alto nivel. El plan de prueba detallado de cada historia son sus
 > **criterios de aceptación**, escritos en `04-product-backlog.md`. Aquí se define la estrategia;
 > allí se define qué significa que cada cosa funcione.
 
@@ -22,7 +22,7 @@ Describir cómo el equipo verifica y valida el producto. La verificación respon
 construido?"* y la validación *"¿es lo que se pidió?"*. Son dos preguntas distintas y este
 documento cubre las dos, porque un sistema puede estar impecablemente construido y no servir.
 
-El plan existe además por una razón concreta del curso: el enunciado evalúa **pruebas** como
+El plan existe además por una razón concreta del curso: el enunciado evalúa pruebas como
 criterio propio, separado de que el sistema funcione.
 
 ## 2. Objetivos
@@ -37,7 +37,7 @@ criterio propio, separado de que el sistema funcione.
 
 > ### Lección del Sprint 1 que este plan incorpora
 >
-> Tres de los diez defectos del Sprint 1 fueron **pruebas que pasaban sin probar lo que decían**.
+> Tres de los diez defectos del Sprint 1 fueron pruebas que pasaban sin probar lo que decían.
 > La más clara: una prueba llamada "ordena las convocatorias por fecha de cierre" pasaba en verde
 > aunque el servicio no ordenara nada, porque el doble de prueba ya venía ordenado. Verificaba el
 > doble, no el código.
@@ -50,13 +50,19 @@ criterio propio, separado de que el sistema funcione.
 ### 3.1 En alcance
 
 Todas las funcionalidades del Product Backlog. Por sprint, el alcance son las historias
-seleccionadas en el Planning. Hoy cubre:
+seleccionadas en el Planning. Al cierre cubre los nueve módulos:
 
-| Módulo         | Qué se prueba                                                            |
-| -------------- | ------------------------------------------------------------------------ |
-| `usuarios`     | Autenticación, roles, control de acceso, entidad y objetos de valor      |
-| `convocatorias`| Listado público, reglas de visibilidad, período de postulación, mapeo    |
-| `salud`        | *Liveness* (`/health`) y *readiness* (`/ready`)                          |
+| Módulo | Qué se prueba |
+| --- | --- |
+| `usuarios` | Autenticación, bloqueo tras 5 intentos, roles, registro, cuentas de evaluador y recuperación de contraseña |
+| `convocatorias` | Fábricas por tipo de beca, publicación, listado público y período de postulación |
+| `estudiantes` | Perfil académico y campos faltantes |
+| `solicitudes` | Los 30 pares estado × acción del patrón State, documentos, historial y avisos |
+| `evaluaciones` | Comités, asignación, dictámenes y las tres estrategias de puntaje |
+| `resoluciones` | Aprobar, rechazar, segunda aprobación, adjudicar, cupos y consulta pública |
+| `reportes` | El Builder, los filtros y la exportación a CSV y PDF |
+| `bitacora` | Que se registren las operaciones aceptadas y rechazadas, incluidos los 403 |
+| `salud` | *Liveness* (`/health`) y *readiness* (`/ready`) |
 
 ### 3.2 Fuera de alcance
 
@@ -80,9 +86,9 @@ Se declara explícitamente para que nadie lo dé por hecho:
 
 **Navegadores soportados:** últimas versiones de Chrome, Firefox y Edge.
 
-> ⚠️ **Staging todavía no existe** al escribir este documento. Mientras siga así, el nivel 3
-> (§5.1) **no se puede ejecutar**, y por lo tanto ninguna historia puede cumplir la Definition of
-> Done. Es el impedimento principal del proyecto, no un detalle pendiente.
+> Staging está desplegado en Render y se verifica con el workflow *Verificar Staging*
+> (`17-staging.md`). El nivel 3 (§5.1) lo ejecuta el Proxy Product Owner a diario y el catedrático
+> en la Sprint Review.
 
 ## 5. Estrategia de Pruebas
 
@@ -91,8 +97,8 @@ Pirámide de pruebas: muchas rápidas y baratas abajo, pocas lentas y caras arri
 ```mermaid
 flowchart TB
     N3["<b>Nivel 3 — Sistema y Aceptación</b><br/>pocas · lentas · en Staging<br/>las hace el Product Owner"]
-    N2["<b>Nivel 2 — Integración</b> · 32 pruebas<br/>HTTP real con supertest, sin base de datos<br/>las hacen los desarrolladores"]
-    N1["<b>Nivel 1 — Unitarias</b> · 106 pruebas<br/>milisegundos · sin Docker ni red<br/>las hacen los desarrolladores"]
+    N2["<b>Nivel 2 — Integración</b> · 171 pruebas<br/>HTTP real con supertest, casi todas sin base de datos<br/>las hacen los desarrolladores"]
+    N1["<b>Nivel 1 — Unitarias</b> · 504 pruebas<br/>milisegundos · sin Docker ni red<br/>las hacen los desarrolladores"]
 
     N3 --- N2 --- N1
 ```
@@ -121,8 +127,8 @@ testeabilidad de `05-arquitectura.md` §2.2 comprobado en vez de afirmado.
 
 > **Las pruebas negativas no son opcionales en este proyecto.** El criterio de US-003 no dice
 > "el administrador entra": dice *"un acceso no autorizado devuelve 403, no 404 ni el recurso"*.
-> Eso solo se puede probar intentando entrar sin permiso. De las 32 pruebas de integración
-> actuales, la mayoría son negativas.
+> Eso solo se puede probar intentando entrar sin permiso, y buena parte de las pruebas de
+> integración son negativas.
 
 ### 5.3 Criterios de entrada y salida
 
@@ -142,45 +148,46 @@ Done**, incluida la verificación del Proxy Product Owner. No hay salida parcial
 Nacen de defectos reales encontrados en el Sprint 1, no de teoría:
 
 1. **Toda prueba debe tener una forma conocida de ponerse roja.** Si no se puede explicar qué
-   cambio la rompería, no está probando nada. _(Defecto 5: la prueba de ordenamiento verificaba el
-   doble de prueba.)_
+   cambio la rompería, no está probando nada. *(Defecto 5: la prueba de ordenamiento verificaba el
+   doble de prueba.)*
 2. **Si el código registra algo importante en el log, hay que comprobar el log.** El aviso *es* la
-   funcionalidad cuando es lo único que delataría un fallo en producción. _(Defecto 6.)_
+   funcionalidad cuando es lo único que delataría un fallo en producción. *(Defecto 6.)*
 3. **Un doble de prueba no debe ser más listo que el código real.** Si el doble ordena, filtra o
-   corrige por su cuenta, oculta la ausencia de esa lógica en el código. _(Defecto 5, otra vez.)_
+   corrige por su cuenta, oculta la ausencia de esa lógica en el código. *(Defecto 5, otra vez.)*
 4. **El código que se va a presentar como evidencia tiene que estar probado.** Los tres adaptadores
    del patrón Adapter estuvieron a 0 % porque las pruebas los sustituían por dobles: bcrypt y JWT
-   reales nunca se ejecutaban. _(Defecto DEF-02, corregido: ahora se prueban con las bibliotecas
-   reales, incluida la firma con otro secreto y los tokens vencidos.)_
+   reales nunca se ejecutaban. *(Defecto DEF-02, corregido: ahora se prueban con las bibliotecas
+   reales, incluida la firma con otro secreto y los tokens vencidos.)*
 5. **Los criterios de aceptación se prueban textualmente.** Si el criterio dice "mensaje genérico
    que no revele cuál de los dos campos falló", la prueba compara los dos mensajes. No se
    parafrasea un criterio para que sea más fácil de probar.
 
 ## 6. Cobertura de código
 
-**Meta:** ≥ 60 % de sentencias para el **21 de octubre de 2026** (WBS 7.3).
+**Meta:** ≥ 60 % de sentencias para el 21 de octubre de 2026 (WBS 7.3).
 
-**Medición corregida al 12 de septiembre de 2026:** **84.35 %** de sentencias · 84.21 % de ramas.
-La meta ya está superada; a partir de aquí se vigila que no baje.
+**Última medición, 21 de octubre de 2026:** 91.83 % de sentencias. El 12 de septiembre, con la
+medición ya corregida, era de 84.35 % de sentencias y 84.21 % de ramas. La meta está superada y se
+vigila que no baje.
 
 > ### Historia de este número — el primero que se reportó estaba mal medido
 >
-> La primera medición dio **41.89 %**, y era falsa por defecto. `npm run test:cov` ejecutaba **solo
+> La primera medición dio 41.89 %, y era falsa por defecto. `npm run test:cov` ejecutaba **solo
 > las pruebas unitarias**. La configuración de Jest para
 > unitarias tiene `rootDir: "src"` y solo reconoce `*.spec.ts`; la de integración
-> (`test/jest-e2e.json`) usa otro `rootDir`, otro patrón, y **no declara cobertura en absoluto**.
+> (`test/jest-e2e.json`) usa otro `rootDir`, otro patrón, y no declara cobertura en absoluto.
 >
 > Consecuencia: las 32 pruebas de integración —que son justamente las que ejercitan controladores,
-> guards y validación— **no cuentan en el porcentaje**. Controladores que sí están probados de
+> guards y validación— no cuentan en el porcentaje. Controladores que sí están probados de
 > punta a punta aparecen a 0 %.
 >
 > **Corrección (DEF-03, 12 de septiembre):** `test:cov` usa ahora `test/jest-cobertura.json`, que
-> recoge unitarias e integración en una sola pasada. Solo con eso el número pasó a **71.22 %**; con
+> recoge unitarias e integración en una sola pasada. Solo con eso el número pasó a 71.22 %; con
 > las pruebas de DEF-02 llegó a 84.35 %. La lección: perseguir un 60 % contra un número mal leído
 > habría llevado a escribir pruebas donde no hacían falta.
 >
-> Hubo un segundo problema escondido: `@nestjs/jwt` v12 se publica **solo como ESM** y Jest corre
-> en CommonJS, así que **ninguna prueba podía importar los adaptadores de JWT**. Por eso nadie los
+> Hubo un segundo problema escondido: `@nestjs/jwt` v12 se publica solo como ESM y Jest corre
+> en CommonJS, así que ninguna prueba podía importar los adaptadores de JWT. Por eso nadie los
 > había probado. Se resolvió con `tsconfig.jest.json` (`allowJs`) y una excepción en
 > `transformIgnorePatterns` para ese paquete.
 
@@ -191,13 +198,13 @@ pruebas que no pueden fallar no vale nada.
 | --------- | ------------------------------------------------------- | ----------------------------------------------------------- |
 | **1**     | Entidades, objetos de valor y casos de uso              | Es donde viven las reglas de negocio                        |
 | **2**     | Guards y control de acceso                              | Un fallo aquí es una fuga de datos, no una molestia          |
-| **3**     | Adaptadores con bibliotecas reales (bcrypt, JWT)         | Hoy a 0 %, y son la evidencia del patrón Adapter             |
+| **3**     | Adaptadores con bibliotecas reales (bcrypt, JWT)         | Cubiertos con las bibliotecas reales desde DEF-02; son la evidencia del patrón Adapter |
 | **4**     | Controladores y DTO                                      | Cubiertos por integración, no por unitarias                  |
-| _No se exige_ | Módulos de NestJS y `main.ts`                      | Son configuración. Ya están excluidos de la medición          |
+| *No se exige* | Módulos de NestJS y `main.ts`                      | Son configuración. Ya están excluidos de la medición          |
 
 ## 7. Registro de defectos
 
-Los defectos se registran como **issues del repositorio** con la etiqueta `bug`, y entran al
+Los defectos se registran como issues del repositorio con la etiqueta `bug`, y entran al
 Product Backlog priorizados por el Product Owner como cualquier otra historia.
 
 **Cada reporte debe incluir:**
@@ -219,19 +226,28 @@ Product Backlog priorizados por el Product Owner como cualquier otra historia.
 | **Medio**     | Falla con alternativa, o un criterio de aceptación incumplido     | Se prioriza en el siguiente Planning     |
 | **Bajo**      | Cosmético, o molestia menor                                      | Cuando haya holgura                      |
 
-### 7.1 Defectos abiertos al 12 de septiembre de 2026
+### 7.1 Defectos al 28 de octubre de 2026
 
 | ID       | Defecto                                                                | Severidad | Estado                     |
 | -------- | ---------------------------------------------------------------------- | --------- | -------------------------- |
 | DEF-01   | `ConvocatoriaPrismaRepositorio` sin cobertura de pruebas (issue #6)     | Medio     | Abierto                    |
-| DEF-02   | Los tres adaptadores del patrón Adapter a 0 % de cobertura              | Medio     | ✅ Corregido 12 Sep        |
-| DEF-03   | La medición de cobertura excluye las pruebas de integración              | Medio     | ✅ Corregido 12 Sep        |
-| US-008   | El listado público quedó detrás del login: criterio incumplido           | **Alto**  | Diferido al Sprint 3 con decisión escrita |
-| US-002   | Falta el bloqueo tras 5 intentos fallidos: criterio incumplido           | Medio     | ✅ Corregido 12 Sep        |
+| DEF-02   | Los tres adaptadores del patrón Adapter a 0 % de cobertura              | Medio     | ✅ Corregido 12 Sep (PR #12) |
+| DEF-03   | La medición de cobertura excluye las pruebas de integración              | Medio     | ✅ Corregido 12 Sep (PR #12) |
+| US-008   | El listado público quedó detrás del login: criterio incumplido           | Alto      | ✅ Corregido en el Sprint 3 (PR #14) |
+| US-002   | Falta el bloqueo tras 5 intentos fallidos: criterio incumplido           | Medio     | ✅ Corregido 12 Sep (PR #13) |
+| DEF-04   | Los integrantes quitados de un comité seguían en la base                 | Medio     | ✅ Corregido (PR #24)      |
+| DEF-05   | El monto de la beca no se guardaba: la segunda aprobación nunca ocurría  | Alto      | ✅ Corregido (PR #30)      |
+| DEF-06   | Cuatro fallos de sesión, dictámenes y cupos hallados verificando en Staging | Medio  | ✅ Corregido (PR #31)      |
+| DEF-07   | El botón de la segunda firma no se podía habilitar nunca                 | Alto      | ✅ Corregido (PR #34)      |
+| DEF-08   | Las credenciales del administrador aparecían en el login desplegado      | Crítico   | ✅ Corregido en el código (PR #28); falta cambiar la contraseña en Render |
 
-> Los dos últimos son **criterios de aceptación incumplidos**, no errores de programación. Se
+> Los criterios de aceptación incumplidos (US-008 y US-002) no son errores de programación. Se
 > registran igual: para el Product Owner la diferencia es irrelevante, porque en ambos casos el
 > sistema no hace lo que se acordó.
+>
+> DEF-04 a DEF-07 los encontró una persona usando la aplicación o una prueba de humo contra
+> PostgreSQL, y ninguno podía detectarlo la suite: las pruebas de integración llaman a la API sin
+> pasar por la interfaz y `apps/web` no tiene pruebas automáticas.
 
 ## 8. Resultados esperados (entregables)
 
@@ -249,8 +265,8 @@ Las pruebas no producen un documento final, sino artefactos continuos:
 ## 9. Cómo se ejecuta
 
 ```bash
-npm run test        # 106 pruebas unitarias, sin Docker
-npm run test:e2e    # 32 pruebas de integración
+npm run test        # 504 pruebas unitarias, sin Docker
+npm run test:e2e    # 171 pruebas de integración
 npm run test:cov    # unitarias + integración con cobertura (necesita Docker)
 npm run lint        # ESLint + Prettier
 ```

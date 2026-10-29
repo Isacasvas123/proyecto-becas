@@ -1,5 +1,5 @@
 /**
- * ADAPTADORES de persistencia de `evaluaciones`. Las únicas clases del módulo que saben que detrás
+ * Adaptadores de persistencia de `evaluaciones`. Las únicas clases del módulo que saben que detrás
  * hay PostgreSQL.
  */
 import { Injectable } from '@nestjs/common';
@@ -52,13 +52,12 @@ export class ComitePrismaRepositorio implements ComiteRepositorio {
   }
 
   /**
-   * Comité e integrantes en una transacción. La tabla de integrantes queda **igual a la entidad**:
-   * se agregan los nuevos y se borran los que ya no están.
+   * Comité e integrantes en una transacción. La tabla de integrantes queda igual a la entidad: se
+   * agregan los nuevos y se borran los que ya no están.
    *
-   * Antes solo se agregaban, porque quitar no existía (CU-13, 5a). Al implementarlo, la prueba de
-   * humo contra PostgreSQL destapó la consecuencia: la entidad quitaba a la persona, la respuesta
-   * la mostraba fuera, pero la fila seguía en la base. Al recargar el comité volvía a aparecer, y
-   * con ella la comprobación de "no dejar el comité vacío" dejaba de valer.
+   * Antes solo agregaba, porque quitar no existía (CU-13, 5a). Al implementarlo, la prueba contra
+   * PostgreSQL mostró que la respuesta daba por fuera a la persona pero su fila seguía en la base
+   * y reaparecía al recargar.
    */
   async guardar(comite: Comite): Promise<void> {
     try {

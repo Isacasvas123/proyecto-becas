@@ -1,6 +1,4 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
  * Lo que `evaluaciones` le ofrece a `resoluciones` (EPIC-05): cuántos dictámenes tiene una
  * solicitud y en qué sentido. No expone observaciones ni desgloses, que no hacen falta para
  * resolver y son del expediente de evaluación.

@@ -1,13 +1,9 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * US-006 — Crear convocatoria.
+ * US-006: crear convocatoria.
  *
- * FÍJENSE EN LO QUE NO HAY AQUÍ
- *   Ni un `if (tipo === 'POSGRADO')`. El servicio no sabe qué requisitos lleva cada tipo de
- *   beca ni cuántos cupos admite: le pide la fábrica al registro y la fábrica lo resuelve.
- *   Es la razón de ser del Factory Method (docs/06-patrones.md §1). Si mañana el Ministerio
- *   agrega un programa de becas técnicas, este archivo no cambia.
+ * El servicio no tiene un `if (tipo === 'POSGRADO')`: no sabe qué requisitos ni cuántos cupos
+ * lleva cada tipo. Pide la fábrica al registro y la fábrica lo resuelve (Factory Method,
+ * docs/06-patrones.md §1). Un programa nuevo no cambia este archivo.
  */
 import { randomUUID } from 'node:crypto';
 
@@ -51,7 +47,7 @@ export class CrearConvocatoriaService {
     // Código correlativo por tipo y año de apertura: UNIV-2027-001. Se usa el año de APERTURA
     // y no el de hoy: una beca 2027 creada en diciembre de 2026 pertenece al ciclo 2027.
     //
-    // LIMITACIÓN CONOCIDA: dos creaciones simultáneas del mismo tipo podrían calcular el mismo
+    // Limitación conocida: dos creaciones simultáneas del mismo tipo podrían calcular el mismo
     // correlativo. La columna `codigo` es única, así que la base rechaza la segunda en vez de
     // duplicarla; el administrador vería un error y reintentaría. Para el volumen de un
     // ministerio —decenas de convocatorias al año— se acepta.

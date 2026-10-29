@@ -6,7 +6,6 @@
 > el período del 10 de septiembre al 21 de octubre de 2026.
 >
 > Los datos de avance, calidad y entrega están tomados del repositorio y del tablero del proyecto.
-> Las secciones que recogen el intercambio con el Product Owner se completan durante la sesión.
 
 ---
 
@@ -17,16 +16,16 @@
 | **Nombre del Proyecto** | Plataforma Nacional para la Gestión Integral de Becas |
 | **Sprints cubiertos** | 2, 3, 4, 5, 6 y 7 |
 | **Período** | jueves 10/09/2026 al miércoles 21/10/2026 |
-| **Fecha de la Reunión** | __/10/2026 |
-| **Hora de inicio / fin** | __:__ / __:__ |
+| **Fecha de la Reunión** | martes 27/10/2026 |
+| **Hora de inicio / fin** | 19:00 / 20:15 |
 
 **Asistentes**
 
-- Product Owner: Ing. Mario Fuentes — *(asistió: Sí / No)*
-- Proxy Product Owner: Ivan \_\_\_\_\_\_\_\_\_\_\_\_
+- Product Owner: Ing. Mario Fuentes — no asistió: fue una sesión interna del equipo. Sus indicaciones del período se recibieron en clase y se registran en §4
+- Proxy Product Owner: Stuard Estrada
 - Scrum Master: Isaac Castillo
-- Development Team: Fernando \_\_\_\_\_\_\_\_\_\_\_\_ · Stuard \_\_\_\_\_\_\_\_\_\_\_\_
-- Stakeholders invitados: \_\_\_\_\_\_\_\_\_\_\_\_
+- Development Team: Ivan García · Fernando Herrera
+- Stakeholders invitados: ninguno
 
 ---
 
@@ -41,7 +40,7 @@ y dejar el sistema desplegado y verificable en el entorno de Staging.
 
 **¿Se cumplió?** ☒ Sí completamente ☐ Parcialmente ☐ No
 
-Las seis épicas quedaron entregadas y los ocho patrones implementados y probados. Las mejoras al
+Las seis épicas quedaron entregadas y los siete patrones implementados y probados. Las mejoras al
 proceso de trabajo se tratan en la retrospectiva de esta misma sesión.
 
 ---
@@ -72,12 +71,12 @@ Sprint 8, en curso con 21, quedan fuera de este cómputo por estar fuera del per
 
 | US | Por qué no se completó | ¿Regresa al backlog? |
 |---|---|---|
-| US-004, US-005 | Nunca se priorizaron; prioridad Media | ☐ Sí ☐ Se congela |
-| US-009, US-010 | Nunca se priorizaron; son las más baratas de las siete | ☐ Sí ☐ Se congela |
-| US-022 | Depende de un servidor de correo que no existía *(ver §5)* | ☐ Sí ☐ Se congela |
-| US-026, US-027 | Nunca se priorizaron; prioridad Media | ☐ Sí ☐ Se congela |
+| US-004, US-005 | Nunca se priorizaron; prioridad Media | ☐ Sí ☒ Se congela |
+| US-009, US-010 | Nunca se priorizaron; son las más baratas de las siete | ☐ Sí ☒ Se congela |
+| US-022 | Depende de un servidor de correo que no existía *(ver §5)* | ☐ Sí ☒ Se congela |
+| US-026, US-027 | Nunca se priorizaron; prioridad Media | ☐ Sí ☒ Se congela |
 
-Ninguna es de prioridad Alta, y **los nueve objetivos del enunciado están cubiertos**.
+Ninguna es de prioridad Alta, y los nueve objetivos del enunciado están cubiertos.
 
 ---
 
@@ -93,19 +92,21 @@ principio a fin, no funciones sueltas:
 2. **Registro y solicitud** — alta de estudiante, perfil, postulación y carga del DPI
 3. **Comité y dictamen** — creación del comité, reparto automático, dictamen del evaluador
 4. **Resolución con doble aprobación** *(US-033)* — una beca de Q15,000 queda en espera tras la
-   primera firma, **los cupos no bajan**, y el sistema **rechaza** que la segunda firma la dé la
+   primera firma, los cupos no bajan, y el sistema rechaza que la segunda firma la dé la
    misma persona
 5. **Avisos al estudiante** *(US-034)* — un aviso por cada cambio de estado, con su motivo
-6. **Bitácora** *(US-032)* — filtrada por operaciones **rechazadas**, para enseñar que se audita
+6. **Bitácora** *(US-032)* — filtrada por operaciones rechazadas, para enseñar que se audita
    también lo que el sistema impide
 
-**Responsable(s) de la demo:** \_\_\_\_\_\_\_\_\_\_\_\_
+**Responsable(s) de la demo:** Stuard (puntos 1 y 2), Fernando (punto 3), Ivan (punto 4) e Isaac (puntos 5 y 6)
 
 **Resumen de la demostración:**
 
-`_______________________________________________________________________`
-
-`_______________________________________________________________________`
+Se recorrió en Staging un expediente completo, de la convocatoria a la adjudicación, con dos
+administradores distintos para la doble aprobación. El sistema rechazó que la misma persona diera
+la segunda firma y los cupos no bajaron hasta la confirmación. El único tropiezo fue la primera
+carga de Staging, que tarda cerca de un minuto porque el plan gratuito duerme el servicio; se anotó
+para abrirlo con anticipación en la defensa.
 
 > **Nota para quien dirija la demostración.** Conviene detenerse en los puntos 4 y 6. En el punto 4,
 > mostrar que los cupos no se descuentan con la primera firma: una aprobación a medio completar no
@@ -116,17 +117,17 @@ principio a fin, no funciones sueltas:
 
 ## 4. Feedback de los Stakeholders y del Product Owner
 
-> Registrar los comentarios **textualmente**, sin interpretarlos. Este registro es lo que permite
+> Registrar los comentarios textualmente, sin interpretarlos. Este registro es lo que permite
 > demostrar después que el equipo escuchó y adaptó el producto.
 
 | Quién | Comentario / Sugerencia / Pregunta | Tipo |
 |---|---|---|
-| | | ☐ Mejora ☐ Pregunta ☐ Positivo ☐ Defecto |
-| | | ☐ Mejora ☐ Pregunta ☐ Positivo ☐ Defecto |
-| | | ☐ Mejora ☐ Pregunta ☐ Positivo ☐ Defecto |
-| | | ☐ Mejora ☐ Pregunta ☐ Positivo ☐ Defecto |
+| Product Owner, clase del 17 Oct | Las becas de más de Q10,000 deben requerir la aprobación de dos personas distintas (R1) | ☒ Mejora ☐ Pregunta ☐ Positivo ☐ Defecto |
+| Product Owner, clase del 17 Oct | Cuando una solicitud cambie de estado, el sistema debe registrar el evento y notificar al estudiante (R2) | ☒ Mejora ☐ Pregunta ☐ Positivo ☐ Defecto |
+| Product Owner, clase del 17 Oct | Toda modificación relevante debe quedar en una bitácora de auditoría (R3) | ☒ Mejora ☐ Pregunta ☐ Positivo ☐ Defecto |
+| Equipo | La segunda aprobación se agregó como un estado más, sin tocar los existentes | ☐ Mejora ☐ Pregunta ☒ Positivo ☐ Defecto |
 
-**¿El Product Owner emitió algún cambio de requerimiento?** ☐ Sí ☐ No
+**¿El Product Owner emitió algún cambio de requerimiento?** ☒ Sí ☐ No
 
 Si la respuesta es sí, se registra en
 [`23-analisis-impacto-requerimientos-po.md`](../23-analisis-impacto-requerimientos-po.md) **antes
@@ -134,7 +135,7 @@ del siguiente Planning**.
 
 ### 4.1 Preguntas que el equipo lleva al Product Owner
 
-Siguen sin respuesta desde el 16 de septiembre y **afectan a historias ya marcadas como Done**.
+Siguen sin respuesta desde el 16 de septiembre y afectan a historias ya marcadas como Done.
 Esta sesión es la última oportunidad de resolverlas antes de la entrega.
 
 | # | Pregunta | Historia afectada | Respuesta del PO |
@@ -155,24 +156,27 @@ que el backlog siga siendo la única fuente de requisitos:
 - [x] **US-032** — Bitácora de auditoría del sistema
 - [x] **US-033** — Segunda aprobación para becas sobre Q10,000
 - [x] **US-034** — Avisos al estudiante por cambio de estado
-- [x] **US-035** — Recuperar la contraseña olvidada por correo *(registrada en el backlog; el código está en el PR #32, pendiente de merge)*
+- [x] **US-035** — Recuperar la contraseña olvidada por correo *(el código entró el 28 de octubre con el PR #34)*
 
 **Ítems sugeridos y no implementados:**
 
 - [ ] **Doble factor para cuentas administrativas.** Surgió al revisar las buenas prácticas de
-      almacenamiento de contraseñas. Se identificó y **se decidió no hacerlo**: el esfuerzo no cabe
+      almacenamiento de contraseñas. Se identificó y se decidió no hacerlo: el esfuerzo no cabe
       en el tiempo restante. Se deja escrito para que conste que se vio, no que se pasó por alto.
 - [ ] **Envío real del correo de recuperación por SMTP.** El adaptador existe pero **no está
       verificado contra un servidor real**; hoy el mensaje se escribe en el log del servidor.
 
 **Repriorización de ítems existentes:**
 
-`_______________________________________________________________________`
+Los tres requerimientos del 17 de octubre pasaron al primer lugar del backlog y desplazaron a las
+siete historias de prioridad Media que quedaban. Con el margen del proyecto consumido, el equipo
+prefirió entregar completo y verificado lo que el Product Owner pidió antes que abrir historias
+nuevas a pocos días de la entrega.
 
 **Decisión sobre el alcance final** *(se toma en esta sesión):*
 
 ☐ Se intenta US-009 y US-010, que son las más baratas de las siete
-☐ Se congelan las siete pendientes y se declara el alcance cerrado
+☒ Se congelan las siete pendientes y se declara el alcance cerrado
 
 ---
 
@@ -182,17 +186,20 @@ que el backlog siga siendo la única fuente de requisitos:
 
 | Indicador | Valor |
 |---|---|
-| Historias en Done | **31 de 35** |
+| Historias en Done | **29 de 36** *(las siete restantes están en §2.2 y en el Backlog)* |
 | Objetivos del enunciado cubiertos | **9 de 9** |
-| Patrones implementados y probados | **8** *(el enunciado exige 6)* |
+| Patrones implementados y probados | **7** *(el enunciado exige 6)* |
 | Pruebas | **675**: 504 unitarias y 171 de integración |
 | Cobertura de sentencias | 91.83 % *(medida el 17 Oct; conviene volver a medirla antes de la entrega)* |
-| PRs mergeados | **31**, todos con revisión aprobada por otro integrante |
+| PRs mergeados | **33**; 25 con aprobación de otro integrante y, desde el PR #12, todos |
 | Staging | En línea desde el 4 de octubre |
 
 **Resumen general:**
 
-`_______________________________________________________________________`
+Período cumplido. Las seis épicas del MVP quedaron entregadas y verificadas en Staging, los siete
+patrones están implementados y probados, y los tres requerimientos del 17 de octubre se absorbieron
+sin mover la fecha de entrega. Lo que queda para el cierre es la Presentación Final, el ensayo de la
+defensa y dejar la documentación al día.
 
 ### Estado de los entregables documentales
 
@@ -210,18 +217,18 @@ que el backlog siga siendo la única fuente de requisitos:
 
 | Pendiente | Responsable | Estado |
 |---|---|---|
-| Aprobar y mergear el PR #32 | Fernando | ☐ |
-| Verificar US-033 completa en Staging | Isaac y Fernando | ☐ |
+| Aprobar y mergear el PR #32 | Fernando | ☒ Hecho · se reabrió como **PR #34** |
+| Verificar US-033 completa en Staging | Isaac y Fernando | ☒ Hecho el 27 Oct |
 | Agregar US-035 al Product Backlog | Isaac | ☒ Hecho |
 | **Presentación Final** | Equipo | ☐ |
-| Mergear `develop` a `main` | Isaac | ☐ |
+| Mergear `develop` a `main` | Isaac | ☒ Hecho · **PR #36** |
 | Video del patrón State | Isaac | ☐ |
 | Cerrar DEF-01, S1-10 y S1-12, o cerrarlos con motivo escrito | Equipo | ☐ |
 
 ### Próximas reuniones
 
 - Sprint Retrospective consolidada: hoy, a continuación
-- Sesión de preparación de la defensa: \_\_/10/2026
+- Sesión de preparación de la defensa: viernes 30/10/2026
 
 ---
 

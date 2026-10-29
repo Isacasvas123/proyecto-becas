@@ -1,27 +1,17 @@
 /**
- * PÁGINA `/convocatorias` — listado de convocatorias de beca.
+ * Página `/convocatorias`: listado de convocatorias de beca.
  *
- * DISEÑO: banda de cifras + panel de facetas + lista de tarjetas. Es el patrón
- * de una bolsa de empleo (computrabajo, tecoloco) y no el de una página de
- * presentación, porque la tarea real del usuario es **comparar** convocatorias
- * y decidir a cuál postular, no leer un texto corrido.
+ * Es una banda de cifras, un panel de facetas y una lista de tarjetas, el patrón de una bolsa de
+ * empleo (computrabajo, tecoloco) y no el de una página de presentación, porque la tarea real del
+ * usuario es comparar convocatorias y decidir a cuál postular.
  *
- * PÁGINA PÚBLICA (US-008)
- *   Sin sesión. La historia dice textualmente: "Como **visitante**, quiero ver las
- *   convocatorias vigentes con sus requisitos y fechas, **sin necesidad de tener
- *   cuenta**". Es la necesidad de Ana, la aspirante de provincia
- *   (docs/03-vision-producto.md), y un requisito de transparencia del enunciado.
+ * Es pública (US-008): la historia pide que un visitante las vea sin cuenta, la necesidad de Ana
+ * (docs/03-vision-producto.md) y un requisito de transparencia del enunciado. La gestión vive en
+ * `/gestion`.
  *
- *   Hasta el Sprint 3 esta página exigía sesión, lo que incumplía la historia: era el
- *   defecto 3 del esqueleto. La gestión de convocatorias vive ahora en /gestion.
- *
- * POSTULAR (US-012)
- *   Un estudiante ve «Postular» en cada tarjeta; un visitante, una invitación a iniciar sesión. Si
- *   el servidor rechaza la postulación porque falta el perfil, el aviso lleva directo a
- *   completarlo, con el camino de vuelta.
- *
- * El filtro es local, sobre lo ya descargado. El filtrado en servidor con paginación
- * se hará cuando el volumen lo justifique.
+ * Un estudiante ve «Postular» en cada tarjeta (US-012) y un visitante, una invitación a iniciar
+ * sesión. Si el servidor rechaza la postulación porque falta el perfil, el aviso lleva a
+ * completarlo y de vuelta. El filtro es local, sobre lo ya descargado.
  */
 import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import { Link, useNavigate } from 'react-router-dom';

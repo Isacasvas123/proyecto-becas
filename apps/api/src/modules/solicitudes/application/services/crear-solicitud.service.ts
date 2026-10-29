@@ -1,13 +1,11 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * US-012 — Crear solicitud. Sigue el flujo de CU-06 (docs/diagramas/01-casos-de-uso.md):
+ * US-012: crear solicitud, según el flujo de CU-06 (docs/diagramas/01-casos-de-uso.md).
  *
- *   1. La convocatoria existe y admite postulaciones ...... criterio 1 · flujo de excepción 1a
- *   2. El perfil del estudiante está completo ............. precondición de CU-06 · flujo 2a
- *   3. No hay otra solicitud activa a esa convocatoria ...... criterio 2 · flujo 3a
- *   4. Nace en BORRADOR con número correlativo ............. criterio 3 (patrón State)
- *   5. Muestra los documentos que faltan .................... criterio 4
+ * 1. La convocatoria existe y admite postulaciones (criterio 1, flujo 1a).
+ * 2. El perfil del estudiante está completo (precondición, flujo 2a).
+ * 3. No hay otra solicitud activa a esa convocatoria (criterio 2, flujo 3a).
+ * 4. Nace en BORRADOR con número correlativo (criterio 3, patrón State).
+ * 5. Muestra los documentos que faltan (criterio 4).
  */
 import { randomUUID } from 'node:crypto';
 

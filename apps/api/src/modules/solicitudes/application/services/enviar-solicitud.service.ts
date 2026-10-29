@@ -1,16 +1,12 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * US-014 — Enviar solicitud. Flujo de CU-08.
+ * US-014: enviar solicitud (CU-08).
  *
- * CRITERIO 2: "SI FALTA ALGO, EL SISTEMA INDICA EXACTAMENTE QUÉ FALTA"
- *   Se revisa todo antes de intentar la transición y se responde con UNA lista: los datos del
- *   perfil y los documentos, con su nombre legible. La persona corrige todo de una vez, en lugar de
- *   descubrir los faltantes uno por uno a base de intentos.
+ * Criterio 2: si falta algo, el sistema indica exactamente qué. Se revisa todo antes de intentar
+ * la transición y se responde con una sola lista, con nombres legibles, para que la persona
+ * corrija todo de una vez.
  *
- *   La transición a ENVIADA vuelve a comprobar los documentos por su cuenta (el estado BORRADOR no
- *   confía en que alguien lo haya hecho antes): esta comprobación es para dar un buen mensaje, la
- *   del estado es la garantía.
+ * La transición a ENVIADA vuelve a comprobar los documentos: esta revisión da el buen mensaje, la
+ * del estado es la garantía.
  */
 import { Inject, Injectable, Logger } from '@nestjs/common';
 

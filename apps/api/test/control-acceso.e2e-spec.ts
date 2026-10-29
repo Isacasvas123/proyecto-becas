@@ -1,17 +1,13 @@
 /**
- * PRUEBAS DE INTEGRACIÓN — US-003, control de acceso.
+ * Pruebas de integración de US-003, control de acceso. Demuestran que la seguridad está en el
+ * servidor y no en el frontend: todas hacen peticiones HTTP reales contra la aplicación levantada.
  *
- * Estas son las pruebas que demuestran que **la seguridad está en el servidor**, no en el
- * frontend. Todas hacen peticiones HTTP reales contra la aplicación levantada.
+ * Verifican los cuatro criterios de aceptación: los roles definidos existen y se distinguen, una
+ * ruta protegida rechaza a quien no tiene sesión, un rol insuficiente recibe 403 y el acceso no
+ * autorizado devuelve 403, no 404 ni el recurso.
  *
- * Se verifican los cuatro criterios de aceptación de US-003:
- *   1. Los roles definidos existen y se distinguen
- *   2. Una ruta protegida rechaza a quien no tiene sesión
- *   3. Un rol insuficiente recibe 403
- *   4. El acceso no autorizado devuelve 403, **no 404 ni el recurso**
- *
- * El verificador de tokens se sustituye por un doble: así se prueba el comportamiento del
- * guard sin depender de la firma real ni de la caducidad, que ya están probadas aparte.
+ * El verificador de tokens se sustituye por un doble para probar el guard sin depender de la
+ * firma real ni de la caducidad, que ya están probadas aparte.
  */
 import { Controller, Get, INestApplication } from '@nestjs/common';
 import { APP_GUARD, Reflector } from '@nestjs/core';
@@ -73,12 +69,10 @@ class ControladorDePrueba {
 }
 
 /**
- * Segundo controlador con `@Roles` A NIVEL DE CLASE.
- *
- * Señalado por Fernando en la revisión del PR #4: en NestJS es práctica corriente restringir
- * un controlador entero y relajar un método concreto, y solo estábamos probando el decorador
- * a nivel de método. El guard usa `getAllAndOverride`, que hace ganar a lo más específico;
- * estas rutas lo demuestran en lugar de darlo por supuesto.
+ * Segundo controlador con `@Roles` a nivel de clase, señalado por Fernando en la revisión del
+ * PR #4: en NestJS es habitual restringir un controlador entero y relajar un método, y solo se
+ * probaba el decorador a nivel de método. El guard usa `getAllAndOverride`, que hace ganar a lo
+ * más específico, y estas rutas lo demuestran.
  */
 @Roles(RolUsuario.ADMINISTRADOR)
 @Controller('panel')

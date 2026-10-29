@@ -1,11 +1,8 @@
 /**
- * PRUEBAS DE LA CAPA DE DOMINIO.
- *
- * Fíjense en lo que NO aparece en este archivo: ni `Test.createTestingModule`, ni Prisma,
- * ni Docker, ni HTTP. Se instancia la entidad y se le pregunta. Corren en milisegundos.
- *
- * Que esto sea posible es la prueba concreta de que el dominio quedó libre de
- * infraestructura, que es el objetivo central del diseño (docs/05-arquitectura.md §2.2).
+ * Pruebas de la capa de dominio. No aparece `Test.createTestingModule`, ni Prisma, ni Docker, ni
+ * HTTP: se instancia la entidad y se le pregunta, y corren en milisegundos. Que sea posible
+ * demuestra que el dominio quedó libre de infraestructura, objetivo central del diseño
+ * (docs/05-arquitectura.md §2.2).
  */
 import {
   ReglaDeNegocioError,

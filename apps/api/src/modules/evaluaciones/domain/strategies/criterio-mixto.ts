@@ -7,7 +7,7 @@ import {
 } from './criterio-evaluacion.strategy';
 
 /**
- * Mixto: COMPONE otros dos criterios con un peso, en vez de repetir sus fórmulas.
+ * Mixto: compone otros dos criterios con un peso, en vez de repetir sus fórmulas.
  *
  * Si mañana cambia la fórmula de necesidad, el mixto la hereda sin tocarse. Composición sobre
  * herencia: es la flecha `o--` del diagrama de clases.

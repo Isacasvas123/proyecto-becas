@@ -1,15 +1,14 @@
 /**
- * PÁGINA `/reportes` — reportes y estadísticas (EPIC-06). Solo administración.
+ * Página `/reportes`: reportes y estadísticas (EPIC-06), solo administración. Tiene tres vistas:
  *
- * Tres vistas:
- *   - Panel (US-029): indicadores del programa o de una convocatoria.
- *   - Solicitudes (US-028): filtros opcionales, agrupación y orden. Es la cara visible del patrón
- *     Builder: cada filtro que se llena es un paso; los vacíos no se envían. Las combinaciones sin
- *     sentido las rechaza el servidor con un mensaje que se muestra tal cual.
- *   - Por región (US-031): los 22 departamentos, también los que no tienen becas.
- * Las dos últimas se exportan a CSV o PDF (US-030).
+ * - Panel (US-029): indicadores del programa o de una convocatoria.
+ * - Solicitudes (US-028): filtros opcionales, agrupación y orden. Es la cara visible del patrón
+ *   Builder: cada filtro lleno es un paso y los vacíos no se envían. El servidor rechaza las
+ *   combinaciones sin sentido y su mensaje se muestra tal cual.
+ * - Por región (US-031): los 22 departamentos, también los que no tienen becas.
  *
- * La tabla es genérica: el servidor dice qué columnas tiene cada reporte.
+ * Las dos últimas se exportan a CSV o PDF (US-030). La tabla es genérica: el servidor dice qué
+ * columnas tiene cada reporte.
  */
 import { useCallback, useEffect, useState, type FormEvent, type ReactElement } from 'react';
 

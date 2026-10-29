@@ -1,15 +1,10 @@
 /**
- * CAPA: domain/ports/  ·  PATRÓN ADAPTER
+ * Puerto de envío de correo (patrón Adapter). El dominio sabe que hay que avisar, no cómo: el
+ * puerto se declara con palabras del negocio y el adaptador se elige por configuración.
  *
- * El dominio sabe que hay que avisar por correo; no sabe cómo. Mismo criterio que el
- * almacenamiento de documentos: el puerto se declara aquí con palabras del negocio y el
- * adaptador concreto se elige por configuración, sin que ninguna regla se entere.
- *
- * POR QUÉ IMPORTA AQUÍ MÁS QUE EN OTROS SITIOS
- *   Enviar correo de verdad necesita credenciales de un servidor SMTP que en un entorno de
- *   pruebas no existen. Con un puerto, el flujo completo se puede probar y demostrar sin
- *   ellas —el adaptador de consola escribe el mensaje en el log— y el día que haya un
- *   servidor real no cambia ni una línea del caso de uso.
+ * Importa porque enviar correo real necesita credenciales SMTP que un entorno de pruebas no
+ * tiene. Con el puerto el flujo se prueba sin ellas, el adaptador de consola escribe el mensaje
+ * en el log, y un servidor real no cambia el caso de uso.
  */
 export const ENVIADOR_CORREO = Symbol('EnviadorCorreo');
 
@@ -22,7 +17,7 @@ export interface Correo {
 
 export interface EnviadorCorreo {
   /**
-   * NO DEBE LANZAR.
+   * NO debe lanzar.
    *
    * Si el correo no sale, el permiso ya se creó y la operación del usuario fue válida. Que
    * el envío falle no puede convertirse en un error que, además, le diría a quien lo

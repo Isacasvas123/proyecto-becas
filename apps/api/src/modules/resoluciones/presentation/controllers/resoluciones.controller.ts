@@ -97,17 +97,12 @@ export class ResolucionesController {
 }
 
 /**
- * Cupos restantes de las convocatorias vigentes, SIN sesión.
+ * Cupos restantes de las convocatorias vigentes, sin sesión. Le sirve a quien decide si postula;
+ * no revela nada de nadie, solo números por convocatoria.
  *
- * Es información que le sirve a quien está decidiendo si postula: una convocatoria sin cupos
- * libres sigue aceptando solicitudes, y sin este dato el aspirante reúne sus documentos para
- * algo que ya no puede ganar. No revela nada de nadie: solo números por convocatoria.
- *
- * CONTROLADOR APARTE, Y NO UN MÉTODO `@Publico()` EN EL DE ARRIBA
- *   `ResolucionesController` lleva `@Roles(ADMINISTRADOR)` en la clase, y `getAllAndOverride`
- *   hace que ese rol gane sobre un método sin `@Roles`. Mezclar las dos marcas en el mismo
- *   controlador es justo lo que `RolesGuard` registra como error de programación. Separar el
- *   controlador deja la intención escrita en su declaración, donde se lee.
+ * Es un controlador aparte porque `ResolucionesController` lleva `@Roles(ADMINISTRADOR)` en la
+ * clase y ese rol gana sobre un método `@Publico()`. Mezclar las dos marcas es lo que `RolesGuard`
+ * registra como error de programación.
  */
 @Publico()
 @Controller('resoluciones')

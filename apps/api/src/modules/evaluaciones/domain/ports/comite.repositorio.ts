@@ -10,7 +10,7 @@ export interface ComiteRepositorio {
 
   /**
    * Crea o actualiza el comité y sus integrantes. Si ya hay otro comité para la misma
-   * convocatoria, el adaptador DEBE lanzar `RecursoDuplicadoError` (CU-13, 3a).
+   * convocatoria, el adaptador debe lanzar `RecursoDuplicadoError` (CU-13, 3a).
    */
   guardar(comite: Comite): Promise<void>;
 

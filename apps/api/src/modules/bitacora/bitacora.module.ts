@@ -1,16 +1,12 @@
 /**
- * MÓDULO `bitacora` — auditoría transversal del sistema.
+ * Módulo `bitacora`: auditoría transversal, pedida por el Product Owner el 17 de octubre.
  *
- * Exigida por el Product Owner el 17 de octubre de 2026: la base de datos debe llevar bitácora.
+ * Es un módulo aparte porque auditar no pertenece a ninguna épica, le ocurre a todas. Tiene su
+ * puerto, su repositorio y su pantalla, y nadie depende de él: lo escribe un middleware en la
+ * frontera HTTP y el dominio no se entera.
  *
- * POR QUÉ ES UN MÓDULO APARTE Y NO UN CAMPO EN CADA TABLA
- *   Auditar no es parte de ninguna épica: le ocurre a todas. Como módulo propio tiene su puerto,
- *   su repositorio y su pantalla, y ningún otro módulo depende de él ni lo menciona. El registro
- *   lo escribe un middleware en la frontera HTTP, así que el dominio ni se entera de que existe.
- *
- * EL MIDDLEWARE SE APLICA A TODAS LAS RUTAS
- *   Por el mismo criterio que el guard de US-003: lo que debe aplicarse siempre se registra una
- *   vez y no depende de que alguien se acuerde. Un endpoint nuevo queda auditado sin hacer nada.
+ * El middleware cubre todas las rutas, por el mismo criterio que el guard de US-003: un endpoint
+ * nuevo queda auditado sin hacer nada.
  */
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 

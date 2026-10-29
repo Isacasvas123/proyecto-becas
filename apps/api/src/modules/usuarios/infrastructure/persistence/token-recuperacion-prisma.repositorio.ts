@@ -1,5 +1,5 @@
 /**
- * CAPA: infrastructure/persistence/  ·  adaptador de `TokenRecuperacionRepositorio`.
+ * Adaptador de `TokenRecuperacionRepositorio`.
  */
 import { Injectable } from '@nestjs/common';
 

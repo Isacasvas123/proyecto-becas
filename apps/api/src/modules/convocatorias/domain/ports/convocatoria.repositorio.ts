@@ -1,38 +1,25 @@
 /**
- * CAPA: domain/ports/  ·  ESTE ARCHIVO ES EL CORAZÓN DEL DISEÑO
- * ────────────────────────────────────────────────────────────────────────────────
- * QUÉ VA AQUÍ
- *   Un PUERTO: la interfaz que declara lo que el dominio NECESITA del mundo exterior,
- *   escrita en el vocabulario del dominio. Nótese que devuelve `Convocatoria` (entidad de
- *   dominio), no filas de Prisma.
+ * Puerto: lo que el dominio necesita del exterior, en su propio vocabulario. Devuelve
+ * `Convocatoria` y no filas de Prisma.
  *
- * POR QUÉ ESTÁ EN domain/ Y NO EN infrastructure/
- *   Aquí es donde se invierte la dependencia (SOLID · D). Sin esta interfaz, el servicio
- *   de aplicación dependería del repositorio Prisma: la flecha apuntaría del negocio hacia
- *   la base de datos y el ORM mandaría sobre el diseño. Con ella, la flecha se invierte:
+ * Está en domain/ y no en infrastructure/ porque aquí se invierte la dependencia (SOLID · D). Sin
+ * esta interfaz el servicio dependería del repositorio de Prisma y el ORM mandaría sobre el
+ * diseño. Con ella:
  *
  *       application ──▶ [ ConvocatoriaRepositorio ]  ◀── infrastructure
  *                              (domain)
  *
- *   Manda el dominio. Prisma pasa a ser un detalle reemplazable, y las pruebas usan una
- *   implementación en memoria sin cambiar una línea del servicio.
+ * Prisma pasa a ser un detalle reemplazable y las pruebas usan una implementación en memoria.
  *
- * SEGREGACIÓN DE INTERFACES (SOLID · I)
- *   Un método, el que hoy se usa. No se declara un repositorio genérico con `guardar`,
- *   `eliminar` y `buscarTodo` "por si acaso": cada historia agrega el método que necesita
- *   (docs/05-arquitectura.md §2.4).
+ * Segregación de interfaces (SOLID · I): un método, el que hoy se usa. Cada historia agrega el
+ * que necesita (docs/05-arquitectura.md §2.4).
  */
 import { Convocatoria } from '../entities/convocatoria.entity';
 
 /**
- * TOKEN DE INYECCIÓN.
- *
- * Una interfaz de TypeScript desaparece al compilar, así que no puede usarse como
- * identificador en tiempo de ejecución. Este `Symbol` es la llave con la que el módulo
- * asocia el puerto (domain) con su adaptador concreto (infrastructure).
- *
- * Es un `Symbol` de JavaScript puro: declararlo aquí NO viola la pureza del dominio,
- * porque no arrastra ninguna dependencia de framework.
+ * Token de inyección. La interfaz desaparece al compilar y no sirve como identificador en
+ * ejecución; este `Symbol` enlaza el puerto con su adaptador. Es JavaScript puro, así que no
+ * contamina el dominio con dependencias de framework.
  */
 export const CONVOCATORIA_REPOSITORIO = Symbol('ConvocatoriaRepositorio');
 

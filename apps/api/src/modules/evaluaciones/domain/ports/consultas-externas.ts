@@ -1,5 +1,5 @@
 /**
- * PUERTOS hacia otros módulos. Mismo criterio que en `solicitudes`: se declara aquí lo que se
+ * Puertos hacia otros módulos. Mismo criterio que en `solicitudes`: se declara aquí lo que se
  * necesita, con palabras de este módulo, y los adaptadores de `infrastructure/integraciones/` lo
  * resuelven con los servicios que `solicitudes`, `convocatorias`, `estudiantes` y `usuarios`
  * exportan.

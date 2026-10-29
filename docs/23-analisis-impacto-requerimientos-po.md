@@ -16,7 +16,7 @@
 
 ## 1. Qué pidió el Product Owner
 
-En la sesión del **17 de octubre de 2026**, con las 24 historias planificadas ya terminadas y
+En la sesión del 17 de octubre de 2026, con las 24 historias planificadas ya terminadas y
 verificadas en Staging, el Product Owner presentó tres requerimientos nuevos:
 
 | # | Requerimiento |
@@ -25,7 +25,7 @@ verificadas en Staging, el Product Owner presentó tres requerimientos nuevos:
 | **R2** | Cuando una solicitud cambie de estado, el sistema deberá **registrar el evento** y **generar una notificación** para el estudiante. |
 | **R3** | Cada **aprobación, rechazo o modificación relevante** debe registrar **quién** la hizo, **cuándo**, **qué operación** fue y **qué resultado** tuvo. |
 
-Se incorporaron al backlog como **US-033** (R1), **US-034** (R2) y **US-032** (R3; esta última ya
+Se incorporaron al backlog como US-033 (R1), US-034 (R2) y US-032 (R3; esta última ya
 venía exigida desde antes por la observación del docente sobre la bitácora).
 
 ---
@@ -49,11 +49,11 @@ una persona distinta de la primera**, porque de lo contrario el control no contr
 administrador daría dos clics y el resultado sería idéntico a hoy. Queda escrito como regla de
 dominio y probado.
 
-**R1 · ¿Se reserva el cupo con la primera aprobación?** Se decidió que **no**. Reservarlo dejaría
+**R1 · ¿Se reserva el cupo con la primera aprobación?** Se decidió que no. Reservarlo dejaría
 cupos retenidos por aprobaciones a medio terminar, que es justo el problema que US-023 resolvió con
 el control atómico de cupos. El cupo se reserva al confirmar la segunda.
 
-**R2 · ¿Qué es una notificación?** Se implementó como **aviso dentro del sistema**, con su pantalla
+**R2 · ¿Qué es una notificación?** Se implementó como aviso dentro del sistema, con su pantalla
 de buzón, no como correo electrónico. El correo es US-022, que sigue en el backlog: cuando se haga,
 será un observador más y no tocará nada de lo que ya existe.
 
@@ -75,16 +75,16 @@ cobertura no depende de que nadie se olvide.
 | Pruebas agregadas | 7 e2e + la tabla de estados ampliada | 4 e2e + dobles en 2 specs | 9 e2e + unitarias |
 | Líneas de código y pruebas | 1,555 entre los dos | | 1,243 |
 
-R1 y R2 se trabajaron juntos y **comparten archivos modificados** —la entidad `Solicitud`, el
+R1 y R2 se trabajaron juntos y comparten archivos modificados —la entidad `Solicitud`, el
 módulo de solicitudes, el repositorio, la plataforma de pruebas—, así que separar el conteo de
 modificaciones entre los dos daría un número inventado. Medido en conjunto: **49 archivos de
 código y pruebas modificados**. R3 modificó 10.
 
-**Total de los tres requerimientos:** alrededor de **2,800 líneas de código y pruebas**, sin contar
+**Total de los tres requerimientos:** alrededor de 2,800 líneas de código y pruebas, sin contar
 la documentación.
 
 **Estado de la suite al 20 de octubre de 2026:** **493 pruebas unitarias en 31 suites, todas en
-verde** (medido hoy, 65 segundos). Las **156 pruebas e2e** quedaron en verde en la última ejecución
+verde (medido hoy, 65 segundos). Las 156 pruebas e2e** quedaron en verde en la última ejecución
 de CI; no se volvieron a correr en local hoy porque necesitan el contenedor de PostgreSQL
 levantado.
 
@@ -97,7 +97,7 @@ sprints anteriores sirvieron para algo o solo fueron adorno académico.
 
 **R1 no obligó a tocar ningún estado existente.** Agregar `APROBACION_PENDIENTE` fue **escribir una
 clase nueva** (`EstadoAprobacionPendiente`) y sumarla al mapa de constructores. `EstadoBorrador`,
-`EstadoEnviada`, `EstadoAprobada`, `EstadoRechazada` y `EstadoAdjudicada` quedaron **idénticos**.
+`EstadoEnviada`, `EstadoAprobada`, `EstadoRechazada` y `EstadoAdjudicada` quedaron idénticos.
 Esto es exactamente lo que el documento de patrones prometió en el Sprint 4 —*agregar un estado
 nuevo es agregar una clase*— y es la primera vez que se puede comprobar en lugar de afirmarlo.
 
@@ -128,9 +128,9 @@ Decir que todo encajó sin fricción sería falso. Dos cosas costaron más de lo
 
 **La bitácora como interceptor no funcionaba.** La primera implementación fue un interceptor
 global, que es lo que parece natural en NestJS. No registraba ningún 403: en NestJS los *guards*
-corren **antes** que los interceptores, así que una petición rechazada por permisos nunca llegaba
+corren antes que los interceptores, así que una petición rechazada por permisos nunca llegaba
 al registro —justo el caso que más interesa auditar. Hubo que rehacerla como middleware enganchado
-al evento `finish` de la respuesta. Queda documentado como **ADR-09** para que nadie lo corrija de
+al evento `finish` de la respuesta. Queda documentado como ADR-09 para que nadie lo corrija de
 vuelta.
 
 **Las convocatorias que ya existían no tienen monto.** El monto es obligatorio para las
@@ -163,8 +163,8 @@ poder leer sus propios datos.
 
 ## 7. Lo que falta
 
-- [ ] Aplicar las tres migraciones en Staging y volver a desplegar.
-- [ ] Verificar US-032, US-033 y US-034 en Staging; hoy están verificadas en local y en CI.
+- [x] Aplicar las tres migraciones en Staging: se aplican solas al arrancar la imagen.
+- [x] Verificar US-032, US-033 y US-034 en Staging.
 - [ ] Confirmar con el Product Owner las cuatro decisiones de la sección 2.
 - [ ] Definir el monto de las convocatorias que ya existen en Staging, hoy en 0.
 - [ ] US-022 (correo) sigue pendiente: será el segundo observador.

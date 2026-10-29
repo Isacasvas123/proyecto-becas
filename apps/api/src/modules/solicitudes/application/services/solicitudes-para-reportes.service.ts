@@ -1,6 +1,4 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
  * Lo que `solicitudes` le ofrece al módulo `reportes` (EPIC-06): filas planas, ya con las fechas
  * que salen del historial (cuándo se resolvió, cuándo se adjudicó). Sin documentos ni motivos.
  */

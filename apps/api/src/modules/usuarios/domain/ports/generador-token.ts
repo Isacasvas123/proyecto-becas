@@ -1,12 +1,9 @@
 /**
- * CAPA: domain/ports/  ·  PATRÓN ADAPTER (estructural)
- * ────────────────────────────────────────────────────────────────────────────────
- * El dominio necesita entregarle al usuario "algo que acredite su sesión", pero no debe
- * saber que ese algo es un JWT firmado con HS256. Mañana podría ser una sesión en
- * servidor o un token opaco; el caso de uso no cambiaría.
+ * Puerto para emitir la credencial de sesión (patrón Adapter, estructural).
  *
- * Por eso el puerto habla de `TokenSesion` y no de "JWT": el vocabulario es del dominio,
- * no de la biblioteca.
+ * El dominio necesita entregar "algo que acredite la sesión" pero no debe saber que es un JWT
+ * HS256: mañana podría ser una sesión en servidor o un token opaco. Por eso el puerto habla de
+ * `TokenSesion` y no de "JWT".
  */
 import { Usuario } from '../entities/usuario.entity';
 

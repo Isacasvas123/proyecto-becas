@@ -1,13 +1,10 @@
 /**
- * PRUEBAS DEL SERVICIO DE APLICACIÓN.
+ * Pruebas del servicio de aplicación.
  *
- * Al servicio se le inyecta `ConvocatoriaEnMemoriaRepositorio` en lugar del repositorio
- * de Prisma. Es el mismo puerto, así que el servicio no nota la diferencia: por eso estas
- * pruebas corren sin Docker, sin PostgreSQL y sin red.
- *
- * Se usa `Test.createTestingModule` de NestJS —y no un simple `new Servicio(...)`— para
- * verificar de paso que el ENLACE del token de inyección está bien hecho. Si alguien
- * rompe el `provide: CONVOCATORIA_REPOSITORIO`, esta prueba lo detecta.
+ * Se le inyecta `ConvocatoriaEnMemoriaRepositorio` en lugar del repositorio de Prisma. Es el
+ * mismo puerto, así que corren sin Docker, sin PostgreSQL y sin red. Se usa
+ * `Test.createTestingModule` y no un `new Servicio(...)` para verificar de paso el enlace del
+ * token de inyección: si alguien rompe el `provide: CONVOCATORIA_REPOSITORIO`, falla aquí.
  */
 import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -92,7 +89,7 @@ describe('ListarConvocatoriasPublicadasService', () => {
   });
 
   it('ordena aunque el repositorio devuelva las convocatorias desordenadas', async () => {
-    // La prueba de arriba no demuestra que ORDENE EL SERVICIO: el repositorio en memoria ya
+    // La prueba de arriba no demuestra que ordene el servicio: el repositorio en memoria ya
     // ordena por su cuenta, así que pasaría igual con un servicio que no ordenara nada.
     // Señalado por Fernando en la revisión del PR #1.
     //

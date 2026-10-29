@@ -1,7 +1,7 @@
 /**
- * PRUEBA UNITARIA — patrón State (docs/06-patrones.md §5).
+ * Prueba unitaria — patrón State (docs/06-patrones.md §5).
  *
- * Se prueba la TABLA COMPLETA de transiciones: cada estado contra cada acción. Así, si alguien
+ * Se prueba la tabla completa de transiciones: cada estado contra cada acción. Así, si alguien
  * habilita por error una transición que no está en el diagrama de estados, una prueba falla.
  */
 import {

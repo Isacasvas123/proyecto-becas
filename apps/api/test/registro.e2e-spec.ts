@@ -1,13 +1,13 @@
 /**
- * PRUEBA DE INTEGRACIÓN — US-001, registro de estudiante.
+ * Prueba de integración de US-001, registro de estudiante.
  *
- * Pila HTTP de producción: guards globales reales, el `ValidationPipe` con la configuración de
- * `main.ts` y el filtro de errores del dominio. El hash es **bcrypt real**; las dos sustituciones
- * son el repositorio (en memoria) y el emisor/verificador de tokens (dobles).
+ * Pila HTTP de producción: guards globales reales, el `ValidationPipe` de `main.ts` y el filtro
+ * de errores del dominio. El hash es bcrypt real; se sustituyen el repositorio (en memoria) y el
+ * emisor y verificador de tokens (dobles).
  *
- * La prueba más importante del archivo es la de ida y vuelta: registrarse y después iniciar
- * sesión con esas mismas credenciales por la ruta de login. Si el registro guardara el hash de
- * forma distinta a como el login lo verifica, el estudiante quedaría registrado y sin poder entrar.
+ * La más importante es la de ida y vuelta: registrarse y luego iniciar sesión con las mismas
+ * credenciales. Si el registro guardara el hash distinto a como el login lo verifica, el
+ * estudiante quedaría registrado y sin poder entrar.
  */
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -88,7 +88,7 @@ describe('POST /auth/registro (e2e)', () => {
         RegistrarEstudianteService,
         AutenticarUsuarioService,
         { provide: USUARIO_REPOSITORIO, useValue: new UsuarioEnMemoriaRepositorio([]) },
-        // bcrypt REAL, con 4 rondas para que la prueba sea rápida.
+        // bcrypt real, con 4 rondas para que la prueba sea rápida.
         { provide: ConfigService, useValue: { get: () => '4' } },
         { provide: HASHER_PASSWORD, useClass: BcryptHasherAdapter },
         { provide: GENERADOR_TOKEN, useClass: GeneradorFalso },

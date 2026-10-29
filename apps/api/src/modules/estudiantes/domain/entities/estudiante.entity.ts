@@ -1,19 +1,12 @@
 /**
- * CAPA: domain/entities/
- * ────────────────────────────────────────────────────────────────────────────────
  * Perfil académico y socioeconómico del estudiante (US-011).
  *
- * Es la clase `Estudiante` del diagrama de clases. Su identidad es la del `Usuario` al que
- * pertenece (relación 1 a 0..1): un usuario tiene como mucho un perfil, y el id del perfil ES el
- * id del usuario. La identidad de la persona —nombre, CUI— vive en `Usuario` (nota ³ del
- * diagrama); aquí solo están los datos con los que se evalúa la elegibilidad.
+ * Su identidad es la del `Usuario` al que pertenece (1 a 0..1): el id del perfil es el id del
+ * usuario. Nombre y CUI viven en `Usuario`; aquí solo están los datos con que se evalúa.
  *
- * SE PUEDE GUARDAR INCOMPLETO, A PROPÓSITO
- *   Reunir el promedio o la constancia de ingresos puede tomar días. Obligar a llenarlo todo de
- *   una vez haría que la persona lo abandone. Por eso los campos son opcionales al guardar, y la
- *   regla que importa es otra: el criterio 3 de US-011, *"el perfil debe estar completo antes de
- *   poder enviar una solicitud"*. Esa regla es `perfilCompleto()`, y `camposFaltantes()` dice
- *   exactamente qué falta (US-014, criterio 2).
+ * Se puede guardar incompleto: reunir el promedio o la constancia de ingresos puede tomar días y
+ * exigirlo todo de una vez haría que la persona abandone. La regla es otra: el perfil debe estar
+ * completo para enviar una solicitud (`perfilCompleto()`), y `camposFaltantes()` dice qué falta.
  */
 import { ReglaDeNegocioError } from '../../../../shared/exceptions/errores-dominio';
 import { Departamento, NivelAcademico } from '../enums/catalogos';

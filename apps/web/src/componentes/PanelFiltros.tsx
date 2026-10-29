@@ -1,14 +1,10 @@
 /**
- * Panel lateral de filtros por tipo de beca, con contadores.
+ * Panel lateral de filtros por tipo de beca, con contadores, patrón tomado de tecoloco.com.gt. El
+ * contador importa tanto como el filtro: antes de hacer clic el usuario ya sabe si vale la pena y
+ * no acaba en una lista vacía.
  *
- * Patrón tomado de tecoloco.com.gt, que muestra "Informática | Internet (9)".
- * El contador importa tanto como el filtro: antes de hacer clic, el usuario ya
- * sabe si vale la pena, y no acaba en una lista vacía.
- *
- * ALCANCE (Sprint 1): filtra en el navegador sobre lo que ya se descargó. El
- * filtrado real en el servidor, con paginación, es del Sprint 3 junto con
- * US-008, cuando el listado pueda tener miles de registros y el NFR de
- * rendimiento (menos de 1 segundo) obligue a filtrar en la base de datos.
+ * Filtra en el navegador sobre lo que ya se descargó. Con miles de convocatorias, el NFR de
+ * rendimiento (menos de 1 segundo) exigiría filtrar en la base con paginación.
  */
 import type { ReactElement } from 'react';
 

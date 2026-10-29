@@ -1,11 +1,6 @@
 /**
- * CAPA: infrastructure/persistence/
- * ────────────────────────────────────────────────────────────────────────────────
- * Bitácora en memoria, para pruebas. Mismo criterio que el resto de repositorios en memoria del
- * proyecto: permite probar el interceptor y la consulta sin PostgreSQL.
- *
- * Tampoco aquí hay forma de modificar ni borrar un asiento: el puerto no lo permite, y un doble
- * de prueba que ofreciera más que el real serviría para probar cosas que no existen.
+ * Bitácora en memoria, para pruebas sin PostgreSQL. Tampoco permite modificar ni borrar: un doble
+ * que ofreciera más que el real probaría cosas que no existen.
  */
 import { RegistroBitacora } from '../../domain/entities/registro-bitacora.entity';
 import {

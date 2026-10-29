@@ -5,17 +5,16 @@
 |                        |                                                    |
 | ---------------------- | -------------------------------------------------- |
 | **Versión del sistema** | 0.1.0                                             |
-| **Versión del manual** | 1.0                                                |
-| **Fecha**              | 12 de septiembre de 2026                           |
+| **Versión del manual** | 2.0                                                |
+| **Fecha**              | 28 de octubre de 2026                              |
 | **Responsable**        | Ivan Castellan (arquitectura) · Isaac Castillo     |
 | **Dirigido a**         | Quien tenga que mantener, extender o desplegar este sistema |
 
-> **Alcance de este documento.** Es el manual para **desarrolladores**: cómo está
+> **Alcance de este documento.** Es el manual para desarrolladores: cómo está
 > construido el sistema, por qué, y cómo trabajar en él. El manual para quien lo usa es
 > `21-manual-usuario.md`.
 >
-> Describe el estado real al 12 de septiembre de 2026. Lo que no está implementado se marca como
-> tal; **no se documenta nada como existente si no existe**.
+> Describe el estado al 28 de octubre de 2026. Lo que no está implementado se marca como tal.
 
 ---
 
@@ -25,8 +24,11 @@ Administra el ciclo de vida completo de las becas del Ministerio de Educación d
 convocatorias, registro de estudiantes, solicitudes, documentación, comités evaluadores,
 resolución y consulta pública.
 
-**Implementado hoy:** inicio de sesión, control de acceso por rol, listado público de
-convocatorias y diagnósticos de salud. El resto está en el Product Backlog con su sprint asignado.
+**Implementado:** cuentas con control de acceso por rol y recuperación de contraseña,
+convocatorias, registro y perfil de estudiantes, solicitudes con documentos e historial, comités y
+evaluación, resolución con segunda aprobación sobre Q10,000, consulta pública del estado, reportes
+con exportación a CSV y PDF, bitácora de auditoría y avisos al estudiante. Las historias que no se
+implementaron están en el Product Backlog con su motivo.
 
 ## 2. Stack técnico y por qué
 
@@ -62,13 +64,13 @@ flowchart TB
     I -.->|implementa| D
 ```
 
-**La regla que sostiene todo:** las flechas apuntan **hacia dentro**. `domain/` no importa nada de
+**La regla que sostiene todo:** las flechas apuntan hacia dentro. `domain/` no importa nada de
 las otras capas. `infrastructure/` no es una capa "de abajo" de la que dependa el dominio: es una
-capa externa que **implementa interfaces que el dominio declara**.
+capa externa que implementa interfaces que el dominio declara.
 
-Consecuencia práctica y verificable: las 106 pruebas unitarias corren **sin Docker, sin PostgreSQL y
-sin red**, porque inyectan repositorios en memoria. Eso no es una comodidad de las pruebas; es la
-demostración de que la inversión de dependencias funciona.
+Consecuencia práctica y verificable: las 504 pruebas unitarias corren sin Docker, sin PostgreSQL y
+sin red, porque inyectan repositorios en memoria. Es la demostración de que la inversión de
+dependencias funciona.
 
 ### 3.2 Estructura de carpetas
 
@@ -112,7 +114,7 @@ no inventando otra.
 
 ### 3.3 Los puertos y sus adaptadores
 
-Es la evidencia del patrón **Adapter** y la tabla que demuestra la inversión de dependencias:
+Es la evidencia del patrón Adapter y la tabla que demuestra la inversión de dependencias:
 
 | Puerto (lo que el dominio necesita)      | Adaptadores (lo que la infraestructura ofrece)                  | Qué aísla                  |
 | ---------------------------------------- | --------------------------------------------------------------- | -------------------------- |
@@ -120,6 +122,10 @@ Es la evidencia del patrón **Adapter** y la tabla que demuestra la inversión d
 | `usuarios/domain/ports/generador-token`  | `JwtGeneradorTokenAdapter`                                      | El formato de sesión       |
 | `usuarios/domain/ports/verificador-token`| `JwtVerificadorTokenAdapter`                                    | La validación de sesión    |
 | `usuarios/domain/ports/usuario.repositorio` | `UsuarioPrismaRepositorio` · `UsuarioEnMemoriaRepositorio`    | La persistencia            |
+| `usuarios/domain/ports/enviador-correo`  | `CorreoConsolaAdapter` · `CorreoSmtpAdapter`                    | El envío de correo (US-035) |
+| `usuarios/domain/ports/token-recuperacion.repositorio` | `TokenRecuperacionPrismaRepositorio` · `TokenRecuperacionEnMemoriaRepositorio` | La persistencia de los permisos de recuperación |
+| `bitacora/domain/ports/bitacora.repositorio` | `BitacoraPrismaRepositorio` · `BitacoraEnMemoriaRepositorio` | La persistencia. Solo escribe y lee: no existe `actualizar` ni `eliminar` |
+| `solicitudes/domain/ports/notificacion.repositorio` | `NotificacionPrismaRepositorio` · `NotificacionEnMemoriaRepositorio` | La bandeja de avisos del estudiante (US-034) |
 | `convocatorias/domain/ports/convocatoria.repositorio` | `ConvocatoriaPrismaRepositorio` · `ConvocatoriaEnMemoriaRepositorio` | La persistencia |
 | `estudiantes/domain/ports/estudiante.repositorio` | `EstudiantePrismaRepositorio` · `EstudianteEnMemoriaRepositorio` | La persistencia |
 | `solicitudes/domain/ports/solicitud.repositorio` | `SolicitudPrismaRepositorio` · `SolicitudEnMemoriaRepositorio` | La persistencia (solicitud, documentos e historial en una transacción) |
@@ -181,7 +187,8 @@ Base local: `http://localhost:3000`
 | `GET` | `/evaluaciones/solicitudes/:id` | **EVALUADOR** | Solicitante, documentos y puntaje calculado. Si no está asignada: **403** |
 | `GET` | `/evaluaciones/solicitudes/:id/documentos/:tipo` | **EVALUADOR** | Descarga un documento de una solicitud asignada |
 | `POST` | `/evaluaciones/solicitudes/:id/dictamen` | **EVALUADOR** | `{ "recomendacion", "observacion" }`. El puntaje **no se manda**: mandarlo es 400 (US-019) |
-| `POST` | `/resoluciones/solicitudes/:id` | **ADMINISTRADOR** | `{ "decision": "APROBAR" \| "RECHAZAR", "motivo" }` (US-023). Sin cupo: 422 |
+| `POST` | `/resoluciones/solicitudes/:id` | **ADMINISTRADOR** | `{ "decision": "APROBAR" \| "RECHAZAR", "motivo" }` (US-023). Sin cupo: 422. Si la beca supera Q10,000, la solicitud queda en `APROBACION_PENDIENTE` y no reserva cupo (US-033) |
+| `POST` | `/resoluciones/solicitudes/:id/confirmar-aprobacion` | **ADMINISTRADOR** | `{ "motivo" }`. Segunda aprobación de una beca de más de Q10,000, que debe dar una persona distinta de la primera (US-033) |
 | `POST` | `/resoluciones/solicitudes/:id/adjudicar` | **ADMINISTRADOR** | Adjudica una APROBADA y crea la beca (US-024) |
 | `GET` | `/resoluciones/convocatorias/:id/cupos` | **ADMINISTRADOR** | Cupos totales, aprobadas, adjudicadas y disponibles |
 | `GET` | `/reportes/solicitudes` | **ADMINISTRADOR** | US-028. Parámetros opcionales: `convocatoriaId`, `estado` (lista separada por comas), `nivel`, `departamento`, `desde`, `hasta` (AAAA-MM-DD, hora de Guatemala, inclusivas), `agruparPor`, `ordenarPor`, `formato` (`JSON`, `CSV`, `PDF`). Combinaciones sin sentido: 422 |
@@ -190,15 +197,22 @@ Base local: `http://localhost:3000`
 | `GET` | `/bitacora` | **ADMINISTRADOR** | Auditoría. Filtros opcionales: `rol`, `entidad`, `desde`, `hasta` (AAAA-MM-DD), `soloRechazadas`, `pagina`, `porPagina` (tope 100). Consultarla también queda registrado |
 | `GET` | `/bitacora/entidades` | **ADMINISTRADOR** | Los recursos que aparecen en la bitácora, para el filtro de la pantalla |
 | `POST` | `/consulta-publica` | **Público** | `{ "numero", "cui" }` → solo `numero`, `estado`, `ultimoCambio` (US-025). 404 genérico; 429 tras 10 consultas por minuto |
+| `GET` | `/resoluciones/cupos` | **Público** | Cupos restantes de las convocatorias vigentes |
+| `POST` | `/auth/recuperacion` | **Público** | `{ "correo" }`. Responde 204 exista o no la cuenta (US-035). Cinco intentos cada 15 minutos por dirección; el sexto, 429 |
+| `POST` | `/auth/recuperacion/confirmar` | **Público** | `{ "token", "password" }`. Un token inexistente, caducado o ya usado responde el mismo 422. No inicia sesión |
+| `GET` | `/notificaciones` | **ESTUDIANTE** | La bandeja de avisos propios (US-034) |
+| `PUT` | `/notificaciones/:id/leida` | **ESTUDIANTE** | Marca un aviso como leído |
+| `PUT` | `/notificaciones/leidas` | **ESTUDIANTE** | Marca todos como leídos |
 
 > **El id del estudiante nunca viaja en la URL ni en el cuerpo.** Sale del token con el decorador
 > `@UsuarioActual()`. No existe una forma de pedir "las solicitudes del estudiante X".
 
-> **Las públicas lo son deliberadamente**, no por olvido. El guard de autenticación es **global y
-> seguro por defecto**: toda ruta exige sesión salvo que se marque con `@Publico()`. Cada una de
-> las cuatro públicas tiene su justificación escrita: el login es donde se *obtiene* la sesión, el
-> listado lo exige US-008 para visitantes sin cuenta, y los dos diagnósticos los consume el
-> monitoreo.
+> Las rutas públicas lo son por decisión y no por olvido. El guard de autenticación es global y
+> seguro por defecto: toda ruta exige sesión salvo que se marque con `@Publico()`. Cada una de las
+> nueve públicas tiene su justificación: el login y el registro son donde se obtiene la sesión, la
+> recuperación la necesita quien no puede entrar, el listado y los cupos los exige US-008 para
+> visitantes sin cuenta, la consulta pública es el requisito de transparencia (US-025) y los dos
+> diagnósticos los consume el monitoreo.
 
 **Códigos de error de las rutas de gestión**, que salen del filtro de excepciones del dominio:
 
@@ -238,11 +252,11 @@ saturar la CPU.
 }
 ```
 
-**Respuesta 401** — mensaje **genérico a propósito**: no revela si falló el usuario o la
+**Respuesta 401** — mensaje genérico a propósito: no revela si falló el usuario o la
 contraseña. Distinguirlos le diría a quien tantea si va por buen camino.
 
 **Bloqueo tras intentos fallidos** (criterio 3 de US-002). Tras **5 intentos fallidos
-consecutivos** la cuenta queda bloqueada **15 minutos**:
+consecutivos la cuenta queda bloqueada 15 minutos**:
 
 | Comportamiento | Por qué |
 |---|---|
@@ -252,13 +266,13 @@ consecutivos** la cuenta queda bloqueada **15 minutos**:
 | El bloqueo **caduca solo** a los 15 minutos | No depende de una tarea programada que, si fallara, dejaría cuentas bloqueadas para siempre |
 | Un acceso correcto **reinicia el contador** | El criterio dice intentos *consecutivos* |
 
-La política (5 y 15) son constantes del **dominio**, `MAX_INTENTOS_FALLIDOS` y
+La política (5 y 15) son constantes del dominio, `MAX_INTENTOS_FALLIDOS` y
 `MINUTOS_DE_BLOQUEO` en `usuario.entity.ts`, y no variables de entorno: son un criterio de
 aceptación acordado con el Product Owner, no un ajuste operativo.
 
 ### 4.3 `GET /convocatorias`
 
-Devuelve un arreglo de convocatorias **publicadas y vigentes**, ordenadas por fecha de cierre más
+Devuelve un arreglo de convocatorias publicadas y vigentes, ordenadas por fecha de cierre más
 próxima. El orden es parte del contrato del caso de uso, no una optimización del adaptador.
 
 ```json
@@ -296,8 +310,8 @@ nada. Fue el defecto 1 de los tres del esqueleto, corregido en S1-12.
 Authorization: Bearer <token>
 ```
 
-El nombre del esquema se compara **sin distinguir mayúsculas** (RFC 7235 §2.1): `bearer` y
-`BEARER` son válidos. El token **no** se normaliza. Una cabecera con dos credenciales separadas
+El nombre del esquema se compara sin distinguir mayúsculas (RFC 7235 §2.1): `bearer` y
+`BEARER` son válidos. El token no se normaliza. Una cabecera con dos credenciales separadas
 por coma se rechaza explícitamente, en vez de adivinar cuál vale.
 
 **Autorización.** Dos guards globales, en este orden:
@@ -310,7 +324,7 @@ por coma se rechaza explícitamente, en vez de adivinar cuál vale.
 @Roles(RolUsuario.ADMINISTRADOR)        // exige sesión Y ese rol
 ```
 
-Ambos decoradores funcionan a nivel de **método o de clase**, y gana el más específico. Sin
+Ambos decoradores funcionan a nivel de método o de clase, y gana el más específico. Sin
 `@Roles` basta con estar autenticado.
 
 **Códigos de respuesta, que son criterios de aceptación de US-003:**
@@ -322,7 +336,7 @@ Ambos decoradores funcionan a nivel de **método o de clase**, y gana el más es
 | Rol insuficiente         | **403**| **No 404 ni el recurso.** Criterio textual de US-003 |
 
 **Limitación aceptada conscientemente:** el token es autocontenido y no se consulta la base en
-cada petición. El precio es que **desactivar un usuario no invalida su token hasta que caduque**,
+cada petición. El precio es que desactivar un usuario no invalida su token hasta que caduque,
 como máximo 8 horas después. Si el Ministerio exigiera revocación inmediata haría falta una lista
 de revocación, y eso cambia el diseño.
 
@@ -335,13 +349,13 @@ de revocación, y eso cambia el diseño.
 | `ADMINISTRADOR` | Sí         | Personal de la Dirección de Becas           |
 | `PUBLICO`       | **No**     | Visitante sin sesión                        |
 
-`PUBLICO` existe en el enum del dominio pero **no en el de Prisma**, y es deliberado: no hay filas
+`PUBLICO` existe en el enum del dominio pero no en el de Prisma, y es deliberado: no hay filas
 de `Usuario` con ese rol y no debe poder haberlas. La constante `ROLES_PERSISTIBLES` marca la
 diferencia, y una prueba la fija para que nadie la "arregle" agregándolo al esquema.
 
 ## 5. Base de datos
 
-Once tablas hoy. El dominio declara sus propios enums en lugar de importar los de Prisma, para no
+Catorce tablas. El dominio declara sus propios enums en lugar de importar los de Prisma, para no
 meter el ORM dentro de `domain/`; el precio es mantener dos listas sincronizadas, y se mitiga con
 una prueba que las compara y falla en CI si divergen.
 
@@ -361,8 +375,8 @@ una prueba que las compara y falla en CI si divergen.
 | `creado_en` · `actualizado_en` | timestamp | Automáticos           |
 
 **`POST /auth/registro`** recibe `nombreCompleto`, `cui`, `correo`, `nombreUsuario` y `password`.
-Responde **201** con la misma forma que el login, **409** si el CUI, el correo o el nombre de usuario
-ya existen —diciendo cuál—, y **422** si el CUI no tiene 13 dígitos o la contraseña no cumple la
+Responde 201 con la misma forma que el login, 409 si el CUI, el correo o el nombre de usuario
+ya existen —diciendo cuál—, y 422 si el CUI no tiene 13 dígitos o la contraseña no cumple la
 política. No acepta `rol`: una petición que lo mande recibe 400, y toda cuenta registrada por
 esta vía es `ESTUDIANTE`.
 
@@ -397,7 +411,7 @@ cumplir un requisito. `departamento` es el enum `Departamento` (22 valores).
 | `documentos_solicitud` | Único por `(solicitud_id, tipo)`: reemplazar es actualizar la fila. `referencia` es la ruta que dio el adaptador; nunca se expone al cliente |
 | `historial_estado_solicitud` | El id lo pone la entidad; la aplicación **solo inserta** (`createMany` con `skipDuplicates`). Índice por `(solicitud_id, ocurrido_en)` |
 
-Guardar una solicitud es **una transacción**: la fila, sus documentos y las entradas nuevas del
+Guardar una solicitud es una transacción: la fila, sus documentos y las entradas nuevas del
 historial. Si algo falla, no queda un documento guardado con la solicitud en el estado anterior.
 
 ### 5.5 Comités, asignaciones y dictámenes (EPIC-04)
@@ -414,17 +428,28 @@ Borrar un usuario, una solicitud o una convocatoria con comités, asignaciones o
 
 ### 5.6 `Beca` (EPIC-05)
 
-Tabla `becas`: `codigo` **único** (`BECA-2026-000001`) y `solicitud_id` **único** (una beca por
+Tabla `becas`: `codigo` único (`BECA-2026-000001`) y `solicitud_id` único (una beca por
 solicitud). Se escribe en la misma transacción que el cambio de la solicitud a ADJUDICADA.
 
 **Cupos.** No hay una columna de "cupos usados": se cuentan las solicitudes APROBADAS y ADJUDICADAS
-de la convocatoria. Aprobar **reserva** el cupo; adjudicar lo formaliza. La aprobación bloquea la
+de la convocatoria. Aprobar reserva el cupo; adjudicar lo formaliza. La aprobación bloquea la
 fila de la convocatoria (`FOR UPDATE`) antes de contar, para que dos aprobaciones simultáneas no
 pasen por el mismo cupo.
 
-### 5.7 Migraciones
+### 5.7 Bitácora, avisos y recuperación de contraseña
 
-Versionadas en `apps/api/prisma/migrations/`. **Nunca se modifica la base a mano.**
+| Tabla | Lo importante |
+|---|---|
+| `bitacora` | Una fila por operación que cambia algo y por consulta a la propia bitácora (US-032). Guarda quién (`actor_id`, `actor_usuario`, `actor_rol`), qué (`accion`, `entidad`, `entidad_id`), el código HTTP del `resultado` y cuándo. No guarda el cuerpo de la petición. La aplicación solo inserta |
+| `notificaciones` | Un aviso por cada cambio de estado de una solicitud (US-034), con `desde`, `hacia`, `mensaje` y `leida`. Se borra en cascada con la solicitud |
+| `tokens_recuperacion` | Un permiso de recuperación por fila (US-035). Guarda `hash_token`, nunca el valor en claro, además de `expira_en` y `usado_en`. Se borra en cascada con el usuario |
+
+Además, `solicitudes.monto_beca` copia el monto de la convocatoria al crearla (US-033), y el estado
+`APROBACION_PENDIENTE` cubre la primera aprobación de una beca de más de Q10,000.
+
+### 5.8 Migraciones
+
+Versionadas en `apps/api/prisma/migrations/`, doce en total. Nunca se modifica la base a mano.
 
 ```bash
 npm run db:migrate         # crear una migración en desarrollo
@@ -437,7 +462,7 @@ arrancar el contenedor en Staging.
 
 ## 6. Configuración
 
-Todo por variables de entorno. **Nada de direcciones ni secretos en el código.** Copiar
+Todo por variables de entorno. Nada de direcciones ni secretos en el código. Copiar
 `.env.example` a `.env` y ajustar.
 
 | Variable          | Para qué                                     | Ojo                                          |
@@ -452,10 +477,12 @@ Todo por variables de entorno. **Nada de direcciones ni secretos en el código.*
 | `VITE_API_URL`    | URL de la API para el frontend               |                                              |
 | `ALMACENAMIENTO_TIPO` | Adaptador de documentos (`local`)       | Otro valor impide arrancar: todavía no existe |
 | `ALMACENAMIENTO_RUTA_LOCAL` | Carpeta de documentos (`./uploads`) | Está en `.gitignore`. En Staging el disco se borra en cada despliegue |
+| `CORREO_TIPO` | Adaptador de correo: `consola` (por defecto) o `smtp` | `consola` escribe el mensaje en el log del servidor. `smtp` exige las variables siguientes |
+| `SMTP_HOST` · `SMTP_PUERTO` · `SMTP_USUARIO` · `SMTP_PASSWORD` · `SMTP_REMITENTE` | Servidor de correo, con `CORREO_TIPO=smtp` | El adaptador SMTP no está verificado contra un servidor real |
 | `EVALUADOR_*` | Evaluador de prueba del seed | Solo desarrollo, igual que `ADMIN_*` |
 
-> ⚠️ Las credenciales de `ADMIN_*` en `.env.example` son **solo para el seed de desarrollo local**.
-> El seed **no se ejecuta en Staging**: crearía un administrador con credenciales que están escritas
+> ⚠️ Las credenciales de `ADMIN_*` en `.env.example` son solo para el seed de desarrollo local.
+> El seed no se ejecuta en Staging: crearía un administrador con credenciales que están escritas
 > en el repositorio.
 
 ## 7. Cómo levantarlo
@@ -486,8 +513,8 @@ pasos detallados y los errores frecuentes están en `13-guia-instalacion.md`.
 | ----------------------- | ----------------------------------------------- |
 | `npm run dev`           | API y frontend en modo desarrollo               |
 | `npm run build`         | Compila los dos                                 |
-| `npm run test`          | 106 pruebas unitarias (sin Docker)              |
-| `npm run test:e2e`      | 32 pruebas de integración                       |
+| `npm run test`          | 504 pruebas unitarias (sin Docker)              |
+| `npm run test:e2e`      | 171 pruebas de integración. `persistencia-solicitud` necesita la base levantada |
 | `npm run test:cov`      | Unitarias + integración con cobertura (necesita Docker) |
 | `npm run lint`          | ESLint + Prettier                               |
 | `npm run format`        | Aplica el formato                               |
@@ -497,16 +524,20 @@ pasos detallados y los errores frecuentes están en `13-guia-instalacion.md`.
 Definido como código en `render.yaml` y `apps/api/Dockerfile`. El procedimiento completo está en
 `17-staging.md`.
 
-⚠️ **Al 12 de septiembre de 2026 el entorno de Staging no está levantado**, y la imagen de Docker
-nunca se ha construido. Es el impedimento principal del proyecto.
+Staging está desplegado en Render desde el 4 de octubre de 2026: la API corre en Docker, el frontend es
+un sitio estático y la base es PostgreSQL de Render. Se despliega solo con cada merge a `develop`, y la
+imagen ejecuta `migrate deploy` al arrancar. El workflow *Verificar Staging* comprueba `/health`,
+`/ready`, el listado público y que el login rechace credenciales inválidas.
+
+⚠️ La base gratuita de Render caduca el 2 de noviembre de 2026; `17-staging.md` explica cómo recrearla.
 
 ## 10. Cómo agregar un módulo nuevo
 
-El orden importa: **de dentro hacia fuera**, igual que apuntan las dependencias.
+El orden importa: de dentro hacia fuera, igual que apuntan las dependencias.
 
-1. **`domain/`** — la entidad, sus objetos de valor y el **puerto** (una interfaz) de lo que
+1. **`domain/` — la entidad, sus objetos de valor y el puerto** (una interfaz) de lo que
    necesite de fuera. Aquí van las reglas de negocio y nada más.
-2. **`application/`** — un servicio por caso de uso. Recibe el puerto por constructor, **nunca la
+2. **`application/` — un servicio por caso de uso. Recibe el puerto por constructor, nunca la
    implementación**. Un caso de uso, un archivo: no un `XServicio` que lo haga todo.
 3. **`infrastructure/`** — los adaptadores que implementan el puerto. Como mínimo dos: el real y
    uno en memoria para las pruebas.
@@ -526,16 +557,17 @@ El orden importa: **de dentro hacia fuera**, igual que apuntan las dependencias.
 
 | Patrón           | Tipo           | Estado                                 | Sprint |
 | ---------------- | -------------- | -------------------------------------- | ------ |
-| **Adapter**      | Estructural    | ✅ Implementado y probado (DEF-03)      | 1      |
+| **Adapter**      | Estructural    | ✅ Implementado y probado (DEF-02)      | 1      |
 | **Factory Method** | Creacional   | ✅ Implementado y probado (12 Sep)      | 3      |
 | **State**        | Comportamiento | ✅ Implementado y probado (16 Sep)      | 4      |
 | **Strategy**     | Comportamiento | ✅ Implementado y probado (16 Sep)      | 5      |
 | **Facade**       | Estructural    | ✅ Implementado y probado (16 Sep)      | 6      |
 | **Builder**      | Creacional     | ✅ Implementado y probado (16 Sep)      | 7      |
+| **Observer**     | Comportamiento | ✅ Implementado y probado (17 Oct)      | 8      |
 
 La justificación de cada uno —qué problema resuelve, qué alternativas había, por qué se eligió y
-qué aporta— está en `06-patrones.md`. **Los patrones se implementan cuando aparece el problema que
-resuelven**, no para cumplir una cuota.
+qué aporta— está en `06-patrones.md`. Los patrones se implementaron cuando apareció el problema
+que resuelven, no para cumplir una cuota.
 
 ## 12. Deuda técnica conocida
 
@@ -543,16 +575,17 @@ Se documenta para que quien mantenga el sistema no la descubra a golpes:
 
 | Deuda                                                          | Impacto                                          | Plan                    |
 | -------------------------------------------------------------- | ------------------------------------------------ | ----------------------- |
-| Staging no existe                                              | Ninguna historia puede cumplir el DoD            | Sprint 2                |
+| Las convocatorias anteriores a US-033 quedaron con monto 0      | No exigen segunda aprobación                      | Editarlas o crearlas de nuevo con monto |
+| El adaptador SMTP no está verificado contra un servidor real    | Hoy se usa el de consola                          | Probarlo antes de activar `CORREO_TIPO=smtp` |
+| No hay doble factor de autenticación                            | Las cuentas administrativas dependen de la contraseña | Descartado por tiempo (US-035) |
+| `apps/web` no tiene pruebas automáticas                         | Cuatro defectos se encontraron usando la aplicación | Montar un runner de pruebas de componentes |
 | `@nestjs/jwt` v12 es solo ESM                                    | Jest necesita transformarlo (`tsconfig.jest.json`) | Revisar si una versión futura publica CommonJS |
 | `ConvocatoriaPrismaRepositorio` sin pruebas                    | El SQL real no se ejercita                       | Issue #6                |
-| El listado público quedó detrás del login en el frontend        | Incumple US-008                                  | Sprint 3                |
 | El contador de intentos es lectura-modificación-escritura        | Peticiones fallidas simultáneas podrían contar menos | Aceptado: riesgo bajo, documentado en el repositorio |
-| `main` y `develop` sin protección de rama                       | El flujo depende de que el equipo se acuerde     | Al entrar GitHub Pro    |
 | El dominio duplica los enums de Prisma                          | Pueden desincronizarse                           | Mitigado con una prueba |
 | Los documentos se guardan en el disco del servidor               | En Staging (Render) se pierden en cada despliegue | Adaptador de nube cuando haya proveedor; el puerto ya existe |
 | El número de solicitud se calcula contando las del año           | Dos creaciones simultáneas: la segunda falla contra el índice único (no se duplica) | Aceptado, igual que el código de convocatoria |
-| Los repositorios Prisma de `estudiantes`, `solicitudes` y `evaluaciones` sin prueba automática contra la base | El SQL real solo se verificó a mano (16 Sep) | Mismo plan que el Issue #6 |
+| Los repositorios Prisma de `estudiantes` y `evaluaciones` sin prueba automática contra la base | El SQL real solo se verificó a mano. `SolicitudPrismaRepositorio` ya tiene la suya | Mismo plan que el Issue #6 |
 | Las fórmulas de puntaje son una propuesta del equipo | Pueden no coincidir con la política del Ministerio | **Confirmar con el Product Owner**; cambiar es editar una clase |
 | El perfil del estudiante se puede editar después de enviar la solicitud | El puntaje se calcula con el perfil del momento de evaluar | Mitigado: el dictamen guarda los datos usados en su desglose. Solución completa: congelar el perfil al enviar |
 | El límite de la consulta pública cuenta en la memoria del proceso | Con varias instancias, cada una cuenta por su lado; se reinicia al reiniciar | Suficiente con una instancia; con más, un almacén compartido |
@@ -560,4 +593,4 @@ Se documenta para que quien mantenga el sistema no la descubra a golpes:
 | Resolver no genera acta | La decisión queda en el historial, pero no en un documento | US-026, como un colaborador más de la fachada |
 | Los reportes combinan en memoria datos de tres módulos | Suficiente para miles de solicitudes, no para cientos de miles | Cambiar la fuente por una vista en la base; el servicio no cambia |
 | El PDF usa las fuentes estándar (WinAnsi) | Cubre el español; otros alfabetos salen como "?" | Si hace falta, cambiar `pdf-simple.ts` por una biblioteca |
-| La prueba de integración de EPIC-04 no importa `EvaluacionesModule` | Jest no carga `@nestjs/jwt` en esta rama | Se corrige con el PR #12; entonces se simplifica la prueba |
+| La prueba de integración de EPIC-04 a EPIC-06 arma el grafo de módulos a mano | Duplica el montaje de `EvaluacionesModule` y `ResolucionesModule` | Simplificarla ahora que Jest carga `@nestjs/jwt` |
