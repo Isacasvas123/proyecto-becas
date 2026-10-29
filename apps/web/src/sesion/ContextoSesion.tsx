@@ -1,29 +1,17 @@
 /**
- * Estado de sesión compartido por toda la aplicación.
+ * Estado de sesión compartido por toda la aplicación. Es un contexto porque las páginas son
+ * hermanas dentro del enrutador y pasar la sesión por props obligaría a subirla hasta la raíz y
+ * bajarla por cada nivel.
  *
- * POR QUÉ UN CONTEXTO Y NO PASAR LA SESIÓN POR PROPIEDADES
- *   Con dos páginas ya no hay un único componente que contenga a los demás: la página de
- *   login y la de convocatorias son hermanas dentro del enrutador. Pasar la sesión de una
- *   a otra por props obligaría a subirla hasta la raíz y bajarla por cada nivel
- *   ("prop drilling"). El contexto la deja disponible donde se necesite.
+ * El token se guarda en `sessionStorage`. Antes vivía solo en memoria y cada F5 echaba a quien
+ * trabajaba, lo que en una pantalla de gestión obliga a volver a entrar en mitad de un trámite.
+ * Es una concesión: frente a un XSS, `sessionStorage` no protege más que `localStorage`, aunque el
+ * token muere al cerrar la pestaña y no queda en disco.
  *
- * DÓNDE VIVE EL TOKEN, Y POR QUÉ AHÍ
- *   Vivía solo en memoria, de modo que cada F5 echaba a quien estuviera usando el sistema.
- *   En una pantalla de gestión donde se recarga a menudo eso no es una molestia menor:
- *   obliga a volver a entrar en mitad de un trámite.
- *
- *   Ahora va en `sessionStorage`. Es una CONCESIÓN CONSCIENTE y conviene decirla sin
- *   adornos: frente a un XSS, `sessionStorage` no protege más que `localStorage`; cualquier
- *   script de la página puede leerlo. Lo que sí cambia es el alcance en el tiempo —el token
- *   muere al cerrar la pestaña y no queda en el disco— y la usabilidad, que era el problema
- *   real que se estaba pagando.
- *
- *   LO CORRECTO SIGUE SIENDO UNA COOKIE `httpOnly`, que el JavaScript no puede leer. No se
- *   hizo porque en el despliegue actual el frontend y la API están en dominios distintos
- *   (`becas-web-staging` y `becas-api-staging`), así que la cookie tendría que ser
- *   `SameSite=None` y eso obliga a añadir protección CSRF aparte. Es trabajo de backend,
- *   CORS y guards, y no se asume a nueve días de la entrega. Queda anotado como deuda, no
- *   como algo que se nos haya pasado.
+ * Lo correcto sigue siendo una cookie `httpOnly`. No se hizo porque el frontend y la API están en
+ * dominios distintos (`becas-web-staging` y `becas-api-staging`), así que la cookie tendría que ser
+ * `SameSite=None` y exigiría protección CSRF aparte, trabajo de backend, CORS y guards que no se
+ * asumió a días de la entrega. Queda anotado como deuda.
  */
 import {
   createContext,

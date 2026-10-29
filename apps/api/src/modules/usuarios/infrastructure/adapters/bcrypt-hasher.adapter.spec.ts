@@ -1,21 +1,15 @@
 /**
- * PRUEBAS DEL ADAPTADOR DE BCRYPT — con la biblioteca REAL.
+ * Pruebas del adaptador de bcrypt, con la biblioteca real (DEF-02).
  *
- * POR QUÉ ESTA PRUEBA EXISTE (defecto DEF-02)
- *   Este adaptador es una de las tres piezas del patrón **Adapter**, el único patrón
- *   implementado del proyecto y el que se presenta como evidencia ante el catedrático. Y
- *   estaba a **0 % de cobertura**: las pruebas del caso de uso le inyectan un doble, y las de
- *   integración también, así que `bcryptjs` real nunca se ejecutaba en ninguna prueba.
+ * El adaptador es una de las piezas del patrón Adapter y estaba a 0 % de cobertura: las pruebas
+ * del caso de uso y las de integración le inyectan un doble, así que `bcryptjs` real nunca se
+ * ejecutaba. Aquí no hay doble, porque lo que se comprueba es el contrato con la biblioteca: que
+ * el hash se verifique, que dos hashes del mismo texto sean distintos y que un hash corrupto no
+ * reviente la API.
  *
- *   Aquí NO se usa doble. Se ejercita bcrypt de verdad, porque lo que hay que comprobar es
- *   precisamente el contrato con la biblioteca: que el hash se pueda verificar, que dos
- *   hashes del mismo texto sean distintos, y que un hash corrupto no reviente la API.
- *
- * POR QUÉ USA 4 RONDAS Y NO 10
- *   bcrypt es lento a propósito. Con las 10 rondas de desarrollo cada `calcular` tardaría
- *   cientos de milisegundos y esta prueba haría lenta toda la suite. 4 es el mínimo que
- *   acepta la biblioteca y basta para verificar el contrato: la robustez del coste es una
- *   decisión de configuración, no de comportamiento.
+ * Usa 4 rondas y no 10 porque bcrypt es lento a propósito y con 10 cada `calcular` tardaría
+ * cientos de milisegundos. 4 es el mínimo que acepta la biblioteca y basta para el contrato; el
+ * coste es una decisión de configuración, no de comportamiento.
  */
 import { ConfigService } from '@nestjs/config';
 

@@ -1,24 +1,16 @@
 /**
  * Límite de intentos de recuperación por dirección (US-035).
  *
- * POR QUÉ HACE FALTA AQUÍ
- *   Las dos rutas de recuperación son públicas, y cada una se puede abusar de una manera
- *   distinta:
+ * Las dos rutas son públicas y se abusan distinto: `POST /auth/recuperacion` manda un correo y,
+ * sin límite, serviría para inundar un buzón o probar direcciones; `POST /auth/recuperacion/
+ * confirmar` prueba un token y, sin límite, se podría intentar adivinarlo por fuerza bruta. Con
+ * 256 bits es inviable, pero el límite lo cierra y abarata cada intento fallido.
  *
- *   - `POST /auth/recuperacion` manda un correo. Sin límite, cualquiera podría usar el
- *     sistema para inundar el buzón de otra persona, o para ir probando direcciones.
- *   - `POST /auth/recuperacion/confirmar` prueba un token. Sin límite se podría intentar
- *     adivinarlo por fuerza bruta. Con 256 bits eso ya es inviable, pero un límite lo cierra
- *     del todo y además abarata el coste de cada intento fallido.
+ * Es el mecanismo de `LimiteConsultasGuard` (US-025) con otro umbral: cinco intentos cada quince
+ * minutos. Recuperar una contraseña se hace una vez.
  *
- *   Es el mismo mecanismo que `LimiteConsultasGuard` de US-025, con otro umbral: cinco
- *   intentos cada quince minutos. Recuperar una contraseña es algo que se hace una vez;
- *   quien lo intenta cinco veces seguidas o se equivocó mucho, o no es quien dice ser.
- *
- * LIMITACIÓN CONOCIDA
- *   El conteo vive en la memoria del proceso: con varias instancias de la API cada una
- *   cuenta por su lado, y se reinicia al reiniciar. Para una instancia —Staging— alcanza.
- *   Con más, se mueve a un almacén compartido sin tocar el caso de uso.
+ * El conteo vive en la memoria del proceso: con varias instancias cada una cuenta por su lado.
+ * Para Staging alcanza; con más se mueve a un almacén compartido.
  */
 import {
   CanActivate,

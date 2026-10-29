@@ -35,7 +35,7 @@ import { EstudiantesModule } from '../estudiantes/estudiantes.module';
 /**
  * EPIC-03 · solicitudes (US-012 a US-016).
  *
- * Importa los MÓDULOS de convocatorias y estudiantes para usar lo que ellos exportan —casos de
+ * Importa los módulos de convocatorias y estudiantes para usar lo que ellos exportan —casos de
  * uso, nunca repositorios— a través de los adaptadores de `infrastructure/integraciones/`.
  */
 @Module({
@@ -50,7 +50,7 @@ import { EstudiantesModule } from '../estudiantes/estudiantes.module';
     SolicitudesParaResolucionService,
     SolicitudesParaReportesService,
     { provide: SOLICITUD_REPOSITORIO, useClass: SolicitudPrismaRepositorio },
-    // PATRÓN OBSERVER (PO, 17 Oct 2026). Sumar un interesado en los cambios de estado —un correo,
+    // Patrón observer (PO, 17 Oct 2026). Sumar un interesado en los cambios de estado —un correo,
     // una integración— es agregarlo a esta lista: ningún caso de uso cambia.
     PublicadorEventosSolicitud,
     NotificacionesService,

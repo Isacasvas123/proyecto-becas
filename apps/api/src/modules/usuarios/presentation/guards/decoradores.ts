@@ -1,16 +1,10 @@
 /**
- * CAPA: presentation/guards/
- * ────────────────────────────────────────────────────────────────────────────────
  * Decoradores que marcan las rutas para el control de acceso (US-003).
  *
- * DECISIÓN IMPORTANTE — SEGURO POR DEFECTO
- *   El guard se registra de forma **global**: toda ruta exige sesión salvo que se marque
- *   explícitamente con `@Publico()`.
- *
- *   La alternativa —proteger solo lo que se marque— es la que causa la mayoría de las fugas
- *   reales: alguien agrega un endpoint, olvida el decorador, y queda abierto sin que nadie
- *   lo note. Con este criterio el olvido produce un 401 molesto pero visible, no una fuga
- *   silenciosa. Se prefiere fallar cerrado.
+ * El guard es global y seguro por defecto: toda ruta exige sesión salvo que se marque con
+ * `@Publico()`. La alternativa, proteger solo lo que se marque, causa la mayoría de las fugas
+ * reales: se agrega un endpoint, se olvida el decorador y queda abierto sin que nadie lo note.
+ * Así el olvido produce un 401 visible.
  */
 import { createParamDecorator, ExecutionContext, SetMetadata } from '@nestjs/common';
 
@@ -37,14 +31,11 @@ export const Publico = () => SetMetadata(CLAVE_PUBLICO, true);
 export const Roles = (...roles: RolUsuario[]) => SetMetadata(CLAVE_ROLES, roles);
 
 /**
- * Inyecta en el controlador el id del usuario que hace la petición.
- *
- * Lo deja `AutenticacionGuard` tras verificar el token. Los controladores lo toman de AQUÍ y
- * nunca de un parámetro de la URL o del cuerpo: si el id viniera del cliente, bastaría cambiarlo
- * para operar sobre las solicitudes de otra persona. Es el criterio de US-003 *"un estudiante
- * solo ve sus propias solicitudes"* resuelto en la frontera.
- *
- * Usarlo en una ruta `@Publico()` es un error de programación, y falla fuerte.
+ * Inyecta en el controlador el id de quien hace la petición, que deja `AutenticacionGuard` tras
+ * verificar el token. Los controladores lo toman de aquí y no de la URL o el cuerpo: si el id
+ * viniera del cliente, bastaría cambiarlo para operar sobre las solicitudes de otra persona. Es
+ * el criterio de US-003 "un estudiante solo ve sus propias solicitudes", resuelto en la frontera.
+ * Usarlo en una ruta `@Publico()` es un error de programación y falla fuerte.
  */
 export const UsuarioActual = createParamDecorator((_dato: unknown, contexto: ExecutionContext) => {
   const peticion = contexto.switchToHttp().getRequest<{ portador?: { usuarioId: string } }>();

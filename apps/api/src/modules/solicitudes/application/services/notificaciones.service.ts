@@ -1,11 +1,9 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * La bandeja del estudiante (US-022; exigida por el PO el 17 de octubre de 2026).
+ * Bandeja del estudiante (US-022, pedida por el PO el 17 de octubre).
  *
- * Cada estudiante ve **solo las suyas**: el identificador sale del token y nunca de la URL, el
- * mismo criterio de US-003 que impide ver las solicitudes de otro. Por eso el id del estudiante
- * viaja hasta el repositorio en cada operación, incluida la de marcar leído.
+ * Cada estudiante ve solo las suyas: el id sale del token y nunca de la URL, el mismo criterio de
+ * US-003. Por eso el id del estudiante viaja hasta el repositorio en cada operación, incluida la
+ * de marcar leído.
  */
 import { Inject, Injectable } from '@nestjs/common';
 

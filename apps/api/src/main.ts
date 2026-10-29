@@ -16,7 +16,7 @@ import { DominioExceptionFilter } from './shared/exceptions/dominio-exception.fi
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  // En Staging la API está detrás del proxy de Render: sin esto, la dirección de TODAS las
+  // En Staging la API está detrás del proxy de Render: sin esto, la dirección de todas las
   // peticiones sería la del proxy y el límite de la consulta pública (US-025) bloquearía a todos a
   // la vez. Se confía en UN salto, el del proxy; no en lo que diga cualquier cliente.
   if (process.env.NODE_ENV === 'production') {

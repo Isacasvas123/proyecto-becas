@@ -1,13 +1,10 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * Lo que el formulario de creación necesita saber: qué requisitos y documentos existen, y
- * cuáles trae por defecto cada tipo de beca.
+ * Lo que necesita el formulario de creación: qué requisitos y documentos existen y cuáles trae
+ * por defecto cada tipo de beca.
  *
- * LA DECISIÓN IMPORTANTE: los valores por defecto se le PREGUNTAN A LAS FÁBRICAS, no se
- * copian al frontend. Si el frontend tuviera su propia lista, el día que el Ministerio cambie
- * los documentos de posgrado habría dos listas y una de ellas estaría mal. Así hay una sola
- * fuente de verdad, y es la misma que usa el servidor al crear.
+ * Los valores por defecto se piden a las fábricas y no se copian al frontend. Con dos listas, el
+ * día que cambien los documentos de posgrado una quedaría mal. Así hay una sola fuente de verdad,
+ * la misma que usa el servidor al crear.
  */
 import { Injectable } from '@nestjs/common';
 

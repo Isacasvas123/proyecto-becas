@@ -1,12 +1,7 @@
 /**
- * Errores del DOMINIO.
- *
- * TypeScript puro, a propósito: el dominio los lanza y por tanto no puede depender de
- * `HttpException` de NestJS. La traducción de error de dominio a código HTTP ocurre en la
- * frontera con el mundo exterior (ver `dominio-exception.filter.ts`), que sí es
- * infraestructura de presentación.
- *
- * Este archivo vive en `shared/` porque los seis módulos de negocio lo comparten.
+ * Errores del dominio. TypeScript puro: el dominio los lanza y por eso no puede depender de
+ * `HttpException` de NestJS. La traducción a código HTTP ocurre en la frontera
+ * (`dominio-exception.filter.ts`). Viven en `shared/` porque los módulos de negocio los comparten.
  */
 
 /** Base común: permite un único filtro de excepciones para todo el dominio. */
@@ -34,7 +29,7 @@ export class TransicionInvalidaError extends ErrorDeDominio {
 /**
  * Se pidió operar sobre algo que no existe (una convocatoria con un id desconocido).
  *
- * Es un error de DOMINIO y no un `NotFoundException` de NestJS para que el caso de uso lo
+ * Es un error de dominio y no un `NotFoundException` de NestJS para que el caso de uso lo
  * pueda lanzar sin depender del framework. El filtro lo traduce a HTTP 404.
  */
 export class RecursoNoEncontradoError extends ErrorDeDominio {
@@ -66,12 +61,10 @@ export class RecursoDuplicadoError extends ErrorDeDominio {
 }
 
 /**
- * Las credenciales no son válidas o la cuenta no puede iniciar sesión (US-002).
- *
- * SEGURIDAD: el `mensaje` que llegue al cliente debe ser siempre genérico. Distinguir
- * "el usuario no existe" de "la contraseña es incorrecta" le regala a un atacante un
- * oráculo para enumerar cuentas válidas. El detalle real se registra en el log del
- * servidor, no en la respuesta (ver `dominio-exception.filter.ts`).
+ * Las credenciales no son válidas o la cuenta no puede iniciar sesión (US-002). El `mensaje` que
+ * llegue al cliente debe ser siempre genérico: distinguir "no existe" de "contraseña incorrecta"
+ * le da a un atacante un oráculo para enumerar cuentas. El detalle real va al log del servidor
+ * (ver `dominio-exception.filter.ts`).
  */
 export class AutenticacionFallidaError extends ErrorDeDominio {
   constructor(mensaje: string) {

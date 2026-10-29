@@ -1,5 +1,5 @@
 /**
- * PRUEBA UNITARIA — US-030: CSV y PDF.
+ * Prueba unitaria — US-030: CSV y PDF.
  *
  * El PDF se valida por su estructura: cabecera, una entrada de la tabla xref por objeto, y que
  * cada desplazamiento apunte exactamente al inicio de su objeto. Un PDF con la tabla mal calculada

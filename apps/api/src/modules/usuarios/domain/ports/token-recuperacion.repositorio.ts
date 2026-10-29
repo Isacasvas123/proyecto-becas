@@ -1,6 +1,4 @@
 /**
- * CAPA: domain/ports/
- *
  * Lo que el dominio necesita de donde se guarden los permisos de recuperación (US-035).
  * No dice PostgreSQL ni Prisma: eso lo resuelve el adaptador.
  */
@@ -11,7 +9,7 @@ export const TOKEN_RECUPERACION_REPOSITORIO = Symbol('TokenRecuperacionRepositor
 export interface TokenRecuperacionRepositorio {
   crear(token: TokenRecuperacion): Promise<void>;
 
-  /** Se busca por el HASH porque el valor en claro no se guarda en ninguna parte. */
+  /** Se busca por el hash porque el valor en claro no se guarda en ninguna parte. */
   buscarPorHash(hashToken: string): Promise<TokenRecuperacion | null>;
 
   /**

@@ -1,6 +1,4 @@
 /**
- * CAPA: infrastructure/persistence/
- * ────────────────────────────────────────────────────────────────────────────────
  * La bitácora en PostgreSQL. Implementa el puerto del dominio, que no tiene forma de modificar
  * ni borrar: aquí tampoco se escriben esos métodos.
  */

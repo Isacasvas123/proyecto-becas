@@ -1,16 +1,11 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * US-017 — Crear comité evaluador (CU-13) y US-018 — asignar solicitudes.
+ * US-017: crear comité evaluador (CU-13). US-018: asignar solicitudes.
  *
- * ORDEN AL ASIGNAR (US-018)
- *   1. Se valida TODO: que cada solicitud esté ENVIADA en esta convocatoria, que cada evaluador sea
- *      integrante y que ninguna quede sin evaluador (criterios 1 y 2).
- *   2. Se guardan las asignaciones.
- *   3. Las solicitudes pasan a EN_EVALUACION (criterio 3).
- *   Si el paso 3 fallara a medias, las solicitudes que siguen ENVIADAS vuelven a aparecer como
- *   pendientes y repetir la asignación es seguro: las asignaciones ya guardadas se ignoran. El
- *   orden inverso sería peor: una solicitud EN_EVALUACION sin nadie que la evalúe.
+ * Al asignar el orden es: validar todo (cada solicitud ENVIADA en esta convocatoria, cada
+ * evaluador integrante, ninguna sin evaluador), guardar las asignaciones y por último pasar las
+ * solicitudes a EN_EVALUACION. Si el último paso falla a medias, repetir es seguro porque las
+ * asignaciones ya guardadas se ignoran. El orden inverso dejaría solicitudes EN_EVALUACION sin
+ * nadie que las evalúe.
  */
 import { randomUUID } from 'node:crypto';
 
@@ -117,18 +112,15 @@ export class ComitesService {
   }
 
   /**
-   * US-017, CU-13 flujo 5a — quitar a un integrante.
+   * US-017, CU-13 flujo 5a: quitar a un integrante.
    *
-   * El flujo pide avisar **cuántas solicitudes quedarían sin evaluador** y pedir confirmación
-   * explícita. Por eso `confirmado` es parte del comando y no un detalle de la interfaz: sin él,
-   * la operación se rechaza y el mensaje trae la cuenta. Así el aviso existe también para quien
-   * llame a la API directamente, no solo para quien use la pantalla.
+   * El flujo pide avisar cuántas solicitudes quedarían sin evaluador y exigir confirmación. Por
+   * eso `confirmado` es parte del comando y no un detalle de la pantalla: sin él se rechaza y el
+   * mensaje trae la cuenta, también para quien llame a la API directamente.
    *
-   * LOS DICTÁMENES YA EMITIDOS NO SE TOCAN
-   *   Si la persona ya dictaminó alguna de sus solicitudes, se le quita del comité pero esas
-   *   asignaciones se conservan: un dictamen es un registro de auditoría (US-019, criterio 4) y
-   *   borrar su asignación dejaría un dictamen huérfano en el consolidado. Solo se borran las
-   *   asignaciones **pendientes**, que son las que de verdad quedan sin evaluador.
+   * Los dictámenes ya emitidos no se tocan: un dictamen es un registro de auditoría (US-019,
+   * criterio 4) y borrar su asignación lo dejaría huérfano en el consolidado. Solo se borran las
+   * asignaciones pendientes.
    */
   async quitarEvaluador(id: string, evaluadorId: string, confirmado: boolean): Promise<ComiteDto> {
     const comite = await this.cargar(id);
@@ -170,12 +162,9 @@ export class ComitesService {
   }
 
   /**
-   * US-018, criterio 1: lo que se puede asignar son las ENVIADAS de la convocatoria.
-   *
-   * Y además las que quedaron **EN_EVALUACION sin ningún evaluador**, que es lo que puede pasar
-   * al quitar a un integrante (CU-13, 5a). Si no aparecieran aquí serían invisibles: nadie las
-   * evaluaría y nadie podría reasignarlas. No vuelven a ENVIADA porque el ciclo de vida solo
-   * avanza (patrón State).
+   * US-018, criterio 1: se asignan las ENVIADAS de la convocatoria y también las que quedaron
+   * EN_EVALUACION sin evaluador al quitar a un integrante (CU-13, 5a). Sin esto serían invisibles.
+   * No vuelven a ENVIADA porque el ciclo de vida solo avanza (patrón State).
    */
   async porAsignar(id: string): Promise<SolicitudPorAsignarDto[]> {
     const comite = await this.cargar(id);

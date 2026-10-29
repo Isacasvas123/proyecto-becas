@@ -1,20 +1,14 @@
 /**
- * Tarjeta de una convocatoria.
+ * Tarjeta de una convocatoria, con el patrón de las bolsas de empleo locales (computrabajo,
+ * tecoloco): sello a la izquierda, título y categoría arriba, resumen y una fila de metadatos con
+ * los datos que se comparan entre ofertas.
  *
- * El patrón viene de las bolsas de empleo locales (computrabajo, tecoloco):
- * sello a la izquierda, título y categoría arriba, resumen breve, y una fila de
- * metadatos separada por una línea con los datos que se comparan entre ofertas.
+ * El plazo va destacado a la derecha del pie porque un aspirante no compara por código ni por
+ * descripción sino por cuánto tiempo le queda: es el único dato con color y forma de píldora.
  *
- * DECISIÓN DE DISEÑO — el plazo va a la derecha del pie, destacado.
- *   Un aspirante no compara convocatorias por su código ni por su descripción:
- *   compara por *cuánto tiempo le queda*. Por eso el plazo es el único dato con
- *   color y forma de píldora, y todo lo demás es texto tranquilo.
- *
- * REQUISITOS Y DOCUMENTOS (US-008)
- *   La historia pide que el visitante vea las convocatorias "con sus requisitos". Van en un
- *   `<details>` plegado y no a la vista: con cuatro requisitos y cuatro documentos por
- *   tarjeta, la lista dejaría de poder compararse de un vistazo. Es un elemento nativo del
- *   navegador, así que funciona con teclado y lector de pantalla sin código extra.
+ * Los requisitos y documentos (US-008) van en un `<details>` plegado: con cuatro de cada uno por
+ * tarjeta, la lista dejaría de compararse de un vistazo. Es un elemento nativo, así que funciona
+ * con teclado y lector de pantalla.
  */
 import type { ReactElement, ReactNode } from 'react';
 

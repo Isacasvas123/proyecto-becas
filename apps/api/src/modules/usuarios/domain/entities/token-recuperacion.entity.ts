@@ -1,32 +1,18 @@
 /**
- * CAPA: domain/entities/
- * ────────────────────────────────────────────────────────────────────────────────
  * Permiso de un solo uso para restablecer una contraseña olvidada (US-035).
  *
- * QUÉ PROTEGE
- *   Durante su vida, este token ES la contraseña: quien lo tenga puede cambiarla. Por eso
- *   la entidad solo guarda su HASH, igual que `Usuario` con la contraseña. El valor en
- *   claro existe una sola vez —el instante en que se crea y se mete en el correo— y no se
- *   vuelve a conocer. Si alguien lee la base de datos, no puede tomar ninguna cuenta.
+ * Mientras vive, este token equivale a la contraseña, así que la entidad guarda solo su hash,
+ * igual que `Usuario`: si alguien lee la base, no puede tomar ninguna cuenta.
  *
- * LAS TRES REGLAS QUE LO HACEN SEGURO
- *   1. Caduca. Un enlace de hace tres meses en un buzón ajeno no sirve de nada.
- *   2. Se usa UNA vez. Reenviar el mismo enlace no vuelve a abrir la puerta.
- *   3. Al usarse, los demás tokens de esa persona mueren. Pedir el enlace cinco veces no
- *      deja cinco llaves vivas.
- *
- *   Las tres viven aquí y no en el servicio, para que no haya forma de saltárselas usando
- *   la entidad por otro camino.
+ * Tres reglas lo hacen seguro, y viven aquí para que no se puedan saltar usando la entidad por
+ * otro camino: caduca; se usa una sola vez; y al usarse mueren los demás tokens de esa persona,
+ * así pedir el enlace cinco veces no deja cinco llaves vivas.
  */
 import { ReglaDeNegocioError } from '../../../../shared/exceptions/errores-dominio';
 
 /**
- * Una hora.
- *
- * El equilibrio es entre dos molestias: demasiado corto y el enlace caduca mientras la
- * persona busca el correo; demasiado largo y queda una llave viva en un buzón que puede no
- * ser suyo para siempre. Una hora es el valor que usan la mayoría de los servicios y alcanza
- * de sobra para abrir un correo.
+ * Una hora: más corto y el enlace caduca mientras la persona busca el correo; más largo y queda
+ * una llave viva en un buzón que puede no ser suyo. Es lo habitual en este tipo de servicios.
  */
 export const VIGENCIA_MINUTOS = 60;
 

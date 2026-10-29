@@ -1,11 +1,10 @@
 /**
- * PÁGINA `/consulta` — consulta pública del estado de una solicitud (US-025). Sin cuenta.
+ * Página `/consulta`: consulta pública del estado de una solicitud, sin cuenta (US-025). Muestra
+ * lo que devuelve el servidor, estado y fecha del último cambio; si los datos no coinciden, el
+ * mensaje es el genérico, que no dice cuál de los dos estaba mal.
  *
- * Muestra solo lo que devuelve el servidor: estado y fecha del último cambio. Si los datos no
- * coinciden, el mensaje es el genérico del servidor, que no dice cuál de los dos estaba mal.
- *
- * NFR de usabilidad: consultar el estado en máximo 3 clics desde la página principal. Aquí son
- * dos: "Consultar estado" en el encabezado y "Consultar".
+ * El NFR de usabilidad pide consultar el estado en máximo 3 clics desde la página principal; aquí
+ * son dos: "Consultar estado" en el encabezado y "Consultar".
  */
 import { useEffect, useRef, useState, type FormEvent, type ReactElement } from 'react';
 import { useNavigate } from 'react-router-dom';

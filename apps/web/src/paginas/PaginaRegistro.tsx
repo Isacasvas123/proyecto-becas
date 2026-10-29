@@ -1,12 +1,9 @@
 /**
- * PÁGINA `/registro` — registro de estudiante (US-001).
+ * Página `/registro`: registro de estudiante (US-001), con la misma composición de dos columnas
+ * que el inicio de sesión.
  *
- * Misma composición de dos columnas que el inicio de sesión: quien llega a crear una cuenta en un
- * portal del Estado necesita ver primero ante qué institución la está creando y para qué.
- *
- * Criterio 5 de US-001: al registrarse la persona queda autenticada y va a su panel. Recién
- * registrada no tiene solicitudes, y no puede postular sin perfil completo (US-011, criterio 3),
- * así que su primer paso útil es el perfil.
+ * Al registrarse la persona queda autenticada (criterio 5) y va a su perfil: recién registrada no
+ * tiene solicitudes y no puede postular sin perfil completo (US-011, criterio 3).
  */
 import { useEffect, type ReactElement } from 'react';
 import { useNavigate } from 'react-router-dom';

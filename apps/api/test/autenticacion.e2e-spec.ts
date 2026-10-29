@@ -1,25 +1,18 @@
 /**
- * PRUEBAS DE INTEGRACIÓN — US-002, criterio 2: el mensaje de error no revela nada.
+ * Pruebas de integración de US-002, criterio 2: el mensaje de error no revela nada.
  *
- * POR QUÉ ESTA PRUEBA EXISTE
- *   Señalado por Fernando en la revisión del PR #13. Leyendo `AutenticarUsuarioService` se
- *   ven `throw` con textos específicos —"El usuario no existe", "La cuenta está bloqueada
- *   temporalmente"— y parece que la API los devuelve. No los devuelve: son el motivo REAL,
- *   que solo va al log del servidor, y `DominioExceptionFilter` los sustituye por un
- *   mensaje genérico antes de responder.
+ * Lo señaló Fernando en la revisión del PR #13. `AutenticarUsuarioService` lanza errores con
+ * textos específicos ("El usuario no existe", "La cuenta está bloqueada temporalmente") y parece
+ * que la API los devuelve, pero son el motivo real, que solo va al log, y `DominioExceptionFilter`
+ * los sustituye por un mensaje genérico antes de responder.
  *
- *   Pero esa garantía vivía únicamente en el filtro, y ninguna prueba la fijaba por HTTP.
- *   Si alguien cambiara el filtro —o lanzara un `UnauthorizedException` de NestJS en vez
- *   del error de dominio— el motivo interno saldría al cliente y nada fallaría. Ahora sí.
+ * Esa garantía vivía solo en el filtro y ninguna prueba la fijaba por HTTP: si alguien lo
+ * cambiara, o lanzara un `UnauthorizedException` de NestJS en vez del error de dominio, el motivo
+ * interno saldría al cliente y nada fallaría.
  *
- * QUÉ SE COMPRUEBA
- *   Los tres caminos que terminan en 401 responden **byte por byte lo mismo**: usuario
- *   inexistente, contraseña incorrecta y cuenta bloqueada. Desde fuera son indistinguibles,
- *   que es justamente lo que pide el criterio.
- *
- * La petición recorre el controlador, el caso de uso y el filtro reales. Solo se sustituyen
- * los tres puertos (repositorio, hasher y generador de token), igual que en la prueba
- * unitaria del servicio.
+ * Los tres caminos que terminan en 401 (usuario inexistente, contraseña incorrecta y cuenta
+ * bloqueada) responden byte por byte lo mismo. La petición recorre el controlador, el caso de uso
+ * y el filtro reales; solo se sustituyen los tres puertos.
  */
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -159,7 +152,7 @@ describe('US-002 · El error de autenticación no revela nada (e2e)', () => {
 
   it('el motivo interno nunca viaja al cliente', async () => {
     // Los textos que `AutenticarUsuarioService` pasa a `AutenticacionFallidaError`. Se
-    // comprueba la respuesta ENTERA, no solo el campo `mensaje`: un motivo filtrado por
+    // comprueba la respuesta entera, no solo el campo `mensaje`: un motivo filtrado por
     // cualquier otro campo sería igual de grave.
     const motivosInternos = ['no existe', 'bloquead', 'contraseña incorrecta'];
 
@@ -179,7 +172,7 @@ describe('US-002 · El error de autenticación no revela nada (e2e)', () => {
   it('un usuario que no existe tarda lo mismo que una contraseña incorrecta', async () => {
     // El mensaje es idéntico, pero el tiempo de respuesta también delata. Por eso el caso de
     // uso verifica contra un hash señuelo cuando el usuario no existe. Aquí solo se comprueba
-    // que esa verificación OCURRE: el hasher falso no simula el costo real de bcrypt, así que
+    // que esa verificación ocurre: el hasher falso no simula el costo real de bcrypt, así que
     // medir milisegundos daría una prueba inestable.
     const verificaciones: string[] = [];
     const hasherEspia: HasherPassword = {

@@ -1,14 +1,9 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * US-011 — Completar perfil académico: consultarlo y guardarlo.
+ * US-011: consultar y guardar el perfil académico.
  *
- * Dos casos de uso muy pequeños en una sola clase, excepción consciente a "un caso de uso, un
- * servicio": leer y escribir el propio perfil son las dos caras de la misma pantalla, y separarlos
- * no aportaría nada que se pueda probar por separado.
- *
- * `estadoDePerfil` es lo que este módulo EXPORTA: `solicitudes` lo usa para saber si alguien
- * puede postular, sin conocer la entidad `Estudiante`.
+ * Dos casos de uso en una sola clase, excepción a "un caso de uso, un servicio": leer y escribir
+ * el propio perfil son las dos caras de la misma pantalla. `estadoDePerfil` es lo que exporta el
+ * módulo: `solicitudes` lo usa para saber si alguien puede postular sin conocer `Estudiante`.
  */
 import { Inject, Injectable } from '@nestjs/common';
 

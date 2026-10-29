@@ -74,14 +74,12 @@ export class ReporteConvocatoriaQueryDto {
 /**
  * EPIC-06. Solo administración.
  *
- * AQUÍ SE VE EL BUILDER
- *   Cada parámetro de la consulta es opcional, y el controlador solo llama al paso del builder que
- *   corresponde a los que llegaron. No hay un `if` por cada combinación ni un constructor con nueve
- *   argumentos, y las combinaciones sin sentido las rechaza `build()`.
+ * Cada parámetro de la consulta es opcional y el controlador solo llama al paso del builder que
+ * corresponde a los que llegaron, sin un `if` por combinación. Las combinaciones sin sentido las
+ * rechaza `build()`.
  *
- * FECHAS
- *   Se reciben como días (AAAA-MM-DD) en hora de Guatemala: "desde" empieza a las 00:00 y "hasta"
- *   termina a las 23:59:59.999 de ese día. Así, "del 1 al 30 de septiembre" incluye el día 30.
+ * Las fechas llegan como días (AAAA-MM-DD) en hora de Guatemala: "desde" empieza a las 00:00 y
+ * "hasta" termina a las 23:59:59.999, así que "del 1 al 30" incluye el 30.
  */
 @Roles(RolUsuario.ADMINISTRADOR)
 @Controller('reportes')

@@ -1,18 +1,11 @@
 /**
- * CAPA: domain/value-objects/
+ * Objeto de valor: se identifica por su valor y no por un id, es inmutable y se valida en el
+ * constructor, así que no existe un periodo incoherente.
  *
- * QUÉ VA AQUÍ: conceptos del negocio que se identifican por su VALOR y no por un id.
- * Son inmutables y se validan a sí mismos en el constructor: si el objeto existe,
- * es válido. No hay forma de construir un periodo incoherente.
- *
- * POR QUÉ EXISTE ESTE OBJETO DE VALOR EN VEZ DE DOS CAMPOS `Date` SUELTOS:
- * la regla "la fecha de cierre debe ser posterior a la de apertura" (US-006) es una
- * regla de negocio. Si vive como un `if` en el controlador, hay que repetirla en cada
- * punto de entrada (REST, carga masiva, tarea programada) y basta olvidarla una vez para
- * corromper los datos. Encapsulada aquí, es imposible saltársela.
- *
- * PLANTILLA: este es el ejemplo a copiar para `Cui`, `CorreoElectronico`, `Password`,
- * `Puntaje`, etc. (docs/05-arquitectura.md §2.3).
+ * Es un objeto y no dos `Date` sueltos porque "el cierre debe ser posterior a la apertura"
+ * (US-006) es una regla de negocio: como `if` en el controlador habría que repetirla en cada
+ * punto de entrada y bastaría olvidarla una vez. Encapsulada aquí no se puede saltar. Es el
+ * modelo que siguen `Cui`, `Password` y `Puntaje` (docs/05-arquitectura.md §2.3).
  */
 import { ReglaDeNegocioError } from '../../../../shared/exceptions/errores-dominio';
 
@@ -27,7 +20,7 @@ export class PeriodoPostulacion {
   }
 
   /**
-   * Única vía de construcción. Valida las invariantes ANTES de que el objeto exista.
+   * Única vía de construcción. Valida las invariantes antes de que el objeto exista.
    */
   static crear(apertura: Date, cierre: Date): PeriodoPostulacion {
     if (Number.isNaN(apertura.getTime()) || Number.isNaN(cierre.getTime())) {

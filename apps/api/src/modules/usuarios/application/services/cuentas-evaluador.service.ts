@@ -1,16 +1,12 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * Cuentas de EVALUADOR (parte de US-017).
+ * Cuentas de evaluador (parte de US-017).
  *
- * POR QUÉ EXISTE
- *   Un comité se forma con usuarios de rol EVALUADOR (precondición de CU-13), y ninguna historia
- *   del backlog decía cómo se crean. Decisión del equipo del 16 Sep: las crea un administrador
- *   desde la gestión. La vía pública (US-001) solo crea estudiantes y sigue así.
+ * Un comité se forma con usuarios de rol EVALUADOR (precondición de CU-13) y ninguna historia
+ * decía cómo se crean. Decisión del equipo del 16 de septiembre: las crea un administrador desde
+ * la gestión; la vía pública (US-001) solo crea estudiantes.
  *
- * LO QUE ESTE MÓDULO EXPORTA
- *   `resumenes` es la forma en que otros módulos (`evaluaciones`) conocen el nombre de una persona
- *   sin tocar la entidad `Usuario` ni, sobre todo, su hash.
+ * `resumenes` es cómo otros módulos conocen el nombre de una persona sin tocar la entidad
+ * `Usuario` ni su hash.
  */
 import { randomUUID } from 'node:crypto';
 

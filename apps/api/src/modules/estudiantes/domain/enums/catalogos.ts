@@ -1,16 +1,9 @@
 /**
- * CAPA: domain/enums/
- * ────────────────────────────────────────────────────────────────────────────────
  * Catálogos del perfil académico (US-011).
  *
- * POR QUÉ LOS DEPARTAMENTOS SON UN CATÁLOGO CERRADO
- *   US-031 pide un reporte de becas adjudicadas **por región**. Si el departamento fuera texto
- *   libre, "Quetzaltenango", "Xela" y "quetzaltenango" serían tres regiones distintas y el reporte
- *   no serviría. Son los 22 departamentos de Guatemala; no cambian.
- *
- *   El MUNICIPIO sí es texto libre: son 340 y el reporte pide región, no municipio. Si algún día
- *   se necesita agrupar por municipio, el cambio es agregar el catálogo, no migrar datos sucios de
- *   departamento.
+ * El departamento es un catálogo cerrado porque US-031 reporta por región y, con texto libre,
+ * "Quetzaltenango", "Xela" y "quetzaltenango" serían tres regiones. Son los 22 departamentos.
+ * El municipio sí es texto libre: son 340 y el reporte pide región.
  */
 export enum NivelAcademico {
   NIVEL_MEDIO = 'NIVEL_MEDIO',

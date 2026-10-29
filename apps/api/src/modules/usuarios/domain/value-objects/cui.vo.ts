@@ -1,23 +1,14 @@
 /**
- * CAPA: domain/value-objects/
- * ────────────────────────────────────────────────────────────────────────────────
- * CUI — Código Único de Identificación del RENAP (US-001).
+ * CUI, Código Único de Identificación del RENAP (US-001): el mismo número del DPI. Sirve para que
+ * una persona no tenga dos cuentas, porque el criterio exige que sea único en el sistema.
  *
- * Es el número que identifica a cada guatemalteco desde que se inscribe su nacimiento, y el
- * mismo que aparece en el DPI. Por eso sirve para que una persona no tenga dos cuentas: el
- * criterio de US-001 exige que sea **único en el sistema**.
+ * Se valida lo que dice el criterio: 13 dígitos. Se aceptan los espacios y guiones con que viene
+ * impreso (`2456 78901 0101`) y se normalizan, para que dos formas del mismo CUI choquen contra
+ * la misma restricción de unicidad.
  *
- * QUÉ SE VALIDA
- *   Exactamente lo que dice el criterio de aceptación: **13 dígitos**. Se aceptan los
- *   espacios y guiones con que suele escribirse (`2456 78901 0101`), porque así viene impreso
- *   en el DPI, y se normalizan antes de guardar: dos formas de escribir el mismo CUI tienen que
- *   chocar contra la misma restricción de unicidad.
- *
- * QUÉ NO SE VALIDA, A PROPÓSITO
- *   El CUI tiene estructura interna: un dígito verificador y los códigos de departamento y
- *   municipio. Comprobarlos detectaría errores de tipeo, pero ningún criterio lo pide, y una
- *   implementación incorrecta rechazaría CUI reales, que es peor que aceptar uno mal escrito.
- *   Queda como mejora a proponer al Product Owner, no como regla inventada por el equipo.
+ * No se valida el dígito verificador ni los códigos de departamento y municipio: ningún criterio
+ * lo pide y una implementación incorrecta rechazaría CUI reales. Queda como mejora a proponer al
+ * Product Owner.
  */
 import { ReglaDeNegocioError } from '../../../../shared/exceptions/errores-dominio';
 
