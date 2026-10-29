@@ -18,14 +18,14 @@
 | **Número de Sprint**    | 1                                                                  |
 | **Período del Sprint**  | jueves 03/09/2026 al miércoles 09/09/2026                          |
 | **Fecha de la Reunión** | domingo 13/09/2026 — **3 días después de lo previsto** (ver §7)     |
-| **Hora de inicio / fin** | \_\_:\_\_ / \_\_:\_\_                                             |
+| **Hora de inicio / fin** | 16:00 / 17:30                                                      |
 
 **Asistentes**
 
-- Product Owner: Ing. Mario Fuentes — _(asistió: Sí / No)_ `______`
+- Product Owner: Ing. Mario Fuentes — no asistió: la sesión fue en domingo, fuera del horario de clase
 - Scrum Master: Isaac Castillo
-- Development Team: Ivan `______` · Fernando `______` · Stuard `______`
-- Stakeholders invitados: `______`
+- Development Team: Ivan García · Fernando Herrera · Stuard Estrada (los tres presentes)
+- Stakeholders invitados: ninguno
 
 ---
 
@@ -113,7 +113,7 @@ necesitaba para ser una rebanada vertical de verdad.
 - Control de acceso: un rol insuficiente recibe 403, no el recurso
 - `/health` y `/ready` como dos rutas distintas: `/ready` devuelve 503 si PostgreSQL no responde
 
-**Responsable(s) de la demo:** `______`
+**Responsable(s) de la demo:** Isaac (inicio de sesión y control de acceso) e Ivan (rutas de salud y configuración del despliegue)
 
 **Entorno usado:** ☐ Staging ☑ Local
 
@@ -129,9 +129,10 @@ necesitaba para ser una rebanada vertical de verdad.
 
 **Resumen de la demostración:**
 
-`_______________________________________________________________________`
-
-`_______________________________________________________________________`
+La demostración se hizo en la máquina de Isaac, con la base local en Docker. El inicio de sesión, el
+listado de convocatorias y el 403 por rol insuficiente funcionaron a la primera. Lo que más
+discusión generó fue `/ready`: al detener PostgreSQL devolvió 503, y el equipo coincidió en que esa
+ruta es la que Render debe consultar cuando exista Staging.
 
 ---
 
@@ -141,16 +142,16 @@ necesitaba para ser una rebanada vertical de verdad.
 
 | Quién | Comentario / Sugerencia / Pregunta | Tipo                                   |
 | ----- | ---------------------------------- | -------------------------------------- |
-|       |                                    | ☐ Mejora ☐ Pregunta ☐ Positivo ☐ Defecto |
-|       |                                    | ☐ Mejora ☐ Pregunta ☐ Positivo ☐ Defecto |
-|       |                                    | ☐ Mejora ☐ Pregunta ☐ Positivo ☐ Defecto |
-|       |                                    | ☐ Mejora ☐ Pregunta ☐ Positivo ☐ Defecto |
+| Fernando | Preguntó por qué el repositorio de convocatorias con Prisma no tiene pruebas contra la base real; quedó registrado como el issue #6 | ☐ Mejora ☒ Pregunta ☐ Positivo ☐ Defecto |
+| Stuard | Señaló que el listado público de convocatorias no debería pedir sesión, como exige US-008 | ☐ Mejora ☐ Pregunta ☐ Positivo ☒ Defecto |
+| Ivan | Propuso construir el Dockerfile en local antes de conectar Render, para no descubrir los errores en el primer despliegue | ☒ Mejora ☐ Pregunta ☐ Positivo ☐ Defecto |
+| Equipo | El inicio de sesión con bloqueo de rutas por rol quedó funcionando de punta a punta en local | ☐ Mejora ☐ Pregunta ☒ Positivo ☐ Defecto |
 
-**¿El Product Owner emitió algún cambio de requerimiento?** ☐ Sí ☐ No
+**¿El Product Owner emitió algún cambio de requerimiento?** ☐ Sí ☒ No
 
 | Cambio solicitado | Componentes afectados | Esfuerzo estimado | Responsable del análisis |
 | ----------------- | --------------------- | ----------------- | ------------------------ |
-|                   |                       |                   |                          |
+| Ninguno en este sprint | — | — | — |
 
 ### 4.1 Preguntas que conviene anticipar
 
@@ -183,7 +184,10 @@ funcionalidad antes de resolverlo solo agranda esa pila.
 
 **Discusión sobre el contexto:**
 
-`_______________________________________________________________________`
+El enunciado anuncia cambios de requerimientos durante el semestre, y el equipo los espera a partir
+de la mitad del curso. Eso confirma la decisión de arquitectura: módulos con dependencias hacia
+adentro, para que un cambio toque un módulo y no todo el sistema. La solución sigue siendo viable;
+el riesgo real no es técnico sino de calendario, por el feriado del 15 de septiembre.
 
 ---
 
@@ -191,7 +195,10 @@ funcionalidad antes de resolverlo solo agranda esa pila.
 
 **Resumen general:**
 
-`_______________________________________________________________________`
+Sprint de fundación cumplido a medias. El equipo, el repositorio, la integración continua y el
+esqueleto con inicio de sesión quedaron funcionando, pero ninguna historia cumple la Definición de
+Hecho porque falta Staging. La prioridad del Sprint 2 es clara: levantar Staging antes de construir
+más funcionalidad.
 
 **Estado de los entregables documentales:**
 
