@@ -127,6 +127,10 @@ sesión abierta en una computadora compartida, no queda abierta indefinidamente.
    caracteres, una mayúscula y un número.
 5. Vuelva a la pantalla de acceso y entre con la contraseña nueva.
 
+6. > **El sistema responde igual exista o no una cuenta con ese correo.** Así nadie puede usar
+> esta pantalla para averiguar quién está registrado. Si su cuenta estaba bloqueada por intentos
+> fallidos, al cambiar la contraseña queda desbloqueada.
+
 ## 3. Ver las convocatorias
 
 **No necesita cuenta para ver las convocatorias.** Entre a la plataforma y llegará directamente al
