@@ -369,15 +369,14 @@ suya.
 
 ## 12. Lo que todavía no está disponible
 
-Lo siguiente **aún no está disponible**, con la fecha prevista para cada punto:
+Lo siguiente no se incluyó en esta versión:
 
-| Funcionalidad                                | Estado           | Previsto para |
-| -------------------------------------------- | ---------------- | ------------- |
-| Cambiar su nombre, correo o contraseña (US-004) | 🔴 No disponible | Sprint 4   |
-| Recuperar una contraseña olvidada            | 🔴 No disponible | Sprint 4      |
-| Recibir los avisos por correo (hoy quedan registrados en el sistema) | 🔴 No disponible | Sprint 5 |
-| Quitar integrantes de un comité              | 🔴 No disponible | Sprint 5      |
-| Acta de resolución y lista pública de becas adjudicadas | 🔴 No disponible | Sprint 6 |
+| Funcionalidad                                                     | Estado            |
+| ----------------------------------------------------------------- | ----------------- |
+| Cambiar su nombre, correo o contraseña desde su perfil (US-004)   | 🔴 No disponible  |
+| Recibir los avisos por correo (hoy quedan en **Mis avisos**)       | 🔴 No disponible  |
+| Cerrar o editar una convocatoria ya creada (US-009, US-010)        | 🔴 No disponible  |
+| Acta de resolución y lista pública de becas adjudicadas            | 🔴 No disponible  |
 
 
 
