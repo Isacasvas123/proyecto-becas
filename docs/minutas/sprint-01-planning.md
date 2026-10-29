@@ -7,11 +7,11 @@
 | | |
 |---|---|
 | **Fecha** | 3 de septiembre de 2026 |
-| **Hora inicio / fin** |09:30 PM / 10:30 PM_ |
+| **Hora inicio / fin** |09:30 PM / 10:30 PM |
 | **Facilitador** | Isaac (Scrum Master) |
 | **Product Owner** | Ing. Mario Fuentes — **no asiste** (reunión interna del equipo) |
 | **Asistentes** | Isaac SI · Ivan SI · Fernando SI · Stuard SI  |
-| **Toma notas** | Todos asistieron_ |
+| **Toma notas** | Todos asistieron |
 
 ---
 
@@ -59,6 +59,8 @@ Se intercambiaron los turnos de lunes y martes respecto a la propuesta inicial:
 | Ivan | `joseivan28gc` | ✅ | ✅ |
 | Fernando | `Keller33` | ✅ | ✅ |
 | Stuard | `Stuard20` | ✅ | ✅ |
+
+La cuenta `ControlExe` es la cuenta compartida de Fernando, Ivan y Stuard.
 
 ---
 

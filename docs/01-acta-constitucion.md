@@ -29,6 +29,12 @@
 | Fernando Herrera | Developer · Diagramas UML · Aseguramiento de calidad y pruebas | williamod090@gmail.com | 46179226 |
 | Stuard Estrada | Developer · **Proxy Product Owner** · Patrones de diseño · Manual de Usuario | emersonstuarde@gmail.com | 54344578 |
 
+> **Cuenta del equipo:** además de las cuentas personales, el equipo usa la cuenta de GitHub
+> `ControlExe`, compartida por Fernando, Ivan y Stuard. En las sesiones de trabajo en conjunto se
+> usó una sola computadora, con Git configurado con el correo de esta cuenta, para no cambiar de
+> configuración cada vez que cambiaba quién escribía. Por eso esos commits aparecen a nombre de la
+> cuenta del equipo y no de cada uno; corresponden al trabajo de ellos tres.
+
 > **Nota sobre los roles:** los cuatro integrantes programan. La columna de rol indica quién es
 > **responsable de que ese entregable exista y esté completo**, no quién lo hace solo.
 
@@ -195,7 +201,7 @@ Sprints semanales de jueves a miércoles. Ceremonias todos los jueves.
 | 5 | **Sprint 5 — Evaluación** | Mié 7 Oct 2026 | Equipo | |
 | 5.1 | Comités evaluadores y asignación de solicitudes | Mié 7 Oct · Completado | Isaac, Fernando | EPIC-04 (US-017 a US-021), incluido quitar integrantes de un comité |
 | 5.2 | Patrón Strategy (criterios de puntuación) | Mié 7 Oct · Completado | Stuard | Comportamiento 2 · **fórmulas por confirmar con el PO** |
-| 5.3 | Notificaciones de cambio de estado | Mié 7 Oct | Ivan | Observer (opcional) |
+| 5.3 | Notificaciones de cambio de estado | Sáb 17 Oct · Completado | Ivan | Se hizo como US-034, a pedido del PO, con el patrón Observer |
 | 6 | **Sprint 6 — Resolución y consulta** | Mié 14 Oct 2026 | Equipo | |
 | 6.1 | Aprobación, rechazo y adjudicación de becas | Mié 14 Oct · Completado | Isaac, Stuard | EPIC-05 (US-023, US-024) · falta el acta (US-026) |
 | 6.2 | Consulta pública del estado de una beca | Mié 14 Oct · Completado | Fernando | Sin autenticación (US-025) · con límite de consultas |
