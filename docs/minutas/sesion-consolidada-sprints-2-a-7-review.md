@@ -182,12 +182,12 @@ que el backlog siga siendo la única fuente de requisitos:
 
 | Indicador | Valor |
 |---|---|
-| Historias en Done | **31 de 35** |
+| Historias en Done | **29 de 36** *(las siete restantes están en §2.2 y en el Backlog)* |
 | Objetivos del enunciado cubiertos | **9 de 9** |
-| Patrones implementados y probados | **8** *(el enunciado exige 6)* |
+| Patrones implementados y probados | **7** *(el enunciado exige 6)* |
 | Pruebas | **675**: 504 unitarias y 171 de integración |
 | Cobertura de sentencias | 91.83 % *(medida el 17 Oct; conviene volver a medirla antes de la entrega)* |
-| PRs mergeados | **31**, todos con revisión aprobada por otro integrante |
+| PRs mergeados | **33**; 25 con aprobación de otro integrante y, desde el PR #12, todos |
 | Staging | En línea desde el 4 de octubre |
 
 **Resumen general:**
