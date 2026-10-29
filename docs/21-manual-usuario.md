@@ -255,8 +255,8 @@ encabezado. Cada aviso dice qué cambió y, si lo hay, el motivo.
 
 - **Marcar leído** marca un aviso; **Marcar todos como leídos**, todos a la vez.
 - Los avisos quedan registrados aunque los marque como leídos.
-- Hoy los avisos se ven dentro de la plataforma; todavía no llegan por correo.
-- ## 5. Evaluar solicitudes (evaluadores)
+
+## 5. Evaluar solicitudes (evaluadores)
 
 Con una cuenta de **evaluador**, al entrar llega a **Mis evaluaciones**: las solicitudes que le
 asignaron, primero las pendientes. No verá ninguna otra.
@@ -309,11 +309,12 @@ intenten al mismo tiempo.
 Las solicitudes aprobadas muestran **Adjudicar**: confirme y el sistema registra la beca con su
 código.
 
-> **Becas de más de Q10,000.** Necesitan dos aprobaciones de dos personas distintas. La primera deja
+**Becas de más de Q10,000.** Necesitan dos aprobaciones de dos personas distintas. La primera deja
 la solicitud en **Aprobación pendiente** y todavía no ocupa cupo. En el Consolidado aparece
 **Segunda aprobación**: otra persona del Ministerio escribe su motivo y confirma, y recién ahí se
 ocupa el cupo. Desde ese estado también se puede rechazar.
->  Ninguna de estas decisiones se puede deshacer desde el sistema.
+
+Ninguna de estas decisiones se puede deshacer desde el sistema.
 
 ## 8. Consultar el estado sin cuenta
 
