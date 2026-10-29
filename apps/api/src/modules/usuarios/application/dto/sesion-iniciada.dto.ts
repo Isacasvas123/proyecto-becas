@@ -1,11 +1,7 @@
 /**
- * CAPA: application/dto/
- * ────────────────────────────────────────────────────────────────────────────────
- * Resultado del caso de uso "iniciar sesión".
- *
- * OBSÉRVESE QUÉ NO ESTÁ AQUÍ: el hash de la contraseña. Ni siquiera un campo opcional.
- * La entidad `Usuario` nunca cruza esta frontera, así que es estructuralmente imposible
- * que el hash llegue a la respuesta HTTP aunque alguien se descuide.
+ * Resultado de iniciar sesión. No incluye el hash de la contraseña, ni siquiera como campo
+ * opcional: la entidad `Usuario` nunca cruza esta frontera, así que el hash no puede llegar a la
+ * respuesta HTTP por descuido.
  */
 import { RolUsuario } from '../../domain/enums/rol-usuario.enum';
 

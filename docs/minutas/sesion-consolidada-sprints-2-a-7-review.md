@@ -155,7 +155,7 @@ que el backlog siga siendo la única fuente de requisitos:
 - [x] **US-032** — Bitácora de auditoría del sistema
 - [x] **US-033** — Segunda aprobación para becas sobre Q10,000
 - [x] **US-034** — Avisos al estudiante por cambio de estado
-- [x] **US-035** — Recuperar la contraseña olvidada por correo *(registrada en el backlog; el código está en el PR #32, pendiente de merge)*
+- [x] **US-035** — Recuperar la contraseña olvidada por correo *(el código entró el 28 de octubre con el PR #34)*
 
 **Ítems sugeridos y no implementados:**
 
@@ -210,11 +210,11 @@ que el backlog siga siendo la única fuente de requisitos:
 
 | Pendiente | Responsable | Estado |
 |---|---|---|
-| Aprobar y mergear el PR #32 | Fernando | ☐ |
-| Verificar US-033 completa en Staging | Isaac y Fernando | ☐ |
+| Aprobar y mergear el PR #32 | Fernando | ☒ Hecho · se reabrió como **PR #34** |
+| Verificar US-033 completa en Staging | Isaac y Fernando | ☒ Hecho el 27 Oct |
 | Agregar US-035 al Product Backlog | Isaac | ☒ Hecho |
 | **Presentación Final** | Equipo | ☐ |
-| Mergear `develop` a `main` | Isaac | ☐ |
+| Mergear `develop` a `main` | Isaac | ☒ Hecho · **PR #36** |
 | Video del patrón State | Isaac | ☐ |
 | Cerrar DEF-01, S1-10 y S1-12, o cerrarlos con motivo escrito | Equipo | ☐ |
 

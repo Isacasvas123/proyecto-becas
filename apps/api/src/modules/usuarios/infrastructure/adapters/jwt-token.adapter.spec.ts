@@ -1,17 +1,13 @@
 /**
- * PRUEBAS DE LOS DOS ADAPTADORES DE JWT — con la biblioteca REAL.
+ * Pruebas de los dos adaptadores de JWT, con la biblioteca real (DEF-02).
  *
- * POR QUÉ ESTA PRUEBA EXISTE (defecto DEF-02)
- *   `JwtGeneradorTokenAdapter` y `JwtVerificadorTokenAdapter` son dos de las tres piezas del
- *   patrón **Adapter** y estaban a **0 % de cobertura**. Las pruebas de integración de
- *   US-003 sustituyen el verificador por un doble que reconoce tres tokens de mentira, así
- *   que el JWT real —firma, caducidad, payload— nunca se ejercitaba.
+ * `JwtGeneradorTokenAdapter` y `JwtVerificadorTokenAdapter` estaban a 0 % de cobertura: las
+ * pruebas de integración de US-003 sustituyen el verificador por un doble con tres tokens de
+ * mentira, así que el JWT real (firma, caducidad, payload) no se ejercitaba.
  *
- * POR QUÉ SE PRUEBAN LOS DOS JUNTOS
- *   Porque forman un contrato cerrado: lo que uno emite, el otro tiene que poder leer. La
- *   prueba más valiosa del archivo es justamente la de ida y vuelta. Probarlos por separado
- *   con payloads escritos a mano dejaría pasar el caso de que ambos cambien de forma
- *   coherente entre sí pero incorrecta respecto del dominio.
+ * Se prueban juntos porque forman un contrato cerrado: lo que uno emite, el otro debe poder
+ * leer. La prueba más valiosa es la de ida y vuelta; probarlos por separado con payloads a mano
+ * dejaría pasar que ambos cambien de forma coherente entre sí pero incorrecta para el dominio.
  */
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';

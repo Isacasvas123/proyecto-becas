@@ -1,4 +1,4 @@
-# Manual de Usuario
+******# Manual de Usuario
 
 ### Plataforma Nacional para la Gestión Integral de Becas
 
@@ -6,18 +6,14 @@
 | ---------------------- | -------------------------------------------- |
 | **Versión del sistema** | 0.1.0                                       |
 | **Versión del manual** | 1.0                                          |
-| **Fecha**              | 12 de septiembre de 2026 · actualizado el 16 de septiembre |
+| **Fecha**              | 12 de septiembre de 2026 · actualizado el 29 de octubre |
 | **Responsable**        | Stuard Estrada                               |
 | **Dirigido a**         | Estudiantes, evaluadores y personal del Ministerio |
 
-> ### Lea esto antes de seguir
+> > ### Lea esto antes de seguir
 >
-> **La plataforma está en construcción.** Este manual describe **únicamente lo que ya funciona** al
-> 16 de septiembre de 2026. La sección 12 lista lo que todavía no existe, con la fecha prevista.
->
-> Se escribe así a propósito: un manual que describa pantallas que no existen hace perder el
-> tiempo a quien lo lee y no sirve para nada.
-
+> Este manual describe lo que funciona en la plataforma al 29 de octubre de 2026. La sección 12
+> lista lo que no se incluyó en esta versión.
 ---
 
 ## 1. Qué es esta plataforma
@@ -120,6 +116,20 @@ sesión abierta en una computadora compartida, no queda abierta indefinidamente.
 
 > ⚠️ **Si usa una computadora prestada o de un café internet**, cierre sesión al terminar en lugar
 > de solo cerrar la ventana.
+
+### 2.7 Si olvidó su contraseña
+
+1. En la pantalla de acceso, presione **¿Olvidó su contraseña?**
+2. Escriba el **correo electrónico** con el que se registró y presione **Enviarme el enlace**.
+3. Revise su correo. El enlace **vence en una hora** y **sirve una sola vez**. Si no le llega,
+   revise la carpeta de correo no deseado.
+4. Al abrir el enlace, escriba su **contraseña nueva** dos veces. Debe tener al menos 8
+   caracteres, una mayúscula y un número.
+5. Vuelva a la pantalla de acceso y entre con la contraseña nueva.
+
+6. > **El sistema responde igual exista o no una cuenta con ese correo.** Así nadie puede usar
+> esta pantalla para averiguar quién está registrado. Si su cuenta estaba bloqueada por intentos
+> fallidos, al cambiar la contraseña queda desbloqueada.
 
 ## 3. Ver las convocatorias
 
@@ -227,6 +237,7 @@ muestra cada cambio de estado con su fecha.
 | **Borrador** | La está preparando. Todavía puede cargar y reemplazar documentos |
 | **Enviada** | Llegó al Ministerio. Ya no se puede modificar |
 | **En evaluación** | Un comité la está revisando |
+| **Aprobación pendiente** | Tiene la primera aprobación y espera la segunda (becas de más de Q10,000) |
 | **Aprobada** · **Rechazada** | Ya hay una decisión, con su motivo |
 | **Adjudicada** | Se le otorgó la beca |
 
@@ -237,13 +248,23 @@ Si su solicitud se **aprueba** o se **rechaza**, el motivo aparece en el histori
 **adjudica** la beca, arriba verá el **código de su beca** (por ejemplo `BECA-2026-000001`):
 consérvelo.
 
-## 5. Evaluar solicitudes (evaluadores)
+### 4.6 Mis avisos
+
+Cada vez que su solicitud cambia de estado, el sistema le deja un aviso en **Mis avisos**, en el
+encabezado. Cada aviso dice qué cambió y, si lo hay, el motivo.
+
+- **Marcar leído** marca un aviso; **Marcar todos como leídos**, todos a la vez.
+- Los avisos quedan registrados aunque los marque como leídos.
+- Hoy los avisos se ven dentro de la plataforma; todavía no llegan por correo.
+- ## 5. Evaluar solicitudes (evaluadores)
 
 Con una cuenta de **evaluador**, al entrar llega a **Mis evaluaciones**: las solicitudes que le
 asignaron, primero las pendientes. No verá ninguna otra.
 
 1. Abra una solicitud con **Evaluar**.
-2. Revise los **datos del solicitante** y abra cada **documento** con su nombre.
+2. Revise los **datos del solicitante** y pulse **Ver** en cada documento: aparece en la misma
+   pantalla, debajo de la lista, sin descargarlo ni cambiar de página. Se cierra con **Ocultar**.
+   Si prefiere el archivo, use **Descargar**.
 3. El **puntaje** ya viene calculado según el tipo de beca, con el detalle de cómo se obtuvo. Usted
    no lo escribe.
 4. Elija **Favorable** o **Desfavorable** y escriba una **observación** de al menos 20 caracteres que
@@ -288,7 +309,11 @@ intenten al mismo tiempo.
 Las solicitudes aprobadas muestran **Adjudicar**: confirme y el sistema registra la beca con su
 código.
 
-> ⚠️ Ninguna de estas decisiones se puede deshacer desde el sistema.
+> **Becas de más de Q10,000.** Necesitan dos aprobaciones de dos personas distintas. La primera deja
+la solicitud en **Aprobación pendiente** y todavía no ocupa cupo. En el Consolidado aparece
+**Segunda aprobación**: otra persona del Ministerio escribe su motivo y confirma, y recién ahí se
+ocupa el cupo. Desde ese estado también se puede rechazar.
+>  Ninguna de estas decisiones se puede deshacer desde el sistema.
 
 ## 8. Consultar el estado sin cuenta
 
@@ -346,15 +371,14 @@ suya.
 
 ## 12. Lo que todavía no está disponible
 
-Lo siguiente **aún no está disponible**, con la fecha prevista para cada punto:
+Lo siguiente no se incluyó en esta versión:
 
-| Funcionalidad                                | Estado           | Previsto para |
-| -------------------------------------------- | ---------------- | ------------- |
-| Cambiar su nombre, correo o contraseña (US-004) | 🔴 No disponible | Sprint 4   |
-| Recuperar una contraseña olvidada            | 🔴 No disponible | Sprint 4      |
-| Recibir los avisos por correo (hoy quedan registrados en el sistema) | 🔴 No disponible | Sprint 5 |
-| Quitar integrantes de un comité              | 🔴 No disponible | Sprint 5      |
-| Acta de resolución y lista pública de becas adjudicadas | 🔴 No disponible | Sprint 6 |
+| Funcionalidad                                                     | Estado            |
+| ----------------------------------------------------------------- | ----------------- |
+| Cambiar su nombre, correo o contraseña desde su perfil (US-004)   | 🔴 No disponible  |
+| Recibir los avisos por correo (hoy quedan en **Mis avisos**)       | 🔴 No disponible  |
+| Cerrar o editar una convocatoria ya creada (US-009, US-010)        | 🔴 No disponible  |
+| Acta de resolución y lista pública de becas adjudicadas            | 🔴 No disponible  |
 
 
 

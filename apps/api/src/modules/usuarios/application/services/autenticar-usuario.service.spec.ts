@@ -1,5 +1,5 @@
 /**
- * Prueba del CASO DE USO de inicio de sesión (US-002).
+ * Prueba del caso de uso de inicio de sesión (US-002).
  *
  * Corre sin PostgreSQL, sin bcrypt real y sin firmar JWT: los tres puertos se sustituyen
  * por dobles de prueba. Es la demostración práctica de para qué sirve la inversión de
@@ -212,7 +212,7 @@ describe('AutenticarUsuarioService', () => {
     });
 
     it('un acceso correcto sin intentos previos no escribe en el repositorio', async () => {
-      // Evita una escritura a la base en CADA inicio de sesión normal.
+      // Evita una escritura a la base en cada inicio de sesión normal.
       const repositorio = new UsuarioEnMemoriaRepositorio([crearUsuario()]);
       const escribir = jest.spyOn(repositorio, 'actualizarEstadoDeAcceso');
       hasher = new HasherFalso();

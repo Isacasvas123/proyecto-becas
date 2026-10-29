@@ -1,13 +1,11 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * Lo que OTROS módulos pueden saber de una convocatoria.
+ * Lo que otros módulos pueden saber de una convocatoria.
  *
- * Es la puerta que usa `solicitudes` (EPIC-03) para preguntar si una convocatoria admite
- * postulaciones y qué documentos exige. Devuelve datos planos y no la entidad: si `solicitudes`
- * recibiera `Convocatoria`, podría llamar a `publicar()` sobre ella y saltarse este módulo.
- * Es la mitigación del riesgo nº4 de docs/05-arquitectura.md §2.2 ("monolito distribuido
- * interno"): los módulos se hablan por la capa de aplicación, nunca por el dominio ajeno.
+ * Es la puerta que usa `solicitudes` para saber si admite postulaciones y qué documentos exige.
+ * Devuelve datos planos y no la entidad: con `Convocatoria` en la mano podría llamar a
+ * `publicar()` y saltarse este módulo. Mitiga el riesgo del "monolito distribuido interno"
+ * (docs/05-arquitectura.md §2.2): los módulos se hablan por la capa de aplicación, no por el
+ * dominio ajeno.
  */
 import { Inject, Injectable } from '@nestjs/common';
 
@@ -28,7 +26,7 @@ export interface ConvocatoriaParaPostulacionDto {
   readonly cupos: number;
   /** Monto de la beca (PO, 17 Oct 2026): decide si hara falta segunda aprobacion. */
   readonly montoBeca: number;
-  /** La regla es de ESTE módulo: publicada y dentro del plazo (`Convocatoria.admiteSolicitudes`). */
+  /** La regla es de este módulo: publicada y dentro del plazo (`Convocatoria.admiteSolicitudes`). */
   readonly admiteSolicitudes: boolean;
   /** Las DOS fechas, no solo el cierre: quien rechaza una postulación tiene que poder decir cuál falló. */
   readonly fechaApertura: Date;

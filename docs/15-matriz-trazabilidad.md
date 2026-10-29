@@ -43,10 +43,10 @@ Los nueve objetivos específicos del proyecto, y dónde se resuelve cada uno.
 | 2 | Registrar estudiantes | EPIC-01, EPIC-03 | US-001, US-011 | `usuarios`, `estudiantes` | 2, 4 | 🟢 Registro (US-001) y perfil académico (US-011) · verificado en Staging |
 | 3 | Gestionar solicitudes | EPIC-03 | US-012, US-014 a US-016 | `solicitudes` | 4 | 🟢 Crear, enviar, listar e historial · verificado en Staging |
 | 4 | Cargar documentación | EPIC-03 | US-013 | `solicitudes` | 4 | 🟢 PDF/JPG/PNG hasta 5 MB, validados por contenido · verificado en Staging |
-| 5 | Administrar evaluaciones | EPIC-04 | US-019, US-021 | `evaluaciones` | 5 | 🟢 Dictamen con puntaje calculado y consolidado · fórmulas por confirmar con el PO · verificado en Staging |
-| 6 | Gestionar comités evaluadores | EPIC-04 | US-017, US-018, US-020 | `evaluaciones` | 5 | 🟢 Comités, cuentas de evaluador y asignación · falta quitar integrantes y Staging |
-| 7 | Aprobar o rechazar solicitudes | EPIC-05 | US-023, US-024, US-026 | `resoluciones` | 6 | 🟡 Aprobar, rechazar y adjudicar · falta el acta (US-026) y Staging |
-| 8 | Consultar el estado de una beca | EPIC-05 | US-025, US-027 | `resoluciones` | 6 | 🟡 Consulta pública hecha · falta la publicación de resultados (US-027) y Staging |
+| 5 | Administrar evaluaciones | EPIC-04 | US-019, US-021, US-036 | `evaluaciones` | 5, 8 | 🟢 Dictamen con puntaje calculado y consolidado, y visor de documentos en la pantalla del dictamen · fórmulas por confirmar con el PO · verificado en Staging |
+| 6 | Gestionar comités evaluadores | EPIC-04 | US-017, US-018, US-020 | `evaluaciones` | 5 | 🟢 Comités, cuentas de evaluador, asignación y retiro de integrantes · verificado en Staging |
+| 7 | Aprobar o rechazar solicitudes | EPIC-05 | US-023, US-024, US-026 | `resoluciones` | 6 | 🟡 Aprobar, rechazar y adjudicar, con segunda firma sobre Q10,000 · falta el acta (US-026) |
+| 8 | Consultar el estado de una beca | EPIC-05 | US-025, US-027 | `resoluciones` | 6 | 🟡 Consulta pública verificada en Staging · falta la publicación de resultados (US-027) |
 | 9 | Generar reportes básicos | EPIC-06 | US-028 a US-031 | `reportes` | 7 | 🟢 Reporte con filtros, panel, CSV/PDF y regiones · verificado en Staging |
 
 **Requisitos transversales**, que no son objetivos funcionales pero el enunciado evalúa:

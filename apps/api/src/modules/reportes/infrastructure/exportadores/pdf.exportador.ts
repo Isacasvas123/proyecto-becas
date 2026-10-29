@@ -36,7 +36,7 @@ export class PdfExportador implements ExportadorReporte {
       if (y - lineas * ALTO_LINEA < MARGEN + ALTO_LINEA) nuevaPagina();
     };
     const escribir = (texto: string, opciones: Partial<Texto> = {}) => {
-      // Un texto más grande necesita espacio ARRIBA (la y es la línea base), no solo abajo.
+      // Un texto más grande necesita espacio arriba (la y es la línea base), no solo abajo.
       const tamano = opciones.tamano ?? TAMANO;
       y -= Math.max(0, tamano - TAMANO);
       espacio(1);

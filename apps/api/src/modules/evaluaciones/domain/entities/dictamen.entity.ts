@@ -1,17 +1,13 @@
 /**
- * CAPA: domain/entities/
- * ────────────────────────────────────────────────────────────────────────────────
  * El dictamen de un evaluador sobre una solicitud (US-019, CU-10). Es la clase `Evaluacion` del
  * diagrama.
  *
- * INMUTABLE (criterio 4)
- *   No tiene ni un método que lo modifique. Todos sus campos son de solo lectura, el repositorio
- *   solo sabe crear, y la base rechaza un segundo dictamen del mismo evaluador sobre la misma
- *   solicitud. Corregir un dictamen, si algún día se permite, será otro dictamen, no una edición.
+ * Es inmutable (criterio 4): sin métodos que lo modifiquen, con un repositorio que solo crea y
+ * una base que rechaza un segundo dictamen del mismo evaluador sobre la misma solicitud. Corregir
+ * un dictamen sería emitir otro.
  *
- * EL PUNTAJE NO LO ESCRIBE EL EVALUADOR
- *   Lo calcula el criterio del tipo de beca (criterio 2). El evaluador aporta su juicio en la
- *   recomendación y la justifica en la observación (criterio 3).
+ * El puntaje no lo escribe el evaluador: lo calcula el criterio del tipo de beca (criterio 2). Él
+ * aporta la recomendación y la observación que la justifica (criterio 3).
  */
 import { ReglaDeNegocioError } from '../../../../shared/exceptions/errores-dominio';
 import { Recomendacion } from '../enums/recomendacion.enum';

@@ -1,12 +1,8 @@
 /**
- * Cliente HTTP de la API.
- *
- * Único punto del frontend que sabe dónde vive el backend y cómo se llaman sus rutas.
- * Los componentes no hacen `fetch` directamente: si mañana cambia la URL base, la
- * autenticación o el manejo de errores, se cambia aquí y nada más.
- *
- * Es el mismo razonamiento que en el backend —aislar el detalle detrás de un contrato—
- * aplicado al frontend.
+ * Cliente HTTP de la API. Es el único punto del frontend que sabe dónde vive el backend y cómo se
+ * llaman sus rutas: los componentes no hacen `fetch`, así que un cambio de URL base, de
+ * autenticación o de manejo de errores se hace aquí. Es el mismo aislamiento detrás de un contrato
+ * que en el backend.
  */
 
 /** Contrato de `GET /health`. */
@@ -80,12 +76,10 @@ export interface Sesion {
 }
 
 /**
- * Forma del cuerpo de error.
- *
- * Dos productores distintos: `DominioExceptionFilter` responde con `mensaje` (una cadena),
- * y el `ValidationPipe` de NestJS con `message` (un arreglo, uno por campo inválido). Se leen
- * los dos para que un 400 de validación le diga al administrador QUÉ campo está mal en vez de
- * un genérico "la API respondió 400".
+ * Forma del cuerpo de error. Hay dos productores: `DominioExceptionFilter` responde con `mensaje`
+ * (una cadena) y el `ValidationPipe` de NestJS con `message` (un arreglo, uno por campo inválido).
+ * Se leen los dos para que un 400 de validación diga qué campo está mal y no un genérico "la API
+ * respondió 400".
  */
 interface ErrorApi {
   mensaje?: string;
@@ -95,12 +89,9 @@ interface ErrorApi {
 const URL_BASE: string = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
 
 /**
- * Extrae el mensaje que envió la API.
- *
- * Se prefiere el texto del backend sobre uno inventado en el frontend: el criterio de
- * aceptación de US-002 exige un mensaje genérico e idéntico para cualquier fallo de
- * autenticación, y esa decisión pertenece al servidor. Si el frontend improvisara sus
- * propios mensajes, podría filtrar más información que la API.
+ * Extrae el mensaje que envió la API. Se prefiere el del backend sobre uno propio: US-002 exige un
+ * mensaje genérico e idéntico ante cualquier fallo de autenticación, y esa decisión es del
+ * servidor; un mensaje improvisado en el frontend podría filtrar más información.
  */
 async function mensajeDelError(respuesta: Response, ruta: string): Promise<string> {
   try {
@@ -122,18 +113,13 @@ async function mensajeDelError(respuesta: Response, ruta: string): Promise<strin
 }
 
 /**
- * Token de la sesión activa.
+ * Token de la sesión activa, en memoria del módulo y no en `localStorage`, donde cualquier script
+ * de la página podría leerlo. Se guarda en el cliente HTTP y no en el contexto de React porque lo
+ * necesita cada petición: si viviera solo en el contexto, bastaría que un componente olvidara
+ * pasarlo para provocar un 401 inexplicable.
  *
- * Vive en memoria del módulo, no en `localStorage`: un token ahí es legible por cualquier
- * script de la página y un XSS bastaría para robarlo. El precio es que al recargar (F5) hay
- * que volver a iniciar sesión.
- *
- * Se guarda aquí, en el cliente HTTP, y no en el contexto de React, porque quien lo necesita
- * es cada petición. Si viviera solo en el contexto, cada componente tendría que acordarse de
- * pasarlo, y bastaría un olvido para provocar un 401 inexplicable.
- *
- * SPRINT 2 (US-003): la forma correcta de persistirlo es una cookie `httpOnly` emitida por
- * el backend, que el JavaScript no puede leer.
+ * `ContextoSesion` persiste la sesión en `sessionStorage` y la restaura aquí al recargar. Lo
+ * correcto sería una cookie `httpOnly` emitida por el backend.
  */
 let tokenActivo: string | null = null;
 

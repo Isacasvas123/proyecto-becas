@@ -1,15 +1,10 @@
 /**
- * CAPA: presentation/dto/
- * ────────────────────────────────────────────────────────────────────────────────
- * Contrato de entrada de `POST /auth/login`. Se valida en la frontera del sistema, antes
- * de que el dato toque la capa de aplicación (`ValidationPipe` global en `main.ts`).
+ * Contrato de entrada de `POST /auth/login`, validado en la frontera con el `ValidationPipe`
+ * global de `main.ts`.
  *
- * POR QUÉ AQUÍ NO SE EXIGEN 8 CARACTERES DE CONTRASEÑA
- *   Esa regla —mínimo 8 caracteres, una mayúscula y un número— pertenece al REGISTRO
- *   (US-001), donde se elige la contraseña. Aplicarla también al inicio de sesión sería
- *   un error: dejaría fuera a cualquier cuenta creada bajo una política anterior, y le
- *   revelaría a un atacante cuál es la política vigente antes siquiera de autenticarse.
- *   Al iniciar sesión solo importa si la credencial coincide.
+ * No exige 8 caracteres de contraseña: esa regla es del registro (US-001), donde se elige. Al
+ * iniciar sesión dejaría fuera a cuentas creadas con una política anterior y revelaría la política
+ * vigente antes de autenticar. Aquí solo importa si la credencial coincide.
  */
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 

@@ -1,15 +1,11 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * US-021 — Consolidar dictámenes del comité: puntaje de cada solicitud y ranking.
+ * US-021: consolidar los dictámenes del comité.
  *
- * CÓMO SE CONSOLIDA
- *   - Puntaje de la solicitud: el promedio de los dictámenes emitidos.
- *   - Ranking: de mayor a menor puntaje, solo entre las que tienen al menos un dictamen. A igual
- *     puntaje, primero la que tiene más dictámenes favorables, después la que se envió antes
- *     (el número de solicitud es correlativo).
- *   - "Dentro de cupos" es orientativo: la decisión es del administrador (US-023) y el cupo lo
- *     controla la adjudicación (US-024). El consolidado no aprueba ni rechaza nada.
+ * - Puntaje de la solicitud: el promedio de los dictámenes emitidos.
+ * - Ranking: de mayor a menor puntaje, solo entre las que tienen algún dictamen. A igual puntaje,
+ *   primero la de más dictámenes favorables y después la que se envió antes.
+ * - "Dentro de cupos" es orientativo: decide el administrador (US-023) y el cupo lo controla la
+ *   adjudicación (US-024). El consolidado no aprueba ni rechaza nada.
  */
 import { Inject, Injectable } from '@nestjs/common';
 

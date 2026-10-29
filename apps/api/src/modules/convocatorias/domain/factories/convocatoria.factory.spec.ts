@@ -1,11 +1,9 @@
 /**
- * PRUEBAS DEL PATRÓN FACTORY METHOD (docs/06-patrones.md §1).
- *
- * Qué demuestran, además de que el código funciona:
- *   - Que cada tipo de beca trae SUS requisitos y documentos (US-006, criterio 1).
- *   - Que la regla propia de un tipo (el tope de posgrado) no contamina a los demás.
- *   - Que el registro cubre todos los tipos. Si alguien agrega un `TipoBeca` sin su fábrica,
- *     falla la compilación; esta prueba lo deja además escrito para quien lea el código.
+ * Pruebas del patrón Factory Method (docs/06-patrones.md §1). Además de que el código funciona,
+ * demuestran que cada tipo de beca trae sus requisitos y documentos (US-006, criterio 1), que la
+ * regla propia de un tipo, el tope de posgrado, no contamina a los demás, y que el registro cubre
+ * todos los tipos. Agregar un `TipoBeca` sin su fábrica ya falla al compilar; esta prueba lo deja
+ * escrito.
  */
 import { ReglaDeNegocioError } from '../../../../shared/exceptions/errores-dominio';
 import { EstadoConvocatoria } from '../enums/estado-convocatoria.enum';

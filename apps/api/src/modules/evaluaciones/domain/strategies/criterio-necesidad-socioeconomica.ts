@@ -17,9 +17,9 @@ export const INGRESO_PER_CAPITA_MAXIMO = 5000;
  *   ingreso por persona = ingreso familiar mensual ÷ personas que dependen de él (mínimo 1)
  *   puntaje = 100 si ≤ Q500 · 0 si ≥ Q5,000 · lineal en medio
  *
- * Se divide entre las personas que dependen del ingreso porque Q4,000 no significan lo mismo para
- * un hogar de dos que para uno de seis. Los dos umbrales son constantes con nombre: son lo primero
- * que el Product Owner va a querer ajustar.
+ * Se divide entre los dependientes porque Q4,000 no significan lo mismo para un hogar de dos que
+ * para uno de seis. Los umbrales son constantes con nombre porque el Product Owner querrá
+ * ajustarlos.
  */
 export class CriterioNecesidadSocioeconomica implements CriterioEvaluacionStrategy {
   readonly nombre = 'Necesidad socioeconómica';

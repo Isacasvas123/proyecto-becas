@@ -179,15 +179,15 @@ Ordenado por lo que más daña si no se hace:
 
 | # | Tarea | Responsable | Estimación | Estado |
 |---|---|---|---|---|
-| 1 | Aprobar y mergear el PR #32 | Fernando | 30 min | ☐ |
-| 2 | Verificar US-033 completa en Staging, con capturas | Isaac + Fernando | 1 h | ☐ |
+| 1 | Aprobar y mergear el PR #32 | Fernando | 30 min | ☒ Hecho el 28 Oct · se reabrió como **PR #34** |
+| 2 | Verificar US-033 completa en Staging, con capturas | Isaac + Fernando | 1 h | ☒ Hecho el 27 Oct · 20 capturas, con dos administradores |
 | 3 | **Presentación Final** | Equipo | 1 día | ☐ |
-| 4 | Agregar US-035 al Product Backlog | Isaac | 30 min | ☐ |
-| 5 | Mergear `develop` a `main` *(va 102 commits por detrás)* | Isaac | 30 min | ☐ |
+| 4 | Agregar US-035 al Product Backlog | Isaac | 30 min | ☒ Hecho |
+| 5 | Mergear `develop` a `main` *(va 102 commits por detrás)* | Isaac | 30 min | ☒ Hecho el 28 Oct · **PR #36** |
 | 6 | Cambiar la contraseña de Staging en Render | Isaac | 15 min | ☐ |
 | 7 | Volver a medir la cobertura y actualizar los documentos | Isaac | 30 min | ☐ |
 | 8 | Video del patrón State *(guion listo desde el 18 Sep)* | Isaac | 1 h | ☐ |
-| 9 | Cerrar DEF-01, S1-10 y S1-12, o cerrarlos con motivo escrito | Equipo | 30 min | ☐ |
+| 9 | Cerrar DEF-01, S1-10 y S1-12, o cerrarlos con motivo escrito | Equipo | 30 min | 🟡 S1-10 y S1-12 cerradas · DEF-01 sigue abierta |
 | 10 | Ensayo de la defensa | Equipo | 2 h | ☐ |
 
 **Lo que el equipo decide NO hacer:**
@@ -208,6 +208,9 @@ Ordenado por lo que más daña si no se hace:
 | La Presentación Final no se empieza a tiempo | **Alto** — es entregable obligatorio | Bloquear un día completo para ella | Equipo |
 | `main` se queda 102 commits por detrás | **Alto** — quien clone el repositorio no ve el proyecto | Mergear antes del 30 | Isaac |
 | El PR #32 no se aprueba y US-033 no se puede verificar | Medio | Revisarlo hoy mismo | Fernando |
+
+> **Al 29 de octubre**, de estos cinco riesgos quedan vivos dos: la Presentación Final, que sigue
+> sin empezarse, y la contraseña de Staging, que sigue sin cambiarse. Los otros tres se cerraron.
 | La contraseña de Staging sigue expuesta | Medio | Cambiarla en Render | Isaac |
 | Nadie ensaya la defensa | Medio | Agendar el ensayo ahora, no "cuando se pueda" | Equipo |
 

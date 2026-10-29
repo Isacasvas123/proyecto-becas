@@ -1,18 +1,12 @@
 /**
- * CAPA: presentation/dto/
+ * Contrato público de la API: lo que ve el frontend y no se puede cambiar sin avisar.
  *
- * El CONTRATO PÚBLICO de la API. Lo que ve el frontend, lo que se documenta y lo que no
- * se puede cambiar sin avisar a quien consume la API.
+ * Es un DTO aparte del de application/ porque responden a preguntas distintas: aquel es lo que
+ * devuelve el caso de uso y este es lo que expone el endpoint. Hoy coinciden; si el público
+ * necesita ver menos campos que un administrador, se separan sin tocar el caso de uso.
  *
- * ¿Por qué otro DTO si `ConvocatoriaListadaDto` de application/ ya tiene estos campos?
- * Porque responden a preguntas distintas: el de application/ es "qué devuelve el caso de
- * uso" y este es "qué expone el endpoint". Hoy coinciden; en cuanto una historia futura
- * necesite exponer menos campos al público que a un administrador —y US-008 apunta
- * justo ahí—, se separan sin tocar el caso de uso.
- *
- * Es una clase y no una interfaz porque en el Sprint 3 los DTOs de ENTRADA llevarán
- * decoradores de `class-validator` (`@IsString()`, `@IsInt()`, `@Min(1)`), y los
- * decoradores necesitan una clase que exista en tiempo de ejecución.
+ * Es una clase y no una interfaz porque los DTOs de entrada llevan decoradores de
+ * `class-validator`, que necesitan una clase en tiempo de ejecución.
  */
 export class ElementoCatalogoResponseDto {
   codigo!: string;

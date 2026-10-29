@@ -1,10 +1,8 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * US-025 — ¿el CUI que escribió alguien corresponde a esta cuenta?
+ * US-025: ¿el CUI que escribió alguien corresponde a esta cuenta?
  *
- * Solo responde sí o no. Nunca devuelve el CUI ni dice por qué no coincide: la consulta pública la
- * usa quien no tiene sesión, y cualquier detalle extra ayudaría a adivinar datos ajenos.
+ * Solo responde sí o no. Nunca devuelve el CUI ni dice por qué no coincide: la consulta pública
+ * la usa quien no tiene sesión y cualquier detalle extra ayudaría a adivinar datos ajenos.
  */
 import { Inject, Injectable } from '@nestjs/common';
 

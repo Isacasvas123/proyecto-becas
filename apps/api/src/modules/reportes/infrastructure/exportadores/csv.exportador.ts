@@ -1,13 +1,11 @@
 /**
- * US-030 — Exportar a CSV.
+ * US-030: exportar a CSV.
  *
  * - UTF-8 con BOM: sin él, Excel en Windows abre "Petén" como "PetÃ©n".
  * - Coma como separador y comillas dobles cuando hace falta (RFC 4180).
- * - INYECCIÓN DE FÓRMULAS: una celda que empieza con `=`, `+`, `-`, `@`, tabulador o retorno de
- *   carro se ejecuta como fórmula al abrir el archivo en una hoja de cálculo. Un centro educativo
- *   llamado `=HYPERLINK(...)` sería un ataque contra quien abra el reporte. Esas celdas se prefijan
- *   con un apóstrofo. Los números no pasan por aquí: se escriben tal cual.
- * - Solo el detalle: la agrupación, si la hay, va en el PDF y en la pantalla.
+ * - Una celda que empieza con `=`, `+`, `-`, `@`, tabulador o retorno se ejecuta como fórmula al
+ *   abrirla en una hoja de cálculo. Esas celdas se prefijan con un apóstrofo; los números no.
+ * - Solo el detalle: la agrupación va en el PDF y en la pantalla.
  */
 import { Injectable } from '@nestjs/common';
 

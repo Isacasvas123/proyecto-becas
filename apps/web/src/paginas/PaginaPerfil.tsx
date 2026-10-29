@@ -1,14 +1,12 @@
 /**
- * PÁGINA `/perfil` — perfil académico y socioeconómico (US-011).
+ * Página `/perfil`: perfil académico y socioeconómico (US-011).
  *
- * SE PUEDE GUARDAR A MEDIAS
- *   Reunir el promedio o el ingreso familiar puede tomar días. El formulario guarda lo que haya y
- *   el aviso de arriba dice qué falta. La lista la calcula el servidor: es la misma regla que
- *   después decide si se puede postular, así que no puede haber dos versiones de "completo".
+ * Se puede guardar a medias, porque reunir el promedio o el ingreso familiar puede tomar días. El
+ * aviso de arriba dice qué falta; la lista la calcula el servidor con la misma regla que luego
+ * decide si se puede postular, así que no hay dos versiones de "completo".
  *
- * UN CAMPO VACÍO SE MANDA COMO `null`
- *   El backend exige el perfil entero en cada guardado para distinguir "no lo mandé" de "lo quiero
- *   vacío". Por eso cada campo del formulario se traduce a su valor o a `null`, nunca se omite.
+ * Un campo vacío se manda como `null`: el backend exige el perfil entero en cada guardado para
+ * distinguir "no lo mandé" de "lo quiero vacío", así que ningún campo se omite.
  */
 import { useEffect, useState, type FormEvent, type ReactElement } from 'react';
 import { Link, useLocation } from 'react-router-dom';

@@ -1,8 +1,6 @@
 /**
- * CAPA: domain/ports/
- * ────────────────────────────────────────────────────────────────────────────────
  * Puerto de persistencia de usuarios. Mismo patrón que `ConvocatoriaRepositorio`:
- * el dominio declara QUÉ necesita, infrastructure decide CÓMO.
+ * el dominio declara qué necesita e infrastructure decide cómo.
  */
 import { Usuario } from '../entities/usuario.entity';
 import { RolUsuario } from '../enums/rol-usuario.enum';
@@ -13,25 +11,18 @@ export const USUARIO_REPOSITORIO = Symbol('UsuarioRepositorio');
 
 export interface UsuarioRepositorio {
   /**
-   * Busca por nombre de usuario. Devuelve `null` si no existe.
-   *
-   * POR QUÉ `null` Y NO UNA EXCEPCIÓN: que un usuario no exista es un resultado
-   * esperable del inicio de sesión, no un error excepcional. Quien decide cómo tratarlo
-   * es el caso de uso, y lo convierte en el mismo fallo genérico que una contraseña
-   * incorrecta (US-002).
-   *
-   * SPRINT 2: aquí se agregarán `guardar()` y `buscarPorCorreo()` cuando lleguen el
-   * registro (US-001) y la recuperación de contraseña (US-005).
+   * Busca por nombre de usuario; devuelve `null` si no existe. Es `null` y no una excepción
+   * porque que no exista es un resultado esperable del inicio de sesión, y el caso de uso lo
+   * convierte en el mismo fallo genérico que una contraseña incorrecta (US-002).
    */
   buscarPorNombreUsuario(nombreUsuario: NombreUsuario): Promise<Usuario | null>;
 
   /**
    * Persiste el contador de intentos fallidos y el bloqueo (US-002, criterio 3).
    *
-   * POR QUÉ UN MÉTODO TAN ESTRECHO Y NO UN `guardar(usuario)` GENERAL
-   *   Porque el inicio de sesión solo tiene derecho a tocar esos dos campos. Un `guardar`
-   *   general permitiría que un error en este caso de uso sobrescribiera el rol, el correo o
-   *   el hash. El puerto expresa lo que el caso de uso necesita, no lo que la tabla permite.
+   * Es un método estrecho y no un `guardar(usuario)` general porque el inicio de sesión solo tiene
+   * derecho a tocar esos dos campos: uno general permitiría que un error pisara el rol, el correo
+   * o el hash.
    */
   actualizarEstadoDeAcceso(usuario: Usuario): Promise<void>;
 
@@ -39,7 +30,7 @@ export interface UsuarioRepositorio {
   buscarPorCorreo(correo: string): Promise<Usuario | null>;
 
   /**
-   * Guarda la contraseña nueva y el desbloqueo. NADA MÁS.
+   * Guarda la contraseña nueva y el desbloqueo, nada más.
    *
    * Deliberadamente estrecho, por el mismo motivo que `actualizarEstadoDeAcceso`: un
    * `guardar()` general permitiría que un fallo en este caso de uso sobrescribiera el rol
@@ -58,12 +49,10 @@ export interface UsuarioRepositorio {
   }): Promise<CamposDuplicados>;
 
   /**
-   * US-001: guarda una cuenta nueva.
-   *
-   * Si otra petición registró el mismo correo, CUI o nombre de usuario entre la comprobación y
-   * la escritura, el adaptador DEBE lanzar `RecursoDuplicadoError`. La base de datos es la
-   * única que puede garantizar la unicidad bajo concurrencia; la comprobación previa solo sirve
-   * para dar un buen mensaje.
+   * US-001: guarda una cuenta nueva. Si otra petición registró el mismo correo, CUI o nombre de
+   * usuario entre la comprobación y la escritura, el adaptador debe lanzar
+   * `RecursoDuplicadoError`: solo la base garantiza la unicidad bajo concurrencia, y la
+   * comprobación previa sirve para dar un buen mensaje.
    */
   crear(usuario: Usuario): Promise<void>;
 

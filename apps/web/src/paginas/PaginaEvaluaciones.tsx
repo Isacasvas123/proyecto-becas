@@ -1,5 +1,5 @@
 /**
- * PÁGINA `/evaluaciones` — mis solicitudes asignadas (US-020). Es el panel del evaluador.
+ * Página `/evaluaciones` — mis solicitudes asignadas (US-020). Es el panel del evaluador.
  *
  * Solo aparecen las que le asignaron (lo garantiza el servidor), primero las pendientes.
  */

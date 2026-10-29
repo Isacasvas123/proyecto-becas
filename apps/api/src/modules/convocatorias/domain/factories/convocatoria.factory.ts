@@ -1,26 +1,16 @@
 /**
- * CAPA: domain/factories/  ·  PATRÓN FACTORY METHOD (creacional)
- * ────────────────────────────────────────────────────────────────────────────────
- * Justificación completa en docs/06-patrones.md §1. Resumen de lo que hay que saber para
- * leer este archivo:
+ * Patrón Factory Method. Justificación en docs/06-patrones.md §1.
  *
- * EL PROBLEMA
- *   Cada tipo de beca se crea con reglas propias: requisitos distintos, documentos
- *   distintos, un prefijo de código distinto y, en posgrado, un tope de cupos. Sin el
- *   patrón, todo eso acabaría en un `switch (tipo)` dentro del servicio de aplicación, que
- *   habría que abrir y volver a probar cada vez que el Ministerio agregue un programa.
+ * Cada tipo de beca se crea con reglas propias: otros requisitos, otros documentos, otro prefijo
+ * de código y, en posgrado, un tope de cupos. Sin el patrón acabaría en un `switch (tipo)` en el
+ * servicio, que habría que abrir y volver a probar con cada programa nuevo.
  *
- * LA SOLUCIÓN
- *   `ConvocatoriaFactory.crear()` es el algoritmo común y NO se sobrescribe. Los pasos que
- *   varían por tipo son métodos abstractos que cada fábrica concreta define. El servicio de
- *   aplicación nunca pregunta "¿de qué tipo es?": pide la fábrica y le dice "crea".
+ * `crear()` es el algoritmo común y no se sobrescribe; los pasos que varían son métodos
+ * abstractos que define cada fábrica concreta. El servicio pide la fábrica y le dice "crea".
  *
- * NOTA HONESTA SOBRE OPEN/CLOSED
- *   La documentación dice que un programa nuevo se agrega "sin tocar código existente". Es
- *   casi cierto: hay que crear la subclase **y agregar una línea** al registro
- *   `FABRICAS_CONVOCATORIA` de abajo, más el valor nuevo en `TipoBeca`. Lo que no se toca es
- *   ninguna fábrica existente ni el servicio. Y el `satisfies Record<TipoBeca, …>` hace que
- *   olvidar esa línea sea un error de compilación, no un fallo en producción.
+ * Un programa nuevo no toca ninguna fábrica ni el servicio, pero sí exige la subclase, una línea
+ * en `FABRICAS_CONVOCATORIA` y el valor en `TipoBeca`. El `satisfies Record<TipoBeca, …>` vuelve
+ * un error de compilación olvidar esa línea.
  */
 import { ReglaDeNegocioError } from '../../../../shared/exceptions/errores-dominio';
 import { Convocatoria } from '../entities/convocatoria.entity';
@@ -48,7 +38,7 @@ export interface DatosNuevaConvocatoria {
 
 export abstract class ConvocatoriaFactory {
   /**
-   * EL MÉTODO PLANTILLA. Igual para todos los tipos; no se sobrescribe.
+   * El método plantilla. Igual para todos los tipos; no se sobrescribe.
    *
    * Orden deliberado: primero las reglas propias del tipo (`validarCupos`) y después la
    * construcción, que valida las invariantes comunes a toda convocatoria. Así el mensaje de
@@ -89,7 +79,7 @@ export abstract class ConvocatoriaFactory {
   abstract documentosPorDefecto(): readonly TipoDocumento[];
 
   /**
-   * GANCHO OPCIONAL. Por defecto no agrega ninguna restricción más allá de "entero mayor que
+   * Gancho opcional. Por defecto no agrega ninguna restricción más allá de "entero mayor que
    * cero", que ya exige la entidad. Solo la sobrescribe el tipo que tenga una regla propia.
    */
   protected validarCupos(_cupos: number): void {
@@ -184,12 +174,11 @@ export class ConvocatoriaPosgradoFactory extends ConvocatoriaFactory {
   }
 
   /**
-   * La única regla de cupos propia de un tipo. Los programas de posgrado financian estudios
-   * más largos y caros, y una convocatoria con cientos de cupos sería un error de captura.
+   * Única regla de cupos propia de un tipo: en posgrado, tope de 50, porque financia estudios más
+   * largos y caros y cientos de cupos serían un error de captura.
    *
-   * ⚠️ PENDIENTE DE CONFIRMAR CON EL PRODUCT OWNER: el tope de 50 viene de la documentación
-   * de diseño del equipo, no de un criterio de aceptación. Nivel medio y universitaria no
-   * tienen tope porque nadie lo ha definido, y no se inventa uno.
+   * Pendiente de confirmar con el Product Owner: el 50 viene del diseño del equipo, no de un
+   * criterio de aceptación. Nivel medio y universitaria no tienen tope porque nadie lo definió.
    */
   protected validarCupos(cupos: number): void {
     if (cupos > MAX_CUPOS_POSGRADO) {
@@ -201,7 +190,7 @@ export class ConvocatoriaPosgradoFactory extends ConvocatoriaFactory {
 }
 
 /**
- * REGISTRO DE FÁBRICAS: el único punto donde se asocia un tipo de beca con su fábrica.
+ * Registro de fábricas: el único punto donde se asocia un tipo de beca con su fábrica.
  *
  * Es un mapa y no un `switch` por la misma razón que existe el patrón. Y `satisfies`
  * convierte en error de compilación agregar un `TipoBeca` sin su fábrica.
