@@ -45,7 +45,7 @@ flowchart TB
     INFR --> BD
     INFR --> ALM
     INFR --> NOTI
-    INFR -.->|no implementada| EXT
+    INFR -.->|integración futura| EXT
 
     style DOMI fill:#fef3e2,stroke:#b45309,stroke-width:3px
     style DESPLIEGUE fill:#f0f7fc,stroke:#12609c,stroke-width:2px
