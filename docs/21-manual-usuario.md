@@ -117,6 +117,16 @@ sesión abierta en una computadora compartida, no queda abierta indefinidamente.
 > ⚠️ **Si usa una computadora prestada o de un café internet**, cierre sesión al terminar en lugar
 > de solo cerrar la ventana.
 
+### 2.7 Si olvidó su contraseña
+
+1. En la pantalla de acceso, presione **¿Olvidó su contraseña?**
+2. Escriba el **correo electrónico** con el que se registró y presione **Enviarme el enlace**.
+3. Revise su correo. El enlace **vence en una hora** y **sirve una sola vez**. Si no le llega,
+   revise la carpeta de correo no deseado.
+4. Al abrir el enlace, escriba su **contraseña nueva** dos veces. Debe tener al menos 8
+   caracteres, una mayúscula y un número.
+5. Vuelva a la pantalla de acceso y entre con la contraseña nueva.
+
 ## 3. Ver las convocatorias
 
 **No necesita cuenta para ver las convocatorias.** Entre a la plataforma y llegará directamente al
