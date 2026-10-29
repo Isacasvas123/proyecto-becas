@@ -20,10 +20,10 @@
 
 ## 1.1 Seguimiento de la acción de mejora anterior
 
-La acción de mejora del Sprint 1 fue **celebrar las ceremonias todos los jueves**, según fija
+La acción de mejora del Sprint 1 fue celebrar las ceremonias todos los jueves, según fija
 [`02-politica-equipo.md`](../02-politica-equipo.md).
 
-**¿Se cumplió?** ☐ Sí ☒ **No**
+**¿Se cumplió?** ☐ Sí ☒ No
 
 **Evidencia:** las ceremonias de los Sprints 2 a 7 no se celebraron en su fecha semanal. El equipo
 las agrupó en la sesión consolidada que recogen esta minuta y la Review que la precede.
@@ -52,7 +52,7 @@ Hechos comprobables, no opiniones:
   la fila seguía en la base. Ninguna prueba unitaria lo veía, porque el repositorio en memoria
   guarda la misma instancia. Lo encontró una prueba de humo contra la base real.
 
-- **Se superó el mínimo de patrones.** El enunciado exige 6 y se implementaron **8**, cada uno con
+- **Se superó el mínimo de patrones.** El enunciado exige 6 y se implementaron 7, cada uno con
   su justificación técnica y sus pruebas.
 
 - **La cobertura se mantuvo alta sin que nadie la persiguiera:** 91.83 % de sentencias.
@@ -93,19 +93,19 @@ Hechos comprobables, no opiniones:
 |---|---|---|
 | Pruebas totales | 675 | 504 unitarias, 171 de integración |
 | Cobertura de sentencias | 91.83 % | Medida el 17 Oct |
-| PRs sin revisión | 0 | Todos aprobados por otro integrante |
+| PRs sin aprobación | 8 | Los ocho son anteriores al PR #12; desde entonces, ninguno |
 | Defectos encontrados por personas, no por pruebas | **4** | Ver abajo |
 
 ### Defectos detectados fuera de la suite de pruebas
 
-Cuatro defectos los encontró **alguien usando la aplicación**, no la suite de pruebas:
+Cuatro defectos los encontró alguien usando la aplicación, no la suite de pruebas:
 
 | Defecto | Cómo se encontró | PR |
 |---|---|---|
 | Integrantes del comité que no se quitaban de la base | Prueba de humo contra PostgreSQL | #24 |
 | El monto de la beca no se guardaba, y la doble aprobación nunca ocurría | Verificando en Staging | #30 |
 | Cuatro fallos de sesión, dictámenes y cupos | Verificando en Staging | #31 |
-| El botón de la segunda firma no se podía habilitar nunca | Verificando en Staging | #32 |
+| El botón de la segunda firma no se podía habilitar nunca | Verificando en Staging | #34 |
 
 Los cuatro comparten una misma causa: las pruebas de integración llaman a la API directamente, sin
 pasar por la interfaz, y `apps/web` no cuenta con pruebas automáticas. Ninguno de los cuatro podía
@@ -144,7 +144,7 @@ adoptarse de inmediato sin ampliar la suite de pruebas.
 
 ## 2.1 Capacidad del equipo
 
-**Período:** del \_\_/10/2026 al **31 de octubre de 2026** *(entrega)*
+**Período:** del \_\_/10/2026 al 31 de octubre de 2026 *(entrega)*
 
 | Integrante | Días disponibles | Observaciones |
 |---|---|---|
@@ -167,7 +167,7 @@ documentación al día, y la Presentación Final lista para defender."*
 
 `_______________________________________________________________________`
 
-> El objetivo **no incluye construir funcionalidad nueva**. Con cuatro días, cada
+> El objetivo no incluye construir funcionalidad nueva. Con cuatro días, cada
 > historia que se empiece compite con la presentación, que es un entregable obligatorio y está sin
 > empezar.
 
@@ -208,11 +208,12 @@ Ordenado por lo que más daña si no se hace:
 | La Presentación Final no se empieza a tiempo | **Alto** — es entregable obligatorio | Bloquear un día completo para ella | Equipo |
 | `main` se queda 102 commits por detrás | **Alto** — quien clone el repositorio no ve el proyecto | Mergear antes del 30 | Isaac |
 | El PR #32 no se aprueba y US-033 no se puede verificar | Medio | Revisarlo hoy mismo | Fernando |
-
-> **Al 29 de octubre**, de estos cinco riesgos quedan vivos dos: la Presentación Final, que sigue
-> sin empezarse, y la contraseña de Staging, que sigue sin cambiarse. Los otros tres se cerraron.
 | La contraseña de Staging sigue expuesta | Medio | Cambiarla en Render | Isaac |
 | Nadie ensaya la defensa | Medio | Agendar el ensayo ahora, no "cuando se pueda" | Equipo |
+
+> **Al 28 de octubre**, de estos cinco riesgos quedan vivos dos: la contraseña de Staging, que sigue
+> sin cambiarse, y el ensayo de la defensa. Los otros tres se cerraron: la Presentación Final ya está
+> armada, `main` se actualizó con el PR #36 y el PR #32 se aprobó.
 
 ---
 

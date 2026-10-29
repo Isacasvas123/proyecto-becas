@@ -4,7 +4,7 @@
 
 > **Estado: PREPARADA, no celebrada.** Los datos de calidad (§1.4) y de capacidad (§2.1) son
 > **medidos, no estimados**, y se reunieron antes de la reunión para no gastarla averiguándolos.
-> Lo que cada integrante aporte en §1.2 y §1.3 **se llena durante la reunión del domingo 13**:
+> Lo que cada integrante aporte en §1.2 y §1.3 se llena durante la reunión del domingo 13:
 > poner palabras en boca de alguien que no las dijo invalidaría el ejercicio.
 
 |                 |                                           |
@@ -17,7 +17,7 @@
 
 # PARTE 1 — SPRINT RETROSPECTIVE
 
-> **Sin el Product Owner.** Se habla del **proceso**, no del producto.
+> **Sin el Product Owner.** Se habla del proceso, no del producto.
 
 ## 1.1 Seguimiento de la acción de mejora anterior
 
@@ -31,7 +31,7 @@ una acción pendiente.
 | Mitigación propuesta: _"que el revisor del PR sea alguien de la otra pareja"_                              | ☐ **No se aplicó.** Los revisores se asignaron el mismo día del cierre, no al inicio del sprint.                     |
 
 > Que el riesgo estuviera escrito desde el primer día y aun así se materializara es el dato más
-> importante de esta retrospectiva. **Anotar un riesgo no lo mitiga.** Una mitigación sin
+> importante de esta retrospectiva. Anotar un riesgo no lo mitiga. Una mitigación sin
 > responsable ni fecha es una intención.
 
 ## 1.2 ¿Qué salió bien?
@@ -75,7 +75,7 @@ _Se critica la situación, no a la persona — Anexo 3, respeto mutuo._
 
 ### 1.3.1 Sobre el reparto desigual — el punto incómodo
 
-El Anexo 3 §4 compromete al equipo a **participación equitativa**, y el enunciado del curso la
+El Anexo 3 §4 compromete al equipo a participación equitativa, y el enunciado del curso la
 evalúa. No se cumplió, y no sirve de nada dejarlo implícito:
 
 - Dos integrantes (Fernando y Stuard) entregaron trabajo real: siete comentarios de revisión
@@ -97,10 +97,10 @@ evalúa. No se cumplió, y no sirve de nada dejarlo implícito:
 _El QAP establece la retrospectiva como la principal herramienta de auditoría del proceso._
 **Datos medidos el 12 de septiembre de 2026 sobre `develop` integrado.**
 
-- ¿Todas las historias marcadas como completadas cumplían realmente el DoD? ☐ Sí ☑ **No**
+- ¿Todas las historias marcadas como completadas cumplían realmente el DoD? ☐ Sí ☑ No
   → US-002 estuvo marcada en _Done_ sin cumplir su tercer criterio de aceptación. Lo detectó Stuard revisando, y la tarjeta se corrigió.
-- ¿Todos los PR tuvieron code review con comentarios sustantivos? ☐ Sí ☑ **No** → 2 de 5 lo tuvieron.
-- ¿Alguien hizo push directo a `develop` o `main`? ☑ **Sí** — dos commits de fundación (`d475418`, `6fd6aca`) el 2 de septiembre, **antes de que existiera la guía de Git que prohíbe hacerlo**. Ninguno después de acordarse el flujo.
+- ¿Todos los PR tuvieron code review con comentarios sustantivos? ☐ Sí ☑ No → 2 de 5 lo tuvieron.
+- ¿Alguien hizo push directo a `develop` o `main`? ☑ Sí — dos commits de fundación (`d475418`, `6fd6aca`) el 2 de septiembre, antes de que existiera la guía de Git que prohíbe hacerlo. Ninguno después de acordarse el flujo.
 - ¿Se escribieron pruebas para todo el código nuevo? ☑ Sí — pero ver el hallazgo de abajo.
 - **Cobertura al cierre del sprint: 41.89 %** de sentencias (43.42 % de ramas).
 - **Bugs detectados durante el sprint: 10.** 3 documentados del esqueleto + 4 de Fernando revisando + 1 de Stuard revisando + 2 salidos de verificar los diagramas contra el código. 9 corregidos, 1 diferido con decisión escrita.
@@ -108,14 +108,14 @@ _El QAP establece la retrospectiva como la principal herramienta de auditoría d
 ### 1.4.1 Dos hallazgos de la medición de cobertura
 
 **Primero: el número de 41.89 % está mal medido, y por debajo de la realidad.** El comando
-`npm run test:cov` corre **solo las pruebas unitarias**; las 32 de integración, que son las que
+`npm run test:cov` corre solo las pruebas unitarias; las 32 de integración, que son las que
 ejercitan controladores y guards, no entran en la medición. El número que reportaríamos al
 catedrático sería más bajo que la cobertura real. **Hay que arreglar la medición antes de
 perseguir la meta de ≥60 % que el WBS fija para el 21 de octubre**, porque hoy no sabemos contra
 qué número estamos trabajando.
 
 **Segundo, y más grave: el único patrón de diseño implementado es el que no tiene ninguna
-prueba.** Los tres adaptadores del patrón Adapter están a **0 % de cobertura**:
+prueba. Los tres adaptadores del patrón Adapter están a 0 % de cobertura**:
 
 | Archivo                                      | Cobertura | Qué aísla                    |
 | -------------------------------------------- | --------- | ---------------------------- |
@@ -138,7 +138,7 @@ catedrático. Se registra como defecto nuevo y entra al Sprint 2.
 > de turnos contraria al autor. Un PR sin revisor asignado en el Planning no se puede abrir.
 
 **Responsable:** Isaac (Scrum Master) — lo hace cumplir en el Planning
-**Cómo sabremos que se cumplió:** al cerrar el Sprint 2, **todos** los PRs del sprint tienen al
+**Cómo sabremos que se cumplió:** al cerrar el Sprint 2, todos los PRs del sprint tienen al
 menos una aprobación de alguien distinto de su autor. Se verifica en la próxima retrospectiva
 mirando el historial de PRs, no de memoria.
 
@@ -154,9 +154,9 @@ de ramas es la mitigación estructural de lo mismo, pero depende de un tercero.
 
 El Sprint 1 cerró el miércoles 9. La Review era el jueves 10 y se celebra el domingo 13. Con la
 cadencia de jueves a miércoles, **el Sprint 2 arrancó el jueves 10 y ya lleva tres días corriendo
-sin planificarse.** Quedan **lunes 14, martes 15 y miércoles 16**.
+sin planificarse. Quedan lunes 14, martes 15 y miércoles 16**.
 
-Y hay un agravante: **el martes 15 de septiembre es feriado** —Día de la Independencia— y es
+Y hay un agravante: el martes 15 de septiembre es feriado —Día de la Independencia— y es
 justo el turno de Ivan e Isaac.
 
 | Opción                                       | Consecuencia                                                                                                      |
@@ -164,11 +164,11 @@ justo el turno de Ivan e Isaac.
 | **A. Mantener la cadencia** (Sprint 2 = 10–16) | Sprint de 3 días con 1 feriado. Hay que recortar mucho el alcance, pero **se conservan los 8 sprints**              |
 | B. Correr todo una semana                    | Quedan **7 sprints** hasta el 31 de octubre. El Sprint 7 del WBS es el de pruebas y cobertura: se perdería ese colchón |
 
-Los 8 sprints semanales desde el 3 de septiembre terminan el **28 de octubre**, tres días antes de
-la entrega. **No hay semana de holgura que gastar.**
+Los 8 sprints semanales desde el 3 de septiembre terminan el 28 de octubre, tres días antes de
+la entrega. No hay semana de holgura que gastar.
 
 **Decisión del equipo:** ☐ A — mantener la cadencia ☐ B — correr una semana
-**Recomendación del Scrum Master:** **A**, y recortar el alcance a lo que de verdad cabe.
+**Recomendación del Scrum Master:** A, y recortar el alcance a lo que de verdad cabe.
 
 ## 2.1 Capacidad del equipo
 
@@ -179,9 +179,9 @@ la entrega. **No hay semana de holgura que gastar.**
 | Fernando   | Lunes 14                                  | ☑ Completa     | Único día completo del sprint                            |
 | Stuard     | Lunes 14                                  | ☑ Completa     | Único día completo del sprint                            |
 
-**Capacidad total:** **≈4 días-persona** _(8 en una semana normal)_ → **la mitad**
-**Velocidad del sprint anterior:** **19 puntos**
-**Compromiso máximo recomendado:** **8 puntos.** La mitad de la capacidad sobre una velocidad de
+**Capacidad total:** ≈4 días-persona _(8 en una semana normal)_ → la mitad
+**Velocidad del sprint anterior:** 19 puntos
+**Compromiso máximo recomendado:** 8 puntos. La mitad de la capacidad sobre una velocidad de
 19 daría ~9; se baja a 8 porque el sprint también carga la deuda de cuatro tareas de revisión sin
 cerrar del Sprint 1.
 
@@ -203,14 +203,14 @@ buena parte del Sprint 2**:
 | 2.6  | Guard de autenticación y control de acceso        | 🟢 **Entregado en el Sprint 1** — US-003, con 32 pruebas e2e     |
 | 2.4  | Registro, perfil y recuperación de contraseña     | 🔴 **Lo único pendiente** — US-001 (5) + US-004 (3) + US-005 (5) = **13 pts** |
 
-Y hay una tarea de **otro** sprint que hay que adelantar: **3.3, el entorno de Staging**, que el
+Y hay una tarea de otro sprint que hay que adelantar: 3.3, el entorno de Staging, que el
 WBS pone en el Sprint 3. Se adelanta porque mientras no exista, el punto 8 de la DoD es
-incumplible y **ninguna historia puede cerrarse**. Dejarlo en el Sprint 3 significaría acumular
+incumplible y ninguna historia puede cerrarse. Dejarlo en el Sprint 3 significaría acumular
 dos sprints enteros de trabajo terminado pero no aceptable.
 
 ## 2.3 Sprint Backlog
 
-_Estimar con Planning Poker (1, 2, 3, 5, 8). Responsables **por consenso**._
+_Estimar con Planning Poker (1, 2, 3, 5, 8). Responsables por consenso._
 **La columna "Revisor" es nueva: es la acción de mejora de §1.5. Se llena aquí, no después.**
 
 ### Se compromete — 8 puntos, igual a la capacidad real

@@ -21,7 +21,7 @@
 > provocan retrasos en la evaluación, duplicidad de información, pérdida de documentos y una
 > nula trazabilidad del proceso,
 >
-> **BecaGT** *(nombre tentativo — confirmar en la reunión de arranque)*
+> **la Plataforma Nacional para la Gestión Integral de Becas**
 >
 > **es** una plataforma web centralizada para la gestión del ciclo de vida completo de las becas,
 >
@@ -97,7 +97,7 @@ qué estado está una solicitud de beca ni por qué se decidió lo que se decidi
 | **Datos demográficos** | 52 años, manejo básico de tecnología, consulta desde el teléfono de su hijo |
 | **Necesidades y metas** | Verificar que la solicitud de su hijo fue recibida y en qué etapa está |
 | **Frustraciones** | *"No entiendo los sistemas del gobierno, siempre piden usuario y contraseña para todo."* |
-| **Implicación de diseño** | Justifica la **consulta pública del estado de una beca sin autenticación**, usando únicamente el número de solicitud. Es un requisito de transparencia, no una comodidad. |
+| **Implicación de diseño** | Justifica la **consulta pública del estado de una beca sin autenticación**, con el número de solicitud y el CUI del titular. Es un requisito de transparencia. |
 
 ---
 
@@ -116,7 +116,7 @@ qué estado está una solicitud de beca ni por qué se decidió lo que se decidi
 - Reportes básicos de gestión
 - Autenticación y control de acceso por rol
 
-### Fuera del alcance (documentado a propósito)
+### Fuera del alcance
 
 - Desembolso de fondos e integración con el sistema de tesorería del Estado
 - Integración real con RENAP o con el sistema académico del MinEduc *(se simulará mediante el

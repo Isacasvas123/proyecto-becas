@@ -41,7 +41,7 @@ y dejar el sistema desplegado y verificable en el entorno de Staging.
 
 **¿Se cumplió?** ☒ Sí completamente ☐ Parcialmente ☐ No
 
-Las seis épicas quedaron entregadas y los ocho patrones implementados y probados. Las mejoras al
+Las seis épicas quedaron entregadas y los siete patrones implementados y probados. Las mejoras al
 proceso de trabajo se tratan en la retrospectiva de esta misma sesión.
 
 ---
@@ -77,7 +77,7 @@ Sprint 8, en curso con 21, quedan fuera de este cómputo por estar fuera del per
 | US-022 | Depende de un servidor de correo que no existía *(ver §5)* | ☐ Sí ☐ Se congela |
 | US-026, US-027 | Nunca se priorizaron; prioridad Media | ☐ Sí ☐ Se congela |
 
-Ninguna es de prioridad Alta, y **los nueve objetivos del enunciado están cubiertos**.
+Ninguna es de prioridad Alta, y los nueve objetivos del enunciado están cubiertos.
 
 ---
 
@@ -93,10 +93,10 @@ principio a fin, no funciones sueltas:
 2. **Registro y solicitud** — alta de estudiante, perfil, postulación y carga del DPI
 3. **Comité y dictamen** — creación del comité, reparto automático, dictamen del evaluador
 4. **Resolución con doble aprobación** *(US-033)* — una beca de Q15,000 queda en espera tras la
-   primera firma, **los cupos no bajan**, y el sistema **rechaza** que la segunda firma la dé la
+   primera firma, los cupos no bajan, y el sistema rechaza que la segunda firma la dé la
    misma persona
 5. **Avisos al estudiante** *(US-034)* — un aviso por cada cambio de estado, con su motivo
-6. **Bitácora** *(US-032)* — filtrada por operaciones **rechazadas**, para enseñar que se audita
+6. **Bitácora** *(US-032)* — filtrada por operaciones rechazadas, para enseñar que se audita
    también lo que el sistema impide
 
 **Responsable(s) de la demo:** \_\_\_\_\_\_\_\_\_\_\_\_
@@ -116,7 +116,7 @@ principio a fin, no funciones sueltas:
 
 ## 4. Feedback de los Stakeholders y del Product Owner
 
-> Registrar los comentarios **textualmente**, sin interpretarlos. Este registro es lo que permite
+> Registrar los comentarios textualmente, sin interpretarlos. Este registro es lo que permite
 > demostrar después que el equipo escuchó y adaptó el producto.
 
 | Quién | Comentario / Sugerencia / Pregunta | Tipo |
@@ -134,7 +134,7 @@ del siguiente Planning**.
 
 ### 4.1 Preguntas que el equipo lleva al Product Owner
 
-Siguen sin respuesta desde el 16 de septiembre y **afectan a historias ya marcadas como Done**.
+Siguen sin respuesta desde el 16 de septiembre y afectan a historias ya marcadas como Done.
 Esta sesión es la última oportunidad de resolverlas antes de la entrega.
 
 | # | Pregunta | Historia afectada | Respuesta del PO |
@@ -160,7 +160,7 @@ que el backlog siga siendo la única fuente de requisitos:
 **Ítems sugeridos y no implementados:**
 
 - [ ] **Doble factor para cuentas administrativas.** Surgió al revisar las buenas prácticas de
-      almacenamiento de contraseñas. Se identificó y **se decidió no hacerlo**: el esfuerzo no cabe
+      almacenamiento de contraseñas. Se identificó y se decidió no hacerlo: el esfuerzo no cabe
       en el tiempo restante. Se deja escrito para que conste que se vio, no que se pasó por alto.
 - [ ] **Envío real del correo de recuperación por SMTP.** El adaptador existe pero **no está
       verificado contra un servidor real**; hoy el mensaje se escribe en el log del servidor.
@@ -182,12 +182,12 @@ que el backlog siga siendo la única fuente de requisitos:
 
 | Indicador | Valor |
 |---|---|
-| Historias en Done | **31 de 35** |
+| Historias en Done | **29 de 36** *(las siete restantes están en §2.2 y en el Backlog)* |
 | Objetivos del enunciado cubiertos | **9 de 9** |
-| Patrones implementados y probados | **8** *(el enunciado exige 6)* |
+| Patrones implementados y probados | **7** *(el enunciado exige 6)* |
 | Pruebas | **675**: 504 unitarias y 171 de integración |
 | Cobertura de sentencias | 91.83 % *(medida el 17 Oct; conviene volver a medirla antes de la entrega)* |
-| PRs mergeados | **31**, todos con revisión aprobada por otro integrante |
+| PRs mergeados | **33**; 25 con aprobación de otro integrante y, desde el PR #12, todos |
 | Staging | En línea desde el 4 de octubre |
 
 **Resumen general:**
