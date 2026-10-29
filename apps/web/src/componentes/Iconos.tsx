@@ -1,13 +1,8 @@
 /**
- * Iconografía del sistema, dibujada como SVG inline.
- *
- * POR QUÉ NO UNA LIBRERÍA DE ICONOS
- *   Son ocho iconos. Traer un paquete entero para eso añade peso de descarga y
- *   una dependencia más que mantener, y el NFR de rendimiento exige cargar en
- *   menos de 3 segundos con conexión 3G (docs/04-product-backlog.md §5).
- *
- * Todos comparten el mismo grosor de trazo y caja de 24, para que se vean como
- * una familia y no como recortes de sitios distintos.
+ * Iconos del sistema, dibujados como SVG inline. Son ocho y traer una librería sumaría peso de
+ * descarga y una dependencia, con un NFR de cargar en menos de 3 segundos con 3G
+ * (docs/04-product-backlog.md §5). Comparten el grosor de trazo y la caja de 24 para verse como
+ * una familia.
  */
 import type { ReactElement } from 'react';
 

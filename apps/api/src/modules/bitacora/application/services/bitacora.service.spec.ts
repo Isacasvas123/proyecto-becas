@@ -1,5 +1,5 @@
 /**
- * PRUEBA UNITARIA — bitácora (exigencia del PO del 17 de octubre de 2026).
+ * Prueba unitaria — bitácora (exigencia del PO del 17 de octubre de 2026).
  *
  * Lo que se fija aquí es la decisión de diseño que más fácil se rompe al refactorizar: que un
  * fallo al auditar NO tumbe la operación del usuario, y que la consulta no se pueda usar para

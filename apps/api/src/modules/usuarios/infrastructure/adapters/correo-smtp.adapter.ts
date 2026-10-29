@@ -1,21 +1,14 @@
 /**
- * CAPA: infrastructure/adapters/  ·  PATRÓN ADAPTER
+ * Adaptador que envía el correo por SMTP (patrón Adapter). Se elige con `CORREO_TIPO=smtp`.
  *
- * Envía el correo de verdad, por SMTP. Se elige con `CORREO_TIPO=smtp`.
+ * Habla SMTP a mano y no con una librería porque el proyecto no tiene ninguna y sumar una
+ * dependencia a días de la entrega no compensa: es un solo correo de texto plano sin adjuntos,
+ * unas seis órdenes sobre un socket TLS. Si hicieran falta HTML, adjuntos o colas, se cambia este
+ * archivo y nada más.
  *
- * POR QUÉ SE HABLA SMTP A MANO Y NO CON UNA LIBRERÍA
- *   Porque el proyecto no tiene ninguna, y meter una dependencia nueva a días de la entrega
- *   es riesgo que no compensa. El correo que hay que mandar es uno solo, de texto plano,
- *   sin adjuntos: eso son seis órdenes del protocolo sobre un socket TLS. Lo que una
- *   librería aporta —HTML, adjuntos, reintentos, colas— aquí no se usa.
- *
- *   Si mañana hacen falta esas cosas, se cambia ESTE archivo y nada más. Para eso está el
- *   puerto.
- *
- * NO LANZA NUNCA
- *   Lo exige el contrato del puerto, y aquí tiene una razón de seguridad además de la
- *   obvia: `solicitar` responde igual exista o no la cuenta, y un error del servidor de
- *   correo delataría la diferencia.
+ * No lanza nunca, lo exige el contrato del puerto y además tiene una razón de seguridad:
+ * `solicitar` responde igual exista o no la cuenta, y un error del servidor de correo delataría
+ * la diferencia.
  */
 import { connect } from 'node:tls';
 
@@ -80,19 +73,17 @@ export class CorreoSmtpAdapter implements EnviadorCorreo {
       };
 
       /**
-       * ¿Terminó de llegar la respuesta?
-       *
-       * SMTP contesta en una o VARIAS líneas, y solo la última lleva un espacio tras el
-       * código; las intermedias llevan un guion. Gmail responde al EHLO con cinco líneas:
+       * ¿Terminó de llegar la respuesta? SMTP contesta en una o varias líneas y solo la última
+       * lleva un espacio tras el código; las intermedias llevan un guion. Gmail responde al EHLO
+       * con cinco:
        *
        *     250-smtp.gmail.com at your service
        *     250-SIZE 35882577
-       *     250 SMTPUTF8          ← esta, con espacio, es la que cierra
+       *     250 SMTPUTF8          ← esta, con espacio, cierra
        *
-       * Además TCP puede partir eso en varios trozos. La versión anterior avanzaba al
-       * comando siguiente en CADA trozo recibido, así que con una respuesta partida mandaba
-       * la contraseña fuera de sitio y la sesión fallaba. Por eso se acumula y solo se
-       * avanza cuando la respuesta está entera.
+       * TCP además puede partirlas en trozos. La versión anterior avanzaba al siguiente comando en
+       * cada trozo y con una respuesta partida mandaba la contraseña fuera de sitio. Ahora se
+       * acumula y solo se avanza con la respuesta entera.
        */
       const respuestaCompleta = (texto: string): boolean => /^\d{3} [^\r\n]*\r\n$/m.test(texto);
 

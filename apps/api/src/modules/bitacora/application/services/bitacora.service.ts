@@ -1,13 +1,9 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * Los dos usos de la bitácora: escribir un asiento y consultarla.
+ * Escribir y consultar la bitácora.
  *
- * ESCRIBIR NUNCA ROMPE LA PETICIÓN
- *   Si la bitácora falla —la base no responde, por ejemplo— la acción del usuario ya ocurrió y
- *   no tiene sentido devolverle un error por algo que no hizo él. El fallo se registra en el log
- *   del servidor y la petición sigue. La alternativa, abortar la operación porque no se pudo
- *   auditar, convertiría la bitácora en un punto único de caída de todo el sistema.
+ * Escribir nunca rompe la petición: si la bitácora falla, la acción del usuario ya ocurrió y se
+ * le devolvería un error por algo que no hizo. El fallo va al log y la petición sigue. Abortar
+ * por no poder auditar haría de la bitácora un punto único de caída.
  */
 import { Inject, Injectable, Logger } from '@nestjs/common';
 

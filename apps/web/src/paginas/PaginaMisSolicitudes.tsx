@@ -1,5 +1,5 @@
 /**
- * PÁGINA `/solicitudes` — mis solicitudes (US-015).
+ * Página `/solicitudes` — mis solicitudes (US-015).
  *
  * Es el panel del estudiante: a donde llega al iniciar sesión. Cada fila dice en qué estado está
  * su trámite y, si sigue en borrador, cuánto le falta para poder enviarlo: es la pregunta que se

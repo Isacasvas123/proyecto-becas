@@ -1,13 +1,12 @@
 /**
- * PRUEBA DE INTEGRACIÓN — EPIC-03 de punta a punta: perfil (US-011) → crear solicitud (US-012) →
+ * Prueba de integración de EPIC-03 de punta a punta: perfil (US-011) → crear solicitud (US-012) →
  * cargar documentos (US-013) → enviar (US-014) → consultar (US-015) con su historial (US-016).
  *
- * Se montan los MÓDULOS reales (`SolicitudesModule` importa `ConvocatoriasModule` y
+ * Se montan los módulos reales (`SolicitudesModule` importa `ConvocatoriasModule` y
  * `EstudiantesModule`), los dos guards globales, el `ValidationPipe` de `main.ts` y el filtro de
- * errores. Solo se sustituyen los repositorios (en memoria), el almacenamiento (en memoria) y el
- * verificador de tokens. Así se prueba también que los módulos se hablan por sus adaptadores.
- *
- * La convocatoria se crea y publica por HTTP, como lo haría el administrador.
+ * errores. Solo se sustituyen los repositorios, el almacenamiento y el verificador de tokens, y
+ * así se prueba también que los módulos se hablan por sus adaptadores. La convocatoria se crea y
+ * publica por HTTP, como lo haría el administrador.
  */
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
@@ -469,7 +468,7 @@ describe('Solicitudes (e2e)', () => {
 
       const { body } = await servidor().get('/notificaciones').set(ana).expect(200);
 
-      // Uno solo: crear la solicitud no es un CAMBIO de estado, es el estado inicial. El PO pidió
+      // Uno solo: crear la solicitud no es un cambio de estado, es el estado inicial. El PO pidió
       // avisar cuando cambie, y un borrador que el propio estudiante acaba de crear no le informa
       // nada que no sepa.
       expect(body.sinLeer).toBe(1);

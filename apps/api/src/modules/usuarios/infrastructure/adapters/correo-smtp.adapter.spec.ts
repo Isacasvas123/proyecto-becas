@@ -1,30 +1,20 @@
 /**
  * El adaptador SMTP, contra un servidor de mentira que se comporta como Gmail.
  *
- * POR QUÉ ESTA PRUEBA EXISTE
- *   Este adaptador habla el protocolo a mano, y el protocolo tiene dos trampas que no se ven
- *   leyendo el código:
+ * El adaptador habla el protocolo a mano y este tiene dos trampas que no se ven leyendo el
+ * código: una respuesta puede ocupar varias líneas (Gmail contesta al `EHLO` con cinco, y solo la
+ * última lleva un espacio tras el código) y TCP puede partirla en trozos. El servidor de abajo
+ * hace las dos cosas, y la prueba comprueba que la conversación se completa en el orden correcto
+ * y que usuario y contraseña llegan donde deben.
  *
- *     1. Una respuesta de SMTP puede ocupar VARIAS líneas. Gmail contesta al `EHLO` con
- *        cinco, y solo la última lleva un espacio tras el código; las demás, un guion.
- *     2. TCP puede partir esa respuesta en varios trozos.
+ * No demuestra que una implementación que no acumule falle: se intentó y, desactivando la
+ * acumulación, las cuatro pruebas siguen pasando, porque este servidor no exige que cada comando
+ * llegue después de su respuesta. Esperar la respuesta completa es lo que manda el protocolo,
+ * pero «sin esto se rompe» no está respaldado por esta prueba.
  *
- *   El servidor de abajo hace las dos cosas: responde al `EHLO` en cinco líneas y las manda
- *   en dos trozos separados. La prueba comprueba que, aun así, la conversación se completa en
- *   el orden correcto y el usuario y la contraseña llegan donde deben.
- *
- * LO QUE ESTA PRUEBA NO DEMUESTRA
- *   No demuestra que una implementación que NO acumule falle. Se intentó: desactivando la
- *   acumulación, estas cuatro pruebas siguen pasando, porque este servidor no exige que cada
- *   comando llegue después de su respuesta. Esperar la respuesta completa es lo que manda el
- *   protocolo y por eso está así, pero la afirmación «sin esto se rompe» no está respaldada
- *   por esta prueba y no debe hacerse.
- *
- *   La validación que falta es contra un servidor real. Mientras no se haga, el adaptador
- *   SMTP se considera no verificado; el de consola es el que está en uso.
- *
- * NO HAY TLS NI CREDENCIALES REALES
- *   Se prueba la conversación, no el cifrado. El socket va en claro contra `localhost`.
+ * Falta validarlo contra un servidor real; mientras tanto el adaptador se considera no verificado
+ * y el de consola es el que está en uso. Tampoco hay TLS: el socket va en claro contra
+ * `localhost`.
  */
 import { createServer, type Server, type Socket } from 'node:net';
 
@@ -143,7 +133,7 @@ describe('CorreoSmtpAdapter', () => {
   });
 
   /**
-   * NO LANZA NUNCA, aunque el servidor rechace las credenciales. Lo exige el contrato del
+   * No lanza nunca, aunque el servidor rechace las credenciales. Lo exige el contrato del
    * puerto: si esto lanzara, el error subiría hasta la respuesta HTTP y delataría que esa
    * dirección tiene cuenta, que es justo lo que el caso de uso se esfuerza en ocultar.
    */

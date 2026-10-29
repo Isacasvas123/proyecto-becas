@@ -1,18 +1,12 @@
 /**
- * PÁGINA `/login` — inicio de sesión (US-002).
+ * Página `/login`: inicio de sesión (US-002).
  *
- * DISEÑO: dos columnas. A la izquierda el contexto institucional; a la derecha
- * el formulario. Se descartó la tarjeta flotante centrada porque no dice nada:
- * un ciudadano que llega a un portal del Estado necesita confirmar **dónde
- * está y para qué sirve** antes de entregar sus credenciales. Los portales de
- * becas guatemaltecos hacen exactamente esto.
+ * Son dos columnas, contexto institucional a la izquierda y formulario a la derecha. Se descartó
+ * la tarjeta flotante centrada porque no dice nada: quien llega a un portal del Estado necesita
+ * confirmar dónde está y para qué sirve antes de dar sus credenciales. En móvil las columnas se
+ * apilan y la lista de garantías se oculta, porque ahí importa entrar.
  *
- * En móvil las columnas se apilan y la lista de garantías se oculta: ahí lo
- * único que importa es entrar.
- *
- * ALCANCE: el inicio de sesión y el enlace a crear cuenta (US-001). El de
- * "olvidé mi contraseña" (US-005) aparecerá cuando esa historia exista: no se
- * ponen enlaces que no llevan a ningún lado.
+ * Ofrece el enlace a crear cuenta (US-001) y el de recuperar la contraseña (US-035).
  */
 import { useEffect, type ReactElement } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';

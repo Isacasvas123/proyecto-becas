@@ -1,12 +1,10 @@
 /**
- * ADAPTADOR de almacenamiento en disco local, para desarrollo (US-013).
+ * Adaptador de almacenamiento en disco local, para desarrollo (US-013).
  *
- * SEGURIDAD
- *   La referencia que se guarda es una ruta RELATIVA a la carpeta raíz, y antes de leer o borrar se
- *   comprueba que, resuelta, siga dentro de esa carpeta. Así una referencia manipulada como
- *   `../../.env` no puede usarse para leer ni borrar nada fuera de `uploads/`.
- *
- * La carpeta está en `.gitignore`: los documentos de los aspirantes nunca llegan al repositorio.
+ * La referencia guardada es relativa a la carpeta raíz y, antes de leer o borrar, se comprueba que
+ * resuelta siga dentro de ella: una referencia manipulada como `../../.env` no sirve para tocar
+ * nada fuera de `uploads/`. La carpeta está en `.gitignore`, así que los documentos de los
+ * aspirantes nunca llegan al repositorio.
  */
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';

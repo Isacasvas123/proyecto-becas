@@ -1,15 +1,12 @@
 /**
- * CAPA: domain/value-objects/
- * ────────────────────────────────────────────────────────────────────────────────
  * Cuántos cupos de una convocatoria están tomados (US-023, criterio 4, y US-024).
  *
- * CUÁNDO SE OCUPA UN CUPO
- *   Al APROBAR, no al adjudicar. Si se contara solo al adjudicar, se podrían aprobar más
- *   solicitudes que becas existen y alguien aprobado se quedaría sin beca. Aprobar RESERVA el cupo;
- *   adjudicar lo formaliza con la beca. Por eso adjudicar no vuelve a comprobarlo.
+ * El cupo se ocupa al aprobar, no al adjudicar: si se contara al adjudicar se podrían aprobar más
+ * solicitudes que becas. Aprobar reserva el cupo y adjudicar lo formaliza, por eso adjudicar no
+ * vuelve a comprobarlo.
  *
  * Esta clase decide la regla para mostrarla y validarla antes de intentar. La garantía bajo
- * concurrencia la da el repositorio de solicitudes, que cuenta y guarda en una sola transacción.
+ * concurrencia la da el repositorio de solicitudes, que cuenta y guarda en una transacción.
  */
 import { ReglaDeNegocioError } from '../../../../shared/exceptions/errores-dominio';
 

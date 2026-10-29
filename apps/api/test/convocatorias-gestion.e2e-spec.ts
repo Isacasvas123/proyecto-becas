@@ -1,15 +1,12 @@
 /**
- * PRUEBA DE INTEGRACIÓN — gestión de convocatorias (US-006 y US-007).
+ * Prueba de integración de la gestión de convocatorias (US-006 y US-007).
  *
- * A diferencia de `convocatorias.e2e-spec.ts`, aquí se montan los DOS guards globales reales
- * (`AutenticacionGuard` y `RolesGuard`), el `ValidationPipe` con la misma configuración que
- * `main.ts` y el filtro de excepciones del dominio. Es la pila HTTP completa de producción,
- * salvo dos sustituciones: el repositorio es el de memoria y el verificador de tokens es un
- * doble que reconoce dos tokens fijos.
- *
- * Así se comprueba lo que una prueba unitaria no puede: que las rutas de administración
- * EXIGEN el rol, que un error de dominio sale con el código HTTP correcto, y que la ruta
- * pública sigue abierta.
+ * A diferencia de `convocatorias.e2e-spec.ts`, aquí se montan los dos guards globales reales, el
+ * `ValidationPipe` con la configuración de `main.ts` y el filtro de excepciones del dominio: la
+ * pila HTTP completa de producción, salvo el repositorio en memoria y un verificador de tokens
+ * doble con dos tokens fijos. Así se comprueba lo que una prueba unitaria no puede: que las rutas
+ * de administración exigen el rol, que un error de dominio sale con el código HTTP correcto y que
+ * la ruta pública sigue abierta.
  */
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';

@@ -9,7 +9,7 @@ import { RolUsuario } from '../../../usuarios/domain/enums/rol-usuario.enum';
 import { Roles, UsuarioActual } from '../../../usuarios/presentation/guards/decoradores';
 
 /**
- * US-011. Todas las rutas son del PROPIO estudiante: el id sale del token (`@UsuarioActual`),
+ * US-011. Todas las rutas son del propio estudiante: el id sale del token (`@UsuarioActual`),
  * nunca de la URL. No existe "ver el perfil del estudiante X" para un estudiante.
  */
 @Roles(RolUsuario.ESTUDIANTE)

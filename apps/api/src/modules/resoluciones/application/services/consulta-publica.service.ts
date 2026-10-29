@@ -1,19 +1,14 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * US-025 — Consulta pública del estado. Sin sesión.
+ * US-025: consulta pública del estado, sin sesión.
  *
- * Criterios, y dónde se cumplen:
- *   1. Sin autenticación .................. `@Publico()` en el controlador
- *   2. Solo estado y fecha del último cambio  el DTO no tiene otro campo: ni nombre, ni documentos,
- *                                             ni puntajes, ni convocatoria
- *   3. Mensaje genérico si no coincide ...... el MISMO error para "no existe ese número" y "el CUI no
- *                                             es de esa solicitud"
+ * 1. Sin autenticación: `@Publico()` en el controlador.
+ * 2. Solo estado y fecha del último cambio: el DTO no tiene otro campo.
+ * 3. Mensaje genérico: el mismo error para "no existe ese número" y "el CUI no es de esa
+ *    solicitud".
  *
- * TRANSPARENCIA SIN ENUMERACIÓN
- *   Los números de solicitud son correlativos: cualquiera puede adivinar uno. Por eso el número solo
- *   no basta, hace falta el CUI del titular, y la respuesta a un intento fallido no dice cuál de los
- *   dos estaba mal. Además se limita la cantidad de consultas por dirección (ver el guard).
+ * Los números de solicitud son correlativos y se pueden adivinar, por eso no basta el número: hace
+ * falta el CUI del titular, y un intento fallido no dice cuál de los dos estaba mal. Además se
+ * limita la cantidad de consultas por dirección.
  */
 import { Inject, Injectable } from '@nestjs/common';
 

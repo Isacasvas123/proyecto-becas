@@ -1,13 +1,11 @@
 /**
- * PÁGINA `/notificaciones` — la bandeja del estudiante (US-022).
+ * Página `/notificaciones`: la bandeja del estudiante (US-022), pedida por el Product Owner el 17
+ * de octubre: cuando una solicitud cambie de estado, el sistema debe registrar el evento y
+ * generar una notificación.
  *
- * Exigida por el Product Owner el 17 de octubre de 2026: *"cuando una solicitud cambie de estado,
- * el sistema deberá registrar el evento y generar una notificación para el estudiante"*.
- *
- * El evento queda en el historial de la solicitud; esta pantalla es la otra mitad, el aviso. Se
- * genera sola: el backend lo hace con el patrón Observer, sin que ningún caso de uso lo pida.
- *
- * Cada quien ve únicamente las suyas: el servidor filtra por el token, nunca por un id de la URL.
+ * El evento queda en el historial de la solicitud y esta pantalla es el aviso, que el backend
+ * genera con el patrón Observer sin que ningún caso de uso lo pida. Cada quien ve solo las suyas:
+ * el servidor filtra por el token y nunca por un id de la URL.
  */
 import { useCallback, useEffect, useState, type ReactElement } from 'react';
 import { Link } from 'react-router-dom';

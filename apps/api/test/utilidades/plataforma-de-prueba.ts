@@ -1,12 +1,10 @@
 /**
  * La plataforma completa montada para las pruebas de integración de EPIC-04, EPIC-05 y EPIC-06.
  *
- * POR QUÉ NO SE IMPORTAN `EvaluacionesModule` NI `ResolucionesModule`
- *   Los dos importan `UsuariosModule`, que importa `@nestjs/jwt`, y en esta rama Jest todavía no
- *   puede cargar esa biblioteca (solo ESM; lo corrige el PR #12). Aquí se arma el mismo grafo con
- *   los mismos controladores, servicios y adaptadores, y un módulo de cuentas de prueba con los
- *   casos de uso reales de `usuarios` y bcrypt real. Lo único sustituido: repositorios en memoria,
- *   almacenamiento en memoria y el verificador de tokens.
+ * Arma a mano el mismo grafo que `EvaluacionesModule` y `ResolucionesModule`, con los mismos
+ * controladores, servicios y adaptadores, y un módulo de cuentas de prueba con los casos de uso
+ * reales de `usuarios` y bcrypt real. Solo se sustituyen los repositorios y el almacenamiento por
+ * versiones en memoria, y el verificador de tokens.
  */
 import { INestApplication, Module, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';

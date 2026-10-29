@@ -7,7 +7,7 @@ export const DICTAMEN_REPOSITORIO = Symbol('DictamenRepositorio');
  * NFR de trazabilidad: los registros de auditoría no se modifican desde la aplicación).
  */
 export interface DictamenRepositorio {
-  /** Si el evaluador ya dictaminó esa solicitud, DEBE lanzar `RecursoDuplicadoError`. */
+  /** Si el evaluador ya dictaminó esa solicitud, debe lanzar `RecursoDuplicadoError`. */
   crear(dictamen: Dictamen): Promise<void>;
   buscar(solicitudId: string, evaluadorId: string): Promise<Dictamen | null>;
   deSolicitudes(solicitudIds: readonly string[]): Promise<Dictamen[]>;

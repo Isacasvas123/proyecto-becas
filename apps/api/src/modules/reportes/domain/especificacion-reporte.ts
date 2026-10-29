@@ -1,6 +1,4 @@
 /**
- * CAPA: domain/
- * ────────────────────────────────────────────────────────────────────────────────
  * Qué se pide en un reporte de solicitudes (US-028). La construye `ReporteBuilder`; nadie más
  * debería crearla a mano, porque el builder es quien comprueba que la combinación tenga sentido.
  */

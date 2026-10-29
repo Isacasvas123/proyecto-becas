@@ -1,5 +1,5 @@
 /**
- * PUERTO de notificaciones (US-014, criterio 4).
+ * Puerto de notificaciones (US-014, criterio 4).
  *
  * Hoy lo implementa un adaptador que escribe en el log (`NOTIFICACIONES_TIPO=consola`). El envío
  * por correo y el resto de avisos de cambio de estado son US-022 (Sprint 5, patrón Observer): se

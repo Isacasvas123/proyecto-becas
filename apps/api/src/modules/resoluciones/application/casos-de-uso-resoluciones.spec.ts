@@ -1,7 +1,7 @@
 /**
- * PRUEBA UNITARIA — EPIC-05 (US-023 a US-025): la fachada de resolución y la consulta pública.
+ * Prueba unitaria — EPIC-05 (US-023 a US-025): la fachada de resolución y la consulta pública.
  *
- * Los colaboradores se sustituyen por dobles de sus PUERTOS. Es lo que el patrón Facade permite
+ * Los colaboradores se sustituyen por dobles de sus puertos. Es lo que el patrón Facade permite
  * probar: que la fachada coordina en el orden correcto y que el controlador no tiene que saberlo.
  */
 import {

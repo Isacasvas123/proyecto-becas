@@ -1,21 +1,12 @@
 /**
- * Encabezado institucional.
+ * Encabezado institucional en tres franjas, como los portales del Estado (becas.segeplan.gob.gt,
+ * becasnuestrofuturo.gob.gt): gobierno, marca del programa y una cenefa que separa la identidad del
+ * contenido. En un trámite público el ciudadano necesita saber ante qué institución actúa.
  *
- * Tres franjas, como en los portales del Estado (becas.segeplan.gob.gt,
- * becasnuestrofuturo.gob.gt):
- *
- *   1. Franja de gobierno — identifica de qué institución depende el sistema
- *   2. Marca del programa — emblema, entidad y nombre de la plataforma
- *   3. Cenefa geométrica — separa la identidad del contenido
- *
- * Esa jerarquía no es decorativa: en un trámite público el ciudadano necesita
- * saber de inmediato ante qué institución está actuando.
- *
- * NAVEGACIÓN (Sprint 3)
- *   Desde que el listado es público, el encabezado tiene que servir a dos personas: al
- *   visitante, que necesita un camino para iniciar sesión, y al administrador, que necesita
- *   llegar a la gestión. El enlace de gestión solo se muestra con ese rol; esconderlo no
- *   protege nada —lo protege el backend—, solo evita ofrecer una puerta que devolvería 403.
+ * Como el listado es público, el encabezado sirve a dos personas: al visitante, que necesita
+ * iniciar sesión, y al administrador, que necesita llegar a la gestión. Ese enlace solo se muestra
+ * con ese rol; esconderlo no protege nada, lo protege el backend, solo evita ofrecer una puerta
+ * que devolvería 403.
  */
 import type { ReactElement } from 'react';
 import { Link, NavLink } from 'react-router-dom';

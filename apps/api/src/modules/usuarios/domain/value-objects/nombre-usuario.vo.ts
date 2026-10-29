@@ -1,20 +1,10 @@
 /**
- * CAPA: domain/value-objects/
- * ────────────────────────────────────────────────────────────────────────────────
- * QUÉ ES UN OBJETO DE VALOR
- *   Un dato sin identidad propia, definido por su contenido, que se valida al construirse
- *   y después es inmutable. Una vez que tienes un `NombreUsuario`, sabes con certeza que
- *   es válido: no hay forma de crear uno que no lo sea.
+ * Nombre de usuario como objeto de valor: sin identidad propia, definido por su contenido,
+ * validado al construirse e inmutable. Si existe un `NombreUsuario`, es válido.
  *
- * POR QUÉ NO USAR UN `string` SUELTO
- *   Un `string` puede venir vacío, con espacios o con mayúsculas inconsistentes, y cada
- *   punto del código tendría que acordarse de validarlo y normalizarlo. Al encapsularlo,
- *   la regla vive en UN solo lugar y el compilador impide confundir un nombre de usuario
- *   con cualquier otro texto.
- *
- * NORMALIZACIÓN
- *   Se guarda siempre en minúsculas y sin espacios extremos, para que "Admin", "ADMIN" y
- *   " admin " sean el mismo usuario al iniciar sesión.
+ * Se usa en vez de un `string` suelto porque este puede venir vacío o con mayúsculas
+ * inconsistentes y cada punto tendría que validarlo; así la regla vive en un lugar. Se guarda en
+ * minúsculas y sin espacios extremos para que "Admin", "ADMIN" y " admin " sean el mismo usuario.
  */
 import { ReglaDeNegocioError } from '../../../../shared/exceptions/errores-dominio';
 

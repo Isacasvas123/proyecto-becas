@@ -1,21 +1,13 @@
 /**
- * CAPA: domain/enums/
- * ────────────────────────────────────────────────────────────────────────────────
  * Requisitos de elegibilidad que puede exigir una convocatoria (US-006).
  *
- * POR QUÉ UN CATÁLOGO CERRADO Y NO TEXTO LIBRE
- *   Si el administrador escribiera los requisitos a mano, "Promedio mínimo de 80",
- *   "promedio >= 80" y "80 de promedio" serían tres requisitos distintos, y en el Sprint 4
- *   no habría forma de comprobar automáticamente si un estudiante cumple o no. Un catálogo
- *   cerrado es lo que permite que `Documento.satisface(Requisito)` —ver el diagrama de
- *   clases— exista algún día.
+ * Es un catálogo cerrado y no texto libre: con "Promedio mínimo de 80", "promedio >= 80" y "80 de
+ * promedio" no habría forma de comprobar automáticamente si un estudiante cumple. El precio es
+ * que un requisito nuevo exige tocar el código; se acepta porque llegaría como cambio de
+ * requerimiento del Product Owner.
  *
- *   El precio es que un requisito nuevo exige tocar el código. Se acepta: el Ministerio no
- *   inventa requisitos cada semana, y cuando lo haga llegará como cambio de requerimiento
- *   del Product Owner, que es justo el flujo que el enunciado espera.
- *
- * El dominio declara sus propios enums y no importa los de Prisma, igual que `RolUsuario`.
- * La prueba `convocatoria-prisma.mapper.spec.ts` vigila que no se desincronicen.
+ * El dominio declara sus propios enums y no importa los de Prisma, igual que `RolUsuario`. La
+ * prueba `convocatoria-prisma.mapper.spec.ts` vigila que no se desincronicen.
  */
 export enum Requisito {
   NACIONALIDAD_GUATEMALTECA = 'NACIONALIDAD_GUATEMALTECA',

@@ -1,23 +1,14 @@
 /**
- * CAPA: application/services/
+ * Explica por qué una convocatoria no admite postulaciones en este momento.
  *
- * Explica POR QUÉ una convocatoria no admite postulaciones en este momento.
+ * `admiteSolicitudes` es una condición, pero falla por tres motivos: aún no abre, ya cerró o no
+ * está publicada. La primera versión del mensaje imprimía siempre la fecha de cierre, así que a
+ * quien llegaba antes de la apertura se le señalaba el dato equivocado. Un mensaje que nombra lo
+ * que está bien es peor que uno genérico.
  *
- * POR QUÉ ESTO EXISTE COMO FUNCIÓN APARTE
- *   La condición `admiteSolicitudes` es una sola, pero puede fallar por tres motivos distintos:
- *   la convocatoria todavía no abre, ya cerró, o no está publicada. La primera versión del
- *   mensaje imprimía siempre la fecha de cierre, así que a quien llegaba nueve días antes de la
- *   apertura se le mostraba una fecha del mes siguiente como si ese fuera el motivo del rechazo.
- *   Un mensaje que nombra el dato equivocado es peor que uno genérico: manda a revisar lo que
- *   está bien.
- *
- *   Vive aparte porque la necesitan dos casos de uso —crear y enviar— y porque así se prueba
- *   sin montar ninguno de los dos.
- *
- * LAS FECHAS SE ESCRIBEN A MANO Y NO CON `toLocaleDateString`
- *   El formato local depende de los datos de internacionalización que traiga el Node del
- *   contenedor. Un mensaje de error no es lugar para descubrir que ahí faltan: estos nombres
- *   son once palabras y no dependen de nada.
+ * Es una función aparte porque la usan dos casos de uso (crear y enviar) y se prueba sin montar
+ * ninguno. Las fechas se escriben a mano y no con `toLocaleDateString`, porque el formato local
+ * depende de los datos de internacionalización del Node del contenedor.
  */
 
 const MESES = [

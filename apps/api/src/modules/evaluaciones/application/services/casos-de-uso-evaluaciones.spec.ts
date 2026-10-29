@@ -1,5 +1,5 @@
 /**
- * PRUEBA UNITARIA — casos de uso de EPIC-04 (US-017 a US-021), con dobles de los puertos.
+ * Prueba unitaria — casos de uso de EPIC-04 (US-017 a US-021), con dobles de los puertos.
  */
 import {
   AccesoDenegadoError,

@@ -1,12 +1,10 @@
 /**
- * PUERTOS de `resoluciones` hacia los módulos que coordina. Mismo criterio que en `solicitudes` y
- * `evaluaciones`: se declaran aquí, con palabras de este módulo, y los adaptadores de
- * `infrastructure/integraciones/` los resuelven con los servicios que esos módulos exportan.
+ * Puertos de `resoluciones` hacia los módulos que coordina, declarados con palabras de este
+ * módulo; los adaptadores de `infrastructure/integraciones/` los resuelven con los servicios que
+ * esos módulos exportan.
  *
- * POR QUÉ UN MÓDULO APARTE
- *   Resolver necesita a `solicitudes` (la transición) y a `evaluaciones` (los dictámenes), y
- *   `evaluaciones` ya depende de `solicitudes`. Poner la fachada dentro de `solicitudes` crearía un
- *   ciclo entre módulos. `resoluciones` depende de todos y nadie depende de él.
+ * Es un módulo aparte porque resolver necesita a `solicitudes` y a `evaluaciones`, y
+ * `evaluaciones` ya depende de `solicitudes`: la fachada dentro de `solicitudes` crearía un ciclo.
  */
 export const CONSULTA_SOLICITUDES_RESOLUCION = Symbol('ConsultaSolicitudesResolucion');
 export const CONSULTA_DICTAMENES = Symbol('ConsultaDictamenes');

@@ -1,6 +1,4 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
  * Lo que `solicitudes` le ofrece al módulo `resoluciones` (EPIC-05). Igual que la puerta de
  * `evaluaciones`: no comprueba quién llama. Lo usan solo casos de uso que ya lo verificaron (la
  * fachada de resolución exige ADMINISTRADOR) o que no exponen nada personal (la consulta pública).

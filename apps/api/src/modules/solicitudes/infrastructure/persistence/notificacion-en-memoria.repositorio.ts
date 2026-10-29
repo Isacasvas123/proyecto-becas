@@ -1,6 +1,4 @@
 /**
- * CAPA: infrastructure/persistence/
- * ────────────────────────────────────────────────────────────────────────────────
  * Bandeja de avisos en memoria, para pruebas. Permite comprobar que cada cambio de estado
  * genera su notificación sin levantar PostgreSQL.
  */

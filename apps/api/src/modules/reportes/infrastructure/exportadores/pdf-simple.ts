@@ -1,15 +1,12 @@
 /**
- * Escritor de PDF mínimo: páginas con texto en Helvetica. Nada más.
+ * Escritor de PDF mínimo: páginas con texto en Helvetica.
  *
- * POR QUÉ NO UNA BIBLIOTECA
- *   Un reporte de gestión es texto en columnas. Para eso bastan unas 100 líneas sobre la
- *   especificación PDF 1.4 y se evita sumar al proyecto una dependencia —con sus propias
- *   dependencias— que habría que mantener y auditar. Si algún día se necesitan gráficos o tablas
- *   con bordes, se cambia este archivo por una biblioteca y el exportador no se entera.
+ * No usa biblioteca porque un reporte de gestión es texto en columnas: bastan unas 100 líneas
+ * sobre PDF 1.4 y se evita una dependencia que habría que mantener y auditar. Si hicieran falta
+ * gráficos, se cambia este archivo y el exportador no se entera.
  *
- * TEXTO
- *   Las fuentes estándar de PDF usan WinAnsiEncoding: cubren el español (á, é, ñ, ¿, ¡) pero no
- *   todo Unicode. Los caracteres que no están se reemplazan por "?".
+ * Las fuentes estándar usan WinAnsiEncoding: cubren el español, no todo Unicode. Lo que no está
+ * se reemplaza por "?".
  */
 
 export interface Texto {

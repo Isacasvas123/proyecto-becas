@@ -1,13 +1,9 @@
 /**
- * Esta prueba existe por una razón concreta y documentada.
- *
- * El dominio declara su propio `RolUsuario` para no importar Prisma (regla de capas), y
- * el precio es que hay DOS listas de roles que deben coincidir. Si alguien agrega un rol
- * al `schema.prisma` y olvida el enum del dominio, el desajuste explotaría en tiempo de
- * ejecución la primera vez que un usuario con ese rol iniciara sesión.
- *
- * Aquí se comparan ambos conjuntos para que ese error falle en CI, no en producción.
- * Es la mitigación del punto débil señalado en `rol-usuario.enum.ts`.
+ * El dominio declara su propio `RolUsuario` para no importar Prisma, y el precio es que hay dos
+ * listas de roles que deben coincidir. Si alguien agrega un rol al `schema.prisma` y olvida el
+ * enum del dominio, el desajuste explotaría en ejecución la primera vez que un usuario con ese
+ * rol iniciara sesión. Aquí se comparan ambos conjuntos para que falle en CI. Es la mitigación
+ * del punto débil señalado en `rol-usuario.enum.ts`.
  */
 import { RolUsuario as RolPrisma } from '@prisma/client';
 

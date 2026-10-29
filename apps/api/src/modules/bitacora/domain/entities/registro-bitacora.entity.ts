@@ -1,18 +1,11 @@
 /**
- * CAPA: domain/entities/
- * ────────────────────────────────────────────────────────────────────────────────
  * Un asiento de la bitácora: quién hizo qué, sobre qué, cómo terminó y cuándo.
  *
- * ES INMUTABLE
- *   Todas las propiedades son de solo lectura y no hay un solo método que cambie el objeto.
- *   Una bitácora que se puede corregir no es evidencia de nada. Es la misma decisión que en
- *   `Dictamen` (US-019, criterio 4) y en el historial de la solicitud (US-016).
+ * Es inmutable, igual que `Dictamen` y el historial de la solicitud: una bitácora que se puede
+ * corregir no sirve de evidencia.
  *
- * QUÉ NO GUARDA
- *   Ningún dato personal: ni CUI, ni correos, ni contraseñas, ni el contenido de los documentos.
- *   Guarda identificadores. Quien necesite el dato personal lo busca en su tabla, donde el control
- *   de acceso sigue aplicando; si la bitácora los copiara, sería una puerta trasera a los datos
- *   de los aspirantes.
+ * No guarda datos personales (CUI, correos, contraseñas, documentos), solo identificadores. Quien
+ * necesite el dato lo busca en su tabla, donde el control de acceso sigue aplicando.
  */
 import { RolUsuario } from '../../../usuarios/domain/enums/rol-usuario.enum';
 

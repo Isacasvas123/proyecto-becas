@@ -1,19 +1,14 @@
 /**
- * CAPA: shared/reglas/
- * ────────────────────────────────────────────────────────────────────────────────
  * Reglas de negocio que no pertenecen a un solo módulo.
  *
- * POR QUÉ AQUÍ Y NO EN `convocatorias` O EN `solicitudes`
- *   El umbral lo usan los dos: `convocatorias` para avisar al crear la convocatoria que sus becas
- *   necesitarán doble aprobación, y `solicitudes` para decidir a qué estado va al aprobarse.
- *   Ponerlo en uno obligaría al otro a importar su dominio, que es justo lo que la regla de capas
- *   prohíbe. Duplicarlo sería peor: dos números que hay que acordarse de cambiar juntos.
+ * El umbral de la segunda aprobación lo usan `convocatorias`, para avisar al crearla que sus becas
+ * necesitarán doble firma, y `solicitudes`, para decidir a qué estado va al aprobarse. Ponerlo en
+ * uno obligaría al otro a importar su dominio, que la regla de capas prohíbe; duplicarlo dejaría
+ * dos números que cambiar a la vez.
  *
- * POR QUÉ UNA CONSTANTE Y NO UNA VARIABLE DE ENTORNO
- *   Es una regla del negocio, no configuración de despliegue, igual que el tope de 5 MB de los
- *   documentos. Si el Ministerio cambia el umbral, cambia esta línea y las pruebas dicen de
- *   inmediato qué quedó afectado. En una variable de entorno, el mismo sistema se comportaría
- *   distinto en cada servidor y nadie podría decir cuál es la regla.
+ * Es una constante y no una variable de entorno porque es una regla del negocio y no configuración
+ * de despliegue, igual que el tope de 5 MB de los documentos. En una variable, el mismo sistema se
+ * comportaría distinto en cada servidor y nadie podría decir cuál es la regla.
  */
 
 /**
