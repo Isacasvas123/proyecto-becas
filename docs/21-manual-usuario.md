@@ -307,7 +307,11 @@ intenten al mismo tiempo.
 Las solicitudes aprobadas muestran **Adjudicar**: confirme y el sistema registra la beca con su
 código.
 
-> ⚠️ Ninguna de estas decisiones se puede deshacer desde el sistema.
+> **Becas de más de Q10,000.** Necesitan dos aprobaciones de dos personas distintas. La primera deja
+la solicitud en **Aprobación pendiente** y todavía no ocupa cupo. En el Consolidado aparece
+**Segunda aprobación**: otra persona del Ministerio escribe su motivo y confirma, y recién ahí se
+ocupa el cupo. Desde ese estado también se puede rechazar.
+>  Ninguna de estas decisiones se puede deshacer desde el sistema.
 
 ## 8. Consultar el estado sin cuenta
 
