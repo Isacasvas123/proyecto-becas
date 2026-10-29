@@ -50,13 +50,19 @@ criterio propio, separado de que el sistema funcione.
 ### 3.1 En alcance
 
 Todas las funcionalidades del Product Backlog. Por sprint, el alcance son las historias
-seleccionadas en el Planning. Hoy cubre:
+seleccionadas en el Planning. Al cierre cubre los nueve módulos:
 
-| Módulo         | Qué se prueba                                                            |
-| -------------- | ------------------------------------------------------------------------ |
-| `usuarios`     | Autenticación, roles, control de acceso, entidad y objetos de valor      |
-| `convocatorias`| Listado público, reglas de visibilidad, período de postulación, mapeo    |
-| `salud`        | *Liveness* (`/health`) y *readiness* (`/ready`)                          |
+| Módulo | Qué se prueba |
+| --- | --- |
+| `usuarios` | Autenticación, bloqueo tras 5 intentos, roles, registro, cuentas de evaluador y recuperación de contraseña |
+| `convocatorias` | Fábricas por tipo de beca, publicación, listado público y período de postulación |
+| `estudiantes` | Perfil académico y campos faltantes |
+| `solicitudes` | Los 30 pares estado × acción del patrón State, documentos, historial y avisos |
+| `evaluaciones` | Comités, asignación, dictámenes y las tres estrategias de puntaje |
+| `resoluciones` | Aprobar, rechazar, segunda aprobación, adjudicar, cupos y consulta pública |
+| `reportes` | El Builder, los filtros y la exportación a CSV y PDF |
+| `bitacora` | Que se registren las operaciones aceptadas y rechazadas, incluidos los 403 |
+| `salud` | *Liveness* (`/health`) y *readiness* (`/ready`) |
 
 ### 3.2 Fuera de alcance
 
@@ -142,16 +148,16 @@ Done**, incluida la verificación del Proxy Product Owner. No hay salida parcial
 Nacen de defectos reales encontrados en el Sprint 1, no de teoría:
 
 1. **Toda prueba debe tener una forma conocida de ponerse roja.** Si no se puede explicar qué
-   cambio la rompería, no está probando nada. _(Defecto 5: la prueba de ordenamiento verificaba el
-   doble de prueba.)_
+   cambio la rompería, no está probando nada. *(Defecto 5: la prueba de ordenamiento verificaba el
+   doble de prueba.)*
 2. **Si el código registra algo importante en el log, hay que comprobar el log.** El aviso *es* la
-   funcionalidad cuando es lo único que delataría un fallo en producción. _(Defecto 6.)_
+   funcionalidad cuando es lo único que delataría un fallo en producción. *(Defecto 6.)*
 3. **Un doble de prueba no debe ser más listo que el código real.** Si el doble ordena, filtra o
-   corrige por su cuenta, oculta la ausencia de esa lógica en el código. _(Defecto 5, otra vez.)_
+   corrige por su cuenta, oculta la ausencia de esa lógica en el código. *(Defecto 5, otra vez.)*
 4. **El código que se va a presentar como evidencia tiene que estar probado.** Los tres adaptadores
    del patrón Adapter estuvieron a 0 % porque las pruebas los sustituían por dobles: bcrypt y JWT
-   reales nunca se ejecutaban. _(Defecto DEF-02, corregido: ahora se prueban con las bibliotecas
-   reales, incluida la firma con otro secreto y los tokens vencidos.)_
+   reales nunca se ejecutaban. *(Defecto DEF-02, corregido: ahora se prueban con las bibliotecas
+   reales, incluida la firma con otro secreto y los tokens vencidos.)*
 5. **Los criterios de aceptación se prueban textualmente.** Si el criterio dice "mensaje genérico
    que no revele cuál de los dos campos falló", la prueba compara los dos mensajes. No se
    parafrasea un criterio para que sea más fácil de probar.
@@ -194,7 +200,7 @@ pruebas que no pueden fallar no vale nada.
 | **2**     | Guards y control de acceso                              | Un fallo aquí es una fuga de datos, no una molestia          |
 | **3**     | Adaptadores con bibliotecas reales (bcrypt, JWT)         | Cubiertos con las bibliotecas reales desde DEF-02; son la evidencia del patrón Adapter |
 | **4**     | Controladores y DTO                                      | Cubiertos por integración, no por unitarias                  |
-| _No se exige_ | Módulos de NestJS y `main.ts`                      | Son configuración. Ya están excluidos de la medición          |
+| *No se exige* | Módulos de NestJS y `main.ts`                      | Son configuración. Ya están excluidos de la medición          |
 
 ## 7. Registro de defectos
 

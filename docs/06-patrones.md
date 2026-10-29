@@ -343,8 +343,9 @@ Implementado el 16 de septiembre (previsto para el Sprint 6; llegó con US-023).
 
 Resolver una solicitud (aprobarla o rechazarla) no es una operación simple: hay que verificar que
 tenga dictámenes registrados, comprobar que quedan cupos disponibles en la convocatoria, ejecutar
-la transición de estado validando que sea legal, generar el registro de auditoría, crear el acta
-de resolución y notificar al estudiante. Son seis colaboradores distintos.
+la transición de estado validando que sea legal, dejarla en el historial con su autor y su
+motivo, y notificar al estudiante. Son cuatro colaboradores de tres módulos distintos. El acta de
+resolución (US-026) estaba prevista como un quinto y no se implementó.
 
 Si el controlador orquestara todo eso, la lógica de negocio se filtraría a la capa de
 presentación, se duplicaría en cada punto que necesite resolver una solicitud (API REST,
@@ -353,7 +354,7 @@ levantar HTTP.
 
 ### ¿Qué otras alternativas existían?
 
-1. **Que el controlador llame a los seis servicios.** Descartada: viola la separación de capas y
+1. **Que el controlador llame a los cuatro servicios.** Descartada: viola la separación de capas y
    duplica la orquestación en cada punto de entrada.
 2. **Un servicio "Dios" que haga todo internamente.** Descartada: viola responsabilidad única y
    convierte una clase en inmantenible.
@@ -372,7 +373,7 @@ especializado. Así se preserva la responsabilidad única de cada uno.
 
 - **Punto de entrada único** al proceso, reutilizado por REST, resolución masiva y tareas
   programadas.
-- **Menor acoplamiento**: la capa de presentación depende de una interfaz, no de seis.
+- **Menor acoplamiento**: la capa de presentación depende de una interfaz, no de cuatro.
 - **La transaccionalidad se maneja en un solo lugar**: o se completa todo el proceso, o no se
   aplica nada.
 - **Testeable de punta a punta** sin levantar el servidor HTTP.

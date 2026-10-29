@@ -6,7 +6,7 @@
 | **Proyecto** | Plataforma Nacional para la Gestión Integral de Becas |
 | **Equipo de Diseño** | Ivan (arquitectura) · Fernando (diagramas) · Stuard (patrones) · Isaac |
 | **Fecha de Creación** | 3 de septiembre de 2026 |
-| **Versión** | 1.0 — *documento vivo, se actualiza al cerrar cada sprint* |
+| **Versión** | 2.0 — 28 de octubre de 2026 (estructura final, decisiones y cambios del Product Owner) |
 
 ---
 
@@ -130,39 +130,36 @@ Ninguna arquitectura es gratis. Asumimos conscientemente:
 
 ### 2.3 Estructura del código
 
-Estado real al 3 de septiembre de 2026 (✅ construido · ⬜ pendiente):
+Estado al 28 de octubre de 2026:
 
 ```
 apps/api/src/
 ├─ modules/
-│  ├─ usuarios/                                                    ✅ Sprint 1 (US-002)
-│  │  ├─ domain/
-│  │  │  ├─ entities/          Usuario
-│  │  │  ├─ enums/             RolUsuario
-│  │  │  ├─ value-objects/     NombreUsuario
-│  │  │  └─ ports/             UsuarioRepositorio · HasherPassword · GeneradorToken
-│  │  ├─ application/
-│  │  │  ├─ services/          AutenticarUsuarioService
-│  │  │  └─ dto/               SesionIniciadaDto
-│  │  ├─ infrastructure/
-│  │  │  ├─ persistence/       UsuarioPrismaRepositorio · UsuarioEnMemoriaRepositorio
-│  │  │  └─ adapters/          BcryptHasherAdapter · JwtGeneradorTokenAdapter
-│  │  └─ presentation/
-│  │     ├─ controllers/       AuthController  (POST /auth/login)
-│  │     └─ dto/               LoginRequestDto
-│  ├─ convocatorias/                                               ✅ Sprint 1 (esqueleto)
-│  │  └─ (misma estructura; solo la operación de lectura de US-008)
-│  ├─ salud/                                                       ✅ GET /health
-│  ├─ estudiantes/                                                 ⬜ Sprint 4
-│  ├─ solicitudes/                                                 ⬜ Sprint 4
-│  ├─ evaluaciones/                                                ⬜ Sprint 5
-│  └─ reportes/                                                    ⬜ Sprint 7
+│  ├─ usuarios/        cuentas, acceso, roles y recuperación de contraseña
+│  │  ├─ domain/          Usuario · TokenRecuperacion · NombreUsuario · RolUsuario
+│  │  │                   puertos: UsuarioRepositorio · HasherPassword · GeneradorToken
+│  │  │                            EnviadorCorreo · TokenRecuperacionRepositorio
+│  │  ├─ application/     AutenticarUsuarioService · RegistrarEstudianteService
+│  │  │                   RecuperacionPasswordService
+│  │  ├─ infrastructure/  repositorios Prisma y en memoria · bcrypt · JWT · correo consola y SMTP
+│  │  └─ presentation/    AuthController · guards de autenticación, roles y límite de intentos
+│  ├─ convocatorias/   programas de beca (Factory Method)
+│  ├─ estudiantes/     perfil académico y socioeconómico
+│  ├─ solicitudes/     expediente, documentos, historial y avisos (State, Observer, Adapter)
+│  ├─ evaluaciones/    comités, asignaciones y dictámenes (Strategy)
+│  ├─ resoluciones/    aprobar, segunda aprobación, adjudicar y consulta pública (Facade)
+│  ├─ reportes/        estadísticas y exportación a CSV y PDF (Builder)
+│  ├─ bitacora/        auditoría, escrita por un middleware global
+│  └─ salud/           GET /health y GET /ready
 ├─ shared/
-│  ├─ exceptions/              errores-dominio.ts · dominio-exception.filter.ts
-│  ├─ persistence/             PrismaService · PrismaModule
-│  └─ patterns/                ⬜ implementaciones transversales de patrones
+│  ├─ exceptions/      errores de dominio y el filtro global que los traduce a HTTP
+│  ├─ persistence/     PrismaService · PrismaModule
+│  └─ reglas/          el umbral de la segunda aprobación (Q10,000)
 └─ main.ts
 ```
+
+`usuarios` se muestra abierto como ejemplo; los demás módulos siguen las mismas cuatro capas. El
+detalle de cada uno está en el Manual Técnico, sección 3.
 
 **Notas sobre desviaciones respecto al diseño original:**
 
@@ -170,11 +167,14 @@ apps/api/src/
   (`RolUsuario`, `TipoBeca`, `EstadoConvocatoria`) en vez de importar los de Prisma, que
   rompería la regla de capas. El precio es mantener dos listas sincronizadas; se mitiga con
   `usuario-prisma.mapper.spec.ts`, que compara ambos conjuntos y falla en CI si divergen.
-- **`shared/persistence/`** aloja el `PrismaService` compartido por los seis módulos, en vez de
+- **`shared/persistence/`** aloja el `PrismaService` compartido por los nueve módulos, en vez de
   duplicar la conexión en cada uno.
 - **`modules/salud/` no tiene las cuatro capas** a propósito: no contiene reglas de negocio.
-  Aplicarle la estructura completa sería ceremonia vacía. La arquitectura se aplica donde
-  aporta, no por reglamento.
+  Aplicarle la estructura completa sería ceremonia vacía.
+- **`resoluciones/` no tiene entidades propias.** Coordina entidades de otros módulos a través de
+  su capa de aplicación, que es justo la regla de comunicación entre módulos.
+- **`shared/patterns/`**, previsto al inicio, no se creó. Cada patrón quedó dentro del módulo que
+  lo necesita.
 
 **Responsabilidad de cada capa**
 
@@ -197,7 +197,7 @@ apps/api/src/
 | **S** — Responsabilidad única | Cada servicio de aplicación implementa un solo caso de uso. `EnviarSolicitudService` no evalúa ni notifica: delega. |
 | **O** — Abierto/cerrado | Un nuevo tipo de beca se agrega registrando una nueva `CriterioEvaluacionStrategy` y un nuevo producto en `ConvocatoriaFactory`, sin modificar el código existente. |
 | **L** — Sustitución de Liskov | Toda implementación de `CriterioEvaluacionStrategy` respeta el mismo contrato: recibe una solicitud y devuelve un puntaje entre 0 y 100, sin excepciones inesperadas. |
-| **I** — Segregación de interfaces | Puertos pequeños y específicos: `AlmacenamientoDocumentosPort` expone `guardar`, `obtener` y `eliminar`, no una interfaz genérica de "servicios externos". |
+| **I** — Segregación de interfaces | Puertos pequeños y específicos: `AlmacenamientoDocumentos` expone `guardar`, `obtener` y `eliminar`, no una interfaz genérica de "servicios externos". |
 | **D** — Inversión de dependencias | Los servicios de aplicación dependen de interfaces declaradas en el dominio; las implementaciones concretas se inyectan mediante el contenedor de NestJS. |
 
 ---
@@ -210,9 +210,9 @@ por línea en el Pull Request en lugar de un archivo binario opaco.
 
 | Diagrama | Archivo | Contenido |
 |---|---|---|
-| **3.1 Casos de uso** | [`diagramas/01-casos-de-uso.md`](diagramas/01-casos-de-uso.md) | 5 actores, 17 casos de uso agrupados, relaciones `include` y `extend`, y **el detalle de los casos que cubren los nueve objetivos del enunciado**: precondiciones, flujo principal, flujos alternos, flujos de excepción y postcondiciones |
-| **3.2 Componentes** | [`diagramas/02-componentes.md`](diagramas/02-componentes.md) | Vista general del despliegue, los seis módulos con sus dependencias, **la tabla de puertos y sus adaptadores**, y los tres entornos |
-| **3.3 Clases** | [`diagramas/03-clases-dominio.md`](diagramas/03-clases-dominio.md) | Modelo de dominio con 9 entidades, las jerarquías de los patrones State y Strategy, el diagrama de transiciones de estado y los objetos de valor |
+| **3.1 Casos de uso** | [`diagramas/01-casos-de-uso.md`](diagramas/01-casos-de-uso.md) | 5 actores, 21 casos de uso agrupados, relaciones `include` y `extend`, y el detalle de los 17 casos que cubren los nueve objetivos del enunciado y los requerimientos del Product Owner: precondiciones, flujo principal, flujos alternos, flujos de excepción y postcondiciones |
+| **3.2 Componentes** | [`diagramas/02-componentes.md`](diagramas/02-componentes.md) | Vista general del despliegue, los nueve módulos con sus dependencias, la tabla de puertos y sus adaptadores, y los entornos |
+| **3.3 Clases** | [`diagramas/03-clases-dominio.md`](diagramas/03-clases-dominio.md) | Modelo de dominio con 12 entidades, las jerarquías de los patrones State y Strategy, el diagrama de transiciones de estado, el patrón Observer y los objetos de valor |
 
 **Lo que hay que mirar en cada uno:**
 
@@ -239,21 +239,27 @@ permite responder "¿por qué hicieron esto así?" en la presentación final.
 | ADR-04 | 03/09/2026 | Puertos y adaptadores en las fronteras | El PO cambiará requerimientos e integraciones durante el semestre | Aceptada |
 | ADR-05 | 03/09/2026 | `bcryptjs` en vez de `bcrypt` | `bcrypt` es un módulo nativo que se compila al instalar; en un equipo de 4 máquinas distintas una compilación fallida bloquea a alguien un día entero. `bcryptjs` implementa el mismo algoritmo en JS puro y cumple igual el NFR de seguridad. Es más lento, cosa irrelevante porque bcrypt es lento a propósito | Aceptada |
 | ADR-06 | 03/09/2026 | Campos privados de JavaScript (`#`) para datos sensibles del dominio | El `private` de TypeScript desaparece al compilar: el hash de contraseña quedaba visible en `Object.keys()` y `JSON.stringify()`. Detectado por una prueba que falló. Un `#` es privado en tiempo de ejecución | Aceptada |
-| ADR-07 | 03/09/2026 | La sesión del frontend vive solo en memoria, no en `localStorage` | Un token en `localStorage` es legible por cualquier script: un XSS bastaría para robarlo. Se acepta el costo de reautenticar al recargar. La solución definitiva es una cookie `httpOnly`, prevista en el Sprint 2 con US-003 | Aceptada, revisar en Sprint 2 |
+| ADR-07 | 03/09/2026 | La sesión del frontend vive solo en memoria, no en `localStorage` | Un token en `localStorage` es legible por cualquier script: un XSS bastaría para robarlo. Se acepta el costo de reautenticar al recargar | Reemplazada por la revisión de abajo |
+| ADR-07b | Oct 2026 | El token pasa a `sessionStorage` | En memoria, cada recarga de la página echaba a quien estaba en mitad de un trámite. `sessionStorage` no protege más que `localStorage` frente a un XSS, pero el token muere al cerrar la pestaña. Lo correcto sería una cookie `httpOnly`; no se hizo porque el frontend y la API están en dominios distintos y obligaría a agregar protección CSRF | Aceptada, anotada como deuda |
 | ADR-08 | 03/09/2026 | La regla de capas se verifica con ESLint, no solo en code review | `no-restricted-imports` rechaza importar `@nestjs/*`, `@prisma/client` o HTTP dentro de `domain/`. Antes dependía de que el revisor se acordara; ahora lo bloquea el CI | Aceptada |
-| ADR-09 | 17/10/2026 | Bitacora de auditoria escrita por un MIDDLEWARE, no por cada caso de uso | Exigencia del PO. Auditar es transversal: repetir la escritura en cada servicio la mezclaria con las reglas de negocio y bastaria olvidarla en un endpoint nuevo para perder el registro, sin que nadie lo note. Se penso primero como interceptor, pero una prueba de integracion mostro que en NestJS los guards corren antes: los 403 del control de acceso nunca se registraban, y son los que mas interesa auditar. El middleware se engancha al evento finish de la respuesta, cuando el codigo ya es definitivo y el guard ya dejo el portador | Aceptada |
-| ADR-10 | | | | |
+| ADR-09 | 17/10/2026 | Bitácora de auditoría escrita por un middleware, no por cada caso de uso | Exigencia del PO. Auditar es transversal: repetir la escritura en cada servicio la mezclaría con las reglas de negocio y bastaría olvidarla en un endpoint nuevo para perder el registro, sin que nadie lo note. Se pensó primero como interceptor, pero una prueba de integración mostró que en NestJS los guards corren antes: los 403 del control de acceso nunca se registraban, y son los que más interesa auditar. El middleware se engancha al evento `finish` de la respuesta, cuando el código ya es definitivo | Aceptada |
+| ADR-10 | 17/10/2026 | Los avisos al estudiante se publican con Observer, después de guardar | La solicitud acumula sus cambios de estado y el caso de uso los publica cuando ya se guardaron. Así nunca se avisa de algo que no llegó a la base de datos, y si el aviso falla la operación del usuario no se cae | Aceptada |
+| ADR-11 | 24/10/2026 | El correo de recuperación usa por defecto el adaptador de consola | El adaptador SMTP no está verificado contra un servidor real. Con el de consola el flujo completo se puede recorrer y demostrar; se cambia con `CORREO_TIPO` sin tocar ninguna regla | Aceptada |
 
 ---
 
 ## 5. Análisis de Impacto de Cambios de Requerimientos
 
-Cada vez que el Product Owner emita un cambio, se registra aquí antes de implementarlo.
+El 17 de octubre de 2026 el Product Owner presentó tres requerimientos nuevos. El análisis
+completo, con lo que costó cada uno medido en archivos, migraciones y pruebas, está en
+`23-analisis-impacto-requerimientos-po.md`.
 
-| # | Fecha | Cambio solicitado | Componentes afectados | Esfuerzo | Decisión de diseño |
-|---|---|---|---|---|---|
-| CR-01 | | | | | |
+| # | Fecha | Cambio solicitado | Componentes afectados | Decisión de diseño |
+|---|---|---|---|---|
+| R1 | 17/10/2026 | Segunda aprobación para becas de más de Q10,000 (US-033) | `solicitudes`, `resoluciones`, `convocatorias`, `shared/reglas` | Un estado nuevo del patrón State, `APROBACION_PENDIENTE`, sin modificar los existentes |
+| R2 | 17/10/2026 | Registrar cada cambio de estado y avisar al estudiante (US-034) | `solicitudes` y la web | Patrón Observer (ADR-10) |
+| R3 | 17/10/2026 | Registrar quién hizo cada operación, cuándo y con qué resultado (US-032) | Módulo nuevo `bitacora` | Middleware global (ADR-09) |
 
-> **Instrucción para el equipo:** este registro es evaluable. El enunciado califica
-> explícitamente la *capacidad de adaptarse al cambio*, y sin evidencia escrita no hay nada que
-> calificar. Aunque el cambio sea pequeño, se documenta.
+Ninguno de los tres obligó a cambiar la arquitectura. R1 no tocó ningún estado existente, R2
+agregó una línea a cada caso de uso que cambia un estado, y R3 no tocó ninguno: es lo que la
+sección 2.2 prometía.

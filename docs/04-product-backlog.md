@@ -121,7 +121,7 @@ los 22 estimados al cerrar el backlog inicial.
 | US-033 Segunda aprobación sobre Q10,000 | 8 | Terminada, verificada en Staging | PR #27, PR #34 | Requerimiento del Product Owner del 17 de octubre. La primera aprobación deja la solicitud en `APROBACION_PENDIENTE` sin reservar cupo; la segunda la confirma una persona distinta |
 | US-034 Avisos al estudiante | 5 | Terminada, verificada en Staging | PR #27 | Requerimiento del Product Owner del 17 de octubre. Implementada con el patrón Observer |
 | US-035 Recuperar la contraseña | 8 | Terminada, pendiente de verificar en Staging | PR #34 | Propuesta por el equipo el 24 de octubre tras revisar las prácticas de almacenamiento de contraseñas |
-| US-036 Ver los documentos sin descargarlos | 3 | Terminada, pendiente de verificar en Staging | — | Propuesta por el equipo el 29 de octubre. El evaluador revisa los adjuntos en la misma pantalla donde redacta el dictamen |
+| US-036 Ver los documentos sin descargarlos | 3 | Terminada, pendiente de verificar en Staging | — | Propuesta por el equipo el 28 de octubre. El evaluador revisa los adjuntos en la misma pantalla donde redacta el dictamen |
 
 ---
 
@@ -268,8 +268,9 @@ completar mi solicitud.
 - Se puede reemplazar un documento mientras la solicitud esté en `BORRADOR`.
 - Cada documento queda asociado al requisito que satisface.
 
-> 🔧 **Aquí se implementa el patrón Adapter** (`AlmacenamientoDocumentosPort`): almacenamiento
-> en disco local durante el desarrollo, en la nube en producción, sin que el dominio se entere.
+> 🔧 **Aquí se implementa el patrón Adapter** (`AlmacenamientoDocumentos`): almacenamiento
+> en disco local y un adaptador en memoria para las pruebas, sin que el dominio se entere. Uno de
+> nube sería una clase más; no se construyó.
 
 **Prioridad:** Alta · **Estimación:** 8
 
@@ -364,9 +365,9 @@ poder** cerrar formalmente su proceso.
 - La solicitud pasa a `APROBADA` o `RECHAZADA`; la transición queda registrada con autor y fecha.
 - No se puede aprobar por encima de los cupos disponibles de la convocatoria.
 
-> 🔧 **Aquí se implementa el patrón Facade** (`SolicitudFacade`): la resolución coordina
-> validación de cupos, cambio de estado, generación de acta y notificación en una sola operación
-> expuesta al controlador.
+> 🔧 **Aquí se implementa el patrón Facade** (`ResolucionFacade`): la resolución coordina
+> dictámenes, cupos, cambio de estado y aviso en una sola operación expuesta al controlador. El
+> acta quedó para US-026 y no se implementó.
 
 **Prioridad:** Alta · **Estimación:** 8
 
@@ -513,7 +514,7 @@ corrigen los criterios de la historia, no se culpa a nadie, y es material para l
 
 ## Requerimientos incorporados después del backlog inicial
 
-> Estas cuatro historias no estaban en el backlog de la versión 1.0. Se documentan aquí, con
+> Estas cinco historias no estaban en el backlog de la versión 1.0. Se documentan aquí, con
 > el mismo formato que las demás, porque un requerimiento que entra tarde sigue siendo un
 > requerimiento: lo que cambia es cuándo se estimó, no cómo se trata.
 >
@@ -696,7 +697,7 @@ segunda aprobación **para poder** evitar que una sola persona comprometa montos
 > factor que surgió en el mismo análisis se descartó de forma explícita en lugar de dejarlo
 > abierto.
 >
-> **Actualización del 29 de octubre de 2026.** Se sumó **US-036**, también propuesta por el equipo:
+> **Actualización del 28 de octubre de 2026.** Se sumó **US-036**, también propuesta por el equipo:
 > **36 historias y 208 puntos**. Salió de revisar el flujo de evaluación y notar que nada obligaba
 > al evaluador a abrir los documentos antes de dictaminar. Se descartó pedirle una casilla de
 > confirmación —se marca sin leer— y se optó por mostrarle los documentos en la misma pantalla.

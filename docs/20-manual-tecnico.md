@@ -524,8 +524,12 @@ pasos detallados y los errores frecuentes están en `13-guia-instalacion.md`.
 Definido como código en `render.yaml` y `apps/api/Dockerfile`. El procedimiento completo está en
 `17-staging.md`.
 
-⚠️ **Al 12 de septiembre de 2026 el entorno de Staging no está levantado**, y la imagen de Docker
-nunca se ha construido. Es el impedimento principal del proyecto.
+Staging está desplegado en Render desde el 4 de octubre de 2026: la API corre en Docker, el frontend es
+un sitio estático y la base es PostgreSQL de Render. Se despliega solo con cada merge a `develop`, y la
+imagen ejecuta `migrate deploy` al arrancar. El workflow *Verificar Staging* comprueba `/health`,
+`/ready`, el listado público y que el login rechace credenciales inválidas.
+
+⚠️ La base gratuita de Render caduca el 2 de noviembre de 2026; `17-staging.md` explica cómo recrearla.
 
 ## 10. Cómo agregar un módulo nuevo
 
@@ -553,7 +557,7 @@ El orden importa: de dentro hacia fuera, igual que apuntan las dependencias.
 
 | Patrón           | Tipo           | Estado                                 | Sprint |
 | ---------------- | -------------- | -------------------------------------- | ------ |
-| **Adapter**      | Estructural    | ✅ Implementado y probado (DEF-03)      | 1      |
+| **Adapter**      | Estructural    | ✅ Implementado y probado (DEF-02)      | 1      |
 | **Factory Method** | Creacional   | ✅ Implementado y probado (12 Sep)      | 3      |
 | **State**        | Comportamiento | ✅ Implementado y probado (16 Sep)      | 4      |
 | **Strategy**     | Comportamiento | ✅ Implementado y probado (16 Sep)      | 5      |

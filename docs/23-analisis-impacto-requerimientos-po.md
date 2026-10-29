@@ -163,8 +163,8 @@ poder leer sus propios datos.
 
 ## 7. Lo que falta
 
-- [ ] Aplicar las tres migraciones en Staging y volver a desplegar.
-- [ ] Verificar US-032, US-033 y US-034 en Staging; hoy están verificadas en local y en CI.
+- [x] Aplicar las tres migraciones en Staging: se aplican solas al arrancar la imagen.
+- [x] Verificar US-032, US-033 y US-034 en Staging.
 - [ ] Confirmar con el Product Owner las cuatro decisiones de la sección 2.
 - [ ] Definir el monto de las convocatorias que ya existen en Staging, hoy en 0.
 - [ ] US-022 (correo) sigue pendiente: será el segundo observador.

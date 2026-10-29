@@ -152,7 +152,7 @@ subir código directamente a `main` saltándose el flujo de PRs, comportamiento 
 
 - **1ª falta grave:** reunión formal del equipo (Paso 3 de resolución de conflictos) para
   discutir el problema y definir un plan de mejora con plazos claros, documentado en minuta.
-- **Si persiste, el equipo aplicará** *(marcar lo acordado en la reunión del 3 de septiembre)*:
+- **Si persiste, el equipo aplicará** *(acordado en la reunión del 3 de septiembre)*:
 
   - [x] Reducción proporcional del porcentaje de contribución declarado en la entrega evaluada,
         calculado con base en los Puntos de Historia efectivamente completados por el integrante.
@@ -160,9 +160,6 @@ subir código directamente a `main` saltándose el flujo de PRs, comportamiento 
   - [x] Reporte formal al docente, adjuntando la evidencia documentada, para que tome las
         medidas académicas correspondientes, que pueden incluir la separación del integrante
         del proyecto.
-
-> ⚠️ **Estas casillas deben marcarse en equipo durante la reunión de arranque.** El Anexo del
-> proyecto exige que las sanciones sean consensuadas, no copiadas.
 
 ---
 
