@@ -6,18 +6,14 @@
 | ---------------------- | -------------------------------------------- |
 | **Versión del sistema** | 0.1.0                                       |
 | **Versión del manual** | 1.0                                          |
-| **Fecha**              | 12 de septiembre de 2026 · actualizado el 16 de septiembre |
+| **Fecha**              | 12 de septiembre de 2026 · actualizado el 29 de octubre |
 | **Responsable**        | Stuard Estrada                               |
 | **Dirigido a**         | Estudiantes, evaluadores y personal del Ministerio |
 
-> ### Lea esto antes de seguir
+> > ### Lea esto antes de seguir
 >
-> **La plataforma está en construcción.** Este manual describe **únicamente lo que ya funciona** al
-> 16 de septiembre de 2026. La sección 12 lista lo que todavía no existe, con la fecha prevista.
->
-> Se escribe así a propósito: un manual que describa pantallas que no existen hace perder el
-> tiempo a quien lo lee y no sirve para nada.
-
+> Este manual describe lo que funciona en la plataforma al 29 de octubre de 2026. La sección 12
+> lista lo que no se incluyó en esta versión.
 ---
 
 ## 1. Qué es esta plataforma
