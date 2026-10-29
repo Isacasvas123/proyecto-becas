@@ -1,4 +1,4 @@
-# Manual de Usuario
+******# Manual de Usuario
 
 ### Plataforma Nacional para la Gestión Integral de Becas
 
@@ -248,7 +248,15 @@ Si su solicitud se **aprueba** o se **rechaza**, el motivo aparece en el histori
 **adjudica** la beca, arriba verá el **código de su beca** (por ejemplo `BECA-2026-000001`):
 consérvelo.
 
-## 5. Evaluar solicitudes (evaluadores)
+### 4.6 Mis avisos
+
+Cada vez que su solicitud cambia de estado, el sistema le deja un aviso en **Mis avisos**, en el
+encabezado. Cada aviso dice qué cambió y, si lo hay, el motivo.
+
+- **Marcar leído** marca un aviso; **Marcar todos como leídos**, todos a la vez.
+- Los avisos quedan registrados aunque los marque como leídos.
+- Hoy los avisos se ven dentro de la plataforma; todavía no llegan por correo.
+- ## 5. Evaluar solicitudes (evaluadores)
 
 Con una cuenta de **evaluador**, al entrar llega a **Mis evaluaciones**: las solicitudes que le
 asignaron, primero las pendientes. No verá ninguna otra.
