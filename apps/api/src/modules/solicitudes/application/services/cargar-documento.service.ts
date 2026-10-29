@@ -1,15 +1,10 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * US-013 — Cargar documentación. Flujo de CU-07.
+ * US-013: cargar documentación (CU-07).
  *
- * EL ORDEN IMPORTA (flujo de excepción 3a de CU-07)
- *   "No puede quedar un requisito marcado como cumplido sin archivo detrás." Por eso:
- *     1. Se valida el archivo antes de tocar nada.
- *     2. Se guarda el archivo nuevo con un nombre ÚNICO (nunca sobre el anterior).
- *     3. Se actualiza la solicitud y se guarda.
- *     4. Solo si todo salió bien, se borra el archivo anterior, si lo había.
- *   Si el paso 3 falla, se borra el archivo recién subido y el expediente queda como estaba.
+ * Orden del flujo de excepción 3a: no puede quedar un requisito cumplido sin archivo detrás.
+ * Se valida el archivo, se guarda con un nombre único (nunca sobre el anterior), se actualiza la
+ * solicitud y solo entonces se borra el archivo anterior. Si falla la solicitud, se borra el
+ * recién subido y el expediente queda como estaba.
  */
 import { randomUUID } from 'node:crypto';
 

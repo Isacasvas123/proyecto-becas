@@ -1,6 +1,4 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
  * Operaciones compartidas por los casos de uso de solicitudes: cargar una solicitud comprobando
  * que sea del estudiante, y presentarla. Existe para que la regla "un estudiante solo ve sus
  * propias solicitudes" (US-003) esté escrita UNA vez y no copiada en cada caso de uso.

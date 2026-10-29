@@ -1,33 +1,17 @@
 /**
- * CAPA: presentation/
- * ────────────────────────────────────────────────────────────────────────────────
- * Escribe la bitácora. Exigida por el Product Owner el 17 de octubre de 2026.
+ * Escribe la bitácora (pedida por el Product Owner el 17 de octubre).
  *
- * POR QUÉ AQUÍ Y NO EN CADA CASO DE USO
- *   Auditar es un asunto TRANSVERSAL: no pertenece a "publicar una convocatoria" ni a "emitir un
- *   dictamen", le ocurre a todas las operaciones por igual. Si cada servicio escribiera su propio
- *   asiento tendríamos la regla repetida en treinta sitios, mezclada con las reglas de negocio, y
- *   bastaría olvidarla al escribir un endpoint nuevo para que esa acción quedara sin registrar.
- *   Nadie lo notaría: una bitácora incompleta se ve igual que una completa.
+ * Va aquí y no en cada caso de uso porque auditar es transversal: repetirlo en treinta servicios
+ * lo mezclaría con las reglas de negocio, y bastaría olvidarlo en un endpoint nuevo para perder
+ * el registro sin que nadie lo note.
  *
- * POR QUÉ MIDDLEWARE Y NO INTERCEPTOR
- *   La primera versión fue un interceptor, y la prueba de integración destapó el problema: en
- *   NestJS **los guards corren antes que los interceptores**, así que un 403 del control de
- *   acceso nunca llegaba a registrarse. Y un intento rechazado de entrar donde no se debe es
- *   justamente lo que una auditoría quiere ver.
+ * Es middleware y no interceptor porque en NestJS los guards corren antes que los interceptores,
+ * y los 403 del control de acceso nunca se registraban. El middleware se engancha al evento
+ * `finish` de la respuesta, cuando el código de estado ya es el definitivo.
  *
- *   El middleware corre antes que todo y se engancha al evento `finish` de la respuesta, que
- *   ocurre cuando ya está decidida. Para entonces el guard ya dejó el portador en la petición
- *   —si lo hubo— y el código de estado es el definitivo, venga de donde venga.
- *
- * QUÉ SE REGISTRA
- *   Lo que CAMBIA algo (POST, PUT, PATCH, DELETE) y las consultas a la propia bitácora. Las demás
- *   lecturas no: un `GET /convocatorias` por visitante llenaría la tabla de ruido y enterraría lo
- *   que importa.
- *
- * QUÉ NO SE REGISTRA NUNCA
- *   El cuerpo de la petición. Ahí viajan contraseñas, CUI y datos de los aspirantes. Se guarda
- *   qué se hizo y sobre qué identificador, no con qué datos.
+ * Registra lo que cambia algo (POST, PUT, PATCH, DELETE) y las consultas a la propia bitácora.
+ * Las demás lecturas llenarían la tabla de ruido. Nunca guarda el cuerpo de la petición, donde
+ * viajan contraseñas, CUI y datos de los aspirantes: solo qué se hizo y sobre qué identificador.
  */
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import type { NextFunction, Request, Response } from 'express';

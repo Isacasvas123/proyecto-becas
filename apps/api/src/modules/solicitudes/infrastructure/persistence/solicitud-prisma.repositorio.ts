@@ -194,7 +194,7 @@ async function escribir(tx: Prisma.TransactionClient, solicitud: Solicitud): Pro
       // alterar las reglas de las solicitudes que ya estaban en trámite (US-033).
       //
       // Faltaba. La solicitud nacía con el monto por defecto de la columna —cero— así que
-      // `necesitaSegundaAprobacion()` era siempre falso y la doble aprobación NO OCURRÍA en
+      // `necesitaSegundaAprobacion()` era siempre falso y la doble aprobación NO ocurría en
       // ningún entorno real, por mucho que la convocatoria valiera Q15,000. Las pruebas no lo
       // vieron porque todas usan el repositorio en memoria, que guarda la entidad entera.
       montoBeca: solicitud.montoBeca,

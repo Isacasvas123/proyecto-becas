@@ -1,16 +1,12 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * Lo que `solicitudes` le ofrece al módulo `evaluaciones` (EPIC-04). Es la única puerta.
+ * Lo que `solicitudes` le ofrece a `evaluaciones` (EPIC-04). Es la única puerta.
  *
- * QUIÉN PUEDE VER QUÉ NO SE DECIDE AQUÍ
- *   Estos métodos no reciben al usuario: no comprueban propiedad. Quien los usa —`evaluaciones`—
- *   debe haber verificado antes que el evaluador tiene la solicitud asignada (CU-10, 1a). Por eso
- *   este servicio NO lo usa ningún controlador de `solicitudes`: solo se exporta.
+ * No recibe al usuario ni comprueba propiedad: quien lo usa debe haber verificado antes que el
+ * evaluador tiene la solicitud asignada (CU-10, 1a). Por eso ningún controlador de `solicitudes`
+ * lo usa; solo se exporta.
  *
- * POR QUÉ `solicitudes` NO CONOCE A `evaluaciones`
- *   La dependencia va en un solo sentido: evaluaciones → solicitudes. Si fuera en los dos, Nest
- *   necesitaría `forwardRef` y los módulos dejarían de poder entenderse por separado.
+ * La dependencia va en un solo sentido, evaluaciones → solicitudes. En los dos haría falta
+ * `forwardRef` y los módulos dejarían de entenderse por separado.
  */
 import { Inject, Injectable } from '@nestjs/common';
 
@@ -77,7 +73,7 @@ export class SolicitudesParaEvaluacionService {
   }
 
   /**
-   * US-018, criterio 3: pasan a EN_EVALUACION. Se validan TODAS antes de cambiar ninguna: si una
+   * US-018, criterio 3: pasan a EN_EVALUACION. Se validan todas antes de cambiar ninguna: si una
    * no está ENVIADA o no es de la convocatoria, no se toca nada y el mensaje dice cuáles.
    */
   async iniciarEvaluacion(

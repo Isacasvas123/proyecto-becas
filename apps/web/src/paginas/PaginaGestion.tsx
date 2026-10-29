@@ -1,16 +1,13 @@
 /**
- * PÁGINA `/gestion` — administración de convocatorias (US-006 y US-007).
+ * Página `/gestion`: administración de convocatorias (US-006, US-007), solo ADMINISTRADOR. Como
+ * en toda pantalla protegida, la guardia del frontend es usabilidad y la seguridad la pone el
+ * `RolesGuard` del backend: si alguien fuerza la página, cada petición recibe 403.
  *
- * Solo con rol ADMINISTRADOR. Recordatorio que conviene repetir en cada pantalla protegida: la
- * guardia del frontend es usabilidad, la seguridad la pone el `RolesGuard` del backend. Si
- * alguien fuerza esta página, cada petición recibe 403.
+ * Es una tabla y no tarjetas: el público compara convocatorias, el administrador las opera
+ * (revisar estados, publicar), y para eso una tabla densa con una acción por fila es más rápida.
  *
- * DISEÑO: una tabla y no tarjetas. El listado público usa tarjetas porque el aspirante
- * COMPARA convocatorias; el administrador las OPERA —revisar estados, publicar—, y para eso
- * una tabla densa con una acción por fila es más rápida de recorrer.
- *
- * ALCANCE: crear en borrador y publicar. Editar un borrador (US-010) y cerrar (US-009) todavía
- * no existen, y no se muestran botones que no llevan a ningún lado.
+ * Permite crear en borrador y publicar. Editar un borrador (US-010) y cerrar (US-009) no existen,
+ * y no se muestran botones que no llevan a ningún lado.
  */
 import { useCallback, useEffect, useState, type ReactElement } from 'react';
 import { Link, useNavigate } from 'react-router-dom';

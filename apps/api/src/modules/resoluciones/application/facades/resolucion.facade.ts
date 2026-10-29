@@ -1,30 +1,16 @@
 /**
- * CAPA: application/facades/  ·  PATRÓN FACADE (estructural)
- * ────────────────────────────────────────────────────────────────────────────────
- * Justificación en docs/06-patrones.md §4.
+ * Patrón Facade. Justificación en docs/06-patrones.md §4.
  *
- * Resolver una solicitud (US-023) coordina a varios colaboradores que viven en módulos distintos:
+ * Resolver una solicitud (US-023) coordina dictámenes, cupos, la transición de estado con su
+ * historial y el aviso al estudiante, cada uno en un módulo distinto. El controlador llama un
+ * solo método; sin la fachada esas reglas quedarían en la presentación y se repetirían en cada
+ * punto de entrada.
  *
- *     dictámenes (evaluaciones) ─┐
- *     cupos (convocatorias) ─────┼──▶  ResolucionFacade.resolver(...)  ◀── controlador
- *     transición e historial ────┤         una sola operación
- *       (solicitudes, State)     │
- *     aviso al estudiante ───────┘
+ * El orden es deliberado: primero las validaciones que no escriben, después la transición, que
+ * es la única escritura y es atómica (comprueba el cupo y guarda el historial), y al final el
+ * aviso. Si el aviso falla, la resolución ya está hecha y no se deshace.
  *
- * El controlador llama a UN método y no sabe nada de eso. Sin la fachada, esas reglas quedarían
- * en el controlador —lógica de negocio en presentación— y se repetirían en cada punto de entrada
- * que un día resuelva solicitudes (una importación masiva, por ejemplo).
- *
- * EL ORDEN IMPORTA
- *   1. Validaciones que no cambian nada: existe, tiene dictámenes, hay cupo (para mostrar un buen
- *      mensaje antes de intentar).
- *   2. La transición, que es la única escritura y es atómica (incluye la comprobación real del
- *      cupo y el historial con autor, fecha y motivo).
- *   3. El aviso. Si falla, la resolución YA está hecha y no se deshace.
- *
- * ALCANCE
- *   El acta de resolución (US-026) no está: cuando exista, será un colaborador más de esta fachada,
- *   sin tocar el controlador.
+ * El acta de resolución (US-026) será un colaborador más, sin tocar el controlador.
  */
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
@@ -169,7 +155,7 @@ export class ResolucionFacade {
     const convocatoria = await this.cargarConvocatoria(solicitud.convocatoriaId);
 
     /*
-     * UNA PERSONA, UNA BECA (pendiente de confirmar con el Product Owner, 22 Oct 2026).
+     * Una persona, una beca (pendiente de confirmar con el Product Owner, 22 Oct 2026).
      *
      * El control va aquí y no al postular, que fue la primera idea del equipo. Postular a
      * varias convocatorias a la vez es razonable y no le cuesta nada al Estado: quien manda
@@ -203,12 +189,11 @@ export class ResolucionFacade {
   }
 
   /**
-   * Cupos de TODAS las convocatorias vigentes, para el listado público.
+   * Cupos de todas las convocatorias vigentes, para el listado público.
    *
-   * Vive aquí y no en `convocatorias` porque el dato está repartido: los cupos ofrecidos los
-   * sabe una convocatoria, y cuántos están tomados lo sabe `solicitudes`. `convocatorias` no
-   * puede preguntárselo sin crear un ciclo entre módulos —`solicitudes` ya depende de él—, y
-   * este módulo depende de los dos y nadie depende de él. Es exactamente para esto que existe.
+   * Vive aquí y no en `convocatorias` porque el dato está repartido: los cupos ofrecidos los sabe
+   * la convocatoria y los tomados, `solicitudes`. Preguntárselo desde `convocatorias` crearía un
+   * ciclo de módulos.
    */
   async cuposPublicos(): Promise<CuposDto[]> {
     const vigentes = await this.convocatorias.publicadasVigentes();

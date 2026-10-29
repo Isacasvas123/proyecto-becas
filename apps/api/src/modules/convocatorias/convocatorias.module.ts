@@ -1,21 +1,14 @@
 /**
- * MÓDULO `convocatorias` — aquí se ATAN las cuatro capas.
- * ────────────────────────────────────────────────────────────────────────────────
- * Este archivo es el único punto del módulo donde el dominio y la infraestructura se
- * mencionan juntos, y ocurre a propósito: es la "raíz de composición". El resto del
- * código no sabe qué implementación concreta está usando.
+ * Módulo `convocatorias`: aquí se atan las cuatro capas.
  *
- * LA LÍNEA QUE HAY QUE ENTENDER es el `provide` / `useClass` de abajo:
+ * Es el único punto del módulo donde dominio e infraestructura se mencionan juntos (la raíz de
+ * composición). El resto no sabe qué implementación usa. La línea clave es el enlace:
  *
- *     provide:  CONVOCATORIA_REPOSITORIO   ← el token del PUERTO (domain/)
- *     useClass: ConvocatoriaPrismaRepositorio ← el ADAPTADOR concreto (infrastructure/)
+ *     provide:  CONVOCATORIA_REPOSITORIO       el token del puerto (domain/)
+ *     useClass: ConvocatoriaPrismaRepositorio  el adaptador concreto (infrastructure/)
  *
- * Ese enlace es la inversión de dependencias hecha código (SOLID · D). Cambiar de
- * PostgreSQL a otra cosa —o a un doble de prueba en un test e2e— es cambiar esa única
- * línea. Ningún servicio, ningún controlador y ninguna entidad se enteran.
- *
- * PLANTILLA: copien esta estructura tal cual para `usuarios`, `estudiantes`,
- * `solicitudes`, `evaluaciones` y `reportes`.
+ * Es la inversión de dependencias (SOLID · D) hecha código: cambiar PostgreSQL por otra cosa, o
+ * por un doble en una prueba e2e, es cambiar esa línea. Los demás módulos siguen esta estructura.
  */
 import { Module } from '@nestjs/common';
 
@@ -43,7 +36,7 @@ import { ConvocatoriasController } from './presentation/controllers/convocatoria
       useClass: ConvocatoriaPrismaRepositorio,
     },
   ],
-  // Se exporta el CASO DE USO, no el repositorio. Si otro módulo necesita convocatorias,
+  // Se exporta el caso de uso, no el repositorio. Si otro módulo necesita convocatorias,
   // pasa por la capa de aplicación; nunca por el repositorio ni por las entidades de este
   // módulo. Es la mitigación del riesgo nº4 de docs/05-arquitectura.md §2.2
   // ("monolito distribuido interno") y se verifica en el code review.

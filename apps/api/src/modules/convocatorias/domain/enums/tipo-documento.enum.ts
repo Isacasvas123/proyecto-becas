@@ -1,16 +1,11 @@
 /**
- * CAPA: domain/enums/
- * ────────────────────────────────────────────────────────────────────────────────
- * Documentos de respaldo que una convocatoria puede exigir (US-006). En el Sprint 4, la
- * carga de documentación (US-013) usará este mismo catálogo para saber qué pedirle a cada
- * estudiante.
+ * Documentos de respaldo que puede exigir una convocatoria (US-006). La carga de documentación
+ * (US-013) usa este mismo catálogo.
  *
- * DETALLE DEL CONTEXTO GUATEMALTECO
- *   El DPI se emite a partir de los 18 años. La mayoría de aspirantes a una beca de nivel
- *   medio son menores de edad y **no tienen DPI**: se identifican con el certificado de
- *   nacimiento del RENAP, que ya incluye el CUI. Por eso son dos documentos distintos y la
- *   fábrica de nivel medio exige el certificado, no el DPI. Pedirle un DPI a un estudiante
- *   de 15 años dejaría fuera justamente a la población que el programa quiere atender.
+ * El DPI se emite a los 18 años y la mayoría de aspirantes de nivel medio son menores, así que se
+ * identifican con el certificado de nacimiento del RENAP, que ya incluye el CUI. Por eso son dos
+ * documentos y la fábrica de nivel medio exige el certificado: pedir DPI dejaría fuera a la
+ * población que el programa quiere atender.
  */
 export enum TipoDocumento {
   DPI = 'DPI',

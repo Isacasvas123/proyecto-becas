@@ -1,12 +1,7 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * US-031 — Becas adjudicadas por región.
- *
- * Reutiliza el reporte de solicitudes: se pide con el MISMO builder (solo adjudicadas, agrupadas
- * por departamento) y se reordena en una tabla con los 22 departamentos. Los que no tienen ninguna
- * beca aparecen con cero a propósito: para evaluar la equidad territorial, lo importante es ver
- * dónde NO llegó ninguna.
+ * US-031: becas adjudicadas por región. Pide el mismo builder (solo adjudicadas, por
+ * departamento) y lo reordena en una tabla con los 22 departamentos. Los que no tienen becas
+ * aparecen en cero: para evaluar la equidad territorial importa ver dónde no llegó ninguna.
  */
 import { Inject, Injectable } from '@nestjs/common';
 

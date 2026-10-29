@@ -1,21 +1,13 @@
 /**
- * CAPA: infrastructure/adapters/  ·  PATRÓN ADAPTER (estructural)
- * ────────────────────────────────────────────────────────────────────────────────
- * Implementa el puerto `HasherPassword` con bcrypt. Es la única clase del proyecto que
- * conoce la biblioteca de hashing; sustituirla por argon2 sería escribir otro adaptador
- * y cambiar una línea en `usuarios.module.ts`.
+ * Implementa el puerto `HasherPassword` con bcrypt (patrón Adapter, estructural). Es la única
+ * clase que conoce la biblioteca; pasar a argon2 sería otro adaptador y una línea en el módulo.
  *
- * POR QUÉ `bcryptjs` Y NO `bcrypt`
- *   `bcrypt` es un módulo nativo que se compila al instalar. En un equipo de cuatro
- *   personas con máquinas distintas, una compilación fallida bloquea a alguien un día
- *   entero. `bcryptjs` implementa el MISMO algoritmo en JavaScript puro: cumple igual el
- *   NFR de seguridad ("las contraseñas deben almacenarse con hash bcrypt") y se instala
- *   sin compilar nada. El costo es que es más lento, lo cual aquí es irrelevante: bcrypt
- *   es lento a propósito.
+ * Usa `bcryptjs` y no `bcrypt` porque este es un módulo nativo que se compila al instalar, y en un
+ * equipo de cuatro con máquinas distintas una compilación fallida bloquea a alguien un día. Es el
+ * mismo algoritmo en JavaScript puro y cumple el NFR de hash bcrypt; es más lento, lo que aquí
+ * no importa porque bcrypt es lento a propósito.
  *
- * LAS RONDAS SON CONFIGURABLES
- *   Se leen de `BCRYPT_ROUNDS` (.env.example). Subirlas endurece el hash sin tocar
- *   código, que es justo lo que pide una política de seguridad que puede cambiar.
+ * Las rondas se leen de `BCRYPT_ROUNDS`: subirlas endurece el hash sin tocar código.
  */
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -42,12 +34,10 @@ export class BcryptHasherAdapter implements HasherPassword {
   }
 
   /**
-   * `compare` de bcrypt hace comparación en tiempo constante: no revela información por
-   * el tiempo que tarda en responder.
-   *
-   * Un hash almacenado con formato corrupto haría lanzar a la biblioteca; se captura y se
-   * devuelve `false` para que el resultado sea el mismo fallo genérico de autenticación
-   * y no un error 500 que delate el estado interno.
+   * `compare` de bcrypt compara en tiempo constante, sin revelar nada por lo que tarda. Un hash
+   * guardado con formato corrupto haría lanzar a la biblioteca; se captura y se devuelve `false`
+   * para que sea el mismo fallo genérico de autenticación y no un 500 que delate el estado
+   * interno.
    */
   async verificar(passwordEnClaro: string, hashAlmacenado: string): Promise<boolean> {
     try {

@@ -85,16 +85,12 @@ export interface EstadoPlazo {
 /**
  * Traduce el periodo de postulación al indicador de plazo.
  *
- * El umbral de 15 días para marcar urgencia no es arbitrario: reunir los
- * documentos exigidos —certificaciones, constancias, cartas de recomendación—
- * toma tiempo, y avisar con dos semanas es lo mínimo útil para el aspirante.
+ * El umbral de 15 días para marcar urgencia es el mínimo útil: reunir certificaciones, constancias
+ * y cartas de recomendación toma tiempo.
  *
- * LA APERTURA SE MIRA ANTES QUE EL CIERRE, Y POR QUÉ IMPORTA
- *   La primera versión solo miraba la fecha de cierre. Una convocatoria que
- *   abría dentro de nueve días se mostraba como «Cierra en 38 días», con su
- *   botón de postular habilitado, y el aspirante solo se enteraba de que no
- *   podía postular cuando el servidor lo rechazaba. El periodo tiene dos
- *   extremos; mirar uno solo deja al usuario adivinando el otro.
+ * La apertura se mira antes que el cierre. La primera versión solo miraba el cierre y una
+ * convocatoria que abría en nueve días se mostraba como «Cierra en 38 días» con el botón de
+ * postular habilitado; el aspirante se enteraba al ser rechazado. El periodo tiene dos extremos.
  */
 export function estadoPlazo(
   isoCierre: string,
@@ -208,16 +204,13 @@ export function formatearQuetzales(monto: number): string {
 }
 
 /**
- * Da forma al monto MIENTRAS la persona lo escribe, en el campo de la convocatoria.
+ * Da forma al monto mientras la persona lo escribe, en el campo de la convocatoria.
  *
- * POR QUÉ NO SE USA UN `<input type="number">` A SECAS
- *   Un campo numérico crudo acepta «15000» y lo muestra «15000»: nadie distingue de un
- *   vistazo quince mil de ciento cincuenta mil, y un cero de más en el monto de una beca
- *   no es un detalle estético. Con separadores de millar el error salta a la vista.
+ * No se usa un `<input type="number">` a secas porque muestra «15000» y nadie distingue de un
+ * vistazo quince mil de ciento cincuenta mil; con separadores de millar el error salta a la vista.
  *
- * La función es tolerante a propósito: acepta lo que la gente realmente teclea —comas,
- * espacios, una Q delante— y se queda con los dígitos. Devuelve el texto ya formateado y
- * el número limpio, para que el componente muestre uno y envíe el otro.
+ * Es tolerante a propósito: acepta comas, espacios y una Q delante y se queda con los dígitos.
+ * Devuelve el texto formateado y el número limpio, para mostrar uno y enviar el otro.
  */
 export function formatearMontoEscrito(texto: string): { texto: string; valor: number } {
   const digitos = texto.replace(/\D/g, '').replace(/^0+(?=\d)/, '');

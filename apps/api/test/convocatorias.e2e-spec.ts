@@ -1,17 +1,11 @@
 /**
- * PRUEBA DE INTEGRACIÓN — `GET /convocatorias`.
+ * Prueba de integración de `GET /convocatorias`. Recorre la rebanada vertical completa: HTTP →
+ * controlador → servicio de aplicación → puerto → adaptador.
  *
- * Recorre la rebanada vertical completa: HTTP → controlador → servicio de aplicación →
- * puerto → adaptador. Todas las capas, de punta a punta.
- *
- * LA PIEZA INTERESANTE es `overrideProvider(CONVOCATORIA_REPOSITORIO)`: se sustituye el
- * adaptador de Prisma por el de memoria SIN tocar el controlador ni el servicio. Eso solo
- * es posible porque la dependencia está invertida (SOLID · D), y es lo que permite que
- * `npm run test:e2e` corra sin Docker ni PostgreSQL.
- *
- * NOTA PARA EL EQUIPO: cuando el CI tenga Postgres disponible (ver .github/workflows/ci.yml)
- * conviene añadir además una prueba de integración contra la base de datos real, que
- * ejercite el `ConvocatoriaPrismaRepositorio` de verdad. Queda pendiente.
+ * `overrideProvider(CONVOCATORIA_REPOSITORIO)` sustituye el adaptador de Prisma por el de memoria
+ * sin tocar el controlador ni el servicio. Solo es posible porque la dependencia está invertida
+ * (SOLID · D), y es lo que permite que `npm run test:e2e` corra sin Docker ni PostgreSQL.
+ * `ConvocatoriaPrismaRepositorio` no tiene todavía una prueba contra la base real (DEF-01).
  */
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';

@@ -1,34 +1,26 @@
 /**
- * Definición de rutas de la aplicación.
+ * Definición de rutas de la aplicación. No dibuja pantallas: declara qué ruta muestra qué página y
+ * cuáles exigen sesión. Es el equivalente de `app.module.ts` en el backend, una raíz de
+ * composición sin lógica propia.
  *
- * Este archivo no dibuja pantallas: solo declara qué ruta muestra qué página y cuáles
- * exigen sesión. Es el equivalente en el frontend a `app.module.ts` en el backend — una
- * raíz de composición, sin lógica propia.
- *
- * MAPA DE RUTAS
  *   /              → redirige a /convocatorias
- *   /convocatorias → PaginaConvocatorias (PÚBLICA — US-008)
- *   /login         → PaginaLogin         (pública)
- *   /registro      → PaginaRegistro      (pública — US-001)
- *   /consulta      → PaginaConsulta      (pública — US-025)
- *   /gestion       → PaginaGestion       (sesión + rol ADMINISTRADOR — US-006, US-007)
- *   /perfil        → PaginaPerfil        (sesión + rol ESTUDIANTE — US-011)
- *   /solicitudes   → PaginaMisSolicitudes (sesión + rol ESTUDIANTE — US-015)
- *   /solicitudes/:id → PaginaSolicitud   (sesión + rol ESTUDIANTE — US-013, US-014, US-016)
- *   /evaluadores   → PaginaEvaluadores   (sesión + rol ADMINISTRADOR — US-017)
- *   /comites       → PaginaComites       (sesión + rol ADMINISTRADOR — US-017)
- *   /comites/:id   → PaginaComite        (sesión + rol ADMINISTRADOR — US-017, US-018, US-021)
- *   /evaluaciones  → PaginaEvaluaciones  (sesión + rol EVALUADOR — US-020)
- *   /reportes      → PaginaReportes      (sesión + rol ADMINISTRADOR — US-028 a US-031)
- *   /bitacora      → PaginaBitacora      (sesión + rol ADMINISTRADOR — auditoría)
- *   /notificaciones → PaginaNotificaciones (sesión + rol ESTUDIANTE — US-022)
- *   /evaluaciones/:id → PaginaEvaluar    (sesión + rol EVALUADOR — US-019)
+ *   /convocatorias → PaginaConvocatorias   (pública, US-008)
+ *   /login         → PaginaLogin           (pública)
+ *   /registro      → PaginaRegistro        (pública, US-001)
+ *   /consulta      → PaginaConsulta        (pública, US-025)
+ *   /gestion       → PaginaGestion         (ADMINISTRADOR, US-006, US-007)
+ *   /perfil        → PaginaPerfil          (ESTUDIANTE, US-011)
+ *   /solicitudes   → PaginaMisSolicitudes  (ESTUDIANTE, US-015)
+ *   /solicitudes/:id → PaginaSolicitud     (ESTUDIANTE, US-013, US-014, US-016)
+ *   /evaluadores   → PaginaEvaluadores     (ADMINISTRADOR, US-017)
+ *   /comites       → PaginaComites         (ADMINISTRADOR, US-017)
+ *   /comites/:id   → PaginaComite          (ADMINISTRADOR, US-017, US-018, US-021)
+ *   /evaluaciones  → PaginaEvaluaciones    (EVALUADOR, US-020)
+ *   /evaluaciones/:id → PaginaEvaluar      (EVALUADOR, US-019)
+ *   /reportes      → PaginaReportes        (ADMINISTRADOR, US-028 a US-031)
+ *   /bitacora      → PaginaBitacora        (ADMINISTRADOR, US-032)
+ *   /notificaciones → PaginaNotificaciones (ESTUDIANTE, US-022)
  *   cualquier otra → redirige a /convocatorias
- *
- * EL CAMBIO DEL SPRINT 3
- *   Hasta aquí /convocatorias exigía sesión, y eso incumplía US-008: la historia pide que un
- *   VISITANTE vea las convocatorias sin cuenta. Era el defecto 3 del esqueleto. Ahora el
- *   listado es público y lo que queda detrás del login es la gestión.
  */
 import type { ReactElement } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';

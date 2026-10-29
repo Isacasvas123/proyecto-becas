@@ -1,21 +1,16 @@
 /**
- * CAPA: domain/entities/
- * ────────────────────────────────────────────────────────────────────────────────
  * La solicitud de un estudiante a una convocatoria (EPIC-03).
  *
- * Su ciclo de vida lo gobiernan los objetos de `domain/estados/` (patrón State). Esta clase no
- * tiene ni un `if (estado === ...)`: pregunta a su estado actual qué sigue, aplica la respuesta y
- * deja constancia en el historial.
+ * Su ciclo de vida lo gobiernan los objetos de `domain/estados/` (patrón State): la clase no
+ * tiene un `if (estado === ...)`, pregunta a su estado qué sigue, lo aplica y lo anota en el
+ * historial.
  *
- * TRAZABILIDAD
- *   Toda transición queda en `historial` con fecha, autor y motivo. Es la respuesta directa a uno
- *   de los problemas del enunciado —"poca trazabilidad del proceso"— y la base de US-016. El
- *   historial solo crece: no hay método para quitar ni modificar una entrada.
+ * Toda transición queda en `historial` con fecha, autor y motivo, respuesta al problema de "poca
+ * trazabilidad" del enunciado y base de US-016. Solo crece: no hay método para quitar ni
+ * modificar una entrada.
  *
- * LOS DOCUMENTOS EXIGIDOS SE COPIAN AL CREAR LA SOLICITUD
- *   Se toma una foto de lo que exigía la convocatoria en ese momento. Una convocatoria publicada
- *   ya no puede cambiar sus requisitos (US-007, criterio 3), pero si algún día se permitiera, las
- *   solicitudes ya iniciadas no deben quedar incompletas de un día para otro.
+ * Los documentos exigidos se copian al crear la solicitud, como foto de lo que pedía la
+ * convocatoria en ese momento, para que las ya iniciadas no queden incompletas si esta cambia.
  */
 import { randomUUID } from 'node:crypto';
 
@@ -47,7 +42,7 @@ export interface EntradaHistorial {
 }
 
 /**
- * US-024. La constancia del otorgamiento. Vive DENTRO de la solicitud (composición `0..1` del
+ * US-024. La constancia del otorgamiento. Vive dentro de la solicitud (composición `0..1` del
  * diagrama de clases) para que el cambio a ADJUDICADA y la beca se guarden en la misma transacción:
  * no puede haber una solicitud adjudicada sin beca, ni una beca de una solicitud que no lo está.
  */
@@ -206,7 +201,7 @@ export class Solicitud {
   /**
    * US-013. Agrega el documento o reemplaza el que había para ese tipo (criterio 3).
    *
-   * Devuelve el documento reemplazado, si había, para que el caso de uso borre su archivo DESPUÉS
+   * Devuelve el documento reemplazado, si había, para que el caso de uso borre su archivo después
    * de guardar: si se borrara antes y el guardado fallara, el expediente apuntaría a un archivo
    * que ya no existe.
    */
@@ -299,7 +294,7 @@ export class Solicitud {
     });
     this.estado = siguiente;
 
-    // PO, 17 Oct 2026. El evento queda anotado aquí y lo publica el caso de uso DESPUÉS de
+    // PO, 17 Oct 2026. El evento queda anotado aquí y lo publica el caso de uso después de
     // guardar: avisar antes sería contarle al estudiante algo que todavía podría no persistirse.
     this.eventos.push({
       solicitudId: this.id,

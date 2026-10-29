@@ -1,16 +1,12 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * US-029 — Panel de estadísticas: solicitudes recibidas, tasa de aprobación, cupos disponibles y
- * tiempo promedio de resolución. Para todo el programa o para una convocatoria.
+ * US-029: panel de estadísticas, para todo el programa o para una convocatoria.
  *
- * CÓMO SE CALCULA CADA INDICADOR
- *   - Recibidas: todas las enviadas (los borradores no cuentan).
- *   - Tasa de aprobación: (aprobadas + adjudicadas) ÷ resueltas. Las que siguen en evaluación NO
- *     entran en el denominador: todavía no tienen decisión. Sin resueltas, no hay tasa (`null`).
- *   - Cupos disponibles: cupos de las convocatorias no borrador − aprobadas − adjudicadas. Es la
- *     misma regla con la que se aprueba (US-023): aprobar reserva el cupo.
- *   - Tiempo promedio de resolución: días entre el envío y la aprobación o rechazo.
+ * - Recibidas: las enviadas; los borradores no cuentan.
+ * - Tasa de aprobación: (aprobadas + adjudicadas) ÷ resueltas. Las que siguen en evaluación no
+ *   entran en el denominador; sin resueltas no hay tasa (`null`).
+ * - Cupos disponibles: cupos de las convocatorias no borrador − aprobadas − adjudicadas, la misma
+ *   regla con que se aprueba (US-023).
+ * - Tiempo promedio: días entre el envío y la aprobación o el rechazo.
  */
 import { Inject, Injectable } from '@nestjs/common';
 

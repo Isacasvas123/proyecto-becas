@@ -262,7 +262,9 @@ Con una cuenta de **evaluador**, al entrar llega a **Mis evaluaciones**: las sol
 asignaron, primero las pendientes. No verá ninguna otra.
 
 1. Abra una solicitud con **Evaluar**.
-2. Revise los **datos del solicitante** y abra cada **documento** con su nombre.
+2. Revise los **datos del solicitante** y pulse **Ver** en cada documento: aparece en la misma
+   pantalla, debajo de la lista, sin descargarlo ni cambiar de página. Se cierra con **Ocultar**.
+   Si prefiere el archivo, use **Descargar**.
 3. El **puntaje** ya viene calculado según el tipo de beca, con el detalle de cómo se obtuvo. Usted
    no lo escribe.
 4. Elija **Favorable** o **Desfavorable** y escriba una **observación** de al menos 20 caracteres que

@@ -1,27 +1,17 @@
 /**
  * Endpoints de diagnóstico.
  *
- * POR QUÉ ESTE MÓDULO NO TIENE LAS CUATRO CAPAS
- *   Porque no tiene negocio. "¿Está viva la API?" no es una regla del Ministerio: es una
- *   pregunta técnica sobre el proceso. Inventarle una entidad `Salud` y un puerto sería
- *   ceremonia vacía, y la arquitectura no se aplica por ritual sino donde resuelve algo.
+ * Este módulo no tiene las cuatro capas porque no tiene negocio: "¿está viva la API?" es una
+ * pregunta técnica, y inventarle una entidad y un puerto sería ceremonia vacía. La plantilla de
+ * capas es el módulo `convocatorias`.
  *
- *   La plantilla de las cuatro capas que deben copiar es el módulo `convocatorias`.
+ * Son dos rutas porque responden preguntas distintas (S1-12). La versión anterior contestaba
+ * siempre `ok`, aunque PostgreSQL estuviera caído:
  *
- * ────────────────────────────────────────────────────────────────────────────────
- * DEFECTO CORREGIDO (tarea S1-12)
- *   La versión anterior respondía siempre `ok`, aunque PostgreSQL estuviera caído. Un
- *   diagnóstico que no puede fallar no diagnostica nada: en Staging el orquestador habría
- *   dado el servicio por sano mientras ninguna consulta funcionaba.
+ *   GET /health   ¿el proceso está vivo?       si falla, hay que reiniciarlo
+ *   GET /ready    ¿puede atender peticiones?   si falla, hay que dejar de enviarle tráfico
  *
- *   Se separan las dos preguntas, que son distintas y tienen consumidores distintos:
- *
- *     GET /health   ¿el proceso está vivo?       (liveness)
- *     GET /ready    ¿puede atender peticiones?   (readiness)
- *
- *   Es la distinción estándar de cualquier orquestador: si falla el primero hay que
- *   REINICIAR el proceso; si falla el segundo hay que DEJAR DE ENVIARLE tráfico, pero
- *   reiniciarlo no arreglaría nada porque el problema está fuera del proceso.
+ * Reiniciar no arreglaría un problema que está fuera del proceso.
  */
 import { Controller, Get, HttpCode, HttpException, HttpStatus, Logger } from '@nestjs/common';
 
@@ -84,13 +74,8 @@ export class SaludController {
   }
 
   /**
-   * Readiness — ¿puede atender peticiones de verdad?
-   *
-   * Consulta la base de datos con `SELECT 1`, la comprobación más barata posible.
-   *
-   * Si falla responde **503**, no un 200 con un cuerpo que diga "no_listo": el código HTTP
-   * tiene que ser honesto, porque los orquestadores y el monitoreo se guían por él y no por
-   * el texto de la respuesta.
+   * Readiness: consulta la base con `SELECT 1`. Si falla responde 503 y no un 200 con "no_listo",
+   * porque los orquestadores se guían por el código HTTP y no por el cuerpo.
    */
   @Get('ready')
   async estaListo(): Promise<RespuestaListo> {

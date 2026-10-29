@@ -1,13 +1,9 @@
 /**
- * CAPA: infrastructure/persistence/
- * ────────────────────────────────────────────────────────────────────────────────
- * Traduce entre el modelo de PERSISTENCIA (fila de Prisma) y el modelo de DOMINIO
- * (entidad `Usuario`). Es el precio aceptado de mantener el dominio libre del ORM
- * (trade-off nº3 de docs/05-arquitectura.md §2.2).
- *
- * Este archivo es el ÚNICO punto del módulo donde conviven los tipos de Prisma y los del
- * dominio. Por eso también es el único donde puede colarse un desajuste entre los dos
- * enums de rol; `usuario-prisma.mapper.spec.ts` lo vigila.
+ * Traduce entre el modelo de persistencia (fila de Prisma) y el de dominio (entidad `Usuario`).
+ * Es el precio de mantener el dominio libre del ORM (trade-off nº3 de docs/05-arquitectura.md
+ * §2.2). Es el único punto del módulo donde conviven los tipos de Prisma y los del dominio, y por
+ * eso el único donde puede colarse un desajuste entre los enums de rol; lo vigila
+ * `usuario-prisma.mapper.spec.ts`.
  */
 import type { Usuario as UsuarioPrisma } from '@prisma/client';
 

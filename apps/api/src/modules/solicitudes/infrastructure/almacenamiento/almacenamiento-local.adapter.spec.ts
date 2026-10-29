@@ -1,5 +1,5 @@
 /**
- * PRUEBA DE INTEGRACIÓN (disco real, en una carpeta temporal) — adaptador de almacenamiento local.
+ * Prueba de integración (disco real, en una carpeta temporal) — adaptador de almacenamiento local.
  */
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';

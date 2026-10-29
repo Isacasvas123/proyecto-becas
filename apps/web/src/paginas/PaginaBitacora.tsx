@@ -1,15 +1,10 @@
 /**
- * PÁGINA `/bitacora` — auditoría del sistema. Solo administración.
+ * Página `/bitacora`: auditoría del sistema, solo administración (pedida por el Product Owner el
+ * 17 de octubre). Muestra quién hizo qué, sobre qué y cómo terminó, con filtros por rol, entidad,
+ * fechas y solo rechazadas.
  *
- * Exigida por el Product Owner el 17 de octubre de 2026. Muestra quién hizo qué, sobre qué y
- * cómo terminó, con filtros por rol, entidad, fechas y solo rechazadas.
- *
- * NO MUESTRA DATOS PERSONALES, porque la bitácora no los guarda: identifica al actor por su
- * nombre de usuario y al recurso por su identificador. Quien necesite el dato de una persona lo
- * busca donde vive, con los permisos de esa pantalla.
- *
- * Abrir esta página también queda registrado: consultar una auditoría es, en sí, una acción
- * auditable.
+ * No muestra datos personales porque la bitácora no los guarda: identifica al actor por su nombre
+ * de usuario y al recurso por su identificador. Abrir esta página también queda registrado.
  */
 import { useCallback, useEffect, useState, type FormEvent, type ReactElement } from 'react';
 

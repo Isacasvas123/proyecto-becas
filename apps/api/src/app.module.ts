@@ -1,12 +1,6 @@
 /**
- * Módulo raíz de la API.
- *
- * Un monolito modular: un solo artefacto desplegable que aquí ensambla sus módulos de
- * negocio (docs/05-arquitectura.md §2.1).
- *
- * SPRINTS 2 a 8 — se irán agregando a la lista de `imports`:
- *   UsuariosModule · EstudiantesModule · SolicitudesModule · EvaluacionesModule ·
- *   ReportesModule
+ * Módulo raíz de la API: un monolito modular, un solo artefacto desplegable que ensambla los
+ * módulos de negocio (docs/05-arquitectura.md §2.1).
  */
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';

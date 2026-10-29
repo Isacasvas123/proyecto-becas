@@ -1,26 +1,18 @@
 /**
- * CAPA: application/builders/  ·  PATRÓN BUILDER (creacional)
- * ────────────────────────────────────────────────────────────────────────────────
- * Justificación en docs/06-patrones.md §2.
+ * Patrón Builder. Justificación en docs/06-patrones.md §2.
  *
- * Un reporte combina ocho elementos OPCIONALES e independientes: convocatoria, estados, nivel,
- * departamento, rango de fechas, agrupación, orden y formato. Con un constructor sería
- * `new Reporte(null, null, 'POSGRADO', null, null, fin, 'DEPARTAMENTO', null, 'CSV')`, imposible de
- * leer y fácil de equivocar. Con el builder, cada llamada dice lo que es:
+ * Un reporte combina ocho elementos opcionales: convocatoria, estados, nivel, departamento,
+ * fechas, agrupación, orden y formato. Con un constructor serían nueve argumentos, la mayoría
+ * `null`. Con el builder cada llamada dice lo que es:
  *
  *     new ReporteBuilder()
  *       .conEstados(['APROBADA', 'ADJUDICADA'])
  *       .deNivel('POSGRADO')
- *       .entreFechas(inicio, fin)
  *       .agrupadoPor('DEPARTAMENTO')
- *       .enFormato('CSV')
  *       .build();
  *
- * `build()` NO ES UN TRÁMITE
- *   Es donde se rechazan las combinaciones que no tienen sentido, antes de consultar nada:
- *   fechas al revés, agrupar por el mismo dato por el que se filtró (todo caería en un grupo),
- *   estados vacíos. Así un reporte a medias o incoherente no llega a construirse. Devuelve un
- *   objeto congelado: el builder puede seguir usándose sin alterar lo ya construido.
+ * `build()` rechaza las combinaciones sin sentido antes de consultar nada: fechas al revés,
+ * estados vacíos, agrupar por el dato por el que se filtró. Devuelve un objeto congelado.
  */
 import { ReglaDeNegocioError } from '../../../../shared/exceptions/errores-dominio';
 import {

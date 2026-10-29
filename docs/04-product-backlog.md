@@ -45,8 +45,8 @@ repositorio.
 | 5 | 1 – 7 Oct | EPIC-04 · Evaluación y comités | 37 | Cerrado |
 | 6 | 8 – 14 Oct | EPIC-05 · Resolución y consulta pública | 18 | Cerrado |
 | 7 | 15 – 21 Oct | EPIC-06 · Reportes y bitácora de auditoría | 34 | Cerrado |
-| 8 | 22 – 28 Oct | Requerimientos del Product Owner y cierre | 21 | En curso |
-| | | **Total completado** | **192** | |
+| 8 | 22 – 31 Oct | Requerimientos del Product Owner y cierre | 24 | En curso |
+| | | **Total completado** | **195** | |
 
 Los 19 puntos del Sprint 1 corresponden a las tareas S1-01 a S1-12 del Sprint Backlog; los demás
 sprints cuentan historias de usuario. La velocidad media resulta de 24 puntos por sprint, frente a
@@ -112,15 +112,16 @@ los 22 estimados al cerrar el backlog inicial.
 | US-029 Panel de estadísticas | 8 | Terminada, verificada en Staging | PR #20 | Solicitudes recibidas, tasa de aprobación, cupos disponibles y días promedio de resolución |
 | US-030 Exportar reporte | 5 | Terminada, verificada en Staging | PR #20 | CSV en UTF-8 con BOM, protegido contra inyección de fórmulas, y PDF generado sin dependencias externas |
 | US-031 Becas por región | 5 | Terminada, verificada en Staging | PR #20 | Los 22 departamentos, incluidos los que no registran becas |
-| US-032 Bitácora de auditoría | 8 | Terminada, pendiente de verificar en Staging | PR #26 | Requerimiento del Product Owner del 17 de octubre. Registra autor, recurso, operación, resultado y fecha, incluidas las peticiones rechazadas |
+| US-032 Bitácora de auditoría | 8 | Terminada, verificada en Staging | PR #26 | Requerimiento del Product Owner del 17 de octubre. Registra autor, recurso, operación, resultado y fecha, incluidas las peticiones rechazadas |
 
 ### Sprint 8 · Requerimientos del Product Owner y cierre
 
 | Historia | Pts | Estado | Evidencia | Nota |
 |---|---|---|---|---|
-| US-033 Segunda aprobación sobre Q10,000 | 8 | Terminada, pendiente de verificar en Staging | PR #27, PR #32 | Requerimiento del Product Owner del 17 de octubre. La primera aprobación deja la solicitud en `APROBACION_PENDIENTE` sin reservar cupo; la segunda la confirma una persona distinta |
-| US-034 Avisos al estudiante | 5 | Terminada, pendiente de verificar en Staging | PR #27 | Requerimiento del Product Owner del 17 de octubre. Implementada con el patrón Observer |
-| US-035 Recuperar la contraseña | 8 | Terminada, pendiente de merge | PR #32 | Propuesta por el equipo el 24 de octubre tras revisar las prácticas de almacenamiento de contraseñas |
+| US-033 Segunda aprobación sobre Q10,000 | 8 | Terminada, verificada en Staging | PR #27, PR #34 | Requerimiento del Product Owner del 17 de octubre. La primera aprobación deja la solicitud en `APROBACION_PENDIENTE` sin reservar cupo; la segunda la confirma una persona distinta |
+| US-034 Avisos al estudiante | 5 | Terminada, verificada en Staging | PR #27 | Requerimiento del Product Owner del 17 de octubre. Implementada con el patrón Observer |
+| US-035 Recuperar la contraseña | 8 | Terminada, pendiente de verificar en Staging | PR #34 | Propuesta por el equipo el 24 de octubre tras revisar las prácticas de almacenamiento de contraseñas |
+| US-036 Ver los documentos sin descargarlos | 3 | Terminada, pendiente de verificar en Staging | — | Propuesta por el equipo el 29 de octubre. El evaluador revisa los adjuntos en la misma pantalla donde redacta el dictamen |
 
 ---
 
@@ -634,6 +635,41 @@ segunda aprobación **para poder** evitar que una sola persona comprometa montos
 
 ---
 
+### US-036 — Ver los documentos sin descargarlos
+
+**Como** evaluador, **quiero** ver los documentos adjuntos dentro de la pantalla del dictamen
+**para poder** comprobar los datos del solicitante mientras redacto mi observación.
+
+> **De dónde salió esta historia.** Tampoco la pidió el Product Owner. Al repasar el flujo de
+> evaluación se vio que nada empuja al evaluador a abrir los documentos: puede ver que existen,
+> escribir los veinte caracteres de observación que exige el sistema y emitir el dictamen sin
+> haber mirado el certificado de notas.
+>
+> **Se descartó pedirle una confirmación.** La alternativa era una casilla del tipo "confirmo que
+> revisé los documentos", validada en el servidor como ya se hace al quitar a alguien de un comité.
+> Se rechazó porque una casilla se marca sin leer: añade una declaración, no una revisión. Poner el
+> documento delante del evaluador, en la misma pantalla donde escribe, cambia lo que hace; la
+> casilla solo cambia lo que firma.
+
+**Criterios de aceptación**
+
+- En la pantalla del dictamen, cada documento cargado ofrece **Ver** junto a su nombre y tamaño.
+- Al pulsarlo, el documento se muestra **dentro de la página**, sin descargarlo ni abrir otra
+  pestaña.
+- Se muestran PDF e imágenes. Cualquier otro formato avisa de que debe descargarse.
+- El documento abierto queda **señalado en la lista**, y se cierra con **Ocultar** o con **Cerrar**.
+- Sigue existiendo **Descargar**, para quien prefiera el archivo.
+- El visor **no abre una URL pública**: el archivo se pide con la sesión, igual que antes.
+
+> 🔒 **Por qué esto no abre un agujero.** El documento sigue viajando por la misma ruta protegida:
+> se pide con el token y el servidor comprueba que la solicitud esté asignada a ese evaluador. Lo
+> único que cambia es qué hace el navegador con el archivo una vez recibido. Un evaluador no puede
+> ver con el visor nada que no pudiera descargar antes.
+
+**Prioridad:** Media · **Estimación:** 3
+
+---
+
 ## Resumen de estimación inicial
 
 | Epic | Historias | Puntos |
@@ -659,6 +695,11 @@ segunda aprobación **para poder** evitar que una sola persona comprometa montos
 > el cierre de la entrega; por eso se le puso prioridad **Media** y no Alta, y por eso el doble
 > factor que surgió en el mismo análisis **se descartó de forma explícita** en lugar de dejarlo
 > abierto.
+>
+> **Actualización del 29 de octubre de 2026.** Se sumó **US-036**, también propuesta por el equipo:
+> **36 historias y 208 puntos**. Salió de revisar el flujo de evaluación y notar que nada obligaba
+> al evaluador a abrir los documentos antes de dictaminar. Se descartó pedirle una casilla de
+> confirmación —se marca sin leer— y se optó por mostrarle los documentos en la misma pantalla.
 
 Con 8 sprints disponibles, se requiere una velocidad promedio de **~22 puntos por sprint**. La
 velocidad real se medirá a partir del Sprint 2; si resulta menor, el Product Owner despriorizará

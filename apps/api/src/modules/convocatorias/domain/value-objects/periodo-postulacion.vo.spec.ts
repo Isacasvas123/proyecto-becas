@@ -1,5 +1,5 @@
 /**
- * PRUEBAS DEL OBJETO DE VALOR. TypeScript puro, sin framework.
+ * Pruebas del objeto de valor. TypeScript puro, sin framework.
  */
 import { ReglaDeNegocioError } from '../../../../shared/exceptions/errores-dominio';
 import { PeriodoPostulacion } from './periodo-postulacion.vo';

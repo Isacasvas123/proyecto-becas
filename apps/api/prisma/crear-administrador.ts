@@ -1,25 +1,20 @@
 /**
- * Crea o actualiza UNA cuenta de administrador, y nada más.
+ * Crea o actualiza una cuenta de administrador, y nada más.
  *
- * POR QUÉ ESTE SCRIPT EXISTE
- *   La aplicación no tiene pantalla para crear administradores, a propósito: quien administra
- *   el sistema de becas de un país no se da de alta solo desde un formulario web. Y el `seed.ts`
- *   no sirve para esto porque además siembra convocatorias de prueba, y está marcado como
- *   solo-desarrollo justamente para que nadie lo apunte a un entorno desplegado.
+ * La aplicación no tiene pantalla para crear administradores, a propósito: quien administra el
+ * sistema de becas no se da de alta desde un formulario web. `seed.ts` tampoco sirve, porque
+ * siembra convocatorias de prueba y está marcado como solo-desarrollo.
  *
- *   Quedaba un hueco real: US-033 exige que la segunda aprobación de una beca de más de
- *   Q10,000 la dé una persona DISTINTA de la primera, así que un entorno con un solo
- *   administrador no puede recorrer ese flujo ni para probarlo ni para demostrarlo. Esto lo
- *   resuelve sin tocar los datos de nadie.
+ * Hacía falta porque US-033 exige que la segunda aprobación de una beca de más de Q10,000 la dé
+ * una persona distinta de la primera, y con un solo administrador ese flujo no se puede recorrer
+ * en un entorno desplegado.
  *
- * QUÉ HACE Y QUÉ NO HACE
- *   Escribe una fila en `Usuario` con rol ADMINISTRADOR y la contraseña cifrada con bcrypt.
- *   No crea convocatorias, no borra nada y no toca ninguna otra cuenta. Si el usuario ya
- *   existe, le actualiza la contraseña y lo deja activo.
+ * Escribe una fila en `Usuario` con rol ADMINISTRADOR y la contraseña con bcrypt. No crea
+ * convocatorias ni toca otras cuentas; si el usuario ya existe, actualiza su contraseña y lo deja
+ * activo.
  *
- * CÓMO SE USA
- *   Las tres variables son obligatorias y la contraseña nunca se escribe en el código ni queda
- *   en el repositorio. Desde la raíz del proyecto:
+ * Las tres variables son obligatorias y la contraseña nunca queda en el repositorio. Desde la
+ * raíz del proyecto:
  *
  *     DATABASE_URL="<cadena de conexión>" \
  *     NUEVO_ADMIN_USUARIO="admin.revisor" \
@@ -27,12 +22,9 @@
  *     NUEVO_ADMIN_PASSWORD="<la contraseña>" \
  *     npm run admin:crear --workspace apps/api
  *
- *   Para Staging, `DATABASE_URL` es la *External Database URL* del panel de Render. La interna
- *   solo funciona desde dentro de su red.
- *
- * ADVERTENCIA
- *   Una contraseña escrita en la línea de comandos queda en el historial del terminal. Después
- *   de usarlo conviene limpiarlo, o exportar la variable en una sesión aparte.
+ * En Staging, `DATABASE_URL` es la External Database URL del panel de Render; la interna solo
+ * funciona dentro de su red. Una contraseña escrita en la línea de comandos queda en el historial
+ * de la terminal, así que conviene limpiarlo después.
  */
 import { PrismaClient, RolUsuario } from '@prisma/client';
 import { hash } from 'bcryptjs';
