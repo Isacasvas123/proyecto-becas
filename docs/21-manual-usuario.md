@@ -237,6 +237,7 @@ muestra cada cambio de estado con su fecha.
 | **Borrador** | La está preparando. Todavía puede cargar y reemplazar documentos |
 | **Enviada** | Llegó al Ministerio. Ya no se puede modificar |
 | **En evaluación** | Un comité la está revisando |
+| **Aprobación pendiente** | Tiene la primera aprobación y espera la segunda (becas de más de Q10,000) |
 | **Aprobada** · **Rechazada** | Ya hay una decisión, con su motivo |
 | **Adjudicada** | Se le otorgó la beca |
 
