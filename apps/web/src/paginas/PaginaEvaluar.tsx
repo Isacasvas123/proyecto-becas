@@ -17,7 +17,7 @@ import {
   type ExpedienteEvaluacion,
 } from '../api/cliente';
 import { MarcoPrivado } from '../componentes/MarcoPrivado';
-import { guardarArchivo } from '../descargas';
+import { VisorDocumento } from '../componentes/VisorDocumento';
 import {
   formatearFechaHora,
   formatearTamano,
@@ -26,6 +26,13 @@ import {
 } from '../formato';
 
 const MINIMO_OBSERVACION = 20;
+
+interface DocumentoAbierto {
+  tipo: string;
+  nombre: string;
+  descripcion: string;
+  archivo: Blob;
+}
 
 const NIVEL: Record<string, string> = {
   NIVEL_MEDIO: 'Nivel medio',
@@ -45,6 +52,8 @@ export function PaginaEvaluar(): ReactElement {
   const [confirmando, setConfirmando] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [abierto, setAbierto] = useState<DocumentoAbierto | null>(null);
+  const [abriendo, setAbriendo] = useState<string | null>(null);
 
   useEffect(() => {
     obtenerExpedienteEvaluacion(id)
@@ -77,11 +86,24 @@ export function PaginaEvaluar(): ReactElement {
     }
   }
 
-  async function ver(tipo: string, nombre: string): Promise<void> {
+  async function abrir(tipo: string, nombre: string, descripcion: string): Promise<void> {
+    if (abierto?.tipo === tipo) {
+      setAbierto(null);
+      return;
+    }
+    setError(null);
+    setAbriendo(tipo);
     try {
-      guardarArchivo(await descargarDocumentoEvaluacion(id, tipo), nombre);
+      setAbierto({
+        tipo,
+        nombre,
+        descripcion,
+        archivo: await descargarDocumentoEvaluacion(id, tipo),
+      });
     } catch (causa: unknown) {
-      setError(causa instanceof Error ? causa.message : 'No se pudo descargar.');
+      setError(causa instanceof Error ? causa.message : 'No se pudo abrir el documento.');
+    } finally {
+      setAbriendo(null);
     }
   }
 
@@ -146,7 +168,15 @@ export function PaginaEvaluar(): ReactElement {
                 <h2>Documentos</h2>
                 <ul className="documentos">
                   {expediente.documentos.map((d) => (
-                    <li key={d.tipo} className={d.cargado ? 'cargado' : 'pendiente'}>
+                    <li
+                      key={d.tipo}
+                      className={[
+                        d.cargado ? 'cargado' : 'pendiente',
+                        abierto?.tipo === d.tipo ? 'abierto' : '',
+                      ]
+                        .filter(Boolean)
+                        .join(' ')}
+                    >
                       <span className="marca-doc" aria-hidden="true">
                         {d.cargado ? '✓' : '—'}
                       </span>
@@ -157,10 +187,19 @@ export function PaginaEvaluar(): ReactElement {
                             <button
                               type="button"
                               className="enlace"
-                              onClick={() => void ver(d.tipo, d.nombreArchivo ?? d.tipo)}
+                              aria-expanded={abierto?.tipo === d.tipo}
+                              onClick={() =>
+                                void abrir(d.tipo, d.nombreArchivo ?? d.tipo, d.descripcion)
+                              }
                             >
-                              {d.nombreArchivo}
+                              {abriendo === d.tipo
+                                ? 'Abriendo…'
+                                : abierto?.tipo === d.tipo
+                                  ? 'Ocultar'
+                                  : 'Ver'}
                             </button>
+                            {' · '}
+                            {d.nombreArchivo}
                             {d.tamanoBytes !== null && <> · {formatearTamano(d.tamanoBytes)}</>}
                           </span>
                         ) : (
@@ -171,6 +210,15 @@ export function PaginaEvaluar(): ReactElement {
                   ))}
                 </ul>
               </section>
+
+              {abierto !== null && (
+                <VisorDocumento
+                  nombre={abierto.nombre}
+                  descripcion={abierto.descripcion}
+                  archivo={abierto.archivo}
+                  onCerrar={() => setAbierto(null)}
+                />
+              )}
             </div>
 
             <div className="lateral">
