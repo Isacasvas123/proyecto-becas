@@ -1,14 +1,11 @@
 /**
  * Formulario de registro de estudiante (US-001).
  *
- * LA LISTA DE CONDICIONES DE LA CONTRASEÑA
- *   Se marca en vivo mientras la persona escribe, para que no descubra las reglas a base de
- *   errores. Es solo ORIENTACIÓN: quien decide es el servidor, y su mensaje se muestra tal cual si
- *   rechaza algo. Si la política cambia en el backend y aquí no, lo peor que pasa es que esta lista
- *   quede desactualizada; la cuenta nunca se crearía con una contraseña que el servidor no acepta.
+ * La lista de condiciones de la contraseña se marca en vivo para que la persona no descubra las
+ * reglas a base de errores. Es solo orientación: decide el servidor y su mensaje se muestra tal
+ * cual, y la cuenta nunca se crea con una contraseña que el servidor no acepte.
  *
- * EL CUI
- *   Se acepta con espacios, como viene impreso en el DPI. El servidor lo normaliza.
+ * El CUI se acepta con espacios, como viene impreso en el DPI, y el servidor lo normaliza.
  */
 import { useState, type FormEvent, type ReactElement } from 'react';
 import { Link } from 'react-router-dom';

@@ -1,7 +1,7 @@
 /**
- * PRUEBA UNITARIA — patrón Strategy (docs/06-patrones.md §6).
+ * Prueba unitaria — patrón Strategy (docs/06-patrones.md §6).
  *
- * Cada fórmula con sus casos límite, y la prueba que justifica el patrón: el mixto COMPONE a los
+ * Cada fórmula con sus casos límite, y la prueba que justifica el patrón: el mixto compone a los
  * otros dos. Si mañana cambia la fórmula de necesidad, el mixto cambia con ella sin tocarse.
  */
 import { ReglaDeNegocioError } from '../../../../shared/exceptions/errores-dominio';

@@ -1,7 +1,7 @@
 /**
- * CAPA: presentation/dto/  ·  US-035, los dos pasos de la recuperación.
+ * US-035, los dos pasos de la recuperación.
  *
- * Aquí solo se valida la FORMA de lo que llega: que sea una cadena, que parezca un correo,
+ * Aquí solo se valida la forma de lo que llega: que sea una cadena, que parezca un correo,
  * que no venga vacío. Si la cuenta existe, si el enlace sirve todavía o si la contraseña
  * cumple la política son reglas de negocio y viven en el dominio.
  */

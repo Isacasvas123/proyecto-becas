@@ -1,17 +1,11 @@
 /**
- * CAPA: infrastructure/notificaciones/  ·  OBSERVADOR del cambio de estado
- * ────────────────────────────────────────────────────────────────────────────────
- * Crea la notificación del estudiante (US-022; exigida por el PO el 17 de octubre de 2026).
+ * Observador que crea la notificación del estudiante (US-022, PO del 17 de octubre).
  *
- * NO LANZA NUNCA
- *   Si la notificación no se puede guardar, el cambio de estado ya ocurrió y es válido. Se deja
- *   constancia en el log y la operación sigue. Lo contrario —tumbar una aprobación porque falló
- *   un aviso— sería poner el accesorio por encima de lo esencial.
+ * No lanza nunca: si el aviso no se puede guardar, el cambio de estado ya ocurrió y es válido. Se
+ * deja constancia en el log y la operación sigue.
  *
- * EL TEXTO VIVE AQUÍ, NO EN EL DOMINIO
- *   El dominio sabe que una solicitud pasó de EN_EVALUACION a APROBADA; cómo se le cuenta eso a
- *   una persona es cosa de presentación. Si mañana cambia la redacción, o hay que traducirla, no
- *   se toca ninguna regla de negocio.
+ * El texto vive aquí y no en el dominio: el dominio sabe que una solicitud pasó a APROBADA, y
+ * cómo se le cuenta eso a una persona es presentación. Cambiar la redacción no toca ninguna regla.
  */
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
@@ -24,7 +18,7 @@ import { EventoCambioEstado, ObservadorSolicitud } from '../../domain/events/eve
 
 /** Qué se le dice al estudiante en cada estado al que llega su solicitud. */
 const MENSAJE: Record<NombreEstado, (numero: string) => string> = {
-  // Nunca se usa: crear una solicitud no es un CAMBIO de estado, es el inicial. Está por
+  // Nunca se usa: crear una solicitud no es un cambio de estado, es el inicial. Está por
   // exhaustividad del Record, para que agregar un estado nuevo al enum no compile sin su mensaje.
   [NombreEstado.BORRADOR]: (n) => `Creó la solicitud ${n}.`,
   [NombreEstado.ENVIADA]: (n) => `Recibimos su solicitud ${n}. Queda a la espera de evaluación.`,

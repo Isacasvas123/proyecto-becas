@@ -1,5 +1,5 @@
 /**
- * PÁGINA `/evaluadores` — cuentas de evaluador (parte de US-017). Solo administración.
+ * Página `/evaluadores` — cuentas de evaluador (parte de US-017). Solo administración.
  *
  * El administrador crea la cuenta con una contraseña inicial y se la entrega a la persona por un
  * canal seguro. Cambiarla después es US-004 (perfil), que todavía no existe: queda anotado.

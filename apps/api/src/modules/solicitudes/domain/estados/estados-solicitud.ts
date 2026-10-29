@@ -1,30 +1,20 @@
 /**
- * CAPA: domain/estados/  ·  PATRÓN STATE (comportamiento)
- * ────────────────────────────────────────────────────────────────────────────────
- * Justificación completa en docs/06-patrones.md §5. El ciclo de vida, tal como lo dibuja el
- * diagrama de estados de docs/diagramas/03-clases-dominio.md §2:
+ * Patrón State. Justificación en docs/06-patrones.md §5. El ciclo de vida, según el diagrama de
+ * estados de docs/diagramas/03-clases-dominio.md §2:
  *
  *     BORRADOR ──enviar──▶ ENVIADA ──iniciarEvaluacion──▶ EN_EVALUACION ──resolver──▶ APROBADA ──adjudicar──▶ ADJUDICADA
  *                                                            │  (si el monto > Q10,000)
  *                                                            └──▶ APROBACION_PENDIENTE ──confirmar──▶ APROBADA
  *                                                                          └────────▶ RECHAZADA
  *
- * CÓMO ESTÁ HECHO
- *   `EstadoSolicitud` RECHAZA TODO por defecto. Cada estado concreto sobrescribe solo lo que sí
- *   permite. Consecuencia: una transición que no aparece en el diagrama no existe en el código, y
- *   nadie tiene que acordarse de comprobarlo. Evaluar un borrador o adjudicar una rechazada lanza
- *   `TransicionInvalidaError` desde el propio estado.
+ * `EstadoSolicitud` rechaza todo por defecto y cada estado concreto sobrescribe solo lo que
+ * permite. Una transición que no está en el diagrama no existe en el código: evaluar un borrador
+ * o adjudicar una rechazada lanza `TransicionInvalidaError` desde el propio estado.
  *
- * UNA DECISIÓN DE DISEÑO: LOS ESTADOS DECIDEN, NO MODIFICAN
- *   Cada transición DEVUELVE el estado siguiente; es la `Solicitud` quien lo aplica y lo registra
- *   en su historial. En la variante clásica el estado llama a `solicitud.cambiarEstado(...)`, lo
- *   que obliga a exponer ese método a cualquiera. Así la solicitud es la única que se modifica a sí
- *   misma, y cada estado se prueba sin construir una solicitud completa.
- *
- * ALCANCE
- *   Las seis clases y las cinco transiciones del diagrama existen desde ya, porque son el modelo y
- *   se prueban solas. Los CASOS DE USO que disparan evaluar, resolver y adjudicar llegan con sus
- *   historias: EPIC-04 (Sprint 5) y EPIC-05 (Sprint 6).
+ * Los estados deciden y no modifican: cada transición devuelve el estado siguiente y es la
+ * `Solicitud` quien lo aplica y lo registra. En la variante clásica el estado llama a
+ * `solicitud.cambiarEstado(...)`, lo que obliga a exponer ese método a cualquiera. Así cada estado
+ * se prueba sin construir una solicitud completa.
  */
 import {
   ReglaDeNegocioError,
@@ -125,12 +115,11 @@ export class EstadoEnEvaluacion extends EstadoSolicitud {
 }
 
 /**
- * Primera aprobacion dada, falta la segunda (PO, 17 Oct 2026).
+ * Primera aprobación dada, falta la segunda (PO, 17 de octubre).
  *
- * No ocupa cupo: el cupo se reserva cuando la aprobacion se completa. Asi, dos solicitudes
- * grandes pueden esperar la segunda firma sin bloquear cupos que todavia no son de nadie.
- *
- * Desde aqui solo se puede confirmar o rechazar. Adjudicar no: todavia no esta aprobada.
+ * No ocupa cupo: se reserva al completarse la aprobación, así dos solicitudes grandes pueden
+ * esperar la segunda firma sin bloquear cupos que aún no son de nadie. Desde aquí solo se puede
+ * confirmar o rechazar; adjudicar no, porque todavía no está aprobada.
  */
 export class EstadoAprobacionPendiente extends EstadoSolicitud {
   readonly nombre = NombreEstado.APROBACION_PENDIENTE;

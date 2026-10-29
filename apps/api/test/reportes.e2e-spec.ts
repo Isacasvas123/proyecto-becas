@@ -1,5 +1,5 @@
 /**
- * PRUEBA DE INTEGRACIÓN — EPIC-06 sobre datos producidos por el flujo real:
+ * Prueba de integración — EPIC-06 sobre datos producidos por el flujo real:
  * dos solicitudes enviadas, evaluadas, una aprobada y adjudicada y la otra rechazada.
  */
 import { INestApplication } from '@nestjs/common';

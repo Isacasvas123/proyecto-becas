@@ -41,7 +41,7 @@ interface ArchivoSubido {
 const FORMATO_TIPO = /^[A-Z_]{2,40}$/;
 
 /**
- * EPIC-03 · solicitudes del PROPIO estudiante. El id del estudiante sale del token en cada ruta
+ * EPIC-03 · solicitudes del propio estudiante. El id del estudiante sale del token en cada ruta
  * (`@UsuarioActual`), así que no hay forma de pedir por las solicitudes de otra persona.
  */
 /**
@@ -110,7 +110,7 @@ export class SolicitudesController {
   }
 
   /**
-   * US-013. PUT porque carga O REEMPLAZA el documento de ese tipo: repetir la petición deja el
+   * US-013. PUT porque carga O reemplaza el documento de ese tipo: repetir la petición deja el
    * mismo resultado. El archivo va en el campo `archivo` de un formulario multipart.
    *
    * `multer` corta en 5 MB + 1 byte: lo que pase de ahí no se termina de recibir. El dominio

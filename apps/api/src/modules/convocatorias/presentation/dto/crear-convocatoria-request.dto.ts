@@ -1,17 +1,11 @@
 /**
- * CAPA: presentation/dto/
- * ────────────────────────────────────────────────────────────────────────────────
- * Contrato de ENTRADA de `POST /convocatorias` (US-006).
+ * Contrato de entrada de `POST /convocatorias` (US-006).
  *
- * QUÉ SE VALIDA AQUÍ Y QUÉ NO
- *   Aquí se valida la FORMA: que los campos existan, tengan el tipo correcto y valores del
- *   catálogo. Eso le toca a la frontera HTTP.
- *
- *   Las REGLAS DE NEGOCIO —cierre posterior a apertura, cupos enteros positivos, el tope de
- *   posgrado— NO se repiten aquí. Viven en el dominio y se comprueban allí. Si también
- *   estuvieran aquí, habría dos definiciones de la misma regla y tarde o temprano dirían
- *   cosas distintas. `@Min(1)` en cupos es la excepción consciente: rechaza basura obvia
- *   antes de llegar al dominio, que de todas formas vuelve a comprobarlo.
+ * Aquí se valida la forma: que los campos existan, tengan el tipo correcto y valores del
+ * catálogo. Las reglas de negocio (cierre posterior a apertura, cupos positivos, el tope de
+ * posgrado) viven en el dominio y no se repiten, porque tendrían dos definiciones que tarde o
+ * temprano dirían cosas distintas. `@Min(1)` en cupos es la excepción: rechaza basura obvia antes
+ * de llegar al dominio, que de todos modos vuelve a comprobarlo.
  */
 import { Type } from 'class-transformer';
 import {

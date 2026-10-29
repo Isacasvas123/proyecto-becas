@@ -8,12 +8,10 @@ import {
 } from '../../domain/ports/solicitud.repositorio';
 
 /**
- * Doble para pruebas: mismo contrato que el adaptador de Prisma.
- *
- * GUARDA Y DEVUELVE COPIAS, como una base de datos. Si guardara la misma instancia, un caso de uso
- * que modifica la solicitud y después ve rechazado el guardado (por ejemplo, por falta de cupo)
- * dejaría el cambio aplicado en la "base", y las pruebas darían por buena una conducta que en
- * PostgreSQL no existe.
+ * Doble para pruebas con el mismo contrato que el adaptador de Prisma. Guarda y devuelve copias,
+ * como una base de datos: si guardara la misma instancia, un guardado rechazado (por falta de
+ * cupo, por ejemplo) dejaría el cambio aplicado y las pruebas darían por buena una conducta que
+ * en PostgreSQL no existe.
  */
 export class SolicitudEnMemoriaRepositorio implements SolicitudRepositorio {
   private readonly solicitudes = new Map<string, Solicitud>();

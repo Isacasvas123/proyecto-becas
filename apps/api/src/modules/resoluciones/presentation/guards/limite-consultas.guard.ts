@@ -1,13 +1,10 @@
 /**
- * Límite de consultas públicas por dirección (US-025).
+ * Límite de consultas públicas por dirección (US-025): sin límite, un script podría probar
+ * números y CUI sin parar. Se permiten `LIMITE` consultas cada `VENTANA_MS`; la siguiente recibe
+ * 429.
  *
- * La consulta pública no tiene sesión, y sin límite un script podría probar números y CUI sin
- * parar. Se permiten `LIMITE` consultas por dirección cada `VENTANA_MS`; la siguiente recibe 429.
- *
- * LIMITACIÓN CONOCIDA
- *   El conteo vive en la memoria del proceso: con varias instancias de la API, cada una cuenta por
- *   su lado, y se reinicia al reiniciar. Para una instancia —Staging— es suficiente. Con más, se
- *   mueve a un almacén compartido sin tocar el caso de uso.
+ * El conteo vive en la memoria del proceso: con varias instancias cada una cuenta por su lado.
+ * Para Staging, con una, alcanza; con más se mueve a un almacén compartido.
  */
 import {
   CanActivate,

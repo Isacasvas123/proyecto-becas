@@ -1,16 +1,9 @@
 /**
- * CAPA: infrastructure/adapters/  ·  PATRÓN ADAPTER (estructural)
- * ────────────────────────────────────────────────────────────────────────────────
- * Implementa el puerto `GeneradorToken` con JWT firmado (HS256).
+ * Implementa `GeneradorToken` con un JWT firmado (HS256), patrón Adapter.
  *
- * QUÉ VA DENTRO DEL TOKEN
- *   Solo el identificador del usuario, su nombre y su rol. NUNCA el correo, ni el hash,
- *   ni datos personales: el payload de un JWT va firmado pero NO cifrado, así que
- *   cualquiera que lo intercepte puede leerlo.
- *
- * SPRINT 2
- *   Aquí falta el `JwtAuthGuard` que valide el token en las peticiones siguientes y el
- *   decorador de roles. Es US-003 y se implementa con el control de acceso.
+ * Dentro del token va solo el id, el nombre de usuario y el rol: nunca el correo, el hash ni
+ * datos personales, porque el payload va firmado pero no cifrado y cualquiera que lo intercepte
+ * puede leerlo.
  */
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -46,7 +39,7 @@ export class JwtGeneradorTokenAdapter implements GeneradorToken {
         rol: usuario.rol,
       },
       // La vigencia se pasa en segundos y desde aquí, para que el `exp` interno del token
-      // y el `expiraEn` que se devuelve al cliente salgan del MISMO cálculo. Si el módulo
+      // y el `expiraEn` que se devuelve al cliente salgan del mismo cálculo. Si el módulo
       // fijara su propio `expiresIn`, ambos podrían discrepar sin que nada lo detectara.
       { expiresIn: segundosVigencia },
     );

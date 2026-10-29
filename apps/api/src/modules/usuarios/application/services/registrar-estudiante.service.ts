@@ -1,20 +1,16 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * US-001 — Registro de estudiante. Criterios de aceptación, y dónde se cumple cada uno:
+ * US-001: registro de estudiante. Dónde se cumple cada criterio:
  *
- *   1. CUI de 13 dígitos y único ...................... `Cui.crear` + `buscarDuplicados`
- *   2. Contraseña de 8+, con mayúscula y número ....... `validarPoliticaContrasena`
- *   3. Guardada con hash bcrypt, nunca en claro ...... `HasherPassword` (patrón Adapter)
- *   4. Error claro y específico si correo o CUI existen `RecursoDuplicadoError` → 409
- *   5. Queda autenticado y va a su panel .............. devuelve la sesión ya iniciada
+ * 1. CUI de 13 dígitos y único: `Cui.crear` y `buscarDuplicados`.
+ * 2. Contraseña de 8+, con mayúscula y número: `validarPoliticaContrasena`.
+ * 3. Hash bcrypt, nunca en claro: `HasherPassword` (patrón Adapter).
+ * 4. Error específico si el correo o el CUI existen: `RecursoDuplicadoError` → 409.
+ * 5. Queda autenticado: devuelve la sesión ya iniciada.
  *
- * SOBRE EL CRITERIO 4 Y LA ENUMERACIÓN DE CUENTAS
- *   Decir "ya existe una cuenta con ese correo" permite averiguar si alguien está registrado,
- *   que es justo lo que el inicio de sesión evita con su mensaje genérico. Aquí se hace igual
- *   porque el criterio lo pide textualmente, y la persona necesita saber qué corregir. La
- *   diferencia está razonada en el detalle de CU-03 (docs/diagramas/01-casos-de-uso.md). La
- *   mitigación estándar —limitar intentos por dirección IP— queda anotada como mejora.
+ * El criterio 4 permite saber si alguien está registrado, justo lo que el inicio de sesión evita
+ * con su mensaje genérico. Aquí se acepta porque el criterio lo pide y la persona necesita saber
+ * qué corregir (razonado en CU-03, docs/diagramas/01-casos-de-uso.md). La mitigación estándar,
+ * limitar intentos por IP, queda anotada como mejora.
  */
 import { randomUUID } from 'node:crypto';
 

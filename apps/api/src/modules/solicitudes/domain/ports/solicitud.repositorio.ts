@@ -49,12 +49,12 @@ export interface SolicitudRepositorio {
 
   /**
    * US-023, criterio 4: guarda una solicitud recién APROBADA solo si su convocatoria todavía tiene
-   * cupo. La comprobación y la escritura DEBEN ser atómicas: dos aprobaciones simultáneas no pueden
+   * cupo. La comprobación y la escritura deben ser atómicas: dos aprobaciones simultáneas no pueden
    * pasar las dos por el último cupo. Si no hay cupo, lanza `ReglaDeNegocioError` y no guarda nada.
    */
   guardarSiHayCupo(solicitud: Solicitud, cupos: number): Promise<void>;
 
-  /** Cuántas solicitudes de la convocatoria ocupan cupo: APROBADAS y ADJUDICADAS. */
+  /** Cuántas solicitudes de la convocatoria ocupan cupo: aprobadas y adjudicadas. */
   contarOcupacion(convocatoriaId: string): Promise<{ aprobadas: number; adjudicadas: number }>;
 
   /** US-025. */
@@ -63,7 +63,7 @@ export interface SolicitudRepositorio {
   contarBecasConPrefijo(prefijo: string): Promise<number>;
 
   /**
-   * EPIC-06. Las solicitudes RECIBIDAS (nunca las que siguen en borrador) que cumplan el filtro.
+   * EPIC-06. Las solicitudes recibidas (nunca las que siguen en borrador) que cumplan el filtro.
    * El rango de fechas se aplica a la fecha de envío.
    */
   paraReporte(filtro: FiltroSolicitudesReporte): Promise<Solicitud[]>;

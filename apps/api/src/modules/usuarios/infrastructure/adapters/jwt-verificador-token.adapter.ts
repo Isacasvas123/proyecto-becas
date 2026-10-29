@@ -1,17 +1,10 @@
 /**
- * CAPA: infrastructure/adapters/  ·  PATRÓN ADAPTER (estructural)
- * ────────────────────────────────────────────────────────────────────────────────
- * Implementa `VerificadorToken` con JWT. Es la única clase que sabe que la sesión viaja
- * como un JSON Web Token firmado con HS256.
+ * Implementa `VerificadorToken` con JWT. Es la única clase que sabe que la sesión viaja como un
+ * JSON Web Token firmado con HS256 (patrón Adapter).
  *
- * SEGURIDAD — POR QUÉ SE CAPTURA CUALQUIER ERROR Y SE DEVUELVE `null`
- *   `jwt.verifyAsync` lanza excepciones distintas según el motivo: firma inválida, token
- *   caducado, formato corrupto. Distinguirlas en la respuesta le diría a un atacante si su
- *   token es "casi válido", que es información útil para él y para nadie más. Todas
- *   producen el mismo resultado: no hay portador.
- *
- *   El motivo real sí se registra en el log del servidor, en nivel `debug`, para poder
- *   diagnosticar sin ruido en producción.
+ * Captura cualquier error y devuelve `null`: `jwt.verifyAsync` lanza excepciones distintas según
+ * el motivo (firma inválida, caducado, formato corrupto) y distinguirlas le diría a un atacante si
+ * su token es "casi válido". El motivo real se registra en el log en nivel `debug`.
  */
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';

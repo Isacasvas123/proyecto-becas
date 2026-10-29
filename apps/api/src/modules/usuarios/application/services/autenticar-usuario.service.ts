@@ -1,20 +1,10 @@
 /**
- * CAPA: application/services/
- * ────────────────────────────────────────────────────────────────────────────────
- * CASO DE USO: iniciar sesión (US-002).
+ * US-002: iniciar sesión.
  *
- * Orquesta cuatro colaboradores y no implementa ninguno: busca el usuario por el puerto
- * del repositorio, verifica la contraseña por el puerto del hasher, pregunta al dominio
- * si la cuenta puede iniciar sesión, y emite el token por el puerto del generador.
- *
- * Los tres puertos viven en domain/ports/. Este servicio no sabe que detrás hay Prisma,
- * bcrypt ni JWT: por eso su prueba unitaria corre sin base de datos y en milisegundos
- * (ver `autenticar-usuario.service.spec.ts`).
- *
- * ALCANCE (Sprint 1)
- *   Solo el inicio de sesión. El registro (US-001), el perfil (US-004), la recuperación
- *   de contraseña (US-005) y el bloqueo tras 5 intentos fallidos son SPRINT 2, y cada uno
- *   será SU PROPIO servicio en esta carpeta.
+ * Orquesta cuatro colaboradores y no implementa ninguno: busca el usuario por el puerto del
+ * repositorio, verifica la contraseña por el del hasher, pregunta al dominio si la cuenta puede
+ * entrar y emite el token por el del generador. No sabe que detrás hay Prisma, bcrypt ni JWT, y
+ * por eso su prueba unitaria corre sin base de datos.
  */
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
@@ -55,7 +45,7 @@ export class AutenticarUsuarioService {
     const nombreUsuario = NombreUsuario.crear(nombreUsuarioEntrada);
     const usuario = await this.repositorio.buscarPorNombreUsuario(nombreUsuario);
 
-    // SEGURIDAD — Si el usuario no existe, igualmente se calcula una verificación contra
+    // Seguridad — Si el usuario no existe, igualmente se calcula una verificación contra
     // un hash señuelo antes de fallar. Sin esto, la respuesta sería notablemente más
     // rápida para usuarios inexistentes que para contraseñas incorrectas, y ese
     // diferencial de tiempo permitiría enumerar cuentas válidas del sistema.
@@ -65,7 +55,7 @@ export class AutenticarUsuarioService {
       throw new AutenticacionFallidaError('El usuario no existe');
     }
 
-    // US-002, criterio 3 — CUENTA BLOQUEADA.
+    // US-002, criterio 3 — cuenta bloqueada.
     //
     // Durante el bloqueo **no se verifica la contraseña real**, ni siquiera si es correcta. Si
     // se verificara, un atacante podría seguir probando contraseñas mientras dura el bloqueo y
@@ -105,7 +95,7 @@ export class AutenticarUsuarioService {
     // Regla de negocio del dominio: una cuenta desactivada no entra.
     usuario.asegurarPuedeIniciarSesion();
 
-    // Un acceso correcto limpia el contador: los intentos deben ser CONSECUTIVOS. Solo se
+    // Un acceso correcto limpia el contador: los intentos deben ser consecutivos. Solo se
     // escribe si hay algo que limpiar, para no tocar la base en cada inicio de sesión normal.
     if (usuario.tieneIntentosRegistrados()) {
       await this.repositorio.actualizarEstadoDeAcceso(usuario.conAccesoCorrecto());

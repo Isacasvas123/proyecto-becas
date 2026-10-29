@@ -1,16 +1,13 @@
 /**
- * PRUEBA DE INTEGRACIÓN — US-035, recuperar una contraseña olvidada.
+ * Prueba de integración de US-035, recuperar una contraseña olvidada.
  *
- * QUÉ SE FIJA AQUÍ Y POR QUÉ NO BASTA CON PROBAR "FUNCIONA"
- *   Este flujo se puede implementar de forma que haga exactamente lo que pide la historia y
- *   aun así regale dos cosas a quien lo mire con mala intención: la lista de quién tiene
- *   cuenta, y la posibilidad de reusar un enlace. Las dos están aquí como pruebas, porque
- *   son invisibles desde la pantalla: todo "se ve bien" igual.
+ * Probar que "funciona" no basta: el flujo puede hacer lo que pide la historia y aun así regalar
+ * a quien lo mire con mala intención la lista de quién tiene cuenta y la posibilidad de reusar un
+ * enlace. Ambas son invisibles desde la pantalla, por eso están como pruebas.
  *
- *   La más importante es la primera. Si `solicitar` respondiera distinto cuando la cuenta no
- *   existe, cualquiera podría ir probando correos y quedarse con la lista de quién pidió una
- *   beca al Estado. Esa prueba protege una decisión que es fácil de deshacer sin querer, por
- *   ejemplo "mejorando" el mensaje de error.
+ * La más importante es la primera: si `solicitar` respondiera distinto cuando la cuenta no
+ * existe, cualquiera podría armar la lista de quién pidió una beca al Estado. Protege una
+ * decisión fácil de deshacer sin querer, por ejemplo "mejorando" el mensaje de error.
  */
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';

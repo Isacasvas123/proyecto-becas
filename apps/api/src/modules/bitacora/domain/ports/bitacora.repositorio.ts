@@ -1,14 +1,7 @@
 /**
- * CAPA: domain/ports/
- * ────────────────────────────────────────────────────────────────────────────────
- * Puerto de la bitácora.
- *
- * NO HAY `actualizar` NI `eliminar`, Y ES A PROPÓSITO
- *   El puerto declara lo único que el sistema tiene derecho a hacer con un asiento: escribirlo y
- *   leerlo. Si existiera un método para corregirlo, tarde o temprano alguien lo llamaría "para
- *   arreglar un registro mal puesto", y la bitácora dejaría de servir como evidencia. Borrar por
- *   retención, si algún día hace falta, es trabajo de administración de la base, no de la
- *   aplicación.
+ * Puerto de la bitácora. No tiene `actualizar` ni `eliminar`: si existieran, alguien los usaría
+ * para "arreglar" un registro y dejaría de ser evidencia. Borrar por retención, si hiciera falta,
+ * sería trabajo de administración de la base.
  */
 import { RolUsuario } from '../../../usuarios/domain/enums/rol-usuario.enum';
 import { RegistroBitacora } from '../entities/registro-bitacora.entity';

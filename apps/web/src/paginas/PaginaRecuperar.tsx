@@ -1,18 +1,13 @@
 /**
- * US-035 — Recuperar una contraseña olvidada.
+ * US-035: recuperar una contraseña olvidada.
  *
- * UNA PANTALLA PARA DOS MOMENTOS
- *   Sin token en la URL (`/recuperar`), pide el correo y manda el enlace.
- *   Con token (`/recuperar/:token`), pide la contraseña nueva.
+ * Es una pantalla para dos momentos: sin token en la URL (`/recuperar`) pide el correo y manda el
+ * enlace, y con token (`/recuperar/:token`) pide la contraseña nueva. Es un solo archivo porque es
+ * el mismo trámite y separarlos duplicaría el encabezado, el marco y los avisos.
  *
- *   Son dos formularios y un solo archivo porque es el mismo trámite visto en dos momentos,
- *   y separarlos obligaría a duplicar el encabezado, el marco y los avisos.
- *
- * EL MENSAJE DE ÉXITO NO CONFIRMA QUE LA CUENTA EXISTA
- *   Dice "si esa dirección tiene una cuenta, le enviamos el enlace". No es una forma
- *   rebuscada de hablar: es la misma decisión que toma el servidor al responder 204 en los
- *   dos casos. Si esta pantalla dijera "listo, le enviamos el correo" solo cuando la cuenta
- *   existe, desharía la protección entera.
+ * El mensaje de éxito dice "si esa dirección tiene una cuenta, le enviamos el enlace", la misma
+ * decisión que toma el servidor al responder 204 en los dos casos. Si aquí se confirmara solo
+ * cuando la cuenta existe, se desharía la protección.
  */
 import { useState, type FormEvent, type ReactElement } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -121,7 +116,7 @@ function ElegirPassword({ token }: { token: string }): ReactElement {
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // La comprobación de que coinciden es SOLO de esta pantalla: evita el error de tecleo
+  // La comprobación de que coinciden es solo de esta pantalla: evita el error de tecleo
   // antes de gastar el enlace, que sirve una sola vez. La política de la contraseña la
   // decide el servidor, y su mensaje se muestra tal cual.
   const coinciden = password === repetida;

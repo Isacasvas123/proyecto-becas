@@ -1,21 +1,16 @@
 /**
- * PÁGINA `/comites/:id` — un comité: integrantes (US-017), asignación (US-018) y consolidado
- * (US-021). Solo administración.
+ * Página `/comites/:id`: un comité con sus integrantes (US-017), la asignación (US-018) y el
+ * consolidado (US-021). Solo administración.
  *
- * ASIGNAR
- *   - Automático: el reparto equitativo lo decide el servidor (tiene en cuenta la carga que cada
- *     integrante ya tenía). Aquí solo se elige cuántos evaluadores por solicitud.
- *   - Manual: una solicitud a la vez, eligiendo a quién.
- *   Asignar es irreversible desde esta pantalla —la solicitud pasa a EN_EVALUACION—, así que el
- *   reparto automático pide confirmación.
+ * Asignar puede ser automático, con un reparto equitativo que decide el servidor según la carga
+ * previa de cada integrante (aquí solo se elige cuántos evaluadores por solicitud), o manual, una
+ * solicitud a la vez. Es irreversible desde esta pantalla porque la solicitud pasa a
+ * EN_EVALUACION, así que el reparto automático pide confirmación.
  *
- * EL CONSOLIDADO NO DECIDE
- *   Ordena y marca lo que cabría en los cupos. La decisión la toma el administrador fila por fila:
- *
- * RESOLVER Y ADJUDICAR (US-023, US-024)
- *   Desde cada fila del consolidado. Resolver exige elegir y escribir el motivo, y confirmar; los
- *   cupos disponibles se ven arriba en todo momento. Las reglas (dictámenes, cupo, transición) las
- *   aplica el servidor, que responde con el mensaje exacto.
+ * El consolidado ordena y marca lo que cabría en los cupos, pero no decide: la decisión es del
+ * administrador, fila por fila (US-023, US-024). Resolver exige elegir, escribir el motivo y
+ * confirmar, y los cupos disponibles se ven arriba. El servidor aplica las reglas y responde con
+ * el mensaje exacto.
  */
 import { useCallback, useEffect, useState, type ReactElement } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -171,7 +166,7 @@ export function PaginaComite(): ReactElement {
       const r = await resolverSolicitud(fila.solicitudId, decision, motivo);
       setSeleccion(null);
 
-      // El mensaje lo decide el estado que DEVOLVIÓ el servidor, no la decisión que se envió.
+      // El mensaje lo decide el estado que devolvió el servidor, no la decisión que se envió.
       // Una beca de más de Q10,000 no queda aprobada con esta firma: queda esperando la
       // segunda, y no descuenta cupo. Decir «aprobada» ahí haría creer que el trámite terminó.
       if (r.estado === 'APROBACION_PENDIENTE') {

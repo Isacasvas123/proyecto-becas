@@ -1,32 +1,23 @@
 /**
- * PRUEBA DE INTEGRACIÓN contra PostgreSQL de verdad — `SolicitudPrismaRepositorio`.
+ * Prueba de integración contra PostgreSQL de verdad: `SolicitudPrismaRepositorio`.
  *
- * POR QUÉ ESTA PRUEBA EXISTE
- *   Todas las demás pruebas del proyecto usan los repositorios EN MEMORIA. Eso es deliberado y
- *   está defendido en `docs/05-arquitectura.md`: demuestra que el dominio no depende de la base
- *   de datos. Pero deja un hueco que ya costó dos defectos reales:
+ * Las demás pruebas usan repositorios en memoria, a propósito: demuestran que el dominio no
+ * depende de la base (docs/05-arquitectura.md). Pero dejan un hueco que ya costó dos defectos:
  *
- *     1. `ComitePrismaRepositorio.guardar` solo agregaba integrantes y nunca quitaba los que
- *        se habían removido. En memoria funcionaba.
- *     2. `SolicitudPrismaRepositorio` nunca escribía `montoBeca`. La solicitud nacía con el
- *        cero por defecto de la columna, así que `necesitaSegundaAprobacion()` era siempre
- *        falso y la DOBLE APROBACIÓN de US-033 no ocurría en ningún entorno desplegado, por
- *        mucho que la convocatoria valiera Q15,000. Lo encontró una persona siguiendo la guía
- *        de verificación en Staging, no las 650 pruebas automáticas.
+ *   1. `ComitePrismaRepositorio.guardar` solo agregaba integrantes y nunca quitaba los removidos.
+ *   2. `SolicitudPrismaRepositorio` nunca escribía `montoBeca`: la solicitud nacía con el cero de
+ *      la columna, `necesitaSegundaAprobacion()` era siempre falso y la doble aprobación de
+ *      US-033 no ocurría en ningún entorno desplegado. Lo encontró una persona siguiendo la guía
+ *      de verificación en Staging, no las 650 pruebas automáticas.
  *
- *   Los dos defectos son el mismo defecto: un campo que la entidad tiene y el adaptador de
- *   Prisma olvida. Un repositorio en memoria guarda el objeto entero y por eso no puede
- *   detectarlo nunca. Solo lo ve una ida y vuelta por la base real.
+ * Son el mismo defecto: un campo que la entidad tiene y el adaptador olvida. Un repositorio en
+ * memoria guarda el objeto entero y no puede detectarlo; solo lo ve una ida y vuelta por la base.
  *
- * QUÉ COMPRUEBA, Y POR QUÉ ASÍ
- *   No comprueba un campo: comprueba que **no se pierda ninguno**. Una prueba que mirara solo
- *   `montoBeca` evitaría que este defecto volviera, y no diría nada del siguiente campo que se
- *   agregue y alguien olvide mapear. Por eso compara la entidad reconstruida contra la
- *   original, atributo por atributo.
+ * No comprueba un campo sino que no se pierda ninguno: compara la entidad reconstruida contra la
+ * original, atributo por atributo, para cubrir también el próximo campo que se olvide mapear.
  *
- * NECESITA LA BASE DE DATOS LEVANTADA
- *   Corre con `npm run test:e2e` y con `npm run test:cov`, las dos ya exigen Docker. NO corre
- *   con `npm test`, que debe seguir funcionando sin PostgreSQL.
+ * Necesita la base levantada: corre con `npm run test:e2e` y `npm run test:cov`, y no con
+ * `npm test`, que debe funcionar sin PostgreSQL.
  */
 import { randomUUID } from 'node:crypto';
 

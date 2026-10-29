@@ -1,14 +1,10 @@
 /**
- * Banda de cifras del programa.
+ * Banda de cifras del programa, tomada de becas.segeplan.gob.gt: responde de un vistazo la primera
+ * pregunta de un aspirante, si hay algo para él ahora mismo.
  *
- * Tomada de becas.segeplan.gob.gt, que abre con "17 convocatorias · 10 países ·
- * 12 áreas de estudio". Funciona porque responde de un vistazo la primera
- * pregunta de cualquier aspirante: *¿hay algo para mí ahora mismo?*
- *
- * IMPORTANTE — todas las cifras se calculan de los datos reales que devolvió la
- * API. Ninguna está escrita a mano. Un número inventado en un portal público es
- * una mentira institucional, y además dejaría de cuadrar en cuanto cambien los
- * datos.
+ * Todas las cifras se calculan con los datos reales de la API y ninguna está escrita a mano: un
+ * número inventado en un portal público sería una mentira institucional y dejaría de cuadrar en
+ * cuanto cambien los datos.
  */
 import type { ReactElement } from 'react';
 

@@ -1,5 +1,5 @@
 /**
- * PRUEBA DE INTEGRACIÓN — bitácora (exigencia del Product Owner, 17 de octubre de 2026).
+ * Prueba de integración — bitácora (exigencia del Product Owner, 17 de octubre de 2026).
  *
  * Lo que se comprueba aquí no se puede comprobar con pruebas unitarias: que el interceptor esté
  * **registrado de forma global** y escriba solo, sin que ningún controlador lo llame. Si alguien

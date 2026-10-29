@@ -1,22 +1,15 @@
 /**
- * CAPA: domain/events/  ·  PATRÓN OBSERVER (comportamiento)
- * ────────────────────────────────────────────────────────────────────────────────
- * Exigencia del Product Owner del 17 de octubre de 2026: *"cuando una solicitud cambie de estado,
- * el sistema deberá registrar el evento y generar una notificación para el estudiante"*.
+ * Patrón Observer. Pedido por el Product Owner el 17 de octubre: cuando una solicitud cambie de
+ * estado, el sistema debe registrar el evento y generar una notificación para el estudiante.
  *
- * QUÉ PROBLEMA RESUELVE
- *   Un cambio de estado le interesa a cosas que no tienen nada que ver entre sí: al estudiante
- *   (su notificación), al log del servidor, y mañana a un correo (US-022) o a una integración con
- *   otra institución. Si cada caso de uso llamara a cada interesado, tendríamos la lista repetida
- *   en cinco servicios, y agregar un sexto interesado obligaría a tocarlos todos.
+ * Un cambio de estado le interesa a cosas sin relación entre sí: la notificación, el log y, más
+ * adelante, un correo (US-022). Si cada caso de uso llamara a cada interesado, la lista estaría
+ * repetida en cinco servicios. Con Observer la solicitud anuncia lo que le pasó y no sabe quién
+ * escucha: sumar un observador es registrar una clase más.
  *
- *   Con Observer, la solicitud **anuncia** lo que le pasó y no sabe quién escucha. Sumar un
- *   observador es registrar una clase más en el módulo; ningún caso de uso cambia.
- *
- * POR QUÉ EL EVENTO SE GUARDA EN LA ENTIDAD Y NO SE EMITE AL VUELO
- *   Porque la transición puede fallar al guardarse. Si se avisara dentro de `transicionar`, el
- *   estudiante recibiría la notificación de algo que después no se guardó. La entidad acumula lo
- *   que pasó y el caso de uso lo publica **después** de persistir, cuando ya es cierto.
+ * El evento se guarda en la entidad y no se emite al vuelo porque la transición puede fallar al
+ * guardarse y el estudiante recibiría el aviso de algo que no ocurrió. La entidad acumula y el
+ * caso de uso publica después de persistir.
  */
 import { NombreEstado } from '../enums/solicitud.enums';
 

@@ -1,17 +1,10 @@
 /**
- * CAPA: domain/entities/
- * ────────────────────────────────────────────────────────────────────────────────
  * Comité evaluador de una convocatoria (US-017, CU-13).
  *
- * Reglas del caso de uso que viven aquí:
- *   - Al menos un evaluador y ninguno repetido (flujo 6a).
- *   - Nombre obligatorio.
- *   - Quién lo creó y cuándo (paso 7).
- * "Una convocatoria, un comité" (flujo 3a) no se puede comprobar desde una sola entidad: lo
- * comprueba el caso de uso y lo garantiza el índice único de la base.
- *
- * El reparto equitativo (US-018, criterio 4) también está aquí porque es una regla sobre los
- * integrantes del comité, y se prueba sin base de datos.
+ * Reglas que viven aquí: al menos un evaluador y ninguno repetido (flujo 6a), nombre obligatorio,
+ * y quién lo creó y cuándo. "Una convocatoria, un comité" (flujo 3a) la comprueba el caso de uso
+ * y la garantiza el índice único de la base. El reparto equitativo (US-018, criterio 4) también
+ * está aquí porque es una regla sobre los integrantes y se prueba sin base de datos.
  */
 import { ReglaDeNegocioError } from '../../../../shared/exceptions/errores-dominio';
 
@@ -108,7 +101,7 @@ export class Comite {
   /**
    * US-018, criterio 4 — reparto automático equitativo.
    *
-   * Cada solicitud va a los `porSolicitud` integrantes con MENOS carga en ese momento, contando la
+   * Cada solicitud va a los `porSolicitud` integrantes con menos carga en ese momento, contando la
    * que ya tenían. Así, repartir en dos tandas deja el mismo equilibrio que repartir de una vez. A
    * igual carga se respeta el orden del comité, para que el resultado sea predecible y probable.
    */

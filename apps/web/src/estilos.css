@@ -1717,6 +1717,49 @@ a.boton {
   cursor: pointer;
 }
 
+/* ---- US-036 · Visor de documentos del evaluador ---- */
+
+.documentos li.abierto {
+  background: var(--gob-50);
+  box-shadow: inset 3px 0 0 var(--gob-600);
+}
+
+.visor > h2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.visor-acciones {
+  display: flex;
+  gap: var(--sp-3);
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.visor-cuerpo {
+  padding: var(--sp-3) var(--sp-4) var(--sp-4);
+}
+
+.visor-marco {
+  width: 100%;
+  height: clamp(20rem, 60vh, 38rem);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-lg);
+  background: var(--fondo);
+}
+
+.visor-imagen {
+  display: block;
+  width: 100%;
+  max-height: clamp(20rem, 60vh, 38rem);
+  object-fit: contain;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-lg);
+  background: var(--fondo);
+}
+
 .envio-cuerpo {
   display: flex;
   flex-direction: column;

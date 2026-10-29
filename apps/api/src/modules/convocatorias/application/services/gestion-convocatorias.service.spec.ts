@@ -1,8 +1,8 @@
 /**
- * PRUEBAS DE LOS CASOS DE USO DE GESTIÓN — US-006 (crear) y US-007 (publicar).
+ * Pruebas de los casos de uso de gestión — US-006 (crear) y US-007 (publicar).
  *
  * Con el repositorio en memoria: sin Docker ni PostgreSQL. Lo que se prueba aquí es la
- * ORQUESTACIÓN —código correlativo, persistencia, "no encontrado"—, porque las reglas del
+ * Orquestación —código correlativo, persistencia, "no encontrado"—, porque las reglas del
  * negocio ya tienen sus pruebas en la entidad y en la fábrica.
  */
 import { RecursoNoEncontradoError } from '../../../../shared/exceptions/errores-dominio';
