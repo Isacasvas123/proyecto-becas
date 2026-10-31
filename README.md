@@ -1,21 +1,17 @@
 # Plataforma Nacional para la Gestión Integral de Becas
 
-Proyecto final de **Análisis de Sistemas II (0910-037)** — Universidad Mariano Gálvez,
-Facultad de Ingeniería en Sistemas de Información y Ciencias de la Computación, 8º Ciclo.
+Proyecto final de Análisis de Sistemas II (0910-037), Universidad Mariano Gálvez, Facultad de
+Ingeniería en Sistemas de Información y Ciencias de la Computación, 8º ciclo.
 
-**Product Owner:** Ing. Mario Fuentes
-**Equipo:** Isaac (Scrum Master) · Ivan · Fernando · Stuard
+**Catedrático:** Ing. Mario Fuentes
+**Equipo ControlExe:** Isaac Castillo (Scrum Master) · Iván García · Fernando Herrera · Stuard Estrada
 **Entrega final:** 31 de octubre de 2026
+**Staging:** https://becas-web-staging.onrender.com
 
----
+Plataforma web para que el Ministerio de Educación administre las becas de principio a fin:
+convocatorias, solicitudes, documentos, evaluación por comités, resolución y consulta pública.
 
-## Qué es
-
-Plataforma web para que el Ministerio de Educación administre el ciclo de vida completo de las
-becas: convocatorias, solicitudes, documentación, evaluación por comités, resolución y consulta
-pública del estado.
-
-## Stack
+## Tecnologías
 
 | | |
 |---|---|
@@ -24,167 +20,91 @@ pública del estado.
 | Base de datos | PostgreSQL 16 · Prisma |
 | Pruebas | Jest · Supertest |
 | CI | GitHub Actions |
+| Despliegue | Docker · Render |
 
-**Arquitectura:** monolito modular en capas con puertos y adaptadores.
-Ver [`docs/05-arquitectura.md`](docs/05-arquitectura.md).
+Monolito modular en capas con puertos y adaptadores. Detalle en
+[`docs/05-arquitectura.md`](docs/05-arquitectura.md).
 
----
+## Ejecutar en local
 
-## Cómo levantarlo en local
-
-**Requisitos:** Node 22+, Docker Desktop, Git.
+Requisitos: Node 22+, Docker Desktop y Git.
 
 ```bash
-git clone <url-del-repo>
-cd plataforma-becas
+git clone https://github.com/Isacasvas123/proyecto-becas.git
+cd proyecto-becas
 cp .env.example .env
-docker compose up -d          # levanta PostgreSQL en el puerto 5432
+docker compose up -d
 npm install
-npm run db:migrate            # aplica las migraciones de Prisma
-npm run db:seed               # datos de prueba
-npm run dev                   # API en :3000 · web en :5173
+npm run db:migrate
+npm run db:seed
+npm run dev
 ```
 
-Verificar que funciona:
-
-```bash
-curl http://localhost:3000/health
-```
-
-### Abrir la aplicación
-
-| Dirección | Qué es |
+| Dirección | Contenido |
 |---|---|
-| http://localhost:5173 | La aplicación web |
-| http://localhost:3000/convocatorias | La API en crudo (JSON) |
-| http://localhost:8080 | Adminer, para inspeccionar la base de datos |
+| http://localhost:5173 | Aplicación web |
+| http://localhost:3000 | API (`/health` para comprobarla) |
+| http://localhost:8080 | Adminer |
 
-**Usuario de prueba:** `admin` / `EC321`
+Usuario de desarrollo: `admin` / `EC321` (definido en `.env.example`, solo para uso local).
 
-Lo crea `npm run db:seed` a partir de las variables `ADMIN_*` de tu `.env`. La contraseña se
-almacena con hash bcrypt; el valor en claro solo existe en tu `.env` local, que nunca se sube.
-
-> ⚠️ Son credenciales **de desarrollo**. Antes de desplegar a Staging hay que definir otras en
-> las variables de entorno del servidor, y el seed no debe ejecutarse contra una base real.
-
-### Rutas de la aplicación
-
-| Ruta | Acceso |
-|---|---|
-| `/login` | Pública |
-| `/convocatorias` | Requiere sesión iniciada |
-
-> **Pendiente conocido:** US-008 exige que el listado de convocatorias sea visible **sin cuenta**
-> ("como visitante..."). Hoy está detrás del login. Se resuelve en el Sprint 3 separando el
-> listado público del panel de administración. Documentado en `PaginaConvocatorias.tsx`.
-
-### Problemas frecuentes al instalar
-
-**Docker Desktop dice "Virtualization support not detected"** (Windows 11 Home): falta WSL.
-Abre una terminal **como administrador**, corre `wsl --install` y **reinicia**. La virtualización
-del BIOS normalmente ya está activada; el problema es que WSL 2 no está instalado.
-
-**`npm run db:seed` falla con `Environment variable not found: DATABASE_URL`**: te falta copiar
-el archivo de entorno. Corre `cp .env.example .env`.
+Si algo falla al instalar, ver [`docs/13-guia-instalacion.md`](docs/13-guia-instalacion.md).
 
 ## Pruebas
 
 ```bash
-npm test                      # pruebas unitarias
-npm run test:cov              # con reporte de cobertura
-npm run test:e2e              # pruebas de integración
-npm run lint                  # análisis estático
+npm test            # unitarias
+npm run test:cov    # con cobertura
+npm run test:e2e    # integración
+npm run lint
 ```
 
----
+## Flujo de trabajo
 
-## Cómo se trabaja aquí
-
-**Nadie hace push a `main` ni a `develop`.** Todo entra por Pull Request.
+Nadie hace push a `main` ni a `develop`; todo entra por Pull Request.
 
 ```
-main      ← versiones estables y desplegables
- └ develop ← integración continua
-    └ feature/US-XXX-descripcion-corta
-    └ fix/descripcion-corta
-    └ docs/descripcion-corta
+main
+ └ develop
+    └ feature/US-XXX-descripcion
+    └ fix/descripcion
+    └ docs/descripcion
 ```
 
-**Flujo para una historia de usuario:**
-
-```bash
-git checkout develop && git pull
-git checkout -b feature/US-012-crear-solicitud
-# ... trabajar, con commits pequeños y descriptivos ...
-git push -u origin feature/US-012-crear-solicitud
-# abrir Pull Request hacia develop en GitHub
-```
-
-**Commits** en formato [Conventional Commits](https://www.conventionalcommits.org/):
+Commits en formato [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```
 feat(convocatorias): agregar factory de tipos de convocatoria
 fix(solicitudes): corregir validación de documentos faltantes
-test(evaluaciones): pruebas del criterio de mérito académico
-docs(arquitectura): justificar el monolito modular
 ```
 
-**Todo Pull Request requiere:**
-- Título con el ID de la historia de usuario
-- Descripción de qué resuelve
-- Checklist de la Definition of Done completo
-- **Aprobación de un integrante distinto al autor**
-- CI en verde
-
----
-
-## Ritmo del equipo
-
-Sprints semanales de jueves a miércoles.
-
-| Día | Quiénes |
-|---|---|
-| **Jueves** | Los 4 — Sprint Review, Retrospective y Planning |
-| Viernes | Isaac + Ivan |
-| Sábado | Fernando + Stuard |
-| Domingo | Libre / buffer |
-| Lunes | Stuard + Fernando |
-| Martes | Ivan + Isaac |
-| **Miércoles** | Los 4 — cierre asincrónico e integración |
-
----
+Cada Pull Request lleva el ID de la historia en el título, la Definition of Done completa, la
+aprobación de otro integrante y el CI en verde. La guía completa está en
+[`docs/11-guia-git.md`](docs/11-guia-git.md).
 
 ## Documentación
 
-| Documento | Anexo |
+| Documento | Archivo |
 |---|---|
-| [Guion de reunión de arranque](docs/00-guion-reunion-sprint-1.md) | — |
-| [Acta de Constitución del Equipo](docs/01-acta-constitucion.md) | 1 |
-| [Política de Trabajo en Grupo](docs/02-politica-equipo.md) | 3 |
-| [Visión del Producto](docs/03-vision-producto.md) | 4 §2-3 |
-| [Product Backlog, NFRs y DoD](docs/04-product-backlog.md) | 4 §4-6 |
-| [Documento de Arquitectura](docs/05-arquitectura.md) | 5 |
-| [Justificación de Patrones de Diseño](docs/06-patrones.md) | — |
-| [Plan de Aseguramiento de Calidad](docs/07-qap.md) | 6 |
-| [Plan de Pruebas](docs/08-plan-pruebas.md) | 7 |
-| [Manual Técnico](docs/09-manual-tecnico.md) | — |
-| [Manual de Usuario](docs/10-manual-usuario.md) | — |
-| [**Guía de Git para el equipo**](docs/11-guia-git.md) | — |
-| [Minutas de sprints](docs/minutas/) | 2 |
-
-> ¿Primera vez con ramas y Pull Requests? Empieza por la
-> [Guía de Git](docs/11-guia-git.md).
-
-> La documentación vive en el repositorio, no en Drive: el enunciado exige control de versiones
-> **del código y de la documentación**, así que cada cambio de documento también pasa por Pull
-> Request.
-
----
+| Acta de Constitución del Equipo | [`01-acta-constitucion.md`](docs/01-acta-constitucion.md) |
+| Política de Trabajo en Grupo | [`02-politica-equipo.md`](docs/02-politica-equipo.md) |
+| Visión del Producto | [`03-vision-producto.md`](docs/03-vision-producto.md) |
+| Product Backlog, NFR y DoD | [`04-product-backlog.md`](docs/04-product-backlog.md) |
+| Arquitectura | [`05-arquitectura.md`](docs/05-arquitectura.md) |
+| Patrones de diseño | [`06-patrones.md`](docs/06-patrones.md) |
+| Casos de uso, componentes y clases | [`diagramas/`](docs/diagramas/) |
+| Matriz de trazabilidad | [`15-matriz-trazabilidad.md`](docs/15-matriz-trazabilidad.md) |
+| Plan de Calidad | [`18-plan-calidad.md`](docs/18-plan-calidad.md) |
+| Plan de Pruebas | [`19-plan-pruebas.md`](docs/19-plan-pruebas.md) |
+| Manual Técnico | [`20-manual-tecnico.md`](docs/20-manual-tecnico.md) |
+| Manual de Usuario | [`21-manual-usuario.md`](docs/21-manual-usuario.md) |
+| Análisis de impacto de los requerimientos del 17 de octubre | [`23-analisis-impacto-requerimientos-po.md`](docs/23-analisis-impacto-requerimientos-po.md) |
+| Minutas de sprint | [`minutas/`](docs/minutas/) |
 
 ## Entornos
 
-| Entorno | Rama | Para qué |
+| Entorno | Rama | Uso |
 |---|---|---|
-| Local | `feature/*` | Desarrollo y pruebas unitarias |
-| Staging | `develop` | Pruebas de integración y aceptación del Product Owner |
-| Producción | `main` | Sprint Reviews y presentación final |
+| Local | `feature/*` | Desarrollo |
+| Staging | `develop` | Pruebas y revisión del catedrático |
+| Producción | `main` | Presentación final |
